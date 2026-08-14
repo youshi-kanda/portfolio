@@ -15,7 +15,7 @@
 - Automation: Google Apps Script
 - Other: REST API / Git / GitHub / Business system development
 
-## Featured Project
+## Featured Projects
 
 ### AI CRM Demo
 
@@ -49,11 +49,51 @@ Backend tests: **484 passed**
 
 [View AI CRM Demo →](./ai-crm-demo/)
 
+### Project Progress Manager
+
+Google Apps ScriptとGoogle Sheetsで構築した、プロジェクト進捗管理デモです。
+
+Project / Work Item / Decision / Dependencyをスプレッドシート上で管理し、
+Sidebarからの一括登録、Dashboard集計、Activity履歴までを実装しています。
+
+**Main Features**
+
+- Project管理
+- Work Item / Task管理
+- Decision / Blocker管理
+- Dependency管理
+- HTML Service Sidebarからの一括登録
+- Dashboard集計
+- Activity履歴
+- onEditによる更新記録
+- Synthetic Demo Data
+
+**Engineering Highlights**
+
+- Google Sheets as Source of Truth
+- Header-based column resolution
+- LockServiceによる排他制御
+- submissionId + payloadHashによる冪等性
+- Transaction-like rollback
+- DFSによる循環依存検出
+- Formula Injection対策
+- Safe Error / secret masking
+
+**Tech Stack**
+
+`Google Apps Script` `JavaScript` `Google Sheets`
+`HTML Service` `LockService`
+
+Tests: **77 passed**
+
+This portfolio demo does not include external API or GitHub integration.
+
+[View Project Progress Manager →](./gas-project-management-demo/)
+
 ## Upcoming Projects
 
 Additional portfolio projects are currently being prepared.
 
-- Business workflow automation
 - Document / OCR automation
 
 ## About This Repository
