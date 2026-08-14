@@ -1,0 +1,16 @@
+{
+  "_comment": "Copy to .clasp.json and fill in your own scriptId. .clasp.json is gitignored — never commit a real Script ID.",
+  "scriptId": "<YOUR_SCRIPT_ID>",
+  "rootDir": ".",
+  "filePushOrder": [
+    "src/config.js",
+    "src/safe-error.js",
+    "src/schema.js",
+    "src/id-service.js",
+    "src/engine.js",
+    "src/registration-service.js",
+    "src/sync-controller.js",
+    "src/demo-data.js",
+    "src/main.js"
+  ]
+}

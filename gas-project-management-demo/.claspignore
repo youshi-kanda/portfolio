@@ -1,0 +1,13 @@
+**
+!appsscript.json
+!src/**/*.js
+!src/**/*.html
+tests/**
+docs/**
+.clasp.example.json
+.clasp.json
+.clasprc.json
+.claspignore
+package.json
+README.md
+*.md

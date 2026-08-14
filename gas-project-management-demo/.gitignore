@@ -1,0 +1,24 @@
+# --- clasp / Apps Script credentials -------------------------------------
+# .clasp.json holds a real Script ID; .clasprc.json holds an OAuth token.
+# Only the sanitized .clasp.example.json is tracked.
+**/.clasp.json
+**/.clasprc.json
+!.clasp.example.json
+
+# --- secrets --------------------------------------------------------------
+.env
+.env.*
+*.pem
+*.key
+credentials*.json
+service-account*.json
+*token*.json
+
+# --- build / editor noise -------------------------------------------------
+node_modules/
+*.log
+.DS_Store
+Thumbs.db
+*.Zone.Identifier
+.idea/
+.vscode/

@@ -1,0 +1,11 @@
+{
+  "name": "gas-project-management-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Project Progress Manager — a Google Apps Script / Google Sheets project progress management demo.",
+  "license": "MIT",
+  "scripts": {
+    "test": "node tests/run-tests.js",
+    "check": "node --check src/config.js && node --check src/safe-error.js && node --check src/schema.js && node --check src/id-service.js && node --check src/engine.js && node --check src/registration-service.js && node --check src/sync-controller.js && node --check src/demo-data.js && node --check src/main.js"
+  }
+}

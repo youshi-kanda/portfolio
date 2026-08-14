@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_top">
+  <style>
+    body { font-family: sans-serif; font-size: 13px; margin: 0; padding: 8px; }
+    h2 { font-size: 15px; margin: 0 0 8px; }
+    h3 { font-size: 13px; margin: 12px 0 4px; border-bottom: 1px solid #ccc; padding-bottom: 2px; }
+    label { display: block; margin-top: 6px; font-weight: bold; font-size: 12px; }
+    input[type="text"], input[type="date"], input[type="number"], select, textarea {
+      width: 100%; box-sizing: border-box; padding: 4px; margin-top: 2px;
+      border: 1px solid #ccc; border-radius: 2px; font-size: 12px;
+    }
+    textarea { resize: vertical; min-height: 44px; }
+    .block { border: 1px solid #ddd; border-radius: 4px; padding: 6px; margin-bottom: 6px; background: #fafafa; }
+    .block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .block-title { font-weight: bold; font-size: 12px; }
+    .btn-remove { background: #e74c3c; color: #fff; border: none; border-radius: 2px; padding: 2px 6px; cursor: pointer; font-size: 11px; }
+    .btn-add    { background: #3498db; color: #fff; border: none; border-radius: 2px; padding: 4px 10px; cursor: pointer; margin-top: 4px; }
+    .btn-submit { background: #27ae60; color: #fff; border: none; border-radius: 2px; padding: 6px 16px; cursor: pointer; margin-top: 8px; width: 100%; font-size: 13px; }
+    .btn-submit:disabled { background: #95a5a6; cursor: not-allowed; }
+    .msg-success { color: #27ae60; background: #eafaf1; border: 1px solid #a9dfbf; padding: 6px; margin-top: 6px; border-radius: 2px; }
+    .msg-error   { color: #c0392b; background: #fdedec; border: 1px solid #f5b7b1; padding: 6px; margin-top: 6px; border-radius: 2px; }
+    .msg-info    { color: #2980b9; background: #eaf4fb; border: 1px solid #aed6f1; padding: 6px; margin-top: 6px; border-radius: 2px; }
+    .hidden { display: none; }
+    small { color: #888; font-weight: normal; }
+    .project-fields.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <h2>プロジェクト・タスクを登録</h2>
+  <div id="msg" class="hidden"></div>
+
+  <form id="regForm">
+    <h3>プロジェクト</h3>
+    <label>対象プロジェクト</label>
+    <select id="projectMode">
+      <option value="new">新規作成</option>
+      <option value="existing">既存プロジェクトを選択</option>
+    </select>
+
+    <div id="existingSelect" class="hidden">
+      <label>既存プロジェクト</label>
+      <select id="existingProjectId"><option value="">（読み込み中...）</option></select>
+    </div>
+
+    <div id="newProjectFields" class="project-fields">
+      <label>プロジェクト名 <small>*必須 200字以内</small></label>
+      <input type="text" id="projectName" maxlength="200">
+
+      <label>共有用タイトル <small>200字以内（非エンジニア向け）</small></label>
+      <input type="text" id="shareTitle" maxlength="200">
+
+      <label>業務上の目的 <small>2000字以内</small></label>
+      <textarea id="purpose" maxlength="2000"></textarea>
+
+      <label>状況</label>
+      <select id="projectStatus">
+        <option value="計画中" selected>計画中</option>
+        <option value="進行中">進行中</option>
+        <option value="保留">保留</option>
+        <option value="完了">完了</option>
+        <option value="中止">中止</option>
+      </select>
+
+      <label>優先順位</label>
+      <select id="projectPriority">
+        <option value="今すぐ">今すぐ</option>
+        <option value="次に" selected>次に</option>
+        <option value="後で">後で</option>
+      </select>
+
+      <label>オーナー <small>200字以内</small></label>
+      <input type="text" id="owner" maxlength="200">
+
+      <label>開始予定日</label>
+      <input type="date" id="startDate">
+
+      <label>完了予定日</label>
+      <input type="date" id="dueDate">
+
+      <label>次の完成目標</label>
+      <input type="text" id="nextMilestone" maxlength="200">
+    </div>
+
+    <h3>Work Item <small>（0〜200件、Epic/Feature/Task/Subtask/Bug/Improvement）</small></h3>
+    <div id="itemList"></div>
+    <button type="button" class="btn-add" id="btnAddItem">＋ Work Item を追加</button>
+
+    <h3>依存関係 <small>（0〜複数、循環禁止）</small></h3>
+    <div id="relList"></div>
+    <button type="button" class="btn-add" id="btnAddRel">＋ 依存を追加</button>
+
+    <h3>判断待ち <small>（0〜複数）</small></h3>
+    <div id="decList"></div>
+    <button type="button" class="btn-add" id="btnAddDec">＋ 判断待ちを追加</button>
+
+    <button type="submit" class="btn-submit" id="btnSubmit">登録する</button>
+  </form>
+
+  <script>
+    var itemCount = 0;
+    var relCount = 0;
+    var decCount = 0;
+    var submissionId = generateSubmissionId();
+
+    function generateSubmissionId() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16 | 0;
+        var v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    function loadProjects() {
+      google.script.run
+        .withSuccessHandler(function(projects) {
+          var sel = document.getElementById('existingProjectId');
+          sel.innerHTML = '<option value="">選択してください</option>';
+          for (var i = 0; i < projects.length; i++) {
+            var opt = document.createElement('option');
+            opt.value = projects[i].projectId;
+            opt.textContent = projects[i].projectId + ' — ' + (projects[i].shareTitle || projects[i].projectName);
+            sel.appendChild(opt);
+          }
+        })
+        .withFailureHandler(function() { /* ignore */ })
+        .v3ListProjects();
+    }
+
+    document.getElementById('projectMode').addEventListener('change', function() {
+      var mode = this.value;
+      document.getElementById('existingSelect').classList.toggle('hidden', mode !== 'existing');
+      document.getElementById('newProjectFields').classList.toggle('hidden', mode !== 'new');
+      if (mode === 'existing') loadProjects();
+    });
+
+    document.getElementById('btnAddItem').addEventListener('click', function() {
+      if (itemCount >= 200) return;
+      addItemRow(itemCount++);
+    });
+
+    function addItemRow(idx) {
+      var key = 'item_' + idx;
+      var div = document.createElement('div');
+      div.className = 'block';
+      div.id = 'itemBlock_' + key;
+      div.innerHTML =
+        '<div class="block-header">' +
+          '<span class="block-title">Work Item ' + (idx + 1) + '</span>' +
+          '<button type="button" class="btn-remove" onclick="removeBlock(\'itemBlock_' + key + '\')">削除</button>' +
+        '</div>' +
+        '<input type="hidden" class="itemDraftKey" value="' + key + '">' +
+        '<label>種類</label>' +
+        '<select class="itemType">' +
+          '<option value="Task" selected>Task</option>' +
+          '<option value="Epic">Epic</option>' +
+          '<option value="Feature">Feature</option>' +
+          '<option value="Subtask">Subtask</option>' +
+          '<option value="Bug">Bug</option>' +
+          '<option value="Improvement">Improvement</option>' +
+        '</select>' +
+        '<label>タイトル <small>*必須 200字以内</small></label>' +
+        '<input type="text" class="itemTitle" maxlength="200">' +
+        '<label>共有用タイトル <small>200字以内</small></label>' +
+        '<input type="text" class="itemShareTitle" maxlength="200">' +
+        '<label>親 (parentDraftKey) <small>同一送信内の Work Item を指定（例: item_0）</small></label>' +
+        '<input type="text" class="itemParentDraft" placeholder="空欄可">' +
+        '<label>親 (parentItemId) <small>既存 Work Item ID（例: PPM-P-0001-E-0010）</small></label>' +
+        '<input type="text" class="itemParentId" placeholder="空欄可">' +
+        '<label>詳細</label>' +
+        '<textarea class="itemDescription" maxlength="4000"></textarea>' +
+        '<label>成果物</label>' +
+        '<textarea class="itemDeliverable" maxlength="2000"></textarea>' +
+        '<label>受入条件</label>' +
+        '<textarea class="itemAcceptance" maxlength="2000"></textarea>' +
+        '<label>状態</label>' +
+        '<select class="itemStatus">' +
+          '<option value="未着手" selected>未着手</option>' +
+          '<option value="作業中">作業中</option>' +
+          '<option value="確認待ち">確認待ち</option>' +
+          '<option value="完了">完了</option>' +
+          '<option value="対象外">対象外</option>' +
+        '</select>' +
+        '<label>フェーズ</label>' +
+        '<select class="itemPhase">' +
+          '<option value="">（未設定）</option>' +
+          '<option value="調査">調査</option>' +
+          '<option value="設計">設計</option>' +
+          '<option value="実装">実装</option>' +
+          '<option value="テスト">テスト</option>' +
+          '<option value="リリース準備">リリース準備</option>' +
+        '</select>' +
+        '<label>優先順位</label>' +
+        '<select class="itemPriority">' +
+          '<option value="">（未設定）</option>' +
+          '<option value="今すぐ">今すぐ</option>' +
+          '<option value="次に">次に</option>' +
+          '<option value="後で">後で</option>' +
+        '</select>' +
+        '<label>担当</label>' +
+        '<input type="text" class="itemAssignee" maxlength="200">' +
+        '<label>開始日</label>' +
+        '<input type="date" class="itemStart">' +
+        '<label>期限</label>' +
+        '<input type="date" class="itemDue">' +
+        '<label>見積 (日数)</label>' +
+        '<input type="number" class="itemEstimate" step="0.5" min="0">' +
+        '<label>ブロッカー</label>' +
+        '<input type="text" class="itemBlocker" maxlength="200">';
+      document.getElementById('itemList').appendChild(div);
+    }
+
+    document.getElementById('btnAddRel').addEventListener('click', function() {
+      addRelRow(relCount++);
+    });
+
+    function addRelRow(idx) {
+      var div = document.createElement('div');
+      div.className = 'block';
+      div.id = 'relBlock_' + idx;
+      div.innerHTML =
+        '<div class="block-header">' +
+          '<span class="block-title">依存関係 ' + (idx + 1) + '</span>' +
+          '<button type="button" class="btn-remove" onclick="removeBlock(\'relBlock_' + idx + '\')">削除</button>' +
+        '</div>' +
+        '<label>依存元 draftKey または itemId</label>' +
+        '<input type="text" class="relSource" placeholder="例: item_0 または PPM-P-0001-T-0010">' +
+        '<label>依存先 draftKey または itemId</label>' +
+        '<input type="text" class="relTarget" placeholder="例: item_1 または PPM-P-0001-T-0020">' +
+        '<label>種類</label>' +
+        '<select class="relType">' +
+          '<option value="depends_on" selected>depends_on</option>' +
+          '<option value="blocks">blocks</option>' +
+        '</select>';
+      document.getElementById('relList').appendChild(div);
+    }
+
+    document.getElementById('btnAddDec').addEventListener('click', function() {
+      addDecRow(decCount++);
+    });
+
+    function addDecRow(idx) {
+      var div = document.createElement('div');
+      div.className = 'block';
+      div.id = 'decBlock_' + idx;
+      div.innerHTML =
+        '<div class="block-header">' +
+          '<span class="block-title">判断待ち ' + (idx + 1) + '</span>' +
+          '<button type="button" class="btn-remove" onclick="removeBlock(\'decBlock_' + idx + '\')">削除</button>' +
+        '</div>' +
+        '<label>タイトル <small>*必須</small></label>' +
+        '<input type="text" class="decTitle" maxlength="200">' +
+        '<label>詳細</label>' +
+        '<textarea class="decDetail" maxlength="2000"></textarea>' +
+        '<label>種類</label>' +
+        '<select class="decType">' +
+          '<option value="判断待ち" selected>判断待ち</option>' +
+          '<option value="ブロッカー">ブロッカー</option>' +
+          '<option value="質問">質問</option>' +
+        '</select>' +
+        '<label>関連 Work Item (draftKey)</label>' +
+        '<input type="text" class="decItemDraft" placeholder="例: item_0（空欄可）">' +
+        '<label>関連 Work Item (itemId)</label>' +
+        '<input type="text" class="decItemId" placeholder="例: PPM-P-0001-T-0010（空欄可）">' +
+        '<label>担当</label>' +
+        '<input type="text" class="decOwner" maxlength="200">' +
+        '<label>希望回答日</label>' +
+        '<input type="date" class="decDue">';
+      document.getElementById('decList').appendChild(div);
+    }
+
+    function removeBlock(id) {
+      var el = document.getElementById(id);
+      if (el) el.parentNode.removeChild(el);
+    }
+    window.removeBlock = removeBlock;
+
+    function buildPayload() {
+      var mode = document.getElementById('projectMode').value;
+      var project = null;
+      if (mode === 'new') {
+        project = {
+          mode: 'new',
+          projectName:   document.getElementById('projectName').value,
+          shareTitle:    document.getElementById('shareTitle').value,
+          purpose:       document.getElementById('purpose').value,
+          status:        document.getElementById('projectStatus').value,
+          priority:      document.getElementById('projectPriority').value,
+          owner:         document.getElementById('owner').value,
+          startDate:     document.getElementById('startDate').value || null,
+          dueDate:       document.getElementById('dueDate').value || null,
+          nextMilestone: document.getElementById('nextMilestone').value,
+        };
+      } else {
+        project = { mode: 'existing', projectId: document.getElementById('existingProjectId').value };
+      }
+
+      var items = [];
+      var itemBlocks = document.querySelectorAll('#itemList .block');
+      for (var i = 0; i < itemBlocks.length; i++) {
+        var b = itemBlocks[i];
+        items.push({
+          draftKey:         b.querySelector('.itemDraftKey').value,
+          itemType:         b.querySelector('.itemType').value,
+          title:            b.querySelector('.itemTitle').value,
+          shareTitle:       b.querySelector('.itemShareTitle').value,
+          parentDraftKey:   b.querySelector('.itemParentDraft').value.trim() || null,
+          parentItemId:     b.querySelector('.itemParentId').value.trim() || null,
+          description:      b.querySelector('.itemDescription').value,
+          deliverable:      b.querySelector('.itemDeliverable').value,
+          acceptanceCriteria: b.querySelector('.itemAcceptance').value,
+          status:           b.querySelector('.itemStatus').value || null,
+          phase:            b.querySelector('.itemPhase').value || null,
+          priority:         b.querySelector('.itemPriority').value || null,
+          assignee:         b.querySelector('.itemAssignee').value,
+          startDate:        b.querySelector('.itemStart').value || null,
+          dueDate:          b.querySelector('.itemDue').value || null,
+          estimate:         b.querySelector('.itemEstimate').value ? Number(b.querySelector('.itemEstimate').value) : null,
+          blocker:          b.querySelector('.itemBlocker').value,
+        });
+      }
+
+      var relations = [];
+      var relBlocks = document.querySelectorAll('#relList .block');
+      for (var r = 0; r < relBlocks.length; r++) {
+        var rb = relBlocks[r];
+        var src = rb.querySelector('.relSource').value.trim();
+        var tgt = rb.querySelector('.relTarget').value.trim();
+        if (!src || !tgt) continue;
+        var isSrcDraft = /^item_\d+$/.test(src);
+        var isTgtDraft = /^item_\d+$/.test(tgt);
+        relations.push({
+          sourceDraftKey: isSrcDraft ? src : null,
+          sourceItemId:   isSrcDraft ? null : src,
+          targetDraftKey: isTgtDraft ? tgt : null,
+          targetItemId:   isTgtDraft ? null : tgt,
+          relationType:   rb.querySelector('.relType').value,
+        });
+      }
+
+      var decisions = [];
+      var decBlocks = document.querySelectorAll('#decList .block');
+      for (var d = 0; d < decBlocks.length; d++) {
+        var db = decBlocks[d];
+        decisions.push({
+          title:        db.querySelector('.decTitle').value,
+          detail:       db.querySelector('.decDetail').value,
+          type:         db.querySelector('.decType').value,
+          itemDraftKey: db.querySelector('.decItemDraft').value.trim() || null,
+          itemId:       db.querySelector('.decItemId').value.trim() || null,
+          owner:        db.querySelector('.decOwner').value,
+          dueDate:      db.querySelector('.decDue').value || null,
+          status:       '未確認',
+        });
+      }
+
+      return {
+        submissionId: submissionId,
+        project: project,
+        items: items,
+        relations: relations,
+        decisions: decisions,
+      };
+    }
+
+    function showMsg(text, type) {
+      var el = document.getElementById('msg');
+      el.className = 'msg-' + (type || 'info');
+      el.textContent = text;
+      el.classList.remove('hidden');
+    }
+
+    function resetForm() {
+      document.getElementById('regForm').reset();
+      document.getElementById('itemList').innerHTML = '';
+      document.getElementById('relList').innerHTML = '';
+      document.getElementById('decList').innerHTML = '';
+      itemCount = 0; relCount = 0; decCount = 0;
+      submissionId = generateSubmissionId();
+      document.getElementById('existingSelect').classList.add('hidden');
+      document.getElementById('newProjectFields').classList.remove('hidden');
+      document.getElementById('projectMode').value = 'new';
+    }
+
+    document.getElementById('regForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('btnSubmit');
+      btn.disabled = true;
+      showMsg('送信中...', 'info');
+      var payload = buildPayload();
+
+      google.script.run
+        .withSuccessHandler(function(result) {
+          btn.disabled = false;
+          if (result && result.ok) {
+            var msg = '登録完了！ プロジェクト: ' + result.projectId +
+              '、Item: ' + (result.itemIds ? result.itemIds.length : 0) +
+              '、判断待ち: ' + (result.decisionIds ? result.decisionIds.length : 0);
+            if (result.idempotent) msg += '（冪等再送）';
+            showMsg(msg, 'success');
+            resetForm();
+          } else {
+            var code = result && result.code ? result.code : 'unknown_error';
+            showMsg('登録に失敗しました（' + code + '）: ' + (result && result.message ? result.message : ''), 'error');
+          }
+        })
+        .withFailureHandler(function() {
+          btn.disabled = false;
+          showMsg('通信エラーが発生しました。再送信してください。', 'error');
+        })
+        .v3RegisterProjectWithItems(payload);
+    });
+  </script>
+</body>
+</html>
