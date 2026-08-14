@@ -1,0 +1,32 @@
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by black)
+    "B008",  # do not perform function calls in default arguments
+]
+
+[tool.ruff.lint.per-file-ignores]
+"config/settings/*.py" = ["F401", "F403"]  # wildcard imports are intentional in settings
+
+[tool.coverage.run]
+source = ["apps"]
+omit = ["*/migrations/*", "*/tests/*", "config/*"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false

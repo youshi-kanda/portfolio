@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+coverage
+backend
+docs
+.env
+.env.*
+*.log
+*.sqlite3

@@ -1,0 +1,85 @@
+# ============================================================
+# Python / Django
+# ============================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.tox/
+.venv/
+venv/
+env/
+.env
+.env.local
+*.sqlite3
+
+# Django artifacts
+staticfiles/
+media/
+backend/media/
+
+# ============================================================
+# Node / Frontend
+# ============================================================
+node_modules/
+frontend/dist/
+frontend/build/
+.env.*.local
+*.tsbuildinfo
+# Vite build artifacts (TypeScript emitted files)
+frontend/vite.config.js
+frontend/vite.config.d.ts
+frontend/tsconfig*.tsbuildinfo
+
+# ============================================================
+# OS / Editor
+# ============================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# ============================================================
+# Logs
+# ============================================================
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ============================================================
+# Security — never commit these
+# ============================================================
+*.pem
+*.key
+*.p12
+secrets.json
+credentials.json
+
+# ============================================================
+# Misc
+# ============================================================
+coverage/
+.coverage
+.pytest_cache/
+htmlcov/
+*.Zone.Identifier
+*:Zone.Identifier
+login_response.json
+backend/celerybeat-schedule

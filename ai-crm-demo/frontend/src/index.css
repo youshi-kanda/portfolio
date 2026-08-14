@@ -1,0 +1,99 @@
+/* Design tokens */
+:root {
+  --brand: #F5A623;
+  --brand-hover: #E09415;
+  --brand-light: #FEF9EC;
+  --brand-dark: #B07000;
+
+  --line-green: #06C755;
+  --line-green-hover: #05A847;
+  --line-green-light: #E6FFF0;
+
+  --sidebar-bg: #1E293B;
+  --sidebar-hover: #273549;
+  --sidebar-active-border: #F5A623;
+  --sidebar-text: #94A3B8;
+  --sidebar-text-active: #F5A623;
+
+  --app-bg: #F1F5F9;
+  --card-bg: #FFFFFF;
+
+  --text-primary: #1E293B;
+  --text-secondary: #64748B;
+  --border: #E2E8F0;
+
+  --danger: #DC2626;
+  --danger-light: #FEE2E2;
+
+  --card-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05);
+  --card-shadow-hover: 0 4px 8px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+}
+
+/* Reset */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  color: var(--text-primary);
+  background: var(--app-bg);
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+@media (max-width: 760px) {
+  .app-body {
+    flex-direction: column;
+    margin-top: 52px !important;
+  }
+
+  .app-sidebar {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 132px;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .app-sidebar-nav {
+    display: flex;
+    gap: 4px;
+    padding: 8px;
+    min-width: max-content;
+  }
+
+  .app-sidebar nav > div {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .app-sidebar nav > div > div:first-child {
+    display: none;
+  }
+
+  .app-sidebar-link {
+    min-height: 44px;
+    border-left: 0 !important;
+    border-bottom: 3px solid transparent;
+    padding: 10px 12px !important;
+    white-space: nowrap;
+  }
+
+  .app-main {
+    height: calc(100vh - 184px) !important;
+    padding: 18px 14px !important;
+  }
+
+  .app-content {
+    max-width: none !important;
+  }
+
+  table {
+    min-width: 720px;
+  }
+}

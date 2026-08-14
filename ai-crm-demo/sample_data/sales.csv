@@ -1,0 +1,4 @@
+customer_id,sale_date,menu_name,category,amount,payment_method,staff_name
+C001,2024-04-01,フェイシャルトリートメント,施術,12000,credit_card,佐藤
+C002,2024-04-05,ボディケア60分,施術,8000,cash,田中
+C001,2024-04-30,フェイシャルトリートメント,施術,12000,credit_card,佐藤

@@ -1,0 +1,4 @@
+customer_id,full_name,kana,phone,email,gender,birth_date,acquisition_channel
+C001,山田花子,ヤマダハナコ,090-0001-0001,sample1@example.com,female,1985-03-15,line
+C002,鈴木一郎,スズキイチロウ,090-0002-0002,sample2@example.com,male,1990-07-22,instagram
+C003,田中美咲,タナカミサキ,090-0003-0003,,female,1992-11-08,web

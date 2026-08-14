@@ -1,0 +1,4 @@
+customer_id,reservation_date,visit_date,status,menu_name,staff_name
+C001,2024-04-01,2024-04-01,visited,フェイシャルトリートメント,佐藤
+C002,2024-04-05,2024-04-05,visited,ボディケア60分,田中
+C001,2024-04-30,2024-04-30,visited,フェイシャルトリートメント,佐藤
