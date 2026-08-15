@@ -1,0 +1,214 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "schema/equipment-inspection-output.schema.json",
+  "title": "EquipmentInspectionExtractionOutput",
+  "description": "Structured output of the field-extraction pipeline for a synthetic Equipment Inspection Form. Field definitions only; this schema carries no real records.",
+  "type": "object",
+  "required": ["extraction_metadata", "fields", "review"],
+  "additionalProperties": false,
+  "properties": {
+    "extraction_metadata": {
+      "description": "Provenance and per-field confidence for one extraction run.",
+      "type": "object",
+      "required": [
+        "document_type",
+        "schema_version",
+        "provider_id",
+        "provider_mode",
+        "extracted_at",
+        "page_count",
+        "page_baseline_confidence",
+        "field_confidences",
+        "field_levels",
+        "low_confidence_fields",
+        "missing_fields"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "document_type": {
+          "description": "Business document this output describes.",
+          "const": "equipment_inspection_form"
+        },
+        "schema_version": {
+          "description": "Version of this output contract.",
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "provider_id": {
+          "description": "Identifier of the OCR provider that produced the source response.",
+          "type": "string",
+          "minLength": 1
+        },
+        "provider_mode": {
+          "description": "synthetic = deterministic fixture; live = a real provider call.",
+          "type": "string",
+          "enum": ["synthetic", "live"]
+        },
+        "extracted_at": {
+          "description": "When the extraction ran (ISO 8601).",
+          "type": "string",
+          "format": "date-time"
+        },
+        "page_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "page_baseline_confidence": {
+          "description": "Mean confidence across every symbol on the page.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "field_confidences": {
+          "description": "Confidence per field name, keyed by the field names under /fields.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "field_levels": {
+          "description": "Confidence band per field name.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["HIGH", "MEDIUM", "LOW", "UNREADABLE"]
+          }
+        },
+        "low_confidence_fields": {
+          "description": "Fields scoring below the review threshold.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "missing_fields": {
+          "description": "Fields for which no value could be read.",
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+
+    "fields": {
+      "description": "Extracted candidate values. Every field is nullable: a value that could not be read is null, never a guess.",
+      "type": "object",
+      "required": [
+        "document_id",
+        "equipment_id",
+        "inspection_date",
+        "location",
+        "equipment_type",
+        "condition",
+        "safety_check_passed",
+        "repair_required",
+        "photo_attached",
+        "issue_description",
+        "next_inspection_date",
+        "inspector_role"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "document_id": {
+          "description": "Form serial number printed on the sheet.",
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{2,4}-[0-9]{4}-[0-9]{3,4}$"
+        },
+        "equipment_id": {
+          "description": "Asset tag of the inspected equipment.",
+          "type": ["string", "null"],
+          "pattern": "^[A-Z]{2}-[0-9]{3,5}$"
+        },
+        "inspection_date": {
+          "description": "Date the inspection was carried out.",
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "location": {
+          "description": "Site or area where the equipment is installed.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "equipment_type": {
+          "description": "Equipment category as written on the form.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "condition": {
+          "description": "Overall assessment. 'unknown' means text was present but matched no known token.",
+          "type": ["string", "null"],
+          "enum": ["good", "needs_review", "failed", "unknown", null]
+        },
+        "safety_check_passed": {
+          "description": "Tri-state tick box. null means the box was left undetermined.",
+          "type": ["boolean", "null"]
+        },
+        "repair_required": {
+          "type": ["boolean", "null"]
+        },
+        "photo_attached": {
+          "type": ["boolean", "null"]
+        },
+        "issue_description": {
+          "description": "Free-text remark recorded by the inspector.",
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "next_inspection_date": {
+          "type": ["string", "null"],
+          "format": "date"
+        },
+        "inspector_role": {
+          "description": "Who carried out the inspection.",
+          "type": ["string", "null"],
+          "enum": ["internal", "contractor", "unknown", null]
+        }
+      }
+    },
+
+    "review": {
+      "description": "Review-gate decision. Extracted values stay candidates until a person confirms them.",
+      "type": "object",
+      "required": ["status", "confirm_allowed", "reasons", "missing_required_fields"],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["passed", "review_required", "blocked", "extraction_failed"]
+        },
+        "confirm_allowed": {
+          "description": "True only when no field needs reviewer attention.",
+          "type": "boolean"
+        },
+        "reasons": {
+          "description": "Why the document did not pass, one entry per triggering field.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "field"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string",
+                "enum": [
+                  "required_field_missing",
+                  "low_confidence",
+                  "unreadable_field",
+                  "low_ocr_quality"
+                ]
+              },
+              "field": {
+                "description": "Field the reason points at, or null for a document-wide reason.",
+                "type": ["string", "null"],
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "missing_required_fields": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

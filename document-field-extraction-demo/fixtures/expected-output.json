@@ -1,0 +1,73 @@
+{
+  "extraction_metadata": {
+    "document_type": "equipment_inspection_form",
+    "schema_version": "1.0.0",
+    "provider_id": "mock",
+    "provider_mode": "synthetic",
+    "extracted_at": "2026-01-01T00:00:00.000Z",
+    "page_count": 1,
+    "page_baseline_confidence": 0.86,
+    "field_confidences": {
+      "document_id": 0.98,
+      "equipment_id": 0.97,
+      "inspection_date": 0.96,
+      "location": 0.89,
+      "equipment_type": 0.87,
+      "condition": 0.9,
+      "safety_check_passed": 0.95,
+      "repair_required": 0.93,
+      "photo_attached": 0.91,
+      "issue_description": 0.49,
+      "next_inspection_date": 0.88,
+      "inspector_role": 0.56
+    },
+    "field_levels": {
+      "document_id": "HIGH",
+      "equipment_id": "HIGH",
+      "inspection_date": "HIGH",
+      "location": "MEDIUM",
+      "equipment_type": "MEDIUM",
+      "condition": "HIGH",
+      "safety_check_passed": "HIGH",
+      "repair_required": "HIGH",
+      "photo_attached": "HIGH",
+      "issue_description": "LOW",
+      "next_inspection_date": "MEDIUM",
+      "inspector_role": "LOW"
+    },
+    "low_confidence_fields": [
+      "issue_description",
+      "inspector_role"
+    ],
+    "missing_fields": []
+  },
+  "fields": {
+    "document_id": "DOC-2026-0142",
+    "equipment_id": "EQ-1001",
+    "inspection_date": "2026-08-15",
+    "location": "Warehouse A",
+    "equipment_type": "Packaging Machine",
+    "condition": "needs_review",
+    "safety_check_passed": true,
+    "repair_required": true,
+    "photo_attached": false,
+    "issue_description": "Abnormal vibration detected",
+    "next_inspection_date": "2026-11-15",
+    "inspector_role": "internal"
+  },
+  "review": {
+    "status": "review_required",
+    "confirm_allowed": false,
+    "reasons": [
+      {
+        "code": "low_confidence",
+        "field": "issue_description"
+      },
+      {
+        "code": "low_confidence",
+        "field": "inspector_role"
+      }
+    ],
+    "missing_required_fields": []
+  }
+}

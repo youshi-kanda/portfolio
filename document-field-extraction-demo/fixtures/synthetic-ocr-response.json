@@ -1,0 +1,1561 @@
+{
+  "responses": [
+    {
+      "fullTextAnnotation": {
+        "text": "EQUIPMENT INSPECTION FORM\n\nDocument ID\nDOC-2026-0142\n\nEquipment ID\nEQ-1001\n\nInspection Date\n2026-08-15\n\nLocation\nWarehouse A\n\nEquipment Type\nPackaging Machine\n\nCondition\nNeeds Review\n\nSafety Check\n[x] Passed\n\nRepair Required\n[x] Yes\n\nPhoto Attached\n[ ] No\n\nIssue Description\nAbnormal vibration detected\n\nNext Inspection Date\n2026-11-15\n\nInspector Role\nInternal Technician",
+        "pages": [
+          {
+            "width": 612,
+            "height": 792,
+            "blocks": [
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "E",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "Q",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "U",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "I",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "P",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "M",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "E",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "N",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "T",
+                            "confidence": 0.99
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "N",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "S",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "P",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "E",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "C",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "T",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "I",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "O",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "N",
+                            "confidence": 0.99
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "F",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "O",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "R",
+                            "confidence": 0.99
+                          },
+                          {
+                            "text": "M",
+                            "confidence": 0.99
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "D",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "m",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.98
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "D",
+                            "confidence": 0.98
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "D",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "O",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "C",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "2",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "2",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "6",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "4",
+                            "confidence": 0.98
+                          },
+                          {
+                            "text": "2",
+                            "confidence": 0.98
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "E",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "q",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "m",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.97
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "D",
+                            "confidence": 0.97
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "E",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "Q",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.97
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.97
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.96
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "D",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.96
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "2",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "2",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "6",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "8",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.96
+                          },
+                          {
+                            "text": "5",
+                            "confidence": 0.96
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "L",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.94
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "W",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.94
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.94
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "A",
+                            "confidence": 0.94
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "E",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "q",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "m",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.92
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "T",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "y",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.92
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "P",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "k",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "g",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "g",
+                            "confidence": 0.92
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "M",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.92
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.92
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "C",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.9
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "N",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.9
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "R",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "v",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.9
+                          },
+                          {
+                            "text": "w",
+                            "confidence": 0.9
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "S",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "f",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "y",
+                            "confidence": 0.95
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "C",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "k",
+                            "confidence": 0.95
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "[",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "x",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "]",
+                            "confidence": 0.95
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "P",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.95
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.95
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "R",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.93
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "R",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "q",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.93
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "[",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "x",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "]",
+                            "confidence": 0.93
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "Y",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.93
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.93
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "P",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.91
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "A",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.91
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "[",
+                            "confidence": 0.91
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "]",
+                            "confidence": 0.91
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "N",
+                            "confidence": 0.91
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.91
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "u",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.58
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "D",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.58
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "A",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "b",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "m",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "l",
+                            "confidence": 0.58
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "v",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "b",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.58
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "d",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.58
+                          },
+                          {
+                            "text": "d",
+                            "confidence": 0.58
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "N",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "x",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.88
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.88
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "D",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.88
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "2",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "0",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "2",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "6",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "-",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "1",
+                            "confidence": 0.88
+                          },
+                          {
+                            "text": "5",
+                            "confidence": 0.88
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "paragraphs": [
+                  {
+                    "words": [
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "s",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "p",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.62
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "R",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "o",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "l",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.62
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "I",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "t",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "r",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "l",
+                            "confidence": 0.62
+                          }
+                        ]
+                      },
+                      {
+                        "symbols": [
+                          {
+                            "text": "T",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "e",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "h",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "c",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "i",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "a",
+                            "confidence": 0.62
+                          },
+                          {
+                            "text": "n",
+                            "confidence": 0.62
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
