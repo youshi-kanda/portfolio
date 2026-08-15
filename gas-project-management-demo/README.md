@@ -17,7 +17,7 @@ Sidebar からの一括登録・依存関係・判断待ち管理・ダッシュ
 | Project 管理 | 目的・期限・優先順位・健全度（Green/Amber/Red）を持つ案件単位の管理 |
 | Work Item / Task 管理 | Epic / Feature / Task / Subtask / Bug / Improvement の6種別。親子構造あり |
 | Decision / Blocker 管理 | 「判断待ち」「ブロッカー」「質問」を明示的なレコードとして管理 |
-| Relation / Dependency 管理 | `depends_on` / `blocks` の依存関係。循環は登録時に拒否 |
+| Relation / Dependency 管理 | `depends_on` / `blocks` の依存関係。同一送信に含まれる循環は書き込み前に拒否 |
 | Sidebar 一括登録 | Project + Item + 依存 + 判断待ちを 1 回の送信でまとめて登録 |
 | Dashboard 集計 | 進行中件数、健全度内訳、判断待ち、期限超過などの KPI を再構築 |
 | Activity 履歴 | 誰が・いつ・どの項目を・何から何に変えたかを追記のみで記録 |
@@ -29,12 +29,12 @@ Sidebar からの一括登録・依存関係・判断待ち管理・ダッシュ
 ## 設計面の見どころ
 
 - **Sheets as Source of Truth** — 外部DBを持たず、シートの1行がそのまま正本
-- **Header-based column resolution** — 列番号を埋め込まず見出し名で解決。列追加で壊れない
+- **Header-based column resolution** — 列番号を埋め込まず見出し名で解決。既存の見出しを保った列の追加・並べ替えでは列ずれが起きない（見出しのリネーム・必要列の削除は対象外。見出し行がスキーマそのもの）
 - **LockService** — 200ms fail-fast で同時実行を直列化。待たせずにエラーを返す
 - **Idempotency** — `submissionId` + payload ハッシュで再送・二重送信を無害化
 - **Rollback** — 途中失敗時に書き込んだ行を逆順に削除し、中途半端な状態を残さない
-- **DFS cycle detection** — 親子関係・依存関係の循環を、書き込み前に検出して拒否
-- **Formula Injection prevention** — 先頭 `=` の文字列をエスケープしてから書き込む
+- **DFS cycle detection** — 1 回の送信に含まれる親子関係・依存関係の循環を、書き込み前に検出して拒否（既存行と新規分が組み合わさって生じる循環は対象外）
+- **Leading `=` formula mitigation** — 先頭 `=` の文字列をエスケープしてから書き込む（`+` `-` `@` は変換しない）
 - **Safe Error masking** — 例外原文をUIに出さず、コード化した上でトークン・鍵・メールをマスク
 - **Sheet column protection** — 構造列・自動列を Range Protection で編集不可にする
 
@@ -70,7 +70,7 @@ Spreadsheet / Range / LockService / Ui の Fake を Node の `vm` サンドボ�
 ネットワークアクセスも、実スプレッドシートへの書き込みも一切発生しません。
 
 カバーしている領域：ID 衝突、循環検出、ロールバック、冪等性、ロック競合、
-Formula Injection、セットアップ冪等性、Activity、Dashboard 集計、Safe Error、
+先頭 `=` のエスケープ、セットアップ冪等性、Activity、Dashboard 集計、Safe Error、
 手打ちIDの幽霊行の隔離、直接編集の許可リスト契約、複数セル貼り付けの境界処理、
 デモデータの基準日固定と再投入時の replay。
 

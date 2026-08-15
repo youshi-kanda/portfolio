@@ -75,8 +75,8 @@ Sidebarからの一括登録、Dashboard集計、Activity履歴までを実装�
 - LockServiceによる排他制御
 - submissionId + payloadHashによる冪等性
 - Transaction-like rollback
-- DFSによる循環依存検出
-- Formula Injection対策
+- DFSによる循環依存検出（同一送信内）
+- 先頭「=」の数式化対策（`+` `-` `@` は対象外）
 - Safe Error / secret masking
 
 **Tech Stack**

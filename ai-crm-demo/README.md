@@ -26,7 +26,7 @@ The AI layer is provider-abstracted: the default `AI_PROVIDER=mock` returns dete
   - `report_generator` — monthly report Markdown
   - `agency_diagnosis` — rule-based store health score, optionally AI-enhanced
 - **Monthly reports** with AI-generated summary and Markdown body.
-- **Audit logging** across every mutating endpoint.
+- **Audit logging** on selected state-changing operations — authentication (login / logout / throttled), store updates, customer create/update/delete/anonymise, consent changes, campaign content submit/approve/reject, campaign result recording, target-CSV export (including denied attempts), CSV upload & import, AI diagnosis, and monthly report generation. 23 call sites across 7 apps; **reservation and sale writes are not audited in this demo.**
 
 ---
 
@@ -37,7 +37,7 @@ The AI layer is provider-abstracted: the default `AI_PROVIDER=mock` returns dete
 | Backend | Django 5.0 · Django REST Framework · SimpleJWT · drf-spectacular · PostgreSQL (or SQLite for the demo) |
 | Frontend | React 18 · TypeScript · Vite · React Router · TanStack Query · Axios |
 | AI provider abstraction | `AI_PROVIDER` env var: `mock` (default) / `anthropic` |
-| Tests | pytest · pytest-django (484 tests, ~17s on SQLite in-memory) |
+| Tests | pytest · pytest-django (484 passed on SQLite in-memory) |
 
 ---
 
@@ -61,7 +61,19 @@ AI_PROVIDER=mock       → deterministic _mock_result()
 AI_PROVIDER=anthropic  → _call_anthropic()  (requires ANTHROPIC_API_KEY)
 ```
 
-This lets the demo boot with no external calls, while the same code paths remain hot for a real deployment. Every service records tokens used and the model name in a per-service `AI*Log` model, so a real deployment can enforce spend controls without changing the call sites.
+This lets the demo boot with no external calls, while the same code paths remain hot for a real deployment.
+
+AI usage logging is uneven across the five services:
+
+| Service | Dedicated log model | Model name persisted | Token usage persisted |
+|---|---|---|---|
+| `copy_generator` | `AIGenerationLog` | yes | yes (on the `anthropic` path) |
+| `expression_checker` | `AIExpressionCheckLog` | yes | yes (on the `anthropic` path) |
+| `improvement_advisor` | `AIImprovementLog` | yes | yes (on the `anthropic` path) |
+| `agency_diagnosis` | `AgencyDiagnosisLog` | yes | no — the columns exist but are never populated |
+| `report_generator` | none | via the audit-log snapshot only | no — the API-reported counts are read but discarded |
+
+So three of the five services provide token-usage evidence today. Token-based spend controls would additionally require populating the `AgencyDiagnosisLog` token columns and adding usage persistence for `report_generator`.
 
 ### Mock vs Real AI
 
@@ -149,7 +161,7 @@ DJANGO_SETTINGS_MODULE=config.settings.demo DB_ENGINE=sqlite \
 - No real customer data is included in this repository. All seeded records use `example.com` emails, `090-0000-XXXX` phone numbers, and generic Japanese placeholders (`デモ顧客001`, `デモ・ビューティサロン中目黒`, ...).
 - No production credentials, VPS IPs, deployment scripts, or LINE Business API secrets are included.
 - The demo owner password is deliberately public.
-- Backend never logs raw request bodies or PII fields; audit-log entries store only structural before/after diffs.
+- Application logs avoid explicitly logging raw request bodies or PII field values. AuditLog snapshots mainly record changed fields and state transitions; campaign rejection reasons are retained as entered.
 - JWT access tokens use `token_version` invalidation so a rotated refresh token cannot resurrect access after logout.
 
 If you plan to fork this and put it behind a real domain, at minimum rotate `DJANGO_SECRET_KEY`, delete the demo owner, and set `DEMO_MODE=false`.
