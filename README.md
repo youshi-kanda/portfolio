@@ -90,11 +90,50 @@ This portfolio demo does not include external API or GitHub integration.
 
 [View Project Progress Manager →](./gas-project-management-demo/)
 
-## Upcoming Projects
+### Document Field Extraction Demo
 
-Additional portfolio projects are currently being prepared.
+設備点検フォームを対象とした、帳票項目抽出デモです。
 
-- Document / OCR automation
+OCRレスポンスから12項目の業務データを抽出し、
+正規化・信頼度スコアリング・スキーマ検証を経て、
+確認が必要な項目だけを人のレビューへ振り分けます。
+
+**Main Features**
+
+- Synthetic OCR Response
+- Mock OCR Provider
+- キーワードアンカー方式のField Extraction
+- 日付 / enum / チェックボックスの正規化
+- Block単位のConfidence Scoring
+- 低信頼フィールドの検出
+- Review Gate（passed / review_required / blocked）
+- JSON Schema検証
+- Structured JSON出力
+- Safe Error
+- Synthetic Demo Data
+
+**Engineering Highlights**
+
+- Post-OCR field extraction pipeline
+- 決定的なMock Providerによるoffline実行
+- Block単位のconfidence集計（ページ平均に埋もれさせない）
+- 欠損値はconfidence 0として扱う設計
+- 次のラベルで打ち切る抽出ウィンドウ
+- チェックボックスのtri-state判定（true / false / 未判定）
+- 不正な日付は補正せずnullを返す
+- 依存なしJSON Schema subset validator（未対応keywordはfail-fast）
+- Zero runtime dependencies / no-networkテスト
+
+**Tech Stack**
+
+`JavaScript` `Node.js` `node:test` `JSON Schema`
+
+Tests: **157 passed across 40 suites**
+
+The default demo uses a deterministic synthetic OCR response
+and does not run an OCR engine or external service.
+
+[View Document Field Extraction Demo →](./document-field-extraction-demo/)
 
 ## About This Repository
 
