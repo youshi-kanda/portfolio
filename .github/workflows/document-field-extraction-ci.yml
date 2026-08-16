@@ -1,0 +1,42 @@
+name: Document Field Extraction CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'document-field-extraction-demo/**'
+      - '.github/workflows/document-field-extraction-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'document-field-extraction-demo/**'
+      - '.github/workflows/document-field-extraction-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests and check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: document-field-extraction-demo
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # package.json declares no dependencies and the project ships no
+      # lockfile, so there is nothing to install. The suite runs on the
+      # Node.js built-in test runner with no API key and no network access.
+      - name: Run tests
+        run: npm test
+
+      - name: Run check
+        run: npm run check

@@ -1,0 +1,43 @@
+name: Progress Manager CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'gas-project-management-demo/**'
+      - '.github/workflows/progress-manager-ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'gas-project-management-demo/**'
+      - '.github/workflows/progress-manager-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    name: Tests and syntax check
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: gas-project-management-demo
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      # package.json declares no dependencies and the project ships no
+      # lockfile, so there is nothing to install. The suite runs on the
+      # Node.js standard library alone and never contacts Apps Script
+      # or Google Sheets.
+      - name: Run tests
+        run: npm test
+
+      - name: Run check
+        run: npm run check
