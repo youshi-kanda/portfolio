@@ -45,7 +45,10 @@
 `React` `TypeScript` `Django` `Django REST Framework`
 `PostgreSQL` `TanStack Query` `Axios` `JWT` `Anthropic API`
 
-Backend tests: **484 passed**
+Backend tests: **484 passed**（pytest / SQLite in-memory）
+
+出典は GitHub Actions [`AI CRM CI`](https://github.com/youshi-kanda/portfolio/actions/workflows/ai-crm-ci.yml?query=branch%3Amain+event%3Apush) の `main` 実行ログ（`Backend tests (pytest)` job）です。
+frontend のテストは未着手のため、CI が frontend で実行しているのは lint / type-check / build のみです。
 
 [View AI CRM Demo →](./ai-crm-demo/)
 

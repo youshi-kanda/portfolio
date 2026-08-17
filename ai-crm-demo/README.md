@@ -39,7 +39,13 @@ The AI layer is provider-abstracted: the default `AI_PROVIDER=mock` returns dete
 | Backend | Django 5.0 · Django REST Framework · SimpleJWT · drf-spectacular · PostgreSQL (or SQLite for the demo) |
 | Frontend | React 18 · TypeScript · Vite · React Router · TanStack Query · Axios |
 | AI provider abstraction | `AI_PROVIDER` env var: `mock` (default) / `anthropic` |
-| Tests | pytest · pytest-django (484 passed on SQLite in-memory) |
+| Tests | pytest · pytest-django — backend only, **484 passed** on SQLite in-memory |
+
+**Test provenance** — the 484 figure is the result reported by the `Backend tests (pytest)` job of the
+[`AI CRM CI`](https://github.com/youshi-kanda/portfolio/actions/workflows/ai-crm-ci.yml?query=branch%3Amain+event%3Apush)
+workflow on `main` (Python 3.12 · `DJANGO_SETTINGS_MODULE=config.settings.test` · SQLite in-memory · `AI_PROVIDER=mock`),
+not a locally-claimed number. The badge above links to the same run history.
+There are **no frontend tests** in this demo; the workflow's `Frontend checks` job runs lint / type-check / build only.
 
 ---
 
