@@ -1,5 +1,7 @@
 # AI CRM Demo
 
+[![AI CRM CI](https://github.com/youshi-kanda/portfolio/actions/workflows/ai-crm-ci.yml/badge.svg?branch=main&event=push)](https://github.com/youshi-kanda/portfolio/actions/workflows/ai-crm-ci.yml?query=branch%3Amain+event%3Apush)
+
 **Portfolio Demo / Development Snapshot** — a scoped-down, publicly-safe extract of a private in-development AI CRM product. This repository is not a finished production service; it is a curated code sample that reproduces the AI-driven customer-management flow end-to-end on a local machine without any real customer data, external APIs, or production credentials.
 
 ---

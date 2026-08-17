@@ -1,5 +1,7 @@
 # Project Progress Manager
 
+[![Progress Manager CI](https://github.com/youshi-kanda/portfolio/actions/workflows/progress-manager-ci.yml/badge.svg?branch=main&event=push)](https://github.com/youshi-kanda/portfolio/actions/workflows/progress-manager-ci.yml?query=branch%3Amain+event%3Apush)
+
 Google Apps Script と Google Sheets で構築した、プロジェクト進捗管理の
 **ポートフォリオ用デモ**です。
 

@@ -1,5 +1,7 @@
 # Document Field Extraction Demo
 
+[![Document Field Extraction CI](https://github.com/youshi-kanda/portfolio/actions/workflows/document-field-extraction-ci.yml/badge.svg?branch=main&event=push)](https://github.com/youshi-kanda/portfolio/actions/workflows/document-field-extraction-ci.yml?query=branch%3Amain+event%3Apush)
+
 **This is a portfolio demo using synthetic data only.**
 
 Reading text off a scanned form is the easy half. The hard half is deciding
