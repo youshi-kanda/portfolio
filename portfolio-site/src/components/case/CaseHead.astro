@@ -1,0 +1,43 @@
+---
+/**
+ * The Case Study hero — CS-1, and the disclosure that must precede everything.
+ *
+ * `leadDisclosure` is rendered here, above the fold, outside any collapsible.
+ * That placement is a spec requirement, not a layout preference: spec §7 puts
+ * DFE's Rule DFE-0 ("この作品は OCR を実行していない") immediately after CS-1 and
+ * forbids folding it away, because the whole page reads differently once you
+ * know the pipeline never touches a scanner. A correction that arrives after
+ * the reader has formed the wrong belief has already failed.
+ */
+import type { CaseStudy, Work } from '../../lib/content/schema.ts';
+import Rail from '../layout/Rail.astro';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  work: Work;
+  caseStudy: CaseStudy;
+}
+
+const { work, caseStudy } = Astro.props;
+---
+
+<section class="hero">
+  <div class="page">
+    <div class="tr">
+      <Rail index="CS-1" labels={[...ui.caseStudy.railLabels, work.title]} />
+      <div class="msr">
+        <p class="mo ty">{work.productType}</p>
+        <h1 class="dsp-s">{ui.caseStudy.sections.overview}</h1>
+        <p class="lede">{caseStudy.overview}</p>
+        {caseStudy.leadDisclosure && (
+          <p class="notclaim" style="margin-top:26px">{caseStudy.leadDisclosure}</p>
+        )}
+        <div class="meta" style="margin-top:26px">
+          <span class="st pass">{work.tests.summary}</span>
+          <span class="st hold">{work.visual.caseVariant}</span>
+          <span class="st">{work.repoPath}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,70 @@
+---
+/**
+ * 00 HERO — the first viewport answers what kind of engineer this is and what
+ * they can build, before any claim, any screenshot and any prose.
+ *
+ * The lede and the 検証 capability row are derived from the work list, so the
+ * first viewport cannot go stale when a fourth work lands.
+ *
+ * The display keeps its authored line breaks: the cut is a Layer-3 token, and
+ * at 88px in the 1040px field an exhaustive search found no other three-line
+ * break that fits. Mobile drops the breaks and re-flows the same sentence.
+ */
+import { copyText } from '../../lib/content/copy.ts';
+import { heroCapability, heroLede } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+
+interface Props {
+  works: readonly Work[];
+}
+
+const { works } = Astro.props;
+const hero = site.hero;
+
+const role = [await copyText('home.hero.role.01'), await copyText('home.hero.role.02')];
+const display = [
+  await copyText('home.hero.display.01'),
+  await copyText('home.hero.display.02'),
+  await copyText('home.hero.display.03'),
+];
+const lede = heroLede(works.length);
+const capability = heroCapability(works);
+---
+
+{/*
+  `data-mx-n` carries the section's own index to the art-direction layer, which
+  draws it as an oversized background graphic (art-direction v2 §3-A). It is the
+  same string the rail already prints in `.ix` — read from `site.hero`, never
+  written twice — so the graphic cannot drift from the rail. It adds no class,
+  no style and no structure, and nothing in the frozen stylesheet selects on it.
+*/}
+<section class="hero" id="top" data-mx-n={hero.index}>
+  <div class="page">
+    <div class="tr">
+      <div class="ins">
+        <span class="ix">{hero.index}</span>
+        {hero.railLabels.map((t) => <span class="lb">{t}</span>)}
+        {/* Explicit, and load-bearing. Below 768px the hero rail becomes an
+            inline formatting context — `.ix` turns inline-block and `.role`
+            inline — so this space sits between the index and the role line and
+            is part of the frozen composition. On desktop both are blocks and it
+            collapses away. */}
+        {' '}<span class="role">{role[0]}<br />{role[1]}</span>
+        <div class="cap3">
+          {capability.map((c) => <span class="cb"><b>{c.key}</b>{c.value}</span>)}
+        </div>
+      </div>
+      <div class="fld">
+        <h1 class="dsp">{display[0]}<br />{display[1]}<br />{display[2]}</h1>
+      </div>
+    </div>
+    <div class="tr">
+      <div class="ins"></div>
+      <div class="msr">
+        <p class="ans">{hero.stackLine}</p>
+        <p class="lede m0">{lede}</p>
+      </div>
+    </div>
+  </div>
+</section>

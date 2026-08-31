@@ -1,0 +1,48 @@
+---
+/**
+ * The section index — CS-1 … CS-16, in the frozen two-column `.toc`.
+ *
+ * Built from the sections this page actually rendered, not from the full CS
+ * list. A table of contents is a set of in-page anchors, and an entry whose
+ * target was dropped as empty is a dead anchor — the same defect the nav's
+ * `needsWorks` filter exists to prevent, in a different place.
+ */
+import { ui } from '../../lib/content/ui.ts';
+
+export interface TocEntry {
+  id: string;
+  index: string;
+  title: string;
+}
+
+interface Props {
+  entries: readonly TocEntry[];
+}
+
+const { entries } = Astro.props;
+---
+
+{
+  entries.length > 0 && (
+    <section class="s-tight">
+      <div class="page">
+        <div class="tr">
+          <div class="ins">
+            <span class="ix">{ui.caseStudy.contents}</span>
+            <span class="lb">{ui.caseStudy.contentsLabel}</span>
+          </div>
+          <div class="fld">
+            <ul class="toc">
+              {entries.map((e) => (
+                <li>
+                  <span class="mo">{e.index}</span>
+                  <a href={`#${e.id}`}>{e.title}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

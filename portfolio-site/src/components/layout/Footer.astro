@@ -1,0 +1,42 @@
+---
+/**
+ * 07 CONTACT.
+ *
+ * Two rows, both of them links this repository can confirm. The prototype had
+ * a third — 連絡先, with the value 未定義 — and a fourth that set
+ * 経歴 / 稼働条件 / 料金 to 未記入. Both are gone (IMPLEMENT-03 §5), along with
+ * the sentence in the note that named the same three categories.
+ *
+ * The earlier reasoning here was that an absent row looks like an oversight
+ * while a 未記入 row says what is true. That holds while the audience is the
+ * people building the site. It stops holding at publication: a visitor reading
+ * 連絡先 — 未定義 does not learn that no address was provided, they learn that
+ * this site has no way to reach anyone, stated by the site itself. Showing
+ * nothing says the same thing more quietly and claims less.
+ *
+ * What stays is the synthetic-data statement, which is a claim about the
+ * screenshots and is required to stay (§10).
+ */
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from './Rail.astro';
+
+const c = site.contact;
+---
+
+<footer class="foot" id="contact">
+  <div class="page">
+    <div class="in">
+      <p class="mark">{site.handle}</p>
+      <div class="tr">
+        <Rail index={c.index} labels={c.railLabels} />
+        <div class="msr">
+          <dl>
+            {c.rows.map((row) => (<><dt>{row.key}</dt><dd>{row.value}</dd></>))}
+          </dl>
+          <p class="note" style="margin-top:22px">{ui.contact.note}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

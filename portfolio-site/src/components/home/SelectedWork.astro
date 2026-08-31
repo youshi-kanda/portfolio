@@ -1,0 +1,77 @@
+---
+/**
+ * 01 SELECTED WORK.
+ *
+ * Data-driven end to end: this reads the work collection and nothing else, so
+ * adding, removing, archiving or reordering a work is an edit to
+ * `src/content/work/` and never a component change. It renders correctly at 0,
+ * 1, 3 and 20 works.
+ *
+ * The heading carries no count. A literal "3" in the copy is a defect that
+ * only surfaces the day a fourth work lands — the count belongs on the rail,
+ * where it is derived.
+ */
+import { copyText } from '../../lib/content/copy.ts';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import WorkEntry from '../work/WorkEntry.astro';
+
+interface Props {
+  works: readonly Work[];
+  evidence: readonly Evidence[];
+}
+
+const { works, evidence } = Astro.props;
+const section = site.selectedWork;
+const byId = new Map(evidence.map((e) => [e.id, e]));
+
+const h2 = await copyText('home.works.h2');
+const lede = await copyText('home.works.lede');
+
+const entries = works
+  .map((work) => {
+    const id = work.evidence[0];
+    const record = id ? byId.get(id) : undefined;
+    return record ? { work, evidence: record } : null;
+  })
+  .filter((e): e is { work: Work; evidence: Evidence } => e !== null);
+---
+
+{
+  works.length === 0 ? (
+    <section class="s-open" id="work" data-mx-n={section.index}>
+      <div class="page">
+        <div class="tr">
+          <Rail index={section.index} labels={section.railLabels} />
+          <div class="fld">
+            <div class="reg"><div class="empty">{ui.empty.selectedWork}</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  ) : (
+    <>
+      {/* `data-mx-n` — see Hero.astro. The index is `site.selectedWork`'s own. */}
+      <section class="s-open" id="work" data-mx-n={section.index}>
+        <div class="page">
+          <div class="tr">
+            <Rail
+              index={section.index}
+              labels={section.railLabels}
+              note={`${works.length} works`}
+            />
+            <div class="msr">
+              <h2>{h2}</h2>
+              <p class="lede m0">{lede}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {entries.map((e, i) => (
+        <WorkEntry work={e.work} evidence={e.evidence} position={i} />
+      ))}
+    </>
+  )
+}

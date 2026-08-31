@@ -1,0 +1,32 @@
+---
+/**
+ * The figure inside a work entry: the Evidence component's first two parts
+ * only. An entry shows the screen and says what it is; the ledger and the
+ * provenance record belong to the Evidence section and the Case Study, where
+ * there is room to read them.
+ *
+ * The frame is the work's Layer-3 token. The caption is the work's own, over
+ * the Evidence record's default.
+ */
+import EvidenceComponent from '../evidence/Evidence.astro';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+  cropHeight?: number | null;
+  eager?: boolean;
+}
+
+const { work, evidence, cropHeight = null, eager = false } = Astro.props;
+---
+
+<EvidenceComponent
+  evidence={evidence}
+  frame={work.visual.frame}
+  caption={work.image.caption}
+  cropHeight={cropHeight}
+  command={work.fieldsTable?.terminalCommand ?? null}
+  full={false}
+  eager={eager}
+/>

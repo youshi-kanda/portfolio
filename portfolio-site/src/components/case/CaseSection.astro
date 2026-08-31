@@ -1,0 +1,44 @@
+---
+/**
+ * One numbered Case Study section: rail on the left, body on the measure.
+ *
+ * It renders nothing when it has nothing to say. That is the §4 rule about
+ * optional sections, enforced at the one place every section passes through
+ * rather than repeated as an `&&` at each call site — a heading with an empty
+ * body is a worse statement than a missing heading, and the way that ships is
+ * one call site forgetting the guard.
+ */
+interface Props {
+  index: string;
+  title: string;
+  /** Extra rail labels beneath the section name. */
+  labels?: readonly string[];
+  /** Rendered only when true. Callers pass `list.length > 0`. */
+  when?: boolean;
+  id?: string;
+  /** `s-open` by default; `s-tight` where a section follows its own kind. */
+  spacing?: string;
+}
+
+const { index, title, labels = [], when = true, id, spacing = 's-open' } = Astro.props;
+---
+
+{
+  when && (
+    <section class={spacing} id={id}>
+      <div class="page">
+        <div class="tr">
+          <div class="ins">
+            <span class="ix">{index}</span>
+            <span class="lb">{title}</span>
+            {labels.map((t) => <span class="lb">{t}</span>)}
+          </div>
+          <div class="fld">
+            <h2>{title}</h2>
+            <slot />
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

@@ -1,0 +1,48 @@
+---
+/**
+ * 06 ABOUT — only what the repositories can confirm.
+ *
+ * Every row here carries the locator it came from, rendered next to it. There
+ * is no second list. The prototype ended this section with a 未提供 block that
+ * named 経歴 / 稼働条件 / 料金 and set each of them to 未記入; that block is gone
+ * (IMPLEMENT-03 §5) and nothing replaced it.
+ *
+ * The reason is not that the gap is embarrassing. It is that a public page and
+ * a prototype have different readers. In the prototype 未記入 was a note to the
+ * people building it — a slot with a name and no value yet. To a visitor the
+ * same three rows read as a statement the site is making about itself, and it
+ * is a statement no source backs. Facts that arrive later get rows here with
+ * `sourceRef` filled in, which is the only way anything gets one.
+ *
+ * PROFILE_INVENTED = NO. Removing the rows was the whole change; no sentence
+ * was written to stand in for them.
+ */
+import { copyText } from '../../lib/content/copy.ts';
+import { site } from '../../lib/content/site.ts';
+import Rail from '../layout/Rail.astro';
+
+const a = site.about;
+const h2 = await copyText('home.about.h2');
+---
+
+{/* `data-mx-n` — see Hero.astro. The index is `site.about`'s own. */}
+<section class="s-open" id="about" data-mx-n={a.index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={a.index} labels={a.railLabels} />
+      <div class="fld">
+        <h2 style="max-width:720px">{h2}</h2>
+        <div class="spx wide" style="margin-top:30px">
+          {
+            a.known.map((k) => (
+              <div class="r">
+                <span class="k">{k.key}</span>
+                <span class="v">{k.value}<i>{k.sourceRef}</i></span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,59 @@
+---
+/**
+ * v-stage — inverted band, the figure takes the bleed.
+ *
+ * For a work whose screen is UI-dense and many-coloured: ink ground and a wide
+ * mat let the screenshot be the subject instead of competing with the page.
+ */
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import Rail from '../layout/Rail.astro';
+import EntryCta from './EntryCta.astro';
+import WorkBody from './WorkBody.astro';
+import WorkFigure from './WorkFigure.astro';
+import WorkHead from './WorkHead.astro';
+import WorkMeta from './WorkMeta.astro';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+  index: string;
+  railLabels: readonly string[];
+  eager?: boolean;
+}
+
+const { work, evidence, index, railLabels, eager = false } = Astro.props;
+---
+
+<section class="s-band inv" id={`w-${work.slug}`} data-w={work.slug}>
+  <div class="in">
+    <div class="page">
+      <div class="tr">
+        <Rail index={index} labels={railLabels} />
+        <div class="msr">
+          <WorkHead work={work} />
+          <WorkMeta work={work} />
+          <EntryCta work={work} />
+        </div>
+      </div>
+      {/*
+        `data-mx-row` names the two rows for the motion prototype
+        (feature/motion-experience-v2) and does nothing else: no class, no
+        style, no structural change, and nothing in the frozen stylesheet
+        selects on it. It exists so motion.css can address the figure and the
+        body by what they are instead of by :nth-child, which would silently
+        target the wrong row the day this variant gains one.
+      */}
+      <div class="tr" style="margin-top:52px" data-mx-row="figure">
+        <div class="bleed">
+          <div class="page">
+            <WorkFigure work={work} evidence={evidence} cropHeight={520} eager={eager} />
+          </div>
+        </div>
+      </div>
+      <div class="tr" style="margin-top:64px" data-mx-row="body">
+        <div class="ins"></div>
+        <div class="fld"><WorkBody work={work} /></div>
+      </div>
+    </div>
+  </div>
+</section>

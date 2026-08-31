@@ -1,0 +1,94 @@
+---
+/**
+ * 02 HOW I BUILD — the AI development method, in the author's own words.
+ *
+ * Every string in this section is the brief's own wording; nothing here is
+ * inferred about how the work is actually done. That includes the two things
+ * it explicitly does NOT claim, which are rendered as prominently as the
+ * workflow itself rather than tucked into a footnote.
+ */
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import SectionHead from '../layout/SectionHead.astro';
+
+interface Props {
+  detail?: boolean;
+}
+
+const { detail = false } = Astro.props;
+const b = site.howIBuild;
+---
+
+{/* `data-mx-n` — see Hero.astro. The index is `site.howIBuild`'s own. */}
+<section class="s-open" id="build" data-mx-n={b.index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={b.index} labels={b.railLabels} />
+      <div class="msr">
+        <h2>{b.title}</h2>
+        <p class="claim">{b.lede}</p>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:44px">
+      <div class="ins">
+        <span class="lb">{ui.howIBuild.workflowLabel}</span>
+        <span class="lb">{fill(ui.howIBuild.workflowCount, { count: b.workflow.length })}</span>
+      </div>
+      <div class="fld">
+        <div class="flow">
+          {
+            b.workflow.map((s) => (
+              <div class={s.tag ? 'fst gate' : 'fst'}>
+                <span class="k">{s.index}</span>
+                <span class="n">{s.name}</span>
+                <span class="o" data-r={(s.owner.split(' ')[0] ?? '').toLowerCase()}>
+                  {s.owner}
+                </span>
+                <span class="d">{s.what}</span>
+                {s.tag && <span class="g">{s.tag}</span>}
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:56px">
+      <div class="ins"><span class="lb">{ui.howIBuild.rolesLabel}</span></div>
+      <div class="fld">
+        <SectionHead label={ui.howIBuild.rolesHead} sub={ui.howIBuild.rolesSub} />
+        <div class="tw">
+          <table>
+            <tbody>
+              {b.roles.map((r) => <tr><th>{r.role}</th><td>{r.duty}</td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:56px">
+      <div class="ins"><span class="lb">{ui.howIBuild.intentLabel}</span></div>
+      <div class="msr">
+        <ul class="dash">{b.intent.map((t) => <li>{t}</li>)}</ul>
+        <div class="notclaim">
+          <h4 aria-level="3">{ui.howIBuild.notClaimed}</h4>
+          <ul>{b.notClaimed.map((t) => <li>{t}</li>)}</ul>
+        </div>
+      </div>
+    </div>
+
+    {
+      detail && (
+        <div class="tr" style="margin-top:56px">
+          <div class="ins"><span class="lb">{ui.howIBuild.sourceLabel}</span></div>
+          <div class="msr">
+            {b.sourceRefs.map((s) => <p class="note">{s}</p>)}
+          </div>
+        </div>
+      )
+    }
+  </div>
+</section>

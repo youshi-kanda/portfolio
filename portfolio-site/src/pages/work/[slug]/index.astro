@@ -1,0 +1,115 @@
+---
+/**
+ * /work/<slug>/ — the Case Study.
+ *
+ * IMPLEMENT-01 shipped this route as the work's entry screen, with a note that
+ * the full Case Study would land at the same URL. This is that: CS-1 … CS-16
+ * from the spec's §17, at the URL the register has always pointed at, so no
+ * link anywhere had to change and none went dead in between.
+ *
+ * Nothing here names a work. The variant comes from the content, the sections
+ * come from what the content has, and the Evidence comes from the ids the work
+ * and its Case Study cite — add a fourth work and this file is untouched.
+ *
+ * A work with no Case Study record still gets its page: the entry screen, as
+ * before. That keeps `/work/<slug>/` meaningful from the moment a work's facts
+ * are sourced, rather than 404ing until its whole body is written.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import CaseBody from '../../../components/case/CaseBody.astro';
+import CaseContents from '../../../components/case/CaseContents.astro';
+import CaseHead from '../../../components/case/CaseHead.astro';
+import CaseSpine from '../../../components/case/CaseSpine.astro';
+import EvidenceDialog from '../../../components/evidence/EvidenceDialog.astro';
+import Footer from '../../../components/layout/Footer.astro';
+import Rail from '../../../components/layout/Rail.astro';
+import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
+import Nav from '../../../components/navigation/Nav.astro';
+import WorkEntry from '../../../components/work/WorkEntry.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { caseSections, shippingWorks } from '../../../lib/content/derive.ts';
+import { fill, ui } from '../../../lib/content/ui.ts';
+
+export const getStaticPaths = (async () => {
+  const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+  const evidence = (await getCollection('evidence')).map((e) => e.data);
+  const caseStudies = (await getCollection('caseStudy')).map((e) => e.data);
+  const byId = new Map(evidence.map((e) => [e.id, e]));
+  const bySlug = new Map(caseStudies.map((c) => [c.slug, c]));
+
+  return works.flatMap((work, position) => {
+    const id = work.evidence[0];
+    const record = id ? byId.get(id) : undefined;
+    // A work with no resolvable Evidence gets no page rather than a page with a
+    // hole where the screen should be. The Truth gate has already failed the
+    // build for the dead reference (T-DEAD-REF) before this runs.
+    if (!record) return [];
+    return [
+      {
+        params: { slug: work.slug },
+        props: { work, evidence: record, allEvidence: evidence, position, caseStudy: bySlug.get(work.slug) ?? null },
+      },
+    ];
+  });
+}) satisfies GetStaticPaths;
+
+const { work, evidence, allEvidence, position, caseStudy } = Astro.props;
+
+const description = caseStudy ? caseStudy.overview : work.purpose;
+const sections = caseStudy ? caseSections(work, caseStudy) : [];
+---
+
+<BaseLayout title={`${work.title} — ${work.productType}`} description={description}>
+  <Nav current="WORK" progress={32} onHomepage={false} />
+  <SyntheticBar />
+  <main data-w={work.slug}>
+    {
+      caseStudy ? (
+        <>
+          <CaseHead work={work} caseStudy={caseStudy} />
+
+          {/* The spine, in this work's declared case variant. */}
+          {caseStudy.flow.length > 0 && (
+            <section class="s-open">
+              <div class="page">
+                <div class="tr">
+                  <Rail index="CS-1" labels={[work.visual.caseVariant]} />
+                  <div class="fld">
+                    <CaseSpine work={work} caseStudy={caseStudy} />
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
+          <CaseBody work={work} caseStudy={caseStudy} evidence={allEvidence} />
+          <CaseContents entries={sections} />
+        </>
+      ) : (
+        <>
+          <section class="hero">
+            <div class="page">
+              <div class="tr">
+                <Rail
+                  index={ui.workPage.railIndex}
+                  labels={[
+                    ...ui.workPage.railLabels,
+                    fill(ui.workPage.railEntry, { title: work.title }),
+                  ]}
+                />
+                <div class="msr">
+                  <h1 class="dsp-s">{work.productType}</h1>
+                  <p class="lede m0">{work.purpose}</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <WorkEntry work={work} evidence={evidence} position={position} />
+        </>
+      )
+    }
+    <Footer />
+  </main>
+  <EvidenceDialog />
+</BaseLayout>

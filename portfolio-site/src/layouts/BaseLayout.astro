@@ -1,0 +1,108 @@
+---
+/**
+ * The page shell.
+ *
+ * `.ad` is the design-system scope: every selector in the frozen stylesheet is
+ * written against it, so the wrapper is kept rather than rewriting 1,493
+ * declarations to drop one class.
+ *
+ * `data-t="light"` matches the frozen screens. The dark token set is present
+ * and correct in tokens.css, but the prototype never auto-switched on
+ * `prefers-color-scheme` and turning it on here would change what a visitor
+ * sees — a visual decision, not an implementation one. Wiring the switch is
+ * IMPLEMENT-02 work.
+ */
+import '../styles/index.css';
+/* The art-direction layer, imported as its own stylesheet and second on
+   purpose. index.css explains why (lightningcss folds `animation-timeline`
+   into the `animation` shorthand and kills every scroll timeline); the order
+   matters because index.css's `@layer` statement is what places `motion`
+   between `components` and `utilities`, and a layer order is fixed by the
+   first declaration the document sees. */
+import '../styles/motion.css';
+import { site } from '../lib/content/site.ts';
+
+interface Props {
+  title: string;
+  description: string;
+  /**
+   * The 404 document, which is not a URL.
+   *
+   * It is emitted once, to `dist/404.html`, and nginx serves it in response to
+   * whatever address the visitor actually typed. So neither of the two things
+   * this layout normally states about a page can be stated truthfully here: a
+   * canonical of `/404/` names a route that is not the one being served and
+   * asks a crawler to index the error document, and a canonical of the typed
+   * URL would point at an address that 404s. `og:url` is the same claim again,
+   * for a page nobody shares.
+   *
+   * So the error document emits neither, and `check-links` asserts their
+   * absence rather than merely tolerating it. No `noindex` either: the correct
+   * signal for a page that does not exist is the 404 status nginx sends with
+   * it, and a `noindex` marker in the artifact is the thing §4 exists to catch.
+   */
+  errorDocument?: boolean;
+}
+
+const { title, description, errorDocument = false } = Astro.props;
+
+/**
+ * The canonical URL for this page.
+ *
+ * `Astro.site` is the single declared origin (astro.config.mjs). It is read
+ * rather than defaulted: a missing `site` used to fall back to
+ * `https://example.invalid`, which produced eight canonical links and — now —
+ * eight og:url values pointing at a domain that is not this one. A build that
+ * cannot state where it will be served should stop, not guess.
+ */
+if (!Astro.site) {
+  throw new Error('astro.config.mjs に site が無い（canonical / og:url / sitemap の正本）');
+}
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    {!errorDocument && <link rel="canonical" href={canonical} />}
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {/*
+      Open Graph. Every value is the one already on the page — the same title,
+      the same description, the same URL as the canonical link. Nothing here was
+      written for sharing: a social card that says something the page does not
+      is the same defect as a claim without a source.
+
+      No `og:image`. There is no image on this site that is not an Evidence
+      screenshot, and an Evidence screenshot has a provenance contract
+      (`sourceFile` / `sha` / `proves` / `notProves`) that a social card strips
+      off. Serving one as a decorative card would show the screen with none of
+      the statements that make it evidence. A card with no image is honest; a
+      card that quietly re-purposes evidence is not.
+    */}
+    {
+      !errorDocument && (
+        <>
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content={canonical} />
+          <meta property="og:title" content={title} />
+          <meta property="og:description" content={description} />
+          <meta property="og:site_name" content={site.handle} />
+          <meta property="og:locale" content="ja_JP" />
+        </>
+      )
+    }
+
+    <title>{title}</title>
+  </head>
+  <body>
+    <div class="ad" data-t="light">
+      <slot />
+    </div>
+    <span hidden data-repo={site.repo}></span>
+  </body>
+</html>

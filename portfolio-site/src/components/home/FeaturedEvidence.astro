@@ -1,0 +1,44 @@
+---
+/**
+ * 05 FEATURED EVIDENCE — one screen, shown ahead of the case studies.
+ *
+ * Which one is decided from the work list and the Evidence metadata, never
+ * named in the markup: with no works there is nothing to feature and the whole
+ * section is dropped (so is its nav anchor), and with a reordered list it must
+ * not keep showing the previous first work's screenshot.
+ *
+ * The caller renders nothing when `featured` is null — see index.astro.
+ */
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import EvidenceComponent from '../evidence/Evidence.astro';
+import Rail from '../layout/Rail.astro';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+}
+
+const { work, evidence } = Astro.props;
+const e = site.evidenceSection;
+---
+
+{/* `data-mx-n` — see Hero.astro. The index is `site.evidenceSection`'s own. */}
+<section class="s-open" id="evidence" data-w={work.slug} data-mx-n={e.index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={e.index} labels={e.railLabels} />
+      <div class="msr">
+        <h2>{e.h2}</h2>
+        <p class="lede m0">{e.lede}</p>
+      </div>
+    </div>
+    {/* `data-mx-row` — see VStage.astro. */}
+    <div class="tr" style="margin-top:40px" data-mx-row="figure">
+      <div class="ins"></div>
+      <div class="fld">
+        <EvidenceComponent evidence={evidence} frame="fr-stage" cropHeight={560} />
+      </div>
+    </div>
+  </div>
+</section>

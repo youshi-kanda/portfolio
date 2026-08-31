@@ -1,0 +1,340 @@
+---
+/**
+ * /work/<slug>/technical/ — the implementation judgment page.
+ *
+ * Not a stack list. §9's rule, and the reason the sections are T-1 … T-8 rather
+ * than "Frontend / Backend / Infra": a list of technologies says what was used,
+ * which the register already says. What is worth a page is why this shape was
+ * chosen over the ones that were rejected, how it fails, and what that cost.
+ *
+ * design-freeze §1 item 9 fixes the layout as a section index rail beside the
+ * body, so the rail here is that index — built from the sections this work
+ * actually has, for the same reason the Case Study's table of contents is.
+ *
+ * Only works with a Case Study get this route. The technical content lives on
+ * the Case Study record, so a work without one has nothing to put here, and a
+ * page of empty headings is worse than no page — `technicalHref` is only ever
+ * rendered from the Case Study itself, so no link points at the gap.
+ */
+import type { GetStaticPaths } from 'astro';
+import { getCollection } from 'astro:content';
+import EvidenceDialog from '../../../components/evidence/EvidenceDialog.astro';
+import Footer from '../../../components/layout/Footer.astro';
+import Rail from '../../../components/layout/Rail.astro';
+import SectionHead from '../../../components/layout/SectionHead.astro';
+import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
+import Nav from '../../../components/navigation/Nav.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { shippingWorks, workHref } from '../../../lib/content/derive.ts';
+import { ui } from '../../../lib/content/ui.ts';
+
+export const getStaticPaths = (async () => {
+  const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+  const caseStudies = (await getCollection('caseStudy')).map((e) => e.data);
+  const bySlug = new Map(caseStudies.map((c) => [c.slug, c]));
+
+  return works.flatMap((work) => {
+    const caseStudy = bySlug.get(work.slug);
+    return caseStudy ? [{ params: { slug: work.slug }, props: { work, caseStudy } }] : [];
+  });
+}) satisfies GetStaticPaths;
+
+const { work, caseStudy } = Astro.props;
+const t = caseStudy.technical;
+const S = ui.technical.sections;
+const A = ui.technical.aboutFields;
+
+/**
+ * The sections this work has content for, in T order. The rail lists these and
+ * the body renders these, from one array — an index entry whose section was
+ * dropped for being empty is a dead anchor.
+ */
+const sections = (
+  [
+    ['t0', 'T-0', S.about, true],
+    ['t1', 'T-1', S.architecture, t.architectureSummary.length > 0],
+    ['t2', 'T-2', S.why, t.whyThisArchitecture.length > 0],
+    ['t3', 'T-3', S.failureModes, t.failureModes.length > 0],
+    ['t4', 'T-4', S.tradeOffs, t.tradeOffs.length > 0],
+    ['t5', 'T-5', S.tests, t.testsSummary.length > 0],
+    ['t6', 'T-6', S.security, t.security.length > 0],
+    ['t7', 'T-7', S.limitations, t.limitationsNote.length > 0],
+    ['scale', 'CS-13', S.scale, caseStudy.scale.length > 0],
+    ['t8', 'T-8', S.links, t.links.length > 0],
+  ] as [string, string, string, boolean][]
+)
+  .filter(([, , , on]) => on)
+  .map(([id, index, title]) => ({ id, index, title }));
+
+const has = (id: string): boolean => sections.some((s) => s.id === id);
+const claimSource = `${work.repoPath}README.md`;
+---
+
+<BaseLayout
+  title={`${work.title} — ${S.architecture}`}
+  description={t.architectureSummary}
+>
+  <Nav current="WORK" progress={48} onHomepage={false} />
+  <SyntheticBar />
+  <main data-w={work.slug}>
+    <section class="hero">
+      <div class="page">
+        <div class="tr">
+          <Rail index="T" labels={[...ui.technical.railLabels, work.title]} />
+          <div class="msr">
+            <p class="mo ty">{work.productType}</p>
+            <h1 class="dsp-s">{work.title}</h1>
+            <p class="lede m0">{work.purpose}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* The section index — design-freeze §1 item 9. */}
+    <section class="s-tight">
+      <div class="page">
+        <div class="tr">
+          <div class="ins"><span class="lb">{ui.technical.sectionsLabel}</span></div>
+          <div class="fld">
+            <ul class="toc">
+              {
+                sections.map((s) => (
+                  <li>
+                    <span class="mo">{s.index}</span>
+                    <a href={`#${s.id}`}>{s.title}</a>
+                  </li>
+                ))
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* T-0 — what this page is about, and what it is not about. */}
+    <section class="s-open" id="t0">
+      <div class="page">
+        <div class="tr">
+          <div class="ins"><span class="ix">T-0</span><span class="lb">{S.about}</span></div>
+          <div class="fld">
+            <h2>{S.about}</h2>
+            <div class="spx">
+              <div class="r"><span class="k">{A.target}</span><span class="v">{work.title}（{work.repoPath}）</span></div>
+              <div class="r"><span class="k">{A.claimSource}</span><span class="v">{claimSource}</span></div>
+              <div class="r"><span class="k">{A.role}</span><span class="v">{caseStudy.role}</span></div>
+            </div>
+            <div class="notclaim" style="margin-top:30px">
+              <h4 aria-level="3">{A.notIncluded}</h4>
+              <ul>{work.originalProductScope.map((s) => <li>{s}</li>)}</ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {
+      has('t1') && (
+        <section class="s-open" id="t1">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-1</span><span class="lb">{S.architecture}</span></div>
+              <div class="fld">
+                <h2>{S.architecture}</h2>
+                <p class="lede m0">{t.architectureSummary}</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {/* T-2 — the sentence the whole page exists for. */}
+    {
+      has('t2') && (
+        <section class="s-open" id="t2">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-2</span><span class="lb">{S.why}</span></div>
+              <div class="fld">
+                <h2>{S.why}</h2>
+                <p class="lede">{t.whyThisArchitecture}</p>
+                {t.rejected.length > 0 && (
+                  <div class="dec">
+                    <ul>
+                      {t.rejected.map((r) => (
+                        <li>
+                          <h5 aria-level="3">{r.option}</h5>
+                          <p class="note">{r.why}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t3') && (
+        <section class="s-open" id="t3">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-3</span><span class="lb">{S.failureModes}</span></div>
+              <div class="fld">
+                <h2>{S.failureModes}</h2>
+                <ol class="num">{t.failureModes.map((f) => <li>{f}</li>)}</ol>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t4') && (
+        <section class="s-open" id="t4">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-4</span><span class="lb">{S.tradeOffs}</span></div>
+              <div class="fld">
+                <h2>{S.tradeOffs}</h2>
+                <ul class="dash">{t.tradeOffs.map((x) => <li>{x}</li>)}</ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t5') && (
+        <section class="s-open" id="t5">
+          <div class="page">
+            <div class="tr">
+              <div class="ins">
+                <span class="ix">T-5</span><span class="lb">{S.tests}</span>
+              </div>
+              <div class="fld">
+                <h2>{S.tests}</h2>
+                <p class="lede">{t.testsSummary}</p>
+                <p class="meta">
+                  <span class="st pass">{work.tests.summary}</span>
+                  <span class="st hold">{work.tests.source}</span>
+                </p>
+                {t.testBreakdown.length > 0 && (
+                  <div class="tw" style="margin-top:26px">
+                    <table>
+                      <thead>
+                        <tr>{ui.technical.testBreakdownHeaders.map((h) => <th>{h}</th>)}</tr>
+                      </thead>
+                      <tbody>
+                        {t.testBreakdown.map((b) => (
+                          <tr><th>{b.area}</th><td>{b.detail}</td></tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t6') && (
+        <section class="s-open" id="t6">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-6</span><span class="lb">{S.security}</span></div>
+              <div class="fld">
+                <h2>{S.security}</h2>
+                <ul class="dash">{t.security.map((x) => <li>{x}</li>)}</ul>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t7') && (
+        <section class="s-open" id="t7">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-7</span><span class="lb">{S.limitations}</span></div>
+              <div class="fld">
+                <h2>{S.limitations}</h2>
+                <p class="note">{t.limitationsNote}</p>
+                <div class="notclaim" style="margin-top:26px">
+                  <h4 aria-level="3">{ui.work.scope.excluded}</h4>
+                  <ul>{work.limitations.map((x) => <li>{x}</li>)}</ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('scale') && (
+        <section class="s-open" id="scale">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">CS-13</span><span class="lb">{S.scale}</span></div>
+              <div class="fld">
+                <h2>{S.scale}</h2>
+                <div class="tw">
+                  <table>
+                    <thead>
+                      <tr>{ui.caseStudy.scaleHeaders.map((h) => <th>{h}</th>)}</tr>
+                    </thead>
+                    <tbody>
+                      {caseStudy.scale.map((s) => (
+                        <tr><th>{s.item}</th><td><b>{s.value}</b></td><td>{s.method}</td></tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+
+    {
+      has('t8') && (
+        <section class="s-open" id="t8">
+          <div class="page">
+            <div class="tr">
+              <div class="ins"><span class="ix">T-8</span><span class="lb">{S.links}</span></div>
+              <div class="fld">
+                <h2>{S.links}</h2>
+                <ul class="dash">{t.links.map((x) => <li><code>{x}</code></li>)}</ul>
+                {t.designDocs.length > 0 && (
+                  <>
+                    <SectionHead label={ui.technical.designDocsHead} />
+                    <ol class="num">{t.designDocs.map((d) => <li><code>{d}</code></li>)}</ol>
+                  </>
+                )}
+                <p style="margin-top:34px">
+                  <a class="lk" href={workHref(work.slug, false)}>
+                    {ui.work.caseStudyCta}<span class="ar">→</span>
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      )
+    }
+    <Footer />
+  </main>
+  <EvidenceDialog />
+</BaseLayout>

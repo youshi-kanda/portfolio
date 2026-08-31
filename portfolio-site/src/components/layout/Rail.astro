@@ -1,0 +1,24 @@
+---
+/**
+ * The instrument rail — the machine side of the gate rule.
+ *
+ * Index, labels, an optional note, and the review readout. The readout is
+ * suppressed at zero on purpose: "0 pending" is not a readout, it is a
+ * leftover, and once copy is approved the slot disappears entirely.
+ */
+interface Props {
+  index: string;
+  labels?: readonly string[];
+  note?: string | null;
+  pending?: number;
+}
+
+const { index, labels = [], note = null, pending = 0 } = Astro.props;
+---
+
+<div class="ins">
+  <span class="ix">{index}</span>
+  {labels.map((t) => <span class="lb">{t}</span>)}
+  {note && <span class="rn">{note}</span>}
+  {pending > 0 && <span class="rsl">Review ▸ {pending} pending</span>}
+</div>

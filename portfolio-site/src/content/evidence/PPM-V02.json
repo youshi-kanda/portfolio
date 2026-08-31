@@ -1,0 +1,28 @@
+{
+  "id": "PPM-V02",
+  "title": "正本を Google スプレッドシートのまま運用する",
+  "caption": "案件ごとの状況・期限・注意点を 1 画面で確認。集計はメニュー操作でのみ作り直される。",
+  "type": "Screenshot（Google Sheets アドオンのダッシュボード）",
+  "sourceFile": "assets/progress-manager/publish/03-dashboard.png",
+  "dims": "1920×1280",
+  "sha": "ccb91212…",
+  "scale": "等倍 1.000",
+  "status": "PUBLISH READY",
+  "chip": null,
+  "disclosure": null,
+  "proves": [
+    "案件・作業・期限・判断待ちが 1 枚のシート上で読める",
+    "集計はメニュー操作でのみ作り直され、自動再計算では書き換わらない",
+    "正本が Google スプレッドシートのまま変わっていない"
+  ],
+  "notProves": [
+    "冪等性の証拠ではない（同一送信の二重登録は自動テストの管轄）",
+    "実案件・実運用の記録ではない（合成データ）"
+  ],
+  "image": {
+    "src": "/img/ppmDash.webp",
+    "width": 1000,
+    "height": 667
+  },
+  "provenanceComplete": true
+}

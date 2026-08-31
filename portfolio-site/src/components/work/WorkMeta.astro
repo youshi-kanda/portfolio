@@ -1,0 +1,15 @@
+---
+import type { Work } from '../../lib/content/schema.ts';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+---
+
+<div class="meta">
+  <span class="st pass">{work.tests.summary}</span>
+  <span class="st hold">{work.tests.source}</span>
+  <span class="st">{work.repoPath}</span>
+</div>

@@ -1,0 +1,59 @@
+---
+/**
+ * Directly under the hero: one panel per work, edge to edge, hairline
+ * dividers. A register header, not a card grid — no box, no radius, no shadow,
+ * no island of padding.
+ *
+ * It also carries SITE-01. Raising the display from 56px to 88px was only
+ * possible because this strip puts part of the first project screenshot inside
+ * the reference viewport without shrinking a single type size.
+ *
+ * Each panel names the product and the language: a claim on its own does not
+ * say what the thing is.
+ */
+import { pad2 } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  works: readonly Work[];
+}
+
+const { works } = Astro.props;
+---
+
+<section class="s-tight">
+  <div class="page">
+    <div class="tr">
+      <div class="bleed">
+        {
+          works.length === 0 ? (
+            <div class="mfs empty0">{ui.empty.triptych}</div>
+          ) : (
+            <div class="mfs">
+              {works.map((w, i) => (
+                <a class="mf" href={`#w-${w.slug}`} data-w={w.slug}>
+                  <span class="sq" />
+                  <span class="n">{pad2(i + 1)} — {w.title}</span>
+                  <span class="ty">{w.productType}</span>
+                  <span class="lg">{w.languages.join(' · ')}</span>
+                  <span class="strip">
+                    <span class="crop">
+                      <img
+                        src={w.image.src}
+                        width={w.image.width}
+                        height={w.image.height}
+                        alt={w.title}
+                        loading="eager"
+                      />
+                    </span>
+                  </span>
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

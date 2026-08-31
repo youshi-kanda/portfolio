@@ -1,0 +1,35 @@
+---
+/**
+ * `ledger` — the spine as a ruled register of a transaction.
+ *
+ * Progress Manager's source of truth is a spreadsheet, and its interesting
+ * property is what the write path refuses before it writes. Rules are the right
+ * vocabulary for that: each stage is a row, and the stages that refuse carry
+ * their refusal in the gate column rather than in a footnote.
+ *
+ * Deliberately not the stepper. Nothing here is a state a document passes
+ * through and rests in — it is one transaction that either commits or is
+ * unwound, so a progress indicator would misdescribe it.
+ */
+import type { CaseStudy } from '../../lib/content/schema.ts';
+
+interface Props {
+  caseStudy: CaseStudy;
+}
+
+const { caseStudy } = Astro.props;
+---
+
+<div class="flow">
+  {
+    caseStudy.flow.map((s) => (
+      <div class={s.gate ? 'fst gate' : 'fst'}>
+        <span class="k">{s.key}</span>
+        <span class="n">{s.name}</span>
+        <span class="o" data-r={s.owner}>{s.owner}</span>
+        <span class="d">{s.what}</span>
+        {s.gate && <span class="g">{s.gate}</span>}
+      </div>
+    ))
+  }
+</div>

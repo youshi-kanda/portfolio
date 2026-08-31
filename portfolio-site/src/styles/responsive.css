@@ -1,0 +1,171 @@
+/* Generated from the frozen prototype stylesheet — see
+   portfolio-art-direction.md (ART_DIRECTION = HELD).
+   Rule bodies are re-emitted verbatim from
+   portfolio-planning/scratchpad/visual-prototype/art-direction/
+   {adcss.CSS, adrender.EXTRA, adrender2.EXTRA2}.
+   Do not restyle here: a visual change needs the freeze re-opened. */
+
+/* 1024–1279 and 768–1023 — carried over verbatim from adcss.TABLET */
+/* ===================================================== 11. RESPONSIVE
+   1024–1279 — the grid narrows but keeps the gate rule and the bleed bands. */
+@media (max-width:1279px){
+  .ad .page{--mg:48px}
+  .ad .tr{grid-template-columns:148px minmax(0,1fr);column-gap:40px}
+  .ad .tr:before{left:167px}
+  .ad .tr > .msr{max-width:660px}
+  .ad .ins .ix{font-size:26px}
+  .ad .dsp{font-size:72px}
+  .ad .v-stage .fr-stage{padding:44px 48px}
+  .ad .mfs .mf{padding:0 28px}
+  .ad .mfs .mf:first-child{padding-left:48px}
+  .ad .mfs .mf:last-child{padding-right:48px}
+  .ad .reg .r{grid-template-columns:56px minmax(0,1fr) 240px;column-gap:32px}
+}
+/* 768–1023 — one track. The instrument rail lies down into a kicker line and
+   figures take the full width. This is a recomposition, not a squeeze. */
+@media (max-width:1023px){
+  .ad .page{--mg:32px}
+  .ad .tr{grid-template-columns:minmax(0,1fr);column-gap:0}
+  .ad .tr:before{display:none}
+  .ad .tr > .ins,.ad .tr > .msr,.ad .tr > .fld{grid-column:1;max-width:none}
+  .ad .tr > .msr{max-width:720px}
+  .ad .ins{display:flex;align-items:baseline;gap:16px;margin:0 0 20px;
+           border-top:2px solid var(--rule);padding-top:12px}
+  .ad .ins .ix{font-size:22px;margin:0}
+  .ad .ins .lb{display:inline}
+  .ad .dsp{font-size:60px}
+  .ad .nav .page{gap:20px}
+  .ad .nav ol a{padding:0 12px;font-size:10.5px;letter-spacing:.12em}
+  .ad .v-split{grid-template-columns:minmax(0,1fr);row-gap:28px}
+  .ad .v-split .esc{margin-right:calc(-1 * var(--mg));margin-left:calc(-1 * var(--mg))}
+  .ad .duo{grid-template-columns:minmax(0,1fr);row-gap:34px}
+  .ad .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ad .mfs{grid-template-columns:1fr}
+  .ad .mfs .mf{border-left:0;border-top:1px solid var(--hair);padding:0 32px}
+  .ad .mfs .mf:first-child{padding-left:32px;border-top:0}
+  .ad .mfs .c{min-height:0}
+  .ad .reg .r{grid-template-columns:56px minmax(0,1fr);row-gap:20px}
+  .ad .reg .r .thumb{grid-column:2}
+  .ad .toc{columns:1}
+  .ad .spine,.ad .manifest{grid-template-columns:1fr}
+}
+
+/* < 768 — mechanically re-emitted from the `.ad.m` single source,
+   the same transform adbuild.mobile_media() applies. */
+@media (max-width:767px){
+.ad .page{--mg:20px}
+.ad .tr{grid-template-columns:minmax(0,1fr);column-gap:0}
+.ad .tr:before{display:none}
+.ad .tr > .ins,.ad .tr > .msr,.ad .tr > .fld{grid-column:1;max-width:none}
+.ad .dsp{font-size:40px;line-height:1.26;letter-spacing:-.03em;margin-bottom:20px}
+.ad .dsp br,.ad .dsp-s br{display:none}
+.ad .dsp-s{font-size:30px;line-height:1.34;margin-bottom:16px}
+.ad h2{font-size:26px;line-height:1.5}
+.ad .claim{font-size:20px;line-height:1.62}
+.ad .ans{font-size:17px}
+.ad .lede{font-size:16px}
+.ad .ins{display:flex;align-items:baseline;gap:14px;margin:0 0 16px;
+           border-top:1px solid var(--rule);padding-top:10px}
+.ad .ins .ix{font-size:20px;margin:0}
+.ad .ins .lb{display:inline}
+.ad .s-open{padding-top:96px}
+.ad .s-tight{padding-top:64px}
+.ad .s-close{padding-top:112px}
+.ad .s-band{margin-top:72px}
+.ad .s-band > .in{padding:64px 0}
+.ad .hero{padding-top:32px}
+.ad .nav .page{height:58px;gap:0;justify-content:space-between}
+.ad .nav ol{display:none}
+.ad .nav .mob{display:block}
+.ad .syn .page{display:block}
+.ad .syn b{display:block;margin-bottom:2px}
+.ad .fr-stage{padding:18px}
+.ad .fr-plate{padding:14px}
+.ad .fr-term .shot{padding:12px}
+.ad .ledger{grid-template-columns:1fr}
+.ad .ledger > div + div{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
+.ad .pair{grid-template-columns:1fr}
+.ad .entry h3{font-size:27px}
+.ad .v-stage .fr-stage{padding:18px 20px}
+.ad .v-split{grid-template-columns:1fr;row-gap:24px}
+.ad .v-split .esc{margin-right:calc(-1 * var(--mg));margin-left:calc(-1 * var(--mg))}
+.ad .fields .row{grid-template-columns:minmax(0,1fr) 58px;column-gap:12px;row-gap:2px}
+.ad .fields .row .k{grid-column:1}
+.ad .fields .row .s{grid-column:2;grid-row:1}
+.ad .fields .row .v{grid-column:1 / -1;font-size:14px}
+.ad .fields .row .c{display:none}
+.ad .duo{grid-template-columns:minmax(0,1fr);row-gap:34px}
+.ad .step{flex-wrap:wrap;row-gap:10px}
+.ad .step .cn{width:22px}
+.ad table,.ad thead,.ad tbody,.ad tr,.ad th,.ad td{display:block;width:auto}
+.ad thead{display:none}
+.ad tbody tr{border-bottom:1px solid var(--hair);padding:14px 0}
+.ad tbody th{border-bottom:0;padding:0 0 4px}
+.ad tbody td{border-bottom:0;padding:0 0 8px}
+.ad .reg .r{grid-template-columns:1fr;row-gap:16px;padding:26px 0}
+.ad .reg .r .thumb{padding:10px}
+.ad .foot{margin-top:112px}
+.ad .foot .mark{font-size:38px}
+.ad .mbar{display:flex;position:sticky;bottom:0;z-index:35;background:var(--paper);
+            border-top:1px solid var(--hair2);align-items:stretch}
+.ad .mbar a{flex:1;padding:13px 16px;font-family:var(--f-mono);font-size:10.5px;
+              letter-spacing:.16em;text-transform:uppercase;color:var(--tx2);display:flex;
+              align-items:center;gap:8px}
+.ad .mbar a + a{border-left:1px solid var(--hair);justify-content:flex-end;color:var(--tx)}
+.ad .mbar .sq{width:7px;height:7px;background:var(--sig)}
+.ad .mfs{grid-template-columns:1fr}
+.ad .mfs .mf{border-left:0;border-top:1px solid var(--hair);padding:0 20px}
+.ad .mfs .mf:first-child{padding-left:20px;border-top:0}
+.ad .spine{grid-template-columns:1fr;row-gap:20px}
+.ad .toc{columns:1}
+.ad .lgr .lrow{grid-template-columns:40px minmax(0,1fr);row-gap:2px;padding:12px 0}
+.ad .lgr .t{padding:0;grid-column:2}
+.ad .lgr .v{padding:0;grid-column:2}
+.ad .lgr .k{padding:0;grid-row:1 / span 2}
+.ad .pipe{grid-template-columns:repeat(2,minmax(0,1fr))}
+.ad .msr h3{font-size:25px}
+.ad .hero .ins{display:block;border-top:2px solid var(--rule);padding-top:12px}
+.ad .hero .ins .ix{display:inline-block;font-size:20px;margin:0 14px 0 0}
+.ad .ins .role{display:inline;margin-top:0}
+.ad .cap3{margin-top:14px}
+.ad .cap3 .cb{display:flex;gap:14px;align-items:baseline}
+.ad .cap3 b{flex:0 0 44px}
+.ad .spx .r,.ad .spx.wide .r{grid-template-columns:minmax(0,1fr);row-gap:2px;padding:12px 0}
+.ad .spx .k,.ad .spx .v{padding:0}
+.ad .lgs{grid-template-columns:1fr;row-gap:22px}
+.ad .scp{grid-template-columns:1fr}
+.ad .scp > div + div{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
+.ad .dec{padding-left:16px}
+.ad .flow .fst{grid-template-columns:44px minmax(0,1fr);row-gap:4px;padding:12px 0}
+.ad .flow .k{grid-row:1 / span 3}
+.ad .flow .o,.ad .flow .d,.ad .flow .g{grid-column:2;text-align:left}
+.ad .stk .srow{grid-template-columns:1fr;row-gap:8px}
+.ad .spine3{grid-template-columns:1fr;row-gap:22px}
+.ad .pdec .prow{grid-template-columns:1fr}
+.ad .pdec .w{text-align:left;padding-top:0;margin-top:8px}
+}
+
+/* ===================================================== 360px — overflow fix
+   NOT a restyle. design-freeze §4.3 makes "no horizontal overflow" a hard
+   requirement at every tested viewport, and this restores it at the narrowest
+   one the QA matrix asks for.
+
+   The cause is `.st{white-space:nowrap}`. A chip carries an unbreakable string
+   such as "backend 静的 480 件 / CI 実測 484 passed", and because a chip sits in
+   a `1fr` grid track, its min-content width becomes the track's — so a single
+   chip widens the whole row and pushes the headings beside it off the page.
+
+   The second cause is content rather than chrome: the Technical page quotes
+   source locators such as `apps/accounts/authentication.py:26-40`, which is one
+   unbreakable run wider than a 360px measure. `overflow-wrap:anywhere` only
+   takes effect on a run that would otherwise overflow, so prose is unaffected —
+   and it inherits, which is why it is set once rather than per element.
+
+   Scoped to 389px and below on purpose. The frozen mobile screen is 390px wide
+   and does not overflow, so every viewport the freeze was reviewed at renders
+   exactly as before; only the narrower width the prototype never covered
+   reflows. */
+@media (max-width:389px){
+  .ad{overflow-wrap:anywhere}
+  .ad .st{white-space:normal}
+}

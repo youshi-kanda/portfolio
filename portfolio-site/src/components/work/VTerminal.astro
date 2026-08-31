@@ -1,0 +1,68 @@
+---
+/**
+ * v-terminal — the visual is typographic.
+ *
+ * For a work with no GUI: the subject picture is the mono field table itself,
+ * and the CLI sits beside it as a small ink terminal. Without a field table
+ * the figure takes the full measure rather than sitting in a half-width column
+ * next to an empty cell.
+ */
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import Rail from '../layout/Rail.astro';
+import EntryCta from './EntryCta.astro';
+import FieldsTable from './FieldsTable.astro';
+import WorkBody from './WorkBody.astro';
+import WorkFigure from './WorkFigure.astro';
+import WorkHead from './WorkHead.astro';
+import WorkMeta from './WorkMeta.astro';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+  index: string;
+  railLabels: readonly string[];
+  eager?: boolean;
+}
+
+const { work, evidence, index, railLabels, eager = false } = Astro.props;
+const table = work.fieldsTable;
+---
+
+<section class="s-band tone" id={`w-${work.slug}`} data-w={work.slug}>
+  <div class="in">
+    <div class="page">
+      <div class="tr">
+        <Rail index={index} labels={railLabels} />
+        <div class="msr">
+          <WorkHead work={work} />
+          <WorkMeta work={work} />
+        </div>
+      </div>
+      <div class="tr" style="margin-top:44px">
+        <div class="ins"></div>
+        <div class="fld">
+          {
+            table ? (
+              <div class="duo">
+                <div><FieldsTable table={table} /></div>
+                <div>
+                  <WorkFigure work={work} evidence={evidence} eager={eager} />
+                  <EntryCta work={work} />
+                </div>
+              </div>
+            ) : (
+              <>
+                <WorkFigure work={work} evidence={evidence} eager={eager} />
+                <EntryCta work={work} />
+              </>
+            )
+          }
+        </div>
+      </div>
+      <div class="tr" style="margin-top:56px">
+        <div class="ins"></div>
+        <div class="fld"><WorkBody work={work} /></div>
+      </div>
+    </div>
+  </div>
+</section>

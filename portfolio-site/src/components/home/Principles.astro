@@ -1,0 +1,78 @@
+---
+/**
+ * 04 ENGINEERING PRINCIPLES.
+ *
+ * "自動処理の結果を、そのまま確定させない。" lives here. It used to be the hero
+ * headline; it is a design principle, not a positioning statement, and the
+ * spec confirms it as one. Every decision below names the work it belongs to
+ * and the locator it came from.
+ */
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import SectionHead from '../layout/SectionHead.astro';
+
+const p = site.principles;
+
+/**
+ * The decisions arrive grouped by work — crm crm crm / ppm ppm / dfe dfe dfe —
+ * and that grouping is the section's reading order. This marks the row that
+ * OPENS each work so the art-direction layer can give it a lead and a rule in
+ * that work's pigment (motion.css, V3 §04) without a single slug being written
+ * into a stylesheet. It is derived from `decisions`, not declared beside it:
+ * reordering the array, or adding a ninth decision, moves the marks with it.
+ */
+const opensWork = p.decisions.map((d, i) => i === 0 || d.work !== p.decisions[i - 1]?.work);
+---
+
+{/* `data-mx-n` — see Hero.astro. The index is `site.principles`'s own. */}
+<section class="s-open" id="principles" data-mx-n={p.index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={p.index} labels={p.railLabels} />
+      <div class="msr">
+        <h2>{p.spine.map((line, i) => (i === 0 ? <>{line}</> : <><br />{line}</>))}</h2>
+        <p class="lede">{p.spineBody}</p>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:36px">
+      <div class="ins"></div>
+      <div class="fld">
+        <ul class="spine3">
+          {
+            p.instances.map((i) => (
+              <li data-w={i.work}>
+                <span class="sq" />
+                <span class="mo"><b>{i.name}</b></span>
+                <span>{i.text}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:64px">
+      <div class="ins">
+        <span class="lb">{ui.principles.decisionsLabel}</span>
+        <span class="lb">{fill(ui.principles.count, { count: p.decisions.length })}</span>
+      </div>
+      <div class="fld">
+        <SectionHead label={ui.principles.head} sub={ui.principles.sub} />
+        <div class="pdec">
+          {
+            p.decisions.map((d, i) => (
+              <div class="prow" data-w={d.work} data-mx-grp={opensWork[i] ? 'open' : undefined}>
+                <span class="t">{d.decision}</span>
+                <span class="w"><span class="sq" />{d.work.toUpperCase()}</span>
+                <span class="y">{d.why}</span>
+                <span class="s">{d.sourceRef}</span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

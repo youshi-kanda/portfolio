@@ -1,0 +1,68 @@
+---
+/**
+ * The homepage. Section order is frozen (design-freeze §2, positioning v2):
+ *
+ *   00 HERO / triptych / 01 SELECTED WORK / 02 HOW I BUILD /
+ *   03 ENGINEERING STACK / 04 ENGINEERING PRINCIPLES /
+ *   05 FEATURED EVIDENCE / 06 ABOUT / 07 CONTACT
+ *
+ * 05 exists only when there is a work to feature. When it is dropped, the nav
+ * drops its entry too — `navItems(hasWorks)` — so there is never an anchor
+ * pointing at a section that is not on the page.
+ */
+import { getCollection } from 'astro:content';
+import About from '../components/home/About.astro';
+import FeaturedEvidence from '../components/home/FeaturedEvidence.astro';
+import Hero from '../components/home/Hero.astro';
+import HowIBuild from '../components/home/HowIBuild.astro';
+import Principles from '../components/home/Principles.astro';
+import SelectedWork from '../components/home/SelectedWork.astro';
+import Stack from '../components/home/Stack.astro';
+import EvidenceDialog from '../components/evidence/EvidenceDialog.astro';
+import Footer from '../components/layout/Footer.astro';
+import SyntheticBar from '../components/layout/SyntheticBar.astro';
+import MobileBar from '../components/navigation/MobileBar.astro';
+import MotionStage from '../components/motion/MotionStage.astro';
+import Nav from '../components/navigation/Nav.astro';
+import Triptych from '../components/work/Triptych.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { featuredEvidence, heroLede, shippingWorks } from '../lib/content/derive.ts';
+import { site } from '../lib/content/site.ts';
+
+const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+const evidence = (await getCollection('evidence')).map((e) => e.data);
+const featured = featuredEvidence(works, evidence);
+---
+
+{/*
+  The homepage title was the handle alone, which is unique but says nothing:
+  in a search result or a browser tab it names the author and not the page.
+  Pairing it with the kicker is the masthead's own composition — Nav renders
+  `{site.handle}<i>{site.kicker}</i>` — so the tab and the top of the page now
+  read the same. Both halves are existing site facts; no copy was authored for
+  the title.
+*/}
+<BaseLayout title={`${site.handle} — ${site.kicker}`} description={heroLede(works.length)}>
+  <Nav progress={6} hasWorks={works.length > 0} />
+  <SyntheticBar />
+  {/*
+    Motion prototype (feature/motion-experience-v2), scoped to 00 and 01.
+    Placed before <main> on purpose: its inline gate script has to set the
+    reduced-motion flag before the hero is parsed, or the elements that start
+    hidden paint once at full size first.
+  */}
+  <MotionStage />
+  <main>
+    <Hero works={works} />
+    <Triptych works={works} />
+    <SelectedWork works={works} evidence={evidence} />
+    <HowIBuild />
+    <Stack />
+    <Principles />
+    {featured && <FeaturedEvidence work={featured.work} evidence={featured.evidence} />}
+    <About />
+    <Footer />
+  </main>
+  <MobileBar />
+  <EvidenceDialog />
+</BaseLayout>

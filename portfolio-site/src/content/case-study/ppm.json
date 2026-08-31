@@ -1,0 +1,279 @@
+{
+  "slug": "ppm",
+  "overview": "複数の案件と作業の進み具合を、いま使っている Google スプレッドシートをそのまま正本として、登録・依存関係・判断待ち・進捗の集計まで管理する仕組みです。",
+  "leadDisclosure": null,
+  "currentPractice": "使うのは小規模チームの進行役と担当者です。表計算ソフトは日常的に使いますが、新しいツールの導入には慎重で、管理を専任で見る人はいません。いまは案件ごとに表を作り、状況は口頭で補い、集計は手で数えて別のシートへ転記しています。",
+  "requirements": {
+    "functional": [
+      "案件・作業項目・判断待ち・依存関係を、1 回の送信でまとめて登録できる",
+      "二重登録の防止（冪等性／submissionId + payloadHash）と、同時操作の保護（LockService）",
+      "不正なタスク依存の検出（DFS ／循環検出）と、使った番号を再利用しない採番（ID の非再利用採番）",
+      "集計表の作り直し（ダッシュボードの再集計）— メニューを押したときだけ動く"
+    ],
+    "constraints": [
+      "いま使っている Google スプレッドシートを正本にし、外部サービスへ通信しない",
+      "後から項目（列）を足せる（列を追加しても壊れない設計／Header-based column resolution）",
+      "未実装の画面を、実装済みに見せない"
+    ]
+  },
+  "built": [
+    { "name": "メニュー「進捗管理」", "what": "初期セットアップ、デモデータ投入、登録フォーム、集計の更新" },
+    { "name": "登録フォーム（サイドバー）", "what": "案件・作業・依存・判断待ちを 1 回でまとめて入力" },
+    { "name": "作業一覧のシート", "what": "案件・状態・担当・期限・止まっている理由を扱う" },
+    { "name": "共有ダッシュボード", "what": "進行中・健全度・判断待ち・期限超過を色分けで示す" },
+    { "name": "活動履歴のシート", "what": "変更の記録が追記だけで積み上がる" },
+    { "name": "まだ作っていない画面", "what": "シート上に「実装予定」と表示したまま置いてある" }
+  ],
+  "decisions": [
+    {
+      "title": "スプレッドシートそのものを正本にした。",
+      "context": "利用者は既に Google スプレッドシートで運用している。",
+      "decision": "外部データベースを持たず、シートを source of truth にした。",
+      "reason": "却下したのは、外部にデータベースを用意して専用画面を作る案です。いま使っている表を捨てることになります。",
+      "tradeoff": "中途半端な書き込みの防止（トランザクション／ロールバック）は書いた行を逆順に消す方式であり、原子性そのものではありません。",
+      "evidenceRefs": ["PPM-V02"]
+    },
+    {
+      "title": "壊れ方のほうを先に設計した。",
+      "context": "複数人が同じ表を同時に触ると、途中で失敗した登録が中途半端な行として残る。",
+      "decision": "二重登録は送信の識別で防ぎ（submissionId + payloadHash）、同時操作は待たせずに断る（LockService の 200ms 打ち切り）。循環する依存は書き込む前に止める。",
+      "reason": "順番待ちの行列を作る案は、待たされた側が二重に押すため却下しました。",
+      "tradeoff": "検出できるのは同一送信の中の循環までです。既存行と新規分が組み合わさって生じる循環は対象外。",
+      "evidenceRefs": []
+    },
+    {
+      "title": "列は番号ではなく見出しの名前で解決する（Header-based column resolution）。",
+      "context": "運用者が列を 1 本足した瞬間に全体がずれる。",
+      "decision": "列番号を埋め込まず、見出し名で列を解決する。",
+      "reason": "却下したのは、列番号をコードに埋め込む案です。既存の見出しを保った列の追加・並べ替えでは列ずれが起きません。",
+      "tradeoff": "見出しの名前を変える／必要な列を消すと動かなくなります。見出し行がスキーマそのものです。",
+      "evidenceRefs": []
+    }
+  ],
+  "highlights": [
+    {
+      "claim": "同じ登録を 2 回送っても、行は 1 件のままです。",
+      "detail": "また「A は B を待ち、B は A を待つ」設定は、その登録の中で見つけて 1 行も書かずに拒否します。動画に異常系として収録しています。",
+      "evidenceRefs": []
+    },
+    {
+      "claim": "集計はメニュー操作で作り直され、遅れ・判断待ち・健全度が色で分かります。",
+      "detail": "自動では動きません。時間主導トリガーは 1 件も登録していません。",
+      "evidenceRefs": ["PPM-V02"]
+    },
+    {
+      "claim": "誰が・いつ・何を・何から何に変えたかが履歴に残ります。",
+      "detail": "管理用の ID の列は保護範囲を設定し、直接編集を制限しています。",
+      "evidenceRefs": []
+    }
+  ],
+  "role": "個人開発です。シート構造の設計、登録処理、集計、履歴、テストまでを 1 人で実装しました。実運用中のスプレッドシートとは接続しておらず、投入されるデータはすべて架空です。外部連携とスケジュール実行は含めていません。",
+  "quality": [
+    "何を確認しているか — ID の衝突、循環の検出、途中失敗の取り消し、二重送信、同時実行の競合、先頭 = のエスケープ、履歴の記録、集計の再構築、安全なエラー、直接編集の許可リスト。",
+    "履歴の記録も登録処理に含めています（Activity ログをトランザクションに含む）。記録に失敗すればデータの変更ごと取り消します。デモデータの投入も通常と同じ経路です（デモ専用の裏道が無い設計）。",
+    "自動の動作チェック（vm サンドボックス／Apps Script ランタイム不要）は Google アカウント無しで再実行できます。77 passed / 0 failed（2026-08-15 に npm test）。列を足しても壊れないこと自体の回帰テストは未整備です。"
+  ],
+  "safety": [
+    {
+      "name": "触ってはいけない列のロック（Range Protection ／ onEdit ／許可リスト）",
+      "what": "自動計算される列を誤って上書きできません。手編集はロック対象外の列では自由で、所有者は編集者として残るため「防止」ではなく「抑止」です。"
+    },
+    {
+      "name": "数式の誤作動防止（Formula Injection prevention）",
+      "what": "= で始まる文字が計算式になりません（対象は先頭 = のみ）。"
+    },
+    {
+      "name": "安全なエラー表示（Safe Error ／ secret masking）",
+      "what": "エラー表示に鍵や個人情報を出しません。"
+    },
+    {
+      "name": "追記のみの履歴（Append-only Activity）と外部通信ゼロのテスト固定",
+      "what": "履歴は後から書き換えず、通信するコードが 1 行も無いことを確認しています。できないのではなく、このデモに含めていません。"
+    }
+  ],
+  "delivery": [
+    {
+      "key": "渡すもの",
+      "value": "src/ 一式（JavaScript 9 + サイドバー HTML 1）と appsscript.json、docs/architecture.md、README のセットアップ手順（clasp 利用時は .clasp.example.json を複製して Script ID を記入）"
+    },
+    {
+      "key": "依頼者側で行うこと",
+      "value": "スプレッドシートの作成とスクリプト配置、メニュー「進捗管理」→「初期セットアップ」の実行（12 シート・入力規則・保護レンジを作成）"
+    },
+    {
+      "key": "日常の操作",
+      "value": "登録フォームからの登録と、メニュー「ダッシュボードを更新」。時間主導トリガーは 1 件も登録しない（ScriptApp.newTrigger の出現 0 件。動くのは onOpen / onEdit の 2 つのみ）"
+    },
+    {
+      "key": "非エンジニア向け操作マニュアル",
+      "value": "あり — assets/progress-manager/USER-GUIDE.md（15 節 / 画像 6 枚）。Case Study 資産であり、公開リポジトリには同梱していない"
+    },
+    { "key": "実データのシート・Script ID", "value": "同梱しない" }
+  ],
+  "scope": [
+    {
+      "implemented": "一括登録・集計・活動履歴",
+      "notIncluded": "自動実行トリガー",
+      "why": "手動再構築のみ。勝手に動く処理を入れない方針"
+    },
+    {
+      "implemented": "同一送信内の循環依存の検出と拒否",
+      "notIncluded": "既存行と組み合わさって生じる循環の検出",
+      "why": "1 回の送信を検証単位としているため。範囲を明示して提示する"
+    },
+    {
+      "implemented": "列を見出し名で解決（追加・並べ替えに耐える）",
+      "notIncluded": "見出しのリネーム・必要列の削除への耐性",
+      "why": "見出し行をスキーマそのものとして扱う設計。名前が変わればスキーマが変わる"
+    },
+    {
+      "implemented": "先頭 = の数式化対策",
+      "notIncluded": "+ - @ の変換",
+      "why": "現在の挙動としてテストで固定。CSV インジェクション全般への対応とは書かない"
+    },
+    {
+      "implemented": "書き込んだ行の逆順削除による取り消し",
+      "notIncluded": "データベースのトランザクション",
+      "why": "シートを正本にする構成のため。完全な原子性は主張しない"
+    },
+    {
+      "implemented": "表示 8 / 管理 4 の 12 シート",
+      "notIncluded": "ボード / ロードマップ / AI 提案",
+      "why": "Phase 2 以降の予定。シート上に「実装予定」と表示している"
+    },
+    {
+      "implemented": "外部通信なし（テストで固定）",
+      "notIncluded": "外部サービス連携・LLM 連携",
+      "why": "できないのではなく、このデモに含めていない"
+    },
+    {
+      "implemented": "Apps Script ランタイム不要のテスト",
+      "notIncluded": "列変更耐性そのものの回帰テスト",
+      "why": "未整備"
+    }
+  ],
+  "scale": [
+    {
+      "item": "シート",
+      "value": "12（表示 8 / 管理 4）",
+      "method": "src/config.js の DISPLAY_SHEETS（8）と ADMIN_SHEETS（4）。初期セットアップが作成する数と一致"
+    },
+    {
+      "item": "スクリプト",
+      "value": "JavaScript 9 ファイル + サイドバー HTML 1",
+      "method": "find src -name '*.js' = 9 / find src -name '*.html' = 1"
+    },
+    {
+      "item": "管理する種別",
+      "value": "5（Project / Work Item / Decision / Relation / Activity）",
+      "method": "src/schema.js の SHEET_DEFS で headers を持つのは 8 シート。うち業務データはこの 5 種"
+    },
+    {
+      "item": "テスト",
+      "value": "77 passed / 0 failed",
+      "method": "npm test（2026-08-15 実行。2026-08-20 に再実行し同数を確認）／ CI run 32023326469"
+    },
+    {
+      "item": "外部通信",
+      "value": "0",
+      "method": "tests/run-tests.js:1569（T-STATIC-2）。src/ に UrlFetchApp の呼び出しが 1 件も無いことをテストで固定"
+    },
+    { "item": "工数", "value": "未計測", "method": "推定値を書かない" }
+  ],
+  "capabilities": [
+    "Google スプレッドシートを使った業務管理の仕組み化（案件・作業・依存・判断待ち）",
+    "Google Apps Script による入力・集計・履歴記録の自動化",
+    "複数人が同時に使う表計算シートの、壊れない入力フロー設計",
+    "既存シートを作り直さずに項目を足せる構造への整理"
+  ],
+  "capabilitiesNote": "以下は対応できる作業の種類であり、受注実績ではありません。",
+  "flow": [
+    { "key": "01", "name": "検証", "owner": "system", "what": "必須項目と依存関係の形を確認する。", "gate": null },
+    { "key": "02", "name": "ロック", "owner": "system", "what": "LockService.tryLock(200) で同時操作を待たせずに断る。", "gate": "200ms fail-fast" },
+    { "key": "03", "name": "冪等性", "owner": "system", "what": "submissionId + payloadHash で再送を無害化する。", "gate": null },
+    { "key": "04", "name": "循環検出", "owner": "system", "what": "同一送信に含まれる依存を DFS で走査し、循環があれば 1 行も書かずに拒否する。", "gate": "書き込み前に拒否" },
+    { "key": "05", "name": "採番", "owner": "system", "what": "型別の ID を採番する。使った番号は再利用しない。", "gate": null },
+    { "key": "06", "name": "書込", "owner": "system", "what": "Project → Work Item → Relation → Decision の順に行を書く。", "gate": null },
+    { "key": "07", "name": "Activity", "owner": "system", "what": "変更前後の値つきで履歴に追記する。記録に失敗すれば変更ごと取り消す。", "gate": null },
+    { "key": "08", "name": "コミット", "owner": "system", "what": "失敗時は書いた行を逆順に削除して戻す。ダッシュボード再構築はこのトランザクションの外。", "gate": null }
+  ],
+  "technical": {
+    "architectureSummary": "検証 → ロック → 冪等性 → 採番 → 書込（Project → Work Item → Relation → Decision）→ Activity → コミット。失敗時は書いた行を逆順に削除して戻す。ダッシュボード再構築はこのトランザクションの外。",
+    "whyThisArchitecture": "Sheets を正本にしたのは、利用者が既にそこで運用しており、外部 DB を持つと導入・権限管理のコストが利益を上回るため。代償は原子性を諦めたこと。",
+    "rejected": [
+      {
+        "option": "外部 DB + 専用 UI",
+        "why": "移行コストと運用負担。いま使っている表を捨てることになる。"
+      },
+      {
+        "option": "Sheets の関数と条件付き書式だけで組む",
+        "why": "同時登録・依存関係・履歴が破綻する。"
+      }
+    ],
+    "failureModes": [
+      "シート上の手編集はロック対象外の列では自由。",
+      "循環検出は同一送信内のみ。",
+      "見出しのリネームと必要列の削除で壊れる。",
+      "ロールバック中の削除失敗は握りつぶす。",
+      "自動実行トリガーが無いため、集計はメニュー実行まで古いまま。",
+      "保護レンジの編集者にはスプレッドシート所有者が残る。"
+    ],
+    "tradeOffs": [
+      "アプリ層での補償削除は完全な原子性を主張できない。",
+      "LockService.tryLock(200) の fail-fast は、混雑時に「登録中」エラーが増える代わりに待ち時間を作らない。"
+    ],
+    "testsSummary": "77 passed / 0 failed（2026-08-15 に npm test）。Apps Script ランタイム不要の vm Fake で実行。",
+    "testBreakdown": [
+      { "area": "ロック競合", "detail": "T-13" },
+      { "area": "冪等性", "detail": "T-09・T-09b" },
+      { "area": "ロールバック", "detail": "T-08" },
+      { "area": "循環検出", "detail": "T-06・T-07" },
+      { "area": "保護と許可リスト", "detail": "T-P1〜P4・T-B1〜B5・T-C1〜C10" },
+      { "area": "外部通信ゼロ", "detail": "T-18a〜d" },
+      { "area": "Activity", "detail": "T-15c" },
+      { "area": "Dashboard", "detail": "T-16" }
+    ],
+    "security": [
+      "safe-error.js:8-45（11 コード・7 パターンのマスク）。",
+      "schema.js:145-256 の Range Protection。",
+      "main.js:113-269 の onEdit 許可リスト。",
+      "先頭 = のエスケープ。",
+      "外部通信は静的テストで 0 件を固定。"
+    ],
+    "limitationsNote": "できること・含めていないことの各行に対応。README「このリポジトリについて（重要）」を正本とする。",
+    "links": [
+      "gas-project-management-demo/src/registration-service.js:32-46, 80-106, 335-344, 346-366, 623-650",
+      "gas-project-management-demo/src/schema.js:38-59, 145-256",
+      "gas-project-management-demo/src/id-service.js:79-86",
+      "gas-project-management-demo/src/sync-controller.js:53-141",
+      "tests/run-tests.js"
+    ],
+    "designDocs": ["docs/architecture.md"]
+  },
+  "repository": [
+    { "label": "リポジトリ — gas-project-management-demo/", "href": "https://github.com/youshi-kanda/portfolio/tree/main/gas-project-management-demo" },
+    { "label": "公開 claim の正本 — README.md", "href": "https://github.com/youshi-kanda/portfolio/blob/main/gas-project-management-demo/README.md" },
+    { "label": "CI 定義 — .github/workflows/progress-manager-ci.yml", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/progress-manager-ci.yml" },
+    { "label": "CI 実行ログ — run 32023326469（PASS: 77 / FAIL: 0）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32023326469" }
+  ],
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "portfolio-case-study-specification.md §17.2（TASK-CS-06 確定版 / 2026-08-20）— CS-1 … CS-16 の本文はこの節が正本",
+      "overview / currentPractice / requirements / built — 同 §17.2 CS-1・CS-3・CS-4・CS-5",
+      "decisions — 同 §17.2 CS-6（判断 1〜3・却下した案つき）",
+      "highlights — 同 §17.2 CS-7",
+      "role — 同 §17.2 CS-8",
+      "quality / safety — 同 §17.2 CS-9・CS-10",
+      "delivery / scope / scale — 同 §17.2 CS-11・CS-12・CS-13",
+      "capabilities — 同 §17.2 CS-14",
+      "technical — 同 §17.2 CS-15 T-1〜T-8",
+      "repository — 同 §17.2 CS-16",
+      "flow — 同 §17.2 CS-15 T-1（登録トランザクションの段）／ CS-6 判断 2",
+      "PPM-V02 の対象外事項 — assets/progress-manager/EVIDENCE-MAPPING.md PPM-S03（ROI / 自動更新 / AI 生成 を証明しない）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

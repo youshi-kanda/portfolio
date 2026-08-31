@@ -1,0 +1,53 @@
+---
+/**
+ * `walkthrough` — the spine as a state the work moves through.
+ *
+ * AI CRM's subject is a transition: 下書き → 承認待ち → 承認済み, and the point
+ * of the whole system is that a machine cannot make the last step. So the spine
+ * leads with the frozen stepper (design-freeze §3, the one content animation the
+ * art direction allows) and then lays the stages out as ruled rows, marking the
+ * two that a human owns and the one that refuses.
+ *
+ * The stepper's three states are not typed here — they are read off the flow's
+ * own gate stages, so a work whose flow changes does not need this file edited.
+ */
+import type { CaseStudy } from '../../lib/content/schema.ts';
+
+interface Props {
+  caseStudy: CaseStudy;
+}
+
+const { caseStudy } = Astro.props;
+const flow = caseStudy.flow;
+
+// The stepper walks the stages a person acts on; the last one is where the
+// state actually becomes 承認済み, so it is the one shown as reached.
+const human = flow.filter((s) => s.owner === 'human');
+---
+
+{
+  human.length > 0 && (
+    <ol class="step">
+      {human.map((s, i) => (
+        <li data-on>
+          {i > 0 && <span class="cn" />}
+          <span class={`st ${i === human.length - 1 ? 'pass' : 'flag'}`}>{s.name}</span>
+        </li>
+      ))}
+    </ol>
+  )
+}
+
+<div class="flow" style="margin-top:34px">
+  {
+    flow.map((s) => (
+      <div class={s.gate ? 'fst gate' : 'fst'}>
+        <span class="k">{s.key}</span>
+        <span class="n">{s.name}</span>
+        <span class="o" data-r={s.owner}>{s.owner}</span>
+        <span class="d">{s.what}</span>
+        {s.gate && <span class="g">{s.gate}</span>}
+      </div>
+    ))
+  }
+</div>

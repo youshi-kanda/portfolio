@@ -1,0 +1,15 @@
+---
+/**
+ * Mobile only: a bottom bar reporting where you are and what is next, then
+ * getting out of the way. Not a floating pill, not a nav drawer.
+ *
+ * It points at 01 and 02, which exist on every homepage regardless of the work
+ * count, so it can never offer an anchor that is not on the page.
+ */
+import { ui } from '../../lib/content/ui.ts';
+---
+
+<div class="mbar">
+  <a href="#work"><span class="sq"></span>{ui.mobileBar.work}</a>
+  <a href="#build">{ui.mobileBar.build}</a>
+</div>

@@ -1,0 +1,79 @@
+---
+/**
+ * The 404 document — `dist/404.html`, served by nginx for any address this site
+ * does not have (DEPLOY.md §4, `error_page 404 /404.html`).
+ *
+ * It is not a route. It is emitted once and served under whatever URL the
+ * visitor typed, so it is deliberately absent from `routes.ts` and therefore
+ * from the sitemap: listing an error document as a public URL is the same
+ * defect as listing a page that was never built. `check-links` knows it by
+ * name for that reason, and holds it to every other page contract — one h1,
+ * a title, a description, no dead link, no `noindex`.
+ *
+ * Nothing here is new art direction. The composition is the hero already used
+ * by `/work/`: the instrument rail carrying an index, the measure beside it
+ * carrying the display line and the lede. `404` is the rail index the same way
+ * `07` is CONTACT's and `L2` is the variant table's.
+ *
+ * Every visible string is an approved row in `src/content/copy/shipping.json`
+ * and comes through `copyText`, so the same gate that covers the homepage
+ * covers this page: reword one and the build fails.
+ */
+import { getCollection } from 'astro:content';
+import Footer from '../components/layout/Footer.astro';
+import Rail from '../components/layout/Rail.astro';
+import SyntheticBar from '../components/layout/SyntheticBar.astro';
+import Nav from '../components/navigation/Nav.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { copyText } from '../lib/content/copy.ts';
+import { shippingWorks } from '../lib/content/derive.ts';
+
+const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+
+const code = await copyText('notfound.code');
+const h1 = await copyText('notfound.h1');
+const body = [await copyText('notfound.body.01'), await copyText('notfound.body.02')];
+const back = await copyText('notfound.back');
+
+/**
+ * Both composed from approved strings, no word written for the head. The title
+ * pairs the status with the sentence — the same `A — B` masthead composition
+ * the homepage and the register use — and the description is the lede with its
+ * approved line break resolved to the running sentence it already is.
+ */
+const title = `${code} — ${h1}`;
+const description = body.join('');
+---
+
+<BaseLayout title={title} description={description} errorDocument={true}>
+  <Nav current={null} progress={0} hasWorks={works.length > 0} onHomepage={false} />
+  <SyntheticBar />
+  <main id="notfound">
+    <section class="hero">
+      <div class="page">
+        <div class="tr">
+          <Rail index={code} />
+          <div class="msr">
+            <h1 class="dsp-s">{h1}</h1>
+            {/*
+              The break is the approved composition — two rows in the registry,
+              not one sentence that happens to wrap. `responsive.css` already
+              drops `.dsp-s br` on mobile; this is a `.lede`, so the break holds
+              at every width, which is where the two clauses were approved to
+              part.
+            */}
+            <p class="lede">{body[0]}<br />{body[1]}</p>
+            {/*
+              `.lk` is the site's link idiom. Its other four uses carry a
+              trailing `<span class="ar">→</span>`; this one does not, because
+              the arrow would read as part of a label the user approved without
+              it. The class styles the rule under the text either way.
+            */}
+            <p style="margin-top:30px"><a class="lk" href="/">{back}</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <Footer />
+  </main>
+</BaseLayout>

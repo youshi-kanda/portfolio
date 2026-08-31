@@ -1,0 +1,13 @@
+---
+/**
+ * SITE-07 — every page states that the screens are synthetic. Set as an
+ * instrument strip, not a banner.
+ */
+import { site } from '../../lib/content/site.ts';
+---
+
+<div class="syn">
+  <div class="page">
+    <b>{site.synthetic.label}</b><span>{site.synthetic.note}</span>
+  </div>
+</div>

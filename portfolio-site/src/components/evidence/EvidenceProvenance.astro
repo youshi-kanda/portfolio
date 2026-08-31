@@ -1,0 +1,42 @@
+---
+/**
+ * figure → caption → ledger → **provenance**. Step 4 of 4.
+ *
+ * SHA256, published size, scale, filename and crop coordinates live in here and
+ * nowhere else (design-freeze §3). They are checkable facts, not decoration, so
+ * they are one click away rather than in the reader's face.
+ *
+ * A record whose provenance is not established may not render this block at
+ * all — see truth.ts `T-PROVENANCE`. Showing "未取得" under a SHA256 heading
+ * presents an absence as a record.
+ */
+import type { Evidence } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  evidence: Evidence;
+  cropped?: boolean;
+}
+
+const { evidence, cropped = false } = Astro.props;
+const L = ui.evidence.provenanceLabels;
+
+const rows: { key: string; value: string }[] = [
+  { key: L.type, value: evidence.type },
+  { key: L.source, value: evidence.sourceFile },
+  { key: L.dims, value: evidence.dims },
+  { key: L.scale, value: evidence.scale },
+];
+if (cropped) rows.push({ key: ui.evidence.cropRowLabel, value: ui.evidence.cropRowValue });
+rows.push({ key: L.sha, value: evidence.sha }, { key: L.status, value: evidence.status });
+---
+
+<details>
+  <summary>{ui.evidence.provenanceSummary}</summary>
+  <div class="prov">
+    <dl>
+      {rows.map((r) => <><dt>{r.key}</dt><dd>{r.value}</dd></>)}
+    </dl>
+    {evidence.disclosure && <p class="disc">{evidence.disclosure}</p>}
+  </div>
+</details>

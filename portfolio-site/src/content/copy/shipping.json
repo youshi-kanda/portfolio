@@ -1,0 +1,300 @@
+[
+  {
+    "id": "home.hero.role.01",
+    "text": "ソフトウェアエンジニア",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — 職種",
+    "purpose": "何のエンジニアかを、最初の viewport で職種名として言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO role candidate"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.role.02",
+    "text": "業務システム / 自動化 / AI駆動開発",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — 領域",
+    "purpose": "その職種がどの領域に向いているかを 1 行で示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO role candidate"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.display.01",
+    "text": "業務の要件を整理し、Web・",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 1 行目",
+    "purpose": "要件 → 実装 → 検証 の順序を display で宣言する（1/3）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO display candidate",
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.display.02",
+    "text": "自動化・データ処理を、",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 2 行目",
+    "purpose": "同上（2/3）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO display candidate",
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.display.03",
+    "text": "検証できる仕組みをつくる。",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 3 行目",
+    "purpose": "同上（3/3）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO display candidate",
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3（「として」の扱いは要判断）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.lede",
+    "text": "公開しているのは 3 つの動くデモです。何のためのサービスか・どこまで実装したか・何の言語で書いたかを、作品ごとに分けて書いています。",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "answer 行の下のリード",
+    "purpose": "この先に何が何件並ぶか、各作品で何を分けて書くかを宣言する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "導出 — len(WORKS)",
+        "レンダリングされる実フィールド（w_product / w_impl / w_scope）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.works.h2",
+    "text": "何のためのサービスを、どこまで実装したのか。",
+    "route": "/",
+    "section": "01 SELECTED WORK",
+    "slot": "見出し",
+    "purpose": "この節が答える問いを見出しにする。件数はコピーに固定しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §Selected Work h2 candidate",
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.works.lede",
+    "text": "作品ごとに、製品種別・使う人・目的と、実装した範囲・使用言語を分けて書いています。公開デモに含まれるもの、含めていないもの、元プロダクト側にあるものは、それぞれ別の欄です。",
+    "route": "/",
+    "section": "01 SELECTED WORK",
+    "slot": "リード",
+    "purpose": "各 entry が実際に出すブロックの構成を先に言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "adrender2.w_product / w_impl / w_scope が描画するフィールド",
+        "portfolio-positioning.md §2 Work item schema"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.stack.h2",
+    "text": "どの技術で何を担当し、それがどの作品に入っているか。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "見出し",
+    "purpose": "技術 → 責務 → 作品 の対応を読む節であることを見出しで言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3",
+        "STACK.languages / STACK.platform の行構造"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.stack.lede",
+    "text": "ロゴは並べていません。1 行が「技術 → その技術で担当した責務 → その責務を持つ作品」の対応です。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "リード",
+    "purpose": "ロゴの壁ではなく 1 行が対応関係であることを説明する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3",
+        "portfolio-positioning.md §4"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.stack.note",
+    "text": "この表に無い技術は、公開しているデモでは使っていません。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "表の下の注記",
+    "purpose": "表に無い技術を使っていないことを明示し、範囲を閉じる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "STACK.languages / STACK.platform（各 README 由来）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.about.h2",
+    "text": "リポジトリから確認できることだけ。",
+    "route": "/",
+    "section": "06 ABOUT",
+    "slot": "見出し",
+    "purpose": "ABOUT がリポジトリから確認できる事実だけであることを見出しで言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "ABOUT.known（spec CS-8 / 各 README / PUBLISH-MAP.md）",
+        "PROFILE_DATA_STATUS = PENDING_USER_FACTS"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "notfound.code",
+    "text": "404",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "instrument rail — index",
+    "purpose": "どの状態のページかを、他の節と同じ rail の index 位置で示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.h1",
+    "text": "ページが見つかりません。",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "見出し",
+    "purpose": "起きたことを 1 行で言う。原因の推測も謝罪も見出しには置かない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.body.01",
+    "text": "URLが変更されたか、",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "リード 1 行目",
+    "purpose": "考えられる理由を 2 つ挙げる（1/2）。断定はしない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.body.02",
+    "text": "ページが存在しない可能性があります。",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "リード 2 行目",
+    "purpose": "同上（2/2）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.back",
+    "text": "Portfolioへ戻る",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "復帰リンク",
+    "purpose": "行き止まりにしない。読者が確実に到達できる 1 つの route を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  }
+]

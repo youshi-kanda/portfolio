@@ -1,0 +1,13 @@
+---
+interface Props {
+  label: string;
+  sub?: string | null;
+}
+
+const { label, sub = null } = Astro.props;
+---
+
+<div class="shead">
+  <span class="mo"><b>{label}</b></span>
+  {sub && <p class="mo">{sub}</p>}
+</div>

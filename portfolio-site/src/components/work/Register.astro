@@ -1,0 +1,69 @@
+---
+/**
+ * The work index — one ruled row per work.
+ *
+ * This is the shape that survives 0 → 20 entries without becoming a card grid,
+ * which is the property the art direction is protecting. The row carries the
+ * product type and the language, not a claim: an index that only carries
+ * claims does not say what the works are.
+ *
+ * Rows link to the permalink, never to `#w-<slug>`: the entry sections are on
+ * the homepage, so an in-page fragment from here resolves to nothing.
+ *
+ * Empty slots are numbered from the end of the register rather than fixed, so
+ * a full index shows none of them instead of claiming "04 — 未登録" underneath
+ * its twentieth row.
+ */
+import { pad2, workHref } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  works: readonly Work[];
+}
+
+const { works } = Astro.props;
+
+const slots: number[] = [];
+for (let n = works.length + 1; n <= site.registerMinSlots; n += 1) slots.push(n);
+---
+
+<div class="reg">
+  {
+    works.map((w, i) => (
+      <a class="r" href={workHref(w.slug, false)} data-w={w.slug}>
+        <span class="no"><span class="sq" />{pad2(i + 1)}</span>
+        <span>
+          <h3 aria-level="2">{w.title}</h3>
+          <p class="ty">{w.productType}</p>
+          <p class="cl">{w.purpose}</p>
+          <span class="meta">
+            <span class="st">{w.languages.join(' · ')}</span>
+            <span class="st pass">{w.tests.summary}</span>
+            <span class="st hold">{w.visual.entryVariant}</span>
+          </span>
+        </span>
+        <span class="thumb">
+          <span class="crop" style="display:block;height:150px">
+            <img
+              src={w.image.src}
+              width={w.image.width}
+              height={w.image.height}
+              alt={w.title}
+              loading="lazy"
+            />
+          </span>
+        </span>
+      </a>
+    ))
+  }
+  {
+    slots.map((n) => (
+      <div class="empty">
+        {fill(ui.register.emptySlot, { index: pad2(n) })}
+        {n === works.length + 1 && ui.register.emptySlotHint}
+      </div>
+    ))
+  }
+</div>

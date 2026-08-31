@@ -1,0 +1,57 @@
+---
+/**
+ * One work, in its declared L2 layout variant.
+ *
+ * The closed set is defined by what can actually be drawn: ENTRY_RENDERERS is
+ * the source of truth (art-direction §12), and this map IS that set. A variant
+ * name with no renderer cannot be added here by accident — and if content
+ * declares one anyway, this refuses rather than falling through to a default
+ * layout, because silently drawing the wrong shape is how a closed set stops
+ * being a guarantee.
+ *
+ * The build already rejects it earlier, at the variant gate. This is the second
+ * line, at the point of use.
+ */
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { pad2 } from '../../lib/content/derive.ts';
+import VSplit from './VSplit.astro';
+import VStage from './VStage.astro';
+import VTerminal from './VTerminal.astro';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+  /** Zero-based position in the running order. */
+  position: number;
+}
+
+const { work, evidence, position } = Astro.props;
+
+const ENTRY_RENDERERS = {
+  'v-stage': VStage,
+  'v-split': VSplit,
+  'v-terminal': VTerminal,
+} as const;
+
+const variant = work.visual.entryVariant;
+const Renderer = ENTRY_RENDERERS[variant as keyof typeof ENTRY_RENDERERS];
+if (!Renderer) {
+  throw new Error(
+    `[E-UNKNOWN] ${work.slug} の entry variant ${variant} には renderer が無い。` +
+      `実装済みの変種は ${Object.keys(ENTRY_RENDERERS).join(' / ')}。`,
+  );
+}
+
+// The rail names the work, the variant it took, and its pigment — the machine
+// side of the gate rule reporting what the human side is showing.
+const signalName = work.visual.signal.split(' ')[0] ?? work.visual.signal;
+const railLabels = [work.title, variant, signalName];
+---
+
+<Renderer
+  work={work}
+  evidence={evidence}
+  index={pad2(position + 1)}
+  railLabels={railLabels}
+  eager={position === 0}
+/>

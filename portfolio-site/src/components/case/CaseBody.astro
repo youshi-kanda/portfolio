@@ -1,0 +1,206 @@
+---
+/**
+ * CS-2 … CS-16, identical in every case variant.
+ *
+ * This is the half of §8's rule that keeps the three variants from becoming
+ * three templates: the variant decides how the *spine* is drawn, and everything
+ * after it is the same component reading the same schema. Three works reading
+ * as one structure is the point — what differs between them is what is true of
+ * them, not how many section kinds they were given.
+ *
+ * Facts that live on the work record (problem, scope, tests, limitations) are
+ * read from there rather than copied into the Case Study, so there is exactly
+ * one place each of them can be wrong.
+ */
+import type { CaseStudy, Evidence, Work } from '../../lib/content/schema.ts';
+import { caseSections, pad2, technicalHref } from '../../lib/content/derive.ts';
+import { ui } from '../../lib/content/ui.ts';
+import EvidenceComponent from '../evidence/Evidence.astro';
+import CaseSection from './CaseSection.astro';
+
+interface Props {
+  work: Work;
+  caseStudy: CaseStudy;
+  evidence: readonly Evidence[];
+}
+
+const { work, caseStudy: c, evidence } = Astro.props;
+const S = ui.caseStudy.sections;
+const L = ui.caseStudy;
+const byId = new Map(evidence.map((e) => [e.id, e]));
+
+// The single source for which sections exist. `has('cs9')` and the table of
+// contents on the page both read this list, so neither can offer a section the
+// other dropped.
+const shown = new Set(caseSections(work, c).map((s) => s.id));
+const has = (id: string): boolean => shown.has(id);
+
+/** Evidence cited by a highlight, in citation order, skipping anything absent. */
+const cited = (ids: readonly string[]): Evidence[] =>
+  ids.flatMap((id) => {
+    const e = byId.get(id);
+    return e ? [e] : [];
+  });
+---
+
+<CaseSection index="CS-2" title={S.problem} id="cs2" when={has('cs2')}>
+  <ol class="num">{work.problem.map((t) => <li>{t}</li>)}</ol>
+</CaseSection>
+
+<CaseSection index="CS-3" title={S.currentPractice} id="cs3" when={has('cs3')}>
+  <p class="lede m0">{c.currentPractice}</p>
+</CaseSection>
+
+<CaseSection index="CS-4" title={S.requirements} id="cs4" when={has('cs4')}>
+  <h4 aria-level="3">{L.requirementsFunctional}</h4>
+  <ul class="dash">{c.requirements.functional.map((t) => <li>{t}</li>)}</ul>
+  <h4 aria-level="3" style="margin-top:30px">{L.requirementsConstraints}</h4>
+  <ul class="dash">{c.requirements.constraints.map((t) => <li>{t}</li>)}</ul>
+</CaseSection>
+
+<CaseSection index="CS-5" title={S.built} id="cs5" when={has('cs5')}>
+  <div class="lgr">
+    {
+      c.built.map((b, i) => (
+        <div class="lrow">
+          <span class="k">{pad2(i + 1)}</span>
+          <span class="t">{b.name}</span>
+          <span class="v">{b.what}</span>
+        </div>
+      ))
+    }
+  </div>
+</CaseSection>
+
+{/* CS-6 — every decision carries the option that was rejected. */}
+<CaseSection index="CS-6" title={S.decisions} id="cs6" when={has('cs6')}>
+  <div class="dec">
+    <ul>
+      {
+        c.decisions.map((d) => (
+          <li>
+            <h5 aria-level="3">{d.title}</h5>
+            <p class="note">{d.context}</p>
+            <p class="note">{d.decision}</p>
+            <p class="note"><b>{L.rejected}</b> — {d.reason}</p>
+            {d.tradeoff && <p class="note"><b>{L.tradeoff}</b> — {d.tradeoff}</p>}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</CaseSection>
+
+{/* CS-7 — each claim next to the screen it can be checked against. */}
+<CaseSection index="CS-7" title={S.highlights} id="cs7" when={has('cs7')}>
+  {
+    c.highlights.map((h) => (
+      <div style="margin-bottom:44px">
+        <h5 aria-level="3">{h.claim}</h5>
+        <p class="note">{h.detail}</p>
+        {cited(h.evidenceRefs).map((e) => (
+          <div style="margin-top:24px">
+            <EvidenceComponent evidence={e} frame={work.visual.frame} headingLevel={4} />
+          </div>
+        ))}
+      </div>
+    ))
+  }
+</CaseSection>
+
+<CaseSection index="CS-8" title={S.role} id="cs8" when={has('cs8')}>
+  <p class="lede m0">{c.role}</p>
+</CaseSection>
+
+<CaseSection index="CS-9" title={S.quality} id="cs9" when={has('cs9')}>
+  <ul class="dash">{c.quality.map((t) => <li>{t}</li>)}</ul>
+  <p class="meta" style="margin-top:22px">
+    <span class="st pass">{work.tests.summary}</span>
+    <span class="st hold">{work.tests.source}</span>
+  </p>
+</CaseSection>
+
+<CaseSection index="CS-10" title={S.safety} id="cs10" when={has('cs10')}>
+  <div class="lgr">
+    {
+      c.safety.map((s, i) => (
+        <div class="lrow">
+          <span class="k">{pad2(i + 1)}</span>
+          <span class="t">{s.name}</span>
+          <span class="v">{s.what}</span>
+        </div>
+      ))
+    }
+  </div>
+</CaseSection>
+
+<CaseSection index="CS-11" title={S.delivery} id="cs11" when={has('cs11')}>
+  <div class="tw">
+    <table>
+      <thead><tr>{L.deliveryHeaders.map((h) => <th>{h}</th>)}</tr></thead>
+      <tbody>
+        {c.delivery.map((d) => <tr><th>{d.key}</th><td>{d.value}</td></tr>)}
+      </tbody>
+    </table>
+  </div>
+</CaseSection>
+
+{/* CS-12 — the boundary, with its reason in the same row. */}
+<CaseSection index="CS-12" title={S.scope} id="cs12" when={has('cs12')}>
+  <div class="tw">
+    <table>
+      <thead><tr>{L.scopeHeaders.map((h) => <th>{h}</th>)}</tr></thead>
+      <tbody>
+        {
+          c.scope.map((s) => (
+            <tr>
+              <th>{s.implemented}</th>
+              <td>{s.notIncluded}</td>
+              <td>{s.why}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</CaseSection>
+
+{/* CS-13 — every number with the command that produced it. */}
+<CaseSection index="CS-13" title={S.scale} id="cs13" when={has('cs13')}>
+  <div class="tw">
+    <table>
+      <thead><tr>{L.scaleHeaders.map((h) => <th>{h}</th>)}</tr></thead>
+      <tbody>
+        {
+          c.scale.map((s) => (
+            <tr><th>{s.item}</th><td><b>{s.value}</b></td><td>{s.method}</td></tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</CaseSection>
+
+<CaseSection index="CS-14" title={S.capabilities} id="cs14" when={has('cs14')}>
+  <p class="note">{c.capabilitiesNote}</p>
+  <ul class="dash">{c.capabilities.map((t) => <li>{t}</li>)}</ul>
+</CaseSection>
+
+{/* CS-15 — the Technical page is a route, not a collapsible on this one. */}
+<CaseSection index="CS-15" title={S.technical} id="cs15" when={has('cs15')}>
+  <p>
+    <a class="lk" href={technicalHref(work.slug)}>
+      {L.technicalCta}<span class="ar">→</span>
+    </a>
+  </p>
+</CaseSection>
+
+<CaseSection index="CS-16" title={S.repository} id="cs16" when={has('cs16')}>
+  <ul class="dash">
+    {
+      c.repository.map((r) => (
+        <li><a class="lk" href={r.href}>{r.label}<span class="ar">→</span></a></li>
+      ))
+    }
+  </ul>
+</CaseSection>
