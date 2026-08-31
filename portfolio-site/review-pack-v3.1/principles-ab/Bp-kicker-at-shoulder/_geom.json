@@ -1,0 +1,26 @@
+{
+ "docH": 18241,
+ "rowHeights": [
+  197,
+  153,
+  153,
+  197,
+  153,
+  197,
+  153,
+  153
+ ],
+ "stops": {
+  "2 first-open-group": 14030
+ },
+ "index": {
+  "font": "11px",
+  "left": "0px",
+  "colorOnOpenRow": "rgb(138, 142, 147)"
+ },
+ "shoulder": "96px",
+ "decision": {
+  "size": "19px",
+  "family": "\"Source Serif 4\""
+ }
+}

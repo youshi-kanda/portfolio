@@ -1,0 +1,21 @@
+{
+ "navH": 75,
+ "docH": 18081,
+ "stops": {
+  "A stack-top": 11869,
+  "B stack-languages": 12261,
+  "C stack-seam": 12539,
+  "D stack-platform": 12811
+ },
+ "geom": {
+  "ax": "226px",
+  "ax2": "176px",
+  "langAxisX": 554,
+  "platAxisX": 504,
+  "srowSize": "1px 100%, calc(100% - 226px) 1px",
+  "trSize": "1px 100%",
+  "thW": "184px",
+  "mxIn": true,
+  "delta": 50
+ }
+}

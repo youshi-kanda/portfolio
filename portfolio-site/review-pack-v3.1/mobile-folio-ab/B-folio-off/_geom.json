@@ -1,0 +1,35 @@
+{
+ "docH": 24409,
+ "folio": {
+  "stack": {
+   "content": "none",
+   "fontSize": "96px",
+   "color": "color(srgb 0.0823529 0.0901961 0.101961 / 0.05)",
+   "top": "46px"
+  },
+  "principles": {
+   "content": "none",
+   "fontSize": "96px",
+   "color": "color(srgb 0.0823529 0.0901961 0.101961 / 0.05)",
+   "top": "46px"
+  },
+  "evidence": {
+   "content": "none",
+   "fontSize": "96px",
+   "color": "color(srgb 0.0823529 0.0901961 0.101961 / 0.05)",
+   "top": "46px"
+  },
+  "about": {
+   "content": "none",
+   "fontSize": "96px",
+   "color": "color(srgb 0.0823529 0.0901961 0.101961 / 0.05)",
+   "top": "46px"
+  }
+ },
+ "stops": {
+  "03 stack": 16551,
+  "04 principles": 18759,
+  "05 evidence": 21386,
+  "06 about": 22946
+ }
+}

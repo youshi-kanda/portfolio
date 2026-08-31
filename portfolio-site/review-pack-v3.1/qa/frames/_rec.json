@@ -1,0 +1,254 @@
+{
+ "desktop": {
+  "d01 hero-top": 0,
+  "d02 hero-transition-a": 281,
+  "d03 hero-transition-b": 545,
+  "d04 work-register": 1183,
+  "d05 crm-sticky": 1978,
+  "d06 how-i-build": 9694,
+  "d07 stack-top": 11869,
+  "d08 principles": 13290,
+  "d09 evidence": 15252,
+  "d10 evidence-fig": 15740,
+  "d11 about": 16562,
+  "d12 foot": 17181
+ },
+ "mobile": {
+  "m01 hero": 0,
+  "m02 work": 1677,
+  "m03 build": 14115,
+  "m04 stack": 16551,
+  "m05 principles": 18759,
+  "m06 evidence": 21386,
+  "m07 about": 22946
+ },
+ "routes": {
+  "r1 work-index": {
+   "docH": 3301,
+   "title": "WORK INDEX — 3 件。同じ規則で 20 件まで伸びる。"
+  },
+  "r2 crm": {
+   "docH": 12537,
+   "title": "AI CRM Demo — 小規模店舗向け 顧客・販促管理システム（CRM）"
+  },
+  "r3 crm-technical": {
+   "docH": 7898,
+   "title": "AI CRM Demo — Architecture"
+  },
+  "r4 ppm": {
+   "docH": 12131,
+   "title": "Project Progress Manager — Google スプレッドシートを正本とする プロジェクト進捗管理アドオン"
+  },
+  "r5 ppm-technical": {
+   "docH": 7416,
+   "title": "Project Progress Manager — Architecture"
+  },
+  "r6 dfe": {
+   "docH": 11905,
+   "title": "Document Field Extraction Demo — 帳票の OCR 後処理パイプライン（CLI）"
+  },
+  "r7 dfe-technical": {
+   "docH": 7545,
+   "title": "Document Field Extraction Demo — Architecture"
+  },
+  "r8 404": {
+   "docH": 1541,
+   "title": "404 — ページが見つかりません。"
+  }
+ },
+ "fallback": {
+  "f1 reduced": {
+   "html": "",
+   "sectionsIn": "stack:false principles:false evidence:false about:false",
+   "evidenceImg": {
+    "nat": "1100x1276",
+    "box": "937x560",
+    "x": 116,
+    "filter": "none",
+    "transform": "none",
+    "opacity": "1",
+    "blend": "normal",
+    "clip": "none"
+   },
+   "evCrop": 937,
+   "evBlock": "72+1025",
+   "evidenceZ": "4",
+   "evZ": "4",
+   "stageZ": "auto",
+   "evidenceIsolation": "isolate",
+   "ruleOverImg": "no-overlap",
+   "stack": {
+    "ax": "226px",
+    "ax2": "",
+    "srowPos": "226px 0px, 226px 100%",
+    "srowSize": "1px 100%, calc(100% - 226px) 1px",
+    "trPos": "226px 0px",
+    "trSize": "1px 100%",
+    "thW": "184px",
+    "readout": "sticky",
+    "head": "none"
+   },
+   "principles": {
+    "padLeft": "96px",
+    "idx": "34px",
+    "idxOpen": "rgb(20, 101, 74)"
+   },
+   "about": {
+    "cols": "1025px"
+   },
+   "folio": "stack:\"03\" / \"\"@223.2px/92px principles:\"04\" / \"\"@223.2px/92px evidence:\"05\" / \"\"@223.2px/92px about:\"06\" / \"\"@223.2px/92px"
+  },
+  "f2 nojs": {
+   "html": "",
+   "sectionsIn": "stack:false principles:false evidence:false about:false",
+   "evidenceImg": {
+    "nat": "1100x1276",
+    "box": "937x560",
+    "x": 116,
+    "filter": "none",
+    "transform": "none",
+    "opacity": "1",
+    "blend": "normal",
+    "clip": "none"
+   },
+   "evCrop": 937,
+   "evBlock": "72+1025",
+   "evidenceZ": "4",
+   "evZ": "4",
+   "stageZ": "3",
+   "evidenceIsolation": "isolate",
+   "ruleOverImg": "top-element=IMG",
+   "stack": {
+    "ax": "226px",
+    "ax2": "",
+    "srowPos": "226px 0px, 226px 100%",
+    "srowSize": "1px 100%, calc(100% - 226px) 1px",
+    "trPos": "226px 0px",
+    "trSize": "1px 100%",
+    "thW": "184px",
+    "readout": "sticky",
+    "head": "none"
+   },
+   "principles": {
+    "padLeft": "96px",
+    "idx": "34px",
+    "idxOpen": "rgb(20, 101, 74)"
+   },
+   "about": {
+    "cols": "1025px"
+   },
+   "folio": "stack:\"03\" / \"\"@223.2px/92px principles:\"04\" / \"\"@223.2px/92px evidence:\"05\" / \"\"@223.2px/92px about:\"06\" / \"\"@223.2px/92px"
+  }
+ },
+ "runtime": {
+  "tick": [
+   {
+    "y": 0,
+    "p": "6%",
+    "docH": 18081
+   },
+   {
+    "y": 6000,
+    "p": "6%",
+    "docH": 18081
+   },
+   {
+    "y": 12000,
+    "p": "6%",
+    "docH": 18081
+   },
+   {
+    "y": 17181,
+    "p": "6%",
+    "docH": 18081
+   }
+  ],
+  "normal": {
+   "html": "mx",
+   "sectionsIn": "stack:true principles:true evidence:true about:true",
+   "evidenceImg": {
+    "nat": "1100x1276",
+    "box": "937x560",
+    "x": 116,
+    "filter": "none",
+    "transform": "none",
+    "opacity": "1",
+    "blend": "normal",
+    "clip": "none"
+   },
+   "evCrop": 937,
+   "evBlock": "72+1025",
+   "evidenceZ": "4",
+   "evZ": "4",
+   "stageZ": "3",
+   "evidenceIsolation": "isolate",
+   "ruleOverImg": "top-element=IMG",
+   "stack": {
+    "ax": "226px",
+    "ax2": "",
+    "srowPos": "226px 0px, 226px 100%",
+    "srowSize": "1px 100%, calc(100% - 226px) 1px",
+    "trPos": "226px 0px",
+    "trSize": "1px 100%",
+    "thW": "184px",
+    "readout": "sticky",
+    "head": "matrix(1, 0, 0, 1, 0, 0)"
+   },
+   "principles": {
+    "padLeft": "96px",
+    "idx": "34px",
+    "idxOpen": "rgb(20, 101, 74)"
+   },
+   "about": {
+    "cols": "1025px"
+   },
+   "folio": "stack:\"03\" / \"\"@223.2px/92px principles:\"04\" / \"\"@223.2px/92px evidence:\"05\" / \"\"@223.2px/92px about:\"06\" / \"\"@223.2px/92px"
+  }
+ },
+ "geom": {
+  "desktop": {
+   "navH": 75,
+   "docH": 18081,
+   "max": 17181,
+   "work": {
+    "y": 1278,
+    "h": 404
+   },
+   "build": {
+    "y": 9789,
+    "h": 2176
+   },
+   "stack": {
+    "y": 11964,
+    "h": 1420
+   },
+   "principles": {
+    "y": 13385,
+    "h": 1962
+   },
+   "evidence": {
+    "y": 15347,
+    "h": 1311
+   },
+   "about": {
+    "y": 16657,
+    "h": 783
+   },
+   "foot": {
+    "y": 17641,
+    "h": 441
+   }
+  },
+  "mobile": {
+   "navH": 59,
+   "docH": 24409,
+   "max": 23565,
+   "work": 1748,
+   "build": 14186,
+   "stack": 16622,
+   "principles": 18830,
+   "evidence": 21457,
+   "about": 23017
+  }
+ }
+}

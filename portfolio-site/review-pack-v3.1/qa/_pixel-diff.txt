@@ -1,0 +1,80 @@
+PIXEL REGRESSION
+same Chrome, same emulated viewport, same derived scroll stops, dSF 1
+threshold: any channel delta > 2
+
+PASS 1 — pre-edit V3  vs  §1 axis unification (this state was REJECTED)
+-----------------------------------------------------------------------
+kept as the record of what unifying the axis actually moved.
+
+  d01 hero-top                 IDENTICAL
+  d02 hero-transition-a        IDENTICAL
+  d03 hero-transition-b        IDENTICAL
+  d04 work-register            IDENTICAL
+  d05 crm-sticky               IDENTICAL
+  d06 how-i-build              IDENTICAL
+  d07 stack-top                IDENTICAL
+  d08 principles               IDENTICAL
+  d09 evidence                 IDENTICAL
+  d10 evidence-fig             IDENTICAL
+  d11 about                    IDENTICAL
+  d12 foot                     IDENTICAL
+  f1 reduced evidence          IDENTICAL
+  f1 reduced stack             674 px (0.0520%)  x-columns=[504, 554]  y=534..875
+  f2 nojs evidence             IDENTICAL
+  f2 nojs stack                IDENTICAL
+  m01 hero                     IDENTICAL
+  m02 work                     IDENTICAL
+  m03 build                    IDENTICAL
+  m04 stack                    IDENTICAL
+  m05 principles               IDENTICAL
+  m06 evidence                 IDENTICAL
+  m07 about                    IDENTICAL
+  r1 work-index                IDENTICAL
+  r2 crm                       IDENTICAL
+  r3 crm-technical             IDENTICAL
+  r4 ppm                       IDENTICAL
+  r5 ppm-technical             IDENTICAL
+  r6 dfe                       IDENTICAL
+  r7 dfe-technical             IDENTICAL
+  r8 404                       IDENTICAL
+
+  frames compared: 31   frames with any difference: 1
+
+PASS 2 — pre-edit V3  vs  FINAL (axis reverted, comments corrected)
+-------------------------------------------------------------------
+this is the shipped state. Expect every frame IDENTICAL: the revert put
+
+  d01 hero-top                 IDENTICAL
+  d02 hero-transition-a        IDENTICAL
+  d03 hero-transition-b        IDENTICAL
+  d04 work-register            IDENTICAL
+  d05 crm-sticky               IDENTICAL
+  d06 how-i-build              IDENTICAL
+  d07 stack-top                IDENTICAL
+  d08 principles               IDENTICAL
+  d09 evidence                 IDENTICAL
+  d10 evidence-fig             IDENTICAL
+  d11 about                    IDENTICAL
+  d12 foot                     IDENTICAL
+  f1 reduced evidence          IDENTICAL
+  f1 reduced stack             IDENTICAL
+  f2 nojs evidence             IDENTICAL
+  f2 nojs stack                IDENTICAL
+  m01 hero                     IDENTICAL
+  m02 work                     IDENTICAL
+  m03 build                    IDENTICAL
+  m04 stack                    IDENTICAL
+  m05 principles               IDENTICAL
+  m06 evidence                 IDENTICAL
+  m07 about                    IDENTICAL
+  r1 work-index                IDENTICAL
+  r2 crm                       IDENTICAL
+  r3 crm-technical             IDENTICAL
+  r4 ppm                       IDENTICAL
+  r5 ppm-technical             IDENTICAL
+  r6 dfe                       IDENTICAL
+  r7 dfe-technical             IDENTICAL
+  r8 404                       IDENTICAL
+
+  frames compared: 31   frames with any difference: 0
+
