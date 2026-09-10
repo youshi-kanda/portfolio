@@ -1,0 +1,26 @@
+---
+/**
+ * The chips under a work entry: what was verified, where the number is read,
+ * and where the source is.
+ *
+ * Each chip is rendered only when the work has that fact. A work whose source
+ * is private has no path to print, and a chip printing nothing would read as
+ * an empty claim rather than as a fact this work does not make.
+ */
+import { workRepoPath, workVerification } from '../../lib/content/compat.ts';
+import type { Work } from '../../lib/content/schema.ts';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+const tests = workVerification(work);
+const repoPath = workRepoPath(work);
+---
+
+<div class="meta">
+  {tests && <span class="st pass">{tests.summary}</span>}
+  {tests && <span class="st hold">{tests.source}</span>}
+  {repoPath && <span class="st">{repoPath}</span>}
+</div>

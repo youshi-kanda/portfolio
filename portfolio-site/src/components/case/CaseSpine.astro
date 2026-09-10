@@ -1,0 +1,43 @@
+---
+/**
+ * The case variant, dispatched.
+ *
+ * CASE_RENDERERS is the closed set, exactly as ENTRY_RENDERERS is for entries
+ * (art-direction §12). `comparison` is in the schema's enum because the art
+ * direction names four variants, but no work declares it and it has no renderer
+ * — so it is absent here, and declaring it fails loudly rather than falling
+ * through to whichever layout happens to be first.
+ *
+ * Falling back to a default would be the quiet version of the same bug the
+ * variant gate exists to catch: a work drawn in a shape it did not declare.
+ */
+import type { CaseStudy, Work } from '../../lib/content/schema.ts';
+import { workVisual } from '../../lib/content/derive.ts';
+import SpineLedger from './SpineLedger.astro';
+import SpinePipeline from './SpinePipeline.astro';
+import SpineWalkthrough from './SpineWalkthrough.astro';
+
+interface Props {
+  work: Work;
+  caseStudy: CaseStudy;
+}
+
+const { work, caseStudy } = Astro.props;
+
+export const CASE_RENDERERS = {
+  walkthrough: SpineWalkthrough,
+  ledger: SpineLedger,
+  pipeline: SpinePipeline,
+} as const;
+
+const variant = workVisual(work).caseVariant;
+const Renderer = CASE_RENDERERS[variant as keyof typeof CASE_RENDERERS];
+if (!Renderer) {
+  throw new Error(
+    `[E-UNKNOWN-CASE] ${work.slug} の case variant ${variant} には renderer が無い。` +
+      `実装済みの変種は ${Object.keys(CASE_RENDERERS).join(' / ')}。`,
+  );
+}
+---
+
+<Renderer caseStudy={caseStudy} />

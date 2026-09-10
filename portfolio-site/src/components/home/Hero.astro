@@ -1,0 +1,111 @@
+---
+/**
+ * 00 HERO — the first viewport answers what kind of engineer this is and what
+ * they can build, before any claim, any screenshot and any prose.
+ *
+ * Every sentence here is registry copy, looked up by id. The lede and the
+ * third capability row used to be computed from the work list, because both
+ * stated a count; V4 states neither, so there is nothing left to compute and
+ * the approval covers the sentence exactly as it ships.
+ *
+ * The display keeps its authored line cut, and each line is now an element
+ * rather than the text either side of a `<br>`. Two things follow from that.
+ * The cut becomes checkable — `check:structure` counts `data-hero-line` and
+ * holds it at three, where counting `<br>` could not tell an authored cut from
+ * a wrapped one. And each line is a block, so a line that does not fit its
+ * measure is visible as a wrap inside its own box instead of silently
+ * reflowing into the next line's.
+ *
+ * Nothing here forces the fit. `white-space: nowrap` would make the count come
+ * out right while the text ran past the measure, which is the defect and not
+ * the check. The display is sized to its measure instead (base.css).
+ *
+ * Mobile makes the lines inline again and re-flows the same sentence, as it
+ * always has: below 768px the authored cut is not the composition.
+ */
+import { copyText } from '../../lib/content/copy.ts';
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+
+const hero = site.hero;
+const index = sectionNumber('intro');
+
+const role = [await copyText('home.hero.role.01'), await copyText('home.hero.role.02')];
+const display = [
+  await copyText('home.hero.display.01'),
+  await copyText('home.hero.display.02'),
+  await copyText('home.hero.display.03'),
+];
+const lede = await copyText('home.hero.lede');
+/**
+ * Three axes, each a name and the line under it. The three is written out here
+ * the same way the display's three lines are: it is the composition that was
+ * approved, not a list whose length happens to be three, and `check:structure`
+ * holds the rendered rail at three rows so the pair cannot silently become two.
+ */
+const capability = await Promise.all(
+  ['01', '02', '03'].map(async (n) => ({
+    key: await copyText(`home.hero.capability.${n}.key`),
+    value: await copyText(`home.hero.capability.${n}.value`),
+  })),
+);
+---
+
+{/*
+  `data-mx-n` carries the section's own index to the art-direction layer, which
+  draws it as an oversized background graphic (art-direction v2 §3-A). It is the
+  same string the rail already prints in `.ix` — read from `site.hero`, never
+  written twice — so the graphic cannot drift from the rail. It adds no class,
+  no style and no structure, and nothing in the frozen stylesheet selects on it.
+*/}
+<section class="hero" id="top" data-mx-n={index}>
+  {/*
+    THE POSTER'S BACK LAYER (Phase 6). Decorative and `aria-hidden`: it states
+    nothing the page does not already say, and a screen reader that met it would
+    hear furniture.
+
+    Three planes, not one surface:
+
+      back    this element — a large field of `--plate` bleeding off the right,
+              and the column grid the page is set on, drawn faintly enough to
+              be read as texture rather than as rules that mean something.
+      middle  the gate rule (layout.css) and the signal edge below.
+      front   the display, the rail and the lede. Unchanged, and never sat on
+              anything that costs contrast — see below.
+
+    WHY A LOW-CONTRAST PLANE AND NOT A DARK ONE. The display crosses this
+    field: its long lines run past the plate's left edge. On `--plate` (#E3DFD5)
+    against `--paper` (#F4F2ED) the ink text measures 13.9:1 and 15.1:1, so the
+    overlap is free — the composition gains a second value and the sentence
+    loses nothing. A dark plane in the same place would have to stop where the
+    text starts, which is not an overlap, it is two panels side by side.
+  */}
+  <div class="hf" aria-hidden="true"><span class="hf-plate"></span><span class="hf-base"></span></div>
+  <div class="page">
+    <div class="tr">
+      <div class="ins">
+        <span class="ix">{index}</span>
+        {hero.railLabels.map((t) => <span class="lb">{t}</span>)}
+        {/* Explicit, and load-bearing. Below 768px the hero rail becomes an
+            inline formatting context — `.ix` turns inline-block and `.role`
+            inline — so this space sits between the index and the role line and
+            is part of the frozen composition. On desktop both are blocks and it
+            collapses away. */}
+        {' '}<span class="role">{role[0]}<br />{role[1]}</span>
+        <div class="cap3">
+          {capability.map((c) => <span class="cb"><b>{c.key}</b>{c.value}</span>)}
+        </div>
+      </div>
+      <div class="fld">
+        <h1 class="dsp">{display.map((line) => <span data-hero-line>{line}</span>)}</h1>
+      </div>
+    </div>
+    <div class="tr">
+      <div class="ins"></div>
+      <div class="msr">
+        <p class="ans">{hero.stackLine}</p>
+        <p class="lede m0">{lede}</p>
+      </div>
+    </div>
+  </div>
+</section>

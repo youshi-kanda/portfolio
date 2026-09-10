@@ -1,0 +1,127 @@
+{
+  "slug": "ppm",
+  "title": "Project Progress Manager",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 2,
+  "repoPath": "gas-project-management-demo/",
+  "productType": "Google スプレッドシートを正本とする プロジェクト進捗管理アドオン",
+  "targetUser": "プロジェクト関係者（スプレッドシートを既に使っている人）",
+  "problem": [
+    "複数人が同じ表を同時に触ると、途中で失敗した登録が中途半端な行として残る。",
+    "案件・作業・依存関係・判断待ちが別々の表に散り、突き合わせが手作業になる。"
+  ],
+  "purpose": "スプレッドシートそのものを正本（source of truth）とし、Project / Work Item / Decision / Dependency の登録・集計・履歴をサーバーレスで完結させる。",
+  "implementationScope": [
+    "Project 管理（目的・期限・優先順位・健全度）",
+    "Work Item / Task 管理（6 種別・親子構造）",
+    "Decision / Blocker 管理",
+    "Relation / Dependency（depends_on · blocks）",
+    "Sidebar 一括登録",
+    "Dashboard 集計",
+    "Activity 履歴（追記のみ）",
+    "onEdit 更新（許可リスト列）",
+    "ID 採番（再利用しない）"
+  ],
+  "publicDemoScope": [
+    "実運用中のスプレッドシートとは接続していない",
+    "投入されるデータはすべて架空（Project 3 / Work Item 14 / Relation 10 / Decision 5）",
+    "実 Script ID・API トークンは含まない",
+    "外部イシュートラッカー連携は無い。UrlFetchApp を 1 行も持たないことをテストで担保"
+  ],
+  "limitations": [
+    "循環依存の検出は同一送信の中まで。既存行と新規分が組み合わさって生じる循環は対象外。",
+    "見出しのリネームと必要列の削除では壊れる。",
+    "03_ボード / 04_ロードマップ / 06_AI提案 は案内行のみのスタブで未実装。"
+  ],
+  "originalProductScope": [
+    "非公開の元プロダクトは宣言していない。このリポジトリ自体がデモの本体。",
+    "未実装として明示しているのは 03_ボード / 04_ロードマップ / 06_AI提案 の 3 スタブ。"
+  ],
+  "languages": [
+    "JavaScript（Google Apps Script V8）"
+  ],
+  "frameworks": [
+    "Google Sheets",
+    "HTML Service（Sidebar UI）",
+    "LockService"
+  ],
+  "platform": [
+    "Google Apps Script ランタイム",
+    "GitHub Actions",
+    "node:test（Fake + vm sandbox）"
+  ],
+  "keyDecision": [
+    {
+      "decision": "壊れる書き込みを、書き込む前に拒否する。",
+      "rationale": "submissionId + payload ハッシュで再送を無害化し、途中失敗時は書いた行を逆順に削除、同一送信に含まれる循環は DFS で検出して書き込み前に拒否します。"
+    },
+    {
+      "decision": "列番号を埋め込まず、見出し名で列を解決する。",
+      "rationale": "既存の見出しを保った列の追加・並べ替えでは列ずれが起きません（見出しのリネームと必要列の削除は対象外。見出し行がスキーマそのものです）。"
+    }
+  ],
+  "tests": {
+    "summary": "77 passed / 0 failed",
+    "count": 77,
+    "source": "npm test（2026-08-15 / CI run 32023326469）"
+  },
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "path": "gas-project-management-demo/"
+    },
+    "demoScope": [
+      "実運用中のスプレッドシートとは接続していない",
+      "投入されるデータはすべて架空（Project 3 / Work Item 14 / Relation 10 / Decision 5）",
+      "実 Script ID・API トークンは含まない",
+      "外部イシュートラッカー連携は無い。UrlFetchApp を 1 行も持たないことをテストで担保"
+    ],
+    "verification": {
+      "tests": {
+        "summary": "77 passed / 0 failed",
+        "count": 77,
+        "source": "npm test（2026-08-15 / CI run 32023326469）"
+      },
+      "verificationId": null
+    }
+  },
+  "evidence": [
+    "PPM-V02"
+  ],
+  "caseStudyPublished": true,
+  "image": {
+    "src": "/img/ppmDash.webp",
+    "width": 1000,
+    "height": 667,
+    "caption": "案件ごとの状況・期限・注意点を 1 画面で確認。集計はメニュー操作でのみ作り直される。"
+  },
+  "visual": {
+    "entryVariant": "v-split",
+    "caseVariant": "ledger",
+    "signal": "藍 #1F3F7A",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "rule",
+    "displayCut": "2 行"
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "productType — TASK-PORTFOLIO-POSITIONING-V2 ／ gas-project-management-demo/README.md 冒頭",
+      "targetUser — content.py WORKS[ppm].users（spec 由来）",
+      "problem — gas-project-management-demo/README.md「設計面の見どころ」／ spec",
+      "purpose — gas-project-management-demo/README.md 冒頭 + 「主な機能」",
+      "implementationScope — gas-project-management-demo/README.md「主な機能」表",
+      "publicDemoScope — gas-project-management-demo/README.md「このリポジトリについて（重要）」「デモデータについて」",
+      "originalProductScope — 同上 — 元プロダクトの記載が無いことの明示",
+      "languages — gas-project-management-demo/README.md「Technology」",
+      "keyDecision — gas-project-management-demo/README.md「設計面の見どころ」",
+      "limitations — 同上 ／ content.py WORKS[ppm].limit"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

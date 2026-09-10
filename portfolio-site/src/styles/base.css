@@ -1,0 +1,108 @@
+/* Generated from the frozen prototype stylesheet — see
+   portfolio-art-direction.md (ART_DIRECTION = HELD).
+   Rule bodies are re-emitted verbatim from
+   portfolio-planning/scratchpad/visual-prototype/art-direction/
+   {adcss.CSS, adrender.EXTRA, adrender2.EXTRA2}.
+   Do not restyle here: a visual change needs the freeze re-opened. */
+
+.ad *{box-sizing:border-box}
+.ad img{display:block;max-width:100%}
+.ad a{color:inherit;text-decoration:none}
+.ad ::selection{background:var(--sig-bg)}
+.ad table{border-collapse:collapse;width:100%;color:inherit}
+/* ================================================= 3. TYPOGRAPHY HIERARCHY
+   Four faces, and a rule for each. Mincho argues, mono instruments,
+   sans labels the interface, and nothing else is allowed a face. */
+/* V4 — the display is sized to its measure, not to a number per breakpoint.
+   The freeze is re-opened here on purpose (Phase 4): V4's hero copy makes the
+   longest authored line 1771px per 100px of type, where V3's was 899px, so no
+   fixed size can hold the three-line cut. Worse, a fixed size cannot hold it at
+   ONE breakpoint either — `.page` grows to its 1440px cap, so between 1280 and
+   1440 the field runs 880px → 1040px and any single value is too large at the
+   bottom of that range or too small at the top.
+
+   5.55cqi is that ratio with a margin: the line fills 98% of the field at every
+   width from 768 up, so it fits and nothing is left over. The 58px cap is the
+   value at the widest field and is what keeps this a size rather than a
+   scaling rule. Below 768 responsive.css takes over at a fixed 40px and the
+   lines re-flow, which is the composition there.
+
+   V5 — 58px was the largest size at which the LONGEST authored line still fit
+   on one visual line, and that constraint was costing the first viewport its
+   only chance at a visual anchor. Measured at 1440 (ART-DIRECTION-REVIEW.md
+   §8): peak ink coverage 18.8%, three consecutive 50px bands at 0.0%, nothing
+   on the screen carrying any weight. The size was being set by the longest
+   sentence rather than by the composition.
+
+   So the one-line rule is dropped and the size is set by the stage instead.
+   The three authored lines are still three elements and still break where they
+   were written to break; what changed is that a line longer than the measure is
+   now allowed to take two. Derivation, from the three lines measured at 100px
+   in the shipped face (914 / 1803 / 1387px against a 1040px field at 1440):
+
+     58px  → 3 visual lines, block 197px = 25% of the 783px stage
+     90px  → 5 visual lines, block 472px = 60% of the stage
+             ink coverage of the first viewport 3.76% → 7.83%, and the three
+             empty bands fall to one
+
+   8.65cqi is 90px at the 1040px field and follows it down — 86px at 1024, 61px
+   at 768 — so the block keeps its proportion of the stage rather than its
+   pixel size. The 90px cap is the value at the widest field, which keeps this a
+   size and not a scaling rule, exactly as the 58px cap did. */
+.ad .dsp{font-size:min(90px, 8.65cqi);line-height:1.05;font-weight:600;letter-spacing:-.035em;
+         margin:0 0 26px;text-wrap:balance}
+/* One authored line, one block. A line too long for the measure then wraps
+   inside its own box and is visible as a wrap, rather than reflowing into the
+   next line and leaving the count looking right. */
+.ad .dsp [data-hero-line]{display:block}
+/* Where a line does take two, it has to break where the sentence has a joint.
+   Japanese line-breaking allows a break between any two kanji, so the default
+   put 「画面・API・データ・自 / 動処理へ落とし込み、」 on the page — a break
+   through the middle of 自動処理, which is a word. `keep-all` removes the
+   between-ideograph break opportunity and leaves the ones the punctuation
+   gives, so the same line breaks at the 中黒 instead:
+   「画面・API・データ・ / 自動処理へ落とし込み、」.
+
+   Safe at every width the display is sized by this rule: the longest run
+   between two break opportunities is 「自動処理へ落とし込み、」 at 11 units,
+   which is 990px against the 1040px field at 1440 and stays inside the field at
+   1280, 1024 and 768. Below 768 responsive.css restores `normal`, because there
+   the measure is 350px and no 11-unit run fits — keep-all there would overflow
+   the page rather than break the word.
+
+   `overflow-wrap:anywhere` is the floor under that, and it is not optional.
+   keep-all makes the display fit CONDITIONAL ON THE COPY: it holds while every
+   run between two punctuation marks is short enough for the measure, and the
+   next sentence approved into this slot does not have to honour that. Alone,
+   keep-all answers an over-long run by putting it outside the page — a
+   horizontal scrollbar on the first viewport, which is the worst failure this
+   sheet can produce and one no static check catches. Together the two say what
+   is actually meant: break at the punctuation, and if there is no punctuation
+   that fits, break the word rather than the page. The bad break comes back only
+   in the case where the alternative is a broken layout.
+
+   Found by the BLIND pass (ART-DIRECTION-REVIEW.md §4): the blinded text has no
+   中黒 in it, so the display ran off the right edge and showed what the real
+   copy was hiding. */
+.ad .dsp [data-hero-line]{word-break:keep-all;overflow-wrap:anywhere}
+.ad .dsp-s{font-size:56px;line-height:1.22;font-weight:600;letter-spacing:-.028em;margin:0 0 20px}
+.ad h2{font-size:40px;line-height:1.42;font-weight:600;letter-spacing:-.022em;margin:0 0 14px;
+       text-wrap:balance}
+.ad h3{font-size:24px;line-height:1.62;font-weight:600;letter-spacing:-.012em;margin:0 0 10px}
+.ad .claim{font-size:26px;line-height:1.66;font-weight:600;letter-spacing:-.014em;margin:0 0 16px}
+.ad .ans{font-size:20px;line-height:1.76;font-weight:600;color:var(--sig);margin:0 0 22px}
+.ad p{margin:0 0 20px}
+.ad .lede{font-size:19px;line-height:1.9;color:var(--tx2);margin:0 0 14px}
+.ad .note{font-size:14.5px;line-height:1.8;color:var(--tx2)}
+.ad .m0{margin-bottom:0}
+/* mono = the instrument face. indices, states, evidence IDs, provenance. */
+.ad .mo{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+        color:var(--tx2);line-height:1.7;font-weight:500}
+.ad .mo b{color:var(--tx);font-weight:700}
+.ad .ui{font-family:var(--f-ui);font-size:13px;letter-spacing:.01em;line-height:1.7}
+/* instrument rail entry: index, tick, label */
+.ad .ins .ix{font-family:var(--f-mono);font-size:34px;line-height:1;letter-spacing:-.02em;
+             color:var(--sig);font-weight:500;display:block;margin:0 0 12px}
+.ad .ins .lb{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;
+             color:var(--tx2);display:block;line-height:1.8}
+.ad .ins .lb + .lb{color:var(--tx3)}

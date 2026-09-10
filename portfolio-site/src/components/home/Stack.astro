@@ -1,0 +1,108 @@
+---
+/**
+ * 03 ENGINEERING STACK.
+ *
+ * Technologies are never shown as free-standing logos. One row is
+ * "technology → the responsibility it actually carries → the work that has
+ * that responsibility", because a logo wall says a name and proves nothing.
+ */
+import { copyText } from '../../lib/content/copy.ts';
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import SectionHead from '../layout/SectionHead.astro';
+
+interface Props {
+  /**
+   * Shipping works, for the platform rows that state how many there are.
+   * The count is filled in here rather than typed into site.json: "3 作品" is
+   * true until a fourth work lands, and then only this sentence is stale.
+   */
+  workCount: number;
+  detail?: boolean;
+}
+
+const { detail = false, workCount } = Astro.props;
+const s = site.stack;
+const index = sectionNumber('stack');
+
+const h2 = await copyText('home.stack.h2');
+const lede = await copyText('home.stack.lede');
+const note = await copyText('home.stack.note');
+---
+
+{/* `data-mx-n` — see Hero.astro. The index is `site.stack`'s own. */}
+<section class="s-open" id="stack" data-mx-n={index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={index} labels={s.railLabels} />
+      <div class="msr">
+        <h2>{h2}</h2>
+        <p class="lede m0">{lede}</p>
+      </div>
+    </div>
+
+    {/*
+      `data-mx-row` names the two technology GROUPS for the art-direction
+      layer, exactly as VStage names its figure and body rows. No class, no
+      style, no structural change, and nothing in the frozen stylesheet
+      selects on it — it exists so motion.css can address a group by what it
+      is rather than by :nth-child.
+    */}
+    <div class="tr" style="margin-top:44px" data-mx-row="lang">
+      <div class="ins">
+        <span class="lb">{ui.stack.languagesLabel}</span>
+        <span class="lb">{fill(ui.stack.count, { count: s.languages.length })}</span>
+      </div>
+      <div class="fld">
+        <div class="stk">
+          {
+            s.languages.map((row) => (
+              <div class="srow" data-w={row.work}>
+                <span class="l">{row.language}</span>
+                <span class="rr">
+                  <span class="r"><span class="sq" />{row.responsibility}</span>
+                  <span class="f">{row.frameworks}</span>
+                  {detail && <span class="s">{row.sourceRef}</span>}
+                </span>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="tr" style="margin-top:56px" data-mx-row="platform">
+      <div class="ins"><span class="lb">{ui.stack.platformLabel}</span></div>
+      <div class="fld">
+        <SectionHead label={ui.stack.platformHead} sub={ui.stack.platformSub} />
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th></th>
+                <th>{ui.stack.tableHeaders.detail}</th>
+                <th>{ui.stack.tableHeaders.work}</th>
+                {detail && <th>{ui.stack.tableHeaders.source}</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {
+                s.platform.map((row) => (
+                  <tr>
+                    <th>{row.layer}</th>
+                    <td>{fill(row.detail, { count: workCount })}</td>
+                    <td class="mo">{row.work}</td>
+                    {detail && <td class="note">{row.sourceRef}</td>}
+                  </tr>
+                ))
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="note" style="margin-top:24px">{note}</p>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,168 @@
+/**
+ * Stylesheet entry.
+ *
+ * Cascade order is declared up front so nothing depends on import accidents:
+ *
+ *   theme       Tailwind's token layer, plus the `@theme` block below
+ *   components  the frozen design system (tokens / base / layout / components /
+ *               evidence / responsive), in that order
+ *   utilities   Tailwind utilities, last, so a utility can override a component
+ *
+ * Tailwind's **preflight is deliberately not imported**. Preflight strips the
+ * default margins on h4/h5/ul/dl and resets font sizes; the frozen stylesheet
+ * was authored against the browser defaults and does not restate all of them.
+ * Importing preflight would silently change the frozen composition, which
+ * art-direction §14 does not permit for implementation convenience. The
+ * prototype shipped no reset either, so omitting it is what preserves parity.
+ */
+@layer theme, base, components, motion, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+
+@import './tokens.css' layer(components);
+@import './base.css' layer(components);
+@import './layout.css' layer(components);
+@import './components.css' layer(components);
+@import './evidence.css' layer(components);
+@import './responsive.css' layer(components);
+
+/* The art-direction layer (motion.css) is deliberately NOT imported here, even
+   though `motion` is declared in the layer order above and this is where it
+   would belong. It is imported by BaseLayout as a second stylesheet instead.
+ *
+ * The reason is a build-pipeline defect, not a design choice. Anything reached
+ * from this file is a Tailwind root and is processed by lightningcss, which
+ * folds `animation-timeline` into the `animation` shorthand:
+ *
+ *     animation: mx-travel linear both;            -->  animation: linear both
+ *     animation-timeline: scroll(root block);           mx-travel scroll(root)
+ *
+ * Chrome rejects a timeline inside the shorthand, so the whole declaration is
+ * invalid and EVERY scroll-driven animation silently stops existing in the
+ * production build — verified with `document.getAnimations()`, which returned
+ * zero scroll timelines from a build made this way and fourteen from the same
+ * CSS served unfolded. It also mangles `animation-range: entry 0% cover 16%`
+ * into `entry cover 16%`.
+ *
+ * This is not new to V2: the v1 prototype's position tick and hero exit drift
+ * were dead in every production build for the same reason, which is why the
+ * layer order statement stays here and only the import moved.
+ *
+ * The layer order above is still what orders it: `@layer` order is per
+ * document and is fixed by the first declaration seen, and BaseLayout imports
+ * this file before motion.css. */
+
+/* Tailwind's utility layer, scanning ONLY the files that render.
+ *
+ * Tailwind v4 detects its sources automatically, rooted at the project, and
+ * reads every file git does not ignore. That put `tests/`, `scripts/`,
+ * `src/lib/`, `src/content/` and the review packs inside the presentation
+ * pipeline: any word in any of them that happens to parse as a utility becomes
+ * a CSS rule. It is not hypothetical — the built stylesheet carried
+ * `.\[portfolio\:truth-gate\]`, scraped from the Astro integration's NAME in
+ * src/lib/validation/integration.ts, alongside `collapse`, `isolate` and
+ * `relative` picked out of prose.
+ *
+ * The consequence is a responsibility boundary, not a byte-count curiosity: a
+ * sentence written in a test or a content record changed the generated CSS,
+ * which changed its hash, which changed every emitted page. Content edits and
+ * style edits then arrive as one indistinguishable diff, which is exactly what
+ * Content Migration must be able to tell apart.
+ *
+ * `source(none)` turns the automatic detection off; the three directives below
+ * are the whole render surface. Nothing else may add a rule to this layer,
+ * because nothing else draws anything.
+ *
+ * This removed four rules and added none. All four were dead — none of the
+ * classes appears in any emitted HTML — so every page is byte-identical apart
+ * from the stylesheet's own filename hash, and the CSS outside this layer is
+ * byte-identical too.
+ */
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@source '../components';
+@source '../layouts';
+@source '../pages';
+
+/**
+ * The four widths and the four section densities are the only Layer-1 tokens
+ * exposed to Tailwind. They are the ones that never swap: a block takes one of
+ * four widths and one of four densities at every breakpoint and in every theme.
+ *
+ * The palette is NOT here on purpose. Its whole design is scope-swapping —
+ * `.ad[data-t="dark"]`, `.inv[data-w="crm"]`, the per-work pigment — and
+ * `@theme` emits a single `:root` set, which cannot express that. Re-keying the
+ * palette through Tailwind would mean renaming colour variables across 1,493
+ * verified declarations to gain nothing.
+ */
+@theme {
+  --container-instrument: 200px;
+  --container-measure: 720px;
+  --container-field: 1064px;
+
+  --spacing-open: 168px;
+  --spacing-tight: 88px;
+  --spacing-band: 120px;
+  --spacing-close: 200px;
+}
+
+@layer components {
+  /**
+   * The document shell. The prototype's harness pinned `body{width:1440px}` so
+   * a screen could be captured at a fixed size; that is exactly what must NOT
+   * come across. Production is fluid — the width comes from `.page`'s
+   * max-width and margins, and the breakpoints in responsive.css do the rest.
+   */
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    background: #f4f2ed;
+  }
+
+  /**
+   * Production-only, and required by it: the served <img> carries its intrinsic
+   * width/height so the browser reserves the right box before the bytes arrive
+   * (the prototype inlined base64 and had no layout shift to prevent). With
+   * `width:100%` and an intrinsic `height` attribute the image would be
+   * stretched to that pixel height, so height is released back to the aspect
+   * ratio. The rendered result is identical to the prototype's.
+   *
+   * `.crop img` sets `height:100%` deliberately and is more specific, so the
+   * art-directed crops are unaffected.
+   */
+  .ad img {
+    height: auto;
+  }
+
+  /**
+   * Production-only, and the second rule that is. Not a restyle: for anyone who
+   * has not asked for reduced motion this block never applies, so the frozen
+   * composition is byte-for-byte what it was.
+   *
+   * What it turns off is small but real. The site animates two things and both
+   * are `transform`: the nav underline (`.nav ol a::after`, 0.18s) and the
+   * register row's rule (`.reg .r::after`, 0.22s), each a 1px line sweeping
+   * across on hover via `scaleX`. `prefers-reduced-motion` is a request not to
+   * be shown movement, and a line that travels the width of a row is movement
+   * however thin it is. The end state — underline present — is identical; only
+   * the sweep is dropped, so nothing about the design depends on it.
+   *
+   * The `.zm` opacity fade on the Evidence zoom label is caught by the same
+   * rule. It is not motion and would not have needed gating, but exempting it
+   * would mean stating which fades are permissible, and that is a longer
+   * argument than simply honouring the preference everywhere.
+   *
+   * This is the only animation-related declaration written for production. No
+   * animation was added anywhere (art-direction §14 / IMPLEMENT-03 §14).
+   */
+  @media (prefers-reduced-motion: reduce) {
+    .ad *,
+    .ad *::before,
+    .ad *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

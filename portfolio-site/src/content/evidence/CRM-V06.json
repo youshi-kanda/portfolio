@@ -1,0 +1,30 @@
+{
+  "id": "CRM-V06",
+  "kind": "screenshot",
+  "title": "人による承認を経て承認済みになる",
+  "caption": "人が承認して初めて「承認済み」に変化。配信はデモでは無効で、外部送信は行われない。",
+  "type": "Screenshot（「承認申請する」→「承認する」後の同一画面）",
+  "sourceFile": "assets/ai-crm/publish/06-campaign-approved.png",
+  "dims": "1600×1856",
+  "sha": "dfd7b2e6…",
+  "scale": "等倍 1.000",
+  "status": "PUBLISH READY",
+  "chip": "AI provider: mock / 承認は人が実行",
+  "disclosure": null,
+  "proves": [
+    "承認を経て「下書き」→「承認済み」に変わる",
+    "同じ画面の 2 件目は「下書き」のままで、承認が文案単位の人の操作だと分かる",
+    "画面内に「配信（デモでは無効）」が写っている"
+  ],
+  "notProves": [
+    "配信した証拠ではない。承認後に出る外部配信の文言は将来形で、このリポジトリに配信実装は無い",
+    "AI が承認した証拠ではない（承認は can_approve_contents を持つ人の操作）"
+  ],
+  "image": {
+    "src": "/img/crmApproved.webp",
+    "width": 1100,
+    "height": 1276
+  },
+  "provenanceComplete": true,
+  "diagram": null
+}

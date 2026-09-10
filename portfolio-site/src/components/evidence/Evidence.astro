@@ -1,0 +1,72 @@
+---
+/**
+ * The Evidence component: figure → caption → 2-column ledger → provenance.
+ *
+ * These four parts appear in this order, at this width, at this type size, in
+ * every frame and in every work. Layer-1 (design-freeze §1.7): the art
+ * direction sets what is *around* the figure and never reaches inside.
+ *
+ * `full={false}` renders only figure + caption, which is what a work entry
+ * uses: it claims nothing about provenance, so it needs none.
+ */
+import type { Evidence } from '../../lib/content/schema.ts';
+import EvidenceCaption from './EvidenceCaption.astro';
+import EvidenceFigure from './EvidenceFigure.astro';
+import EvidenceLedger from './EvidenceLedger.astro';
+import EvidenceProvenance from './EvidenceProvenance.astro';
+
+interface Props {
+  evidence: Evidence;
+  frame: string;
+  /** Overrides the record's own caption (a work entry captions its own figure). */
+  caption?: string | null;
+  cropHeight?: number | null;
+  command?: string | null;
+  full?: boolean;
+  eager?: boolean;
+  /** Passed through to the ledger — see its `headingLevel`. */
+  headingLevel?: number;
+}
+
+const {
+  evidence,
+  frame,
+  caption = null,
+  cropHeight = null,
+  command = null,
+  full = true,
+  eager = false,
+  headingLevel = 3,
+} = Astro.props;
+
+const cropped = cropHeight !== null;
+// Provenance is shown only where it is actually established. PPM-V02 / DFE-V01
+// have no PUBLISH-MAP yet (art-direction §13.3).
+const showProvenance = full && evidence.provenanceComplete;
+---
+
+<div class="ev">
+  <EvidenceFigure
+    evidenceId={evidence.id}
+    frame={frame}
+    image={evidence.image}
+    alt={evidence.title}
+    cropHeight={cropHeight}
+    command={command}
+    eager={eager}
+  />
+  <EvidenceCaption
+    evidenceId={evidence.id}
+    title={evidence.title}
+    caption={caption ?? evidence.caption}
+    cropped={cropped}
+  />
+  {full && (
+    <EvidenceLedger
+      proves={evidence.proves}
+      notProves={evidence.notProves}
+      headingLevel={headingLevel}
+    />
+  )}
+  {showProvenance && <EvidenceProvenance evidence={evidence} cropped={cropped} />}
+</div>

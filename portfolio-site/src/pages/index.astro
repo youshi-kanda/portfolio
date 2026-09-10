@@ -1,0 +1,91 @@
+---
+/**
+ * The homepage — V4 Top IA, first prototype.
+ *
+ *   00 INTRO / Editorial Band / 01 WORK (heading, Lead entry, index) /
+ *   02 HOW I BUILD / 03 ABOUT / 04 CONTACT
+ *
+ * THREE SECTIONS LEFT THIS PAGE, and none of them was deleted. 03 ENGINEERING
+ * STACK, 04 ENGINEERING PRINCIPLES and 05 FEATURED EVIDENCE are still
+ * components, still hold their content in `site.json`, and are still under
+ * every gate. What changed is that the homepage no longer renders them: the
+ * Top's job is to say what this engineer builds and show the work, and a
+ * reader who wants the stack table or the decision ledger is a reader who has
+ * already decided to go deeper. Where they land is Phase 5's question, and
+ * keeping the components intact is what leaves that question open.
+ *
+ * The numbers above are not written anywhere. `site.sections` is the running
+ * order and every index is its position in it, so this list going from eight
+ * entries to five renumbered the sections and the nav in one edit.
+ *
+ * DOM ORDER. The Editorial Band sits before the WORK heading, where V3's
+ * triptych sat, and the Lead entry sits directly after it — the art-direction
+ * layer still selects the Lead as `#work + section`. Phase 7 repoints that at
+ * `[data-homepage-role="lead"]`; until it does, this order is load-bearing.
+ */
+import { getCollection } from 'astro:content';
+import About from '../components/home/About.astro';
+import EditorialBand from '../components/home/EditorialBand.astro';
+import Hero from '../components/home/Hero.astro';
+import HowIBuild from '../components/home/HowIBuild.astro';
+import SelectedWork from '../components/home/SelectedWork.astro';
+import EvidenceDialog from '../components/evidence/EvidenceDialog.astro';
+import Footer from '../components/layout/Footer.astro';
+import SyntheticBar from '../components/layout/SyntheticBar.astro';
+import MobileBar from '../components/navigation/MobileBar.astro';
+import MotionStage from '../components/motion/MotionStage.astro';
+import Nav from '../components/navigation/Nav.astro';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { copyText } from '../lib/content/copy.ts';
+import { featuredWorks, shippingWorks } from '../lib/content/derive.ts';
+import { composition } from '../lib/review/lead-candidate.ts';
+import { site } from '../lib/content/site.ts';
+
+/*
+  THE LEAD A/B (Phase 5, ART-DIRECTION-REVIEW.md §9). `composition()` is null in
+  every build that is not a review build, and then these two lines are the two
+  lines that were here before — `shippingWorks()` and `featuredWorks()`, reached
+  by the same expression, returning the same works. The review path cannot write
+  dist/ (astro.config.mjs) and changes nothing under src/content/; it exists so
+  that "which work should lead" can be answered from two photographs instead of
+  from an argument about two records.
+*/
+const all = (await getCollection('work')).map((e) => e.data);
+const review = composition(all);
+const works = review?.works ?? shippingWorks(all);
+const evidence = (await getCollection('evidence')).map((e) => e.data);
+const band = review?.band ?? featuredWorks(works);
+/** The same sentence the hero prints, so the tab and the page do not disagree. */
+const description = await copyText('home.hero.lede');
+---
+
+{/*
+  The homepage title was the handle alone, which is unique but says nothing:
+  in a search result or a browser tab it names the author and not the page.
+  Pairing it with the kicker is the masthead's own composition — Nav renders
+  `{site.handle}<i>{site.kicker}</i>` — so the tab and the top of the page now
+  read the same. Both halves are existing site facts; no copy was authored for
+  the title.
+*/}
+<BaseLayout title={`${site.handle} — ${site.kicker}`} description={description}>
+  <Nav progress={6} hasWorks={works.length > 0} />
+  <SyntheticBar />
+  {/*
+    Motion prototype (feature/motion-experience-v2), scoped to 00 and 01.
+    Placed before <main> on purpose: its inline gate script has to set the
+    reduced-motion flag before the hero is parsed, or the elements that start
+    hidden paint once at full size first.
+  */}
+  <MotionStage />
+  <main>
+    <Hero />
+    <EditorialBand works={band} />
+    <SelectedWork works={works} evidence={evidence} />
+    <HowIBuild />
+    <About />
+    <Footer />
+  </main>
+  <MobileBar />
+  <EvidenceDialog />
+</BaseLayout>

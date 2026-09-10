@@ -1,0 +1,345 @@
+{
+  "handle": "youshi-kanda",
+  "kicker": "業務システム / 業務自動化",
+  "repo": "https://github.com/youshi-kanda/portfolio",
+  "synthetic": {
+    "label": "Synthetic data / Demo",
+    "note": "掲載している画面はすべて合成データです。実顧客・実案件・本番運用の記録ではありません。"
+  },
+  "sections": [
+    {
+      "id": "intro",
+      "anchor": "#top",
+      "label": null,
+      "needsWorks": false
+    },
+    {
+      "id": "work",
+      "anchor": "#work",
+      "label": "WORK",
+      "needsWorks": false
+    },
+    {
+      "id": "build",
+      "anchor": "#build",
+      "label": "HOW I BUILD",
+      "needsWorks": false
+    },
+    {
+      "id": "about",
+      "anchor": "#about",
+      "label": "ABOUT",
+      "needsWorks": false
+    },
+    {
+      "id": "contact",
+      "anchor": "#contact",
+      "label": null,
+      "needsWorks": false
+    }
+  ],
+  "workPermalink": "/work/{id}/",
+  "hero": {
+    "railLabels": [],
+    "stackLine": "Python / Django · TypeScript / React · Google Apps Script · Node.js"
+  },
+  "registerMinSlots": 5,
+  "selectedWork": {
+    "railLabels": [
+      "SELECTED WORK",
+      "Product / Purpose / Implementation"
+    ]
+  },
+  "howIBuild": {
+    "railLabels": [
+      "HOW I BUILD",
+      "AI Development Methodology"
+    ],
+    "title": "Human-Orchestrated / Spec-Driven / Agentic Development",
+    "lede": "AI へ実装を委譲しても、理解まで委譲しない。",
+    "workflow": [
+      {
+        "index": "01",
+        "name": "Requirement",
+        "owner": "Human",
+        "what": "何を作るかを決める",
+        "tag": ""
+      },
+      {
+        "index": "02",
+        "name": "Specification",
+        "owner": "Human",
+        "what": "仕様として書き出す",
+        "tag": ""
+      },
+      {
+        "index": "03",
+        "name": "Planning / Review",
+        "owner": "ChatGPT",
+        "what": "計画を立て、批判する",
+        "tag": "review"
+      },
+      {
+        "index": "04",
+        "name": "Coding Agent",
+        "owner": "Claude Code",
+        "what": "実装する",
+        "tag": ""
+      },
+      {
+        "index": "05",
+        "name": "Tests / CI",
+        "owner": "Claude Code",
+        "what": "テストを書き、CI を回す",
+        "tag": ""
+      },
+      {
+        "index": "06",
+        "name": "Independent Review",
+        "owner": "ChatGPT",
+        "what": "実装を独立にレビューする",
+        "tag": "review"
+      },
+      {
+        "index": "07",
+        "name": "Evidence",
+        "owner": "Claude Code",
+        "what": "確認できる形にして残す",
+        "tag": ""
+      },
+      {
+        "index": "08",
+        "name": "Human Decision",
+        "owner": "Human",
+        "what": "採否を判断する",
+        "tag": "decision gate"
+      }
+    ],
+    "roles": [
+      {
+        "role": "Human",
+        "duty": "Requirement / Learning / Decision Gate"
+      },
+      {
+        "role": "ChatGPT",
+        "duty": "Planner / Reviewer / Critic"
+      },
+      {
+        "role": "Claude Code",
+        "duty": "Executor / Coder / Tester"
+      }
+    ],
+    "intent": [
+      "AI へ実装を委譲しても、理解まで委譲しない。",
+      "学習中の言語・Framework・Architecture、仕様逸脱、重要判断については、Human involvement を厚くする。",
+      "定型的・低学習価値の作業は、将来的に Selective Harness Engineering へ移行できる。"
+    ],
+    "notClaimed": [
+      "完全自動の Multi-Agent 開発をしているとは主張しない。",
+      "Harness を構築済みであるとは主張しない。"
+    ],
+    "sourceRefs": [
+      "TASK-PORTFOLIO-POSITIONING-V2「HOW I BUILD」節（依頼者の記述をそのまま使用）"
+    ]
+  },
+  "stack": {
+    "railLabels": [
+      "ENGINEERING STACK",
+      "Languages / Frameworks / Platforms"
+    ],
+    "languages": [
+      {
+        "language": "Python 3.12",
+        "responsibility": "AI CRM Backend — API・権限・承認・監査・AI 呼び出し",
+        "work": "crm",
+        "frameworks": "Django 5.0 / Django REST Framework / SimpleJWT / drf-spectacular / pytest",
+        "sourceRef": "ai-crm-demo/README.md「Technology Stack」"
+      },
+      {
+        "language": "TypeScript",
+        "responsibility": "AI CRM Frontend — 業務画面・状態取得",
+        "work": "crm",
+        "frameworks": "React 18 / Vite / React Router / TanStack Query / Axios",
+        "sourceRef": "ai-crm-demo/README.md「Technology Stack」"
+      },
+      {
+        "language": "JavaScript（GAS V8）",
+        "responsibility": "Progress Manager — シート上の登録・集計・履歴",
+        "work": "ppm",
+        "frameworks": "Google Apps Script / Google Sheets / HTML Service / LockService",
+        "sourceRef": "gas-project-management-demo/README.md「Technology」"
+      },
+      {
+        "language": "JavaScript（Node.js 20）",
+        "responsibility": "Document Extraction Pipeline — 抽出・確信度・レビューゲート",
+        "work": "dfe",
+        "frameworks": "依存パッケージ 0 / node:test / リポジトリ内 schema-validator",
+        "sourceRef": "document-field-extraction-demo/package.json ／ README.md"
+      }
+    ],
+    "platform": [
+      {
+        "layer": "データベース",
+        "detail": "PostgreSQL（デモは SQLite）",
+        "work": "crm",
+        "sourceRef": "ai-crm-demo/README.md「Local Setup」"
+      },
+      {
+        "layer": "認証",
+        "detail": "JWT（SimpleJWT）— rotating refresh / token_version 失効 / ログイン制限",
+        "work": "crm",
+        "sourceRef": "ai-crm-demo/README.md「Key Features」"
+      },
+      {
+        "layer": "AI",
+        "detail": "provider 抽象化。既定は mock（API キー不要）、Anthropic API は任意経路",
+        "work": "crm",
+        "sourceRef": "ai-crm-demo/README.md「AI Architecture」"
+      },
+      {
+        "layer": "テスト",
+        "detail": "pytest / node:test。484 passed・77 passed・157 passed",
+        "work": "all",
+        "sourceRef": "各 README ／ CI run 32078586978・32023326469"
+      },
+      {
+        "layer": "CI",
+        "detail": "GitHub Actions — {count} 作品それぞれに workflow がある",
+        "work": "all",
+        "sourceRef": ".github/workflows/（ai-crm-ci / progress-manager-ci / document-field-extraction-ci）"
+      },
+      {
+        "layer": "設計文書",
+        "detail": "Markdown 24 本（ai-crm-demo/docs/）",
+        "work": "crm",
+        "sourceRef": "content.py CASE.cs13（spec CS-13）"
+      }
+    ]
+  },
+  "principles": {
+    "railLabels": [
+      "ENGINEERING PRINCIPLES",
+      "Key technical decisions"
+    ],
+    "spine": [
+      "自動処理の結果を、",
+      "そのまま確定させない。"
+    ],
+    "spineBody": "{count} 作品はいずれも「自動化した結果を、無条件に正しいものとして扱わない」という同じ設計態度で作られている。",
+    "instances": [
+      {
+        "work": "crm",
+        "name": "AI CRM Demo",
+        "text": "AI が書いた文案は、人が承認するまで承認済みにならない"
+      },
+      {
+        "work": "ppm",
+        "name": "Project Progress Manager",
+        "text": "途中で失敗した登録は、成功として残さない"
+      },
+      {
+        "work": "dfe",
+        "name": "Document Field Extraction",
+        "text": "読み取れなかった項目は、確信度ゼロとして人に回す"
+      }
+    ],
+    "decisions": [
+      {
+        "decision": "承認は段階で管理し、手順を飛ばした操作を拒否する",
+        "work": "crm",
+        "why": "生成物をそのまま承認済みにして後から取り消す方式は、外部に出た後では間に合わない。",
+        "sourceRef": "spec CS-6 判断 3"
+      },
+      {
+        "decision": "AI を使う場所を限定し、既定を決定的な見本応答にする",
+        "work": "crm",
+        "why": "顧客状態の分類と表現チェックは規則で判定する。契約が無くても通しで確認できる。",
+        "sourceRef": "spec CS-6 判断 2 ／ ai-crm-demo/README.md"
+      },
+      {
+        "decision": "見せる情報の粒度はサーバ側で決める",
+        "work": "crm",
+        "why": "同一画面・同一顧客で、氏名・電話・メールだけが応答生成時にマスクされる。表示制御であって暗号化ではない。",
+        "sourceRef": "spec CS-10 ／ apps/customers/utils.py"
+      },
+      {
+        "decision": "壊れる書き込みは、書き込む前に拒否する",
+        "work": "ppm",
+        "why": "冪等性（submissionId + payload ハッシュ）・ロールバック・DFS 循環検出を書き込み前に置く。",
+        "sourceRef": "gas-project-management-demo/README.md「設計面の見どころ」"
+      },
+      {
+        "decision": "列は番号ではなく見出し名で解決する",
+        "work": "ppm",
+        "why": "見出し行がスキーマそのもの。列の追加・並べ替えで列ずれが起きない。",
+        "sourceRef": "同上"
+      },
+      {
+        "decision": "確信度はページ平均ではなくブロック単位で採点する",
+        "work": "dfe",
+        "why": "ページ平均 0.86 に対し、手書きの備考は 0.49。平均だけでは弱い項目を捕まえられない。",
+        "sourceRef": "document-field-extraction-demo/README.md"
+      },
+      {
+        "decision": "読めなかった値は補完せず拒否する",
+        "work": "dfe",
+        "why": "欠損は 0 点。不正な日付は null。静かに直された値は、確認の必要を人に伝えられない。",
+        "sourceRef": "同上"
+      },
+      {
+        "decision": "エラーはコードと固定文言だけを返す",
+        "work": "dfe",
+        "why": "応答本文・OCR テキスト・入力のエコーを載せない。ログやバグ報告に最も残りやすい値だから。",
+        "sourceRef": "同上"
+      }
+    ]
+  },
+  "evidenceSection": {
+    "railLabels": [
+      "FEATURED EVIDENCE",
+      "1 枚だけ先に出す"
+    ],
+    "h2": "実際の画面を、1 枚だけ先に出します。",
+    "lede": "主張ごとの証拠は各 Case Study にあります。ここに置くのは 1 枚だけです。",
+    "featured": "CRM-V06"
+  },
+  "about": {
+    "railLabels": [
+      "ABOUT",
+      "Profile"
+    ],
+    "known": [
+      {
+        "key": "実装形態",
+        "value": "個人開発。AI CRM Demo は画面・API・データベース・AI 呼び出し・権限・テストまで 1 人で実装している。",
+        "sourceRef": "spec CS-8"
+      },
+      {
+        "key": "公開範囲",
+        "value": "私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。",
+        "sourceRef": "spec CS-8 ／ ai-crm-demo/README.md"
+      },
+      {
+        "key": "データ",
+        "value": "掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。",
+        "sourceRef": "各 README ／ PUBLISH-MAP.md"
+      }
+    ]
+  },
+  "contact": {
+    "railLabels": [
+      "CONTACT",
+      "連絡"
+    ],
+    "rows": [
+      {
+        "key": "GitHub",
+        "value": "github.com/youshi-kanda"
+      },
+      {
+        "key": "リポジトリ",
+        "value": "github.com/youshi-kanda/portfolio"
+      }
+    ]
+  }
+}

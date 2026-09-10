@@ -1,0 +1,140 @@
+{
+  "slug": "crm",
+  "title": "AI CRM Demo",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 1,
+  "repoPath": "ai-crm-demo/",
+  "productType": "小規模店舗向け 顧客・販促管理システム（CRM）",
+  "targetUser": "店舗オーナー + スタッフ（権限差あり）",
+  "problem": [
+    "誰にいま声をかけるべきかが、担当者の記憶と感覚に依存する。",
+    "販促文を自作すると、法律上問題になりやすい言い回しに気づかないまま外部へ出る。",
+    "生成 AI に書かせると、誰の確認も通らないまま顧客向けの文面が確定してしまう。"
+  ],
+  "purpose": "顧客・来店・売上を 1 か所にまとめ、次に声をかけるべき顧客を見つけ、販促の文案を用意し、人が承認するまでを回す。",
+  "implementationScope": [
+    "顧客管理",
+    "予約管理",
+    "売上管理",
+    "顧客状態判定（ルールベース 6 区分）",
+    "AI 診断",
+    "Campaign（施策）",
+    "LINE・Email 文案生成",
+    "表現リスクチェック",
+    "Human Approval（承認ワークフロー）",
+    "月次レポート",
+    "監査ログ",
+    "JWT 認証・権限別マスキング"
+  ],
+  "publicDemoScope": [
+    "AI provider の既定は mock。API キー無し・外部通信無しで全機能を通せる",
+    "データは seed_demo の合成データ（顧客 50 件）",
+    "外部配信（LINE / メール）は 1 行も含めていない",
+    "DEMO_MODE により公開デモ用の破壊防止が入る"
+  ],
+  "limitations": [
+    "frontend テストは 0 件（CI が frontend で回すのは lint / type-check / build のみ）。",
+    "マスキングは API 応答時の表示制御で、データベースは平文で保持している。",
+    "監査ログは対象操作限定。予約・売上の書き込みは対象外（23 か所 / 7 アプリ）。"
+  ],
+  "originalProductScope": [
+    "LINE Messaging API 連携（webhook / 一斉・個別・ステップ配信 / リッチメニュー）",
+    "代理店マルチテナント管理（/agencies UI・代理店単位の店舗ダッシュボード）",
+    "Celery + Redis による配信の定期実行・バックグラウンド処理",
+    "本番インフラ（HTTPS 終端・HSTS・secure cookie・CDN・VPS 運用手順）",
+    "実顧客 CSV 取込のポリシー（生データのマスキング・保持期限の削除）"
+  ],
+  "languages": [
+    "Python 3.12",
+    "TypeScript"
+  ],
+  "frameworks": [
+    "Django 5.0",
+    "Django REST Framework",
+    "SimpleJWT",
+    "drf-spectacular",
+    "React 18",
+    "Vite",
+    "TanStack Query"
+  ],
+  "platform": [
+    "PostgreSQL（デモは SQLite）",
+    "GitHub Actions",
+    "pytest"
+  ],
+  "keyDecision": [
+    {
+      "decision": "承認を段階で管理し、手順を飛ばした操作を拒否する。",
+      "rationale": "却下したのは、生成物をそのまま承認済みにして後から取り消す方式です。外部に出た後では間に合いません。"
+    },
+    {
+      "decision": "AI を使う場所を限定し、既定を見本応答にした。",
+      "rationale": "顧客状態の分類と表現チェックは決まった規則で判定します。既定を実 API にする案は、契約が無い人が通しで確認できないため却下しました。"
+    }
+  ],
+  "tests": {
+    "summary": "backend 静的 480 件 / CI 実測 484 passed",
+    "count": 484,
+    "source": "AI CRM CI の main 実行ログ（run 32078586978）"
+  },
+  "homepageRole": "lead",
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "path": "ai-crm-demo/"
+    },
+    "demoScope": [
+      "AI provider の既定は mock。API キー無し・外部通信無しで全機能を通せる",
+      "データは seed_demo の合成データ（顧客 50 件）",
+      "外部配信（LINE / メール）は 1 行も含めていない",
+      "DEMO_MODE により公開デモ用の破壊防止が入る"
+    ],
+    "verification": {
+      "tests": {
+        "summary": "backend 静的 480 件 / CI 実測 484 passed",
+        "count": 484,
+        "source": "AI CRM CI の main 実行ログ（run 32078586978）"
+      },
+      "verificationId": null
+    }
+  },
+  "evidence": [
+    "CRM-V06"
+  ],
+  "caseStudyPublished": true,
+  "image": {
+    "src": "/img/crmApproved.webp",
+    "width": 1100,
+    "height": 1276,
+    "caption": "人が承認して初めて「承認済み」に変化。配信はデモでは無効で、外部送信は行われない。"
+  },
+  "visual": {
+    "entryVariant": "v-stage",
+    "caseVariant": "walkthrough",
+    "signal": "常磐 #14654A",
+    "frame": "fr-stage",
+    "ground": "inv",
+    "texture": "none",
+    "displayCut": "3 行"
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "productType — TASK-PORTFOLIO-POSITIONING-V2 ／ ai-crm-demo/README.md Overview「A prototype CRM for small brick-and-mortar businesses」",
+      "targetUser — content.py WORKS[crm].users（spec 由来）",
+      "problem — content.py CASE.cs2（portfolio-case-study-specification.md CS-2）",
+      "purpose — content.py WORKS[crm].cs1（spec CS-1）",
+      "implementationScope — ai-crm-demo/README.md「Key Features (Demo scope)」",
+      "publicDemoScope — ai-crm-demo/README.md「AI Architecture」「Security / Privacy」／ spec CS-12",
+      "originalProductScope — ai-crm-demo/README.md「Differences from the Original Product Scope」",
+      "languages — ai-crm-demo/README.md「Technology Stack」「Prerequisites」",
+      "keyDecision — content.py CASE.cs6 判断 3 / 判断 2（spec CS-6）",
+      "limitations — ai-crm-demo/README.md ／ spec CS-9・CS-10・CS-12"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

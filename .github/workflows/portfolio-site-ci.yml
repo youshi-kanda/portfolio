@@ -1,0 +1,61 @@
+name: Portfolio Site CI
+
+# The release branch and main. `portfolio-site/` now exists on the release
+# branch and lands on main from it, so this fires where the tree it checks
+# actually is — and on every pull request that proposes to change it.
+on:
+  push:
+    branches:
+      - main
+      - release/portfolio-site-*
+  pull_request:
+    branches:
+      - main
+      - release/portfolio-site-*
+  workflow_dispatch:
+
+# No path filter, deliberately — unlike the three demo workflows beside this
+# one. `scan:public` reads every tracked file in the repository, not just this
+# subtree, so filtering on `portfolio-site/**` would mean a secret committed
+# under ai-crm-demo/ skipped the only job that looks for it.
+permissions:
+  contents: read
+
+jobs:
+  qa:
+    name: Truth Gate, build, links, structure, public-safe scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: portfolio-site
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          # 24, not the 22.12 in `engines`. That floor is Astro's; this package
+          # runs its scripts and its tests as `node <file>.ts` with no flag,
+          # which Node only does unflagged from 23.6
+          # (`process.features.typescript === 'strip'`). 24 is also what the
+          # three workflows beside this one pin.
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: portfolio-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # One step, because `qa` is the project's own definition of green:
+      # validate:content -> check -> test -> build -> check:links ->
+      # check:structure -> scan:public. Listing those stages here as separate
+      # steps would be a second place that has to agree with package.json about
+      # what "green" means, and `scan:public` would run twice.
+      #
+      # What this does NOT verify, and cannot: `scan:local`, the private
+      # patterns in review-private/ (gitignored, never in a public repository),
+      # verification against private repositories, and Local Human
+      # Verification. Public CI checks what a public repository can check.
+      - name: QA
+        run: npm run qa

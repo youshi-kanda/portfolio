@@ -1,0 +1,49 @@
+---
+/**
+ * The full-size viewer — design-freeze §3 / §1.10.
+ *
+ * A native <dialog> opened with showModal(): Escape, the focus trap and
+ * inerting the background are the platform's job, not ours. All the script
+ * does is copy the clicked image in, open, and hand focus back on close.
+ *
+ * The dialog element is rendered as markup rather than built by script, so the
+ * page needs no JavaScript to be correct — only to zoom.
+ */
+import { ui } from '../../lib/content/ui.ts';
+---
+
+<dialog class="evdlg">
+  <div class="dh">
+    <span class="id"></span>
+    <span class="dt"></span>
+    <button class="dc" type="button">{ui.evidence.dialog.close}</button>
+  </div>
+  <div class="db"><img alt="" /></div>
+  <div class="df">{ui.evidence.dialog.footer}</div>
+</dialog>
+
+<script>
+  const dialog = document.querySelector<HTMLDialogElement>('dialog.evdlg');
+  if (dialog) {
+    const view = dialog.querySelector<HTMLImageElement>('.db img');
+    const id = dialog.querySelector<HTMLElement>('.dh .id');
+    const title = dialog.querySelector<HTMLElement>('.dh .dt');
+    let opener: HTMLElement | null = null;
+
+    dialog.querySelector<HTMLButtonElement>('.dc')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => opener?.focus());
+
+    for (const button of document.querySelectorAll<HTMLButtonElement>('.fig .shot')) {
+      button.addEventListener('click', () => {
+        const source = button.querySelector('img');
+        if (!source || !view) return;
+        opener = button;
+        view.src = source.currentSrc || source.src;
+        view.alt = source.alt;
+        if (id) id.textContent = button.closest<HTMLElement>('[data-ev]')?.dataset.ev ?? '';
+        if (title) title.textContent = source.alt;
+        dialog.showModal();
+      });
+    }
+  }
+</script>

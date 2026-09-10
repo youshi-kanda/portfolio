@@ -1,0 +1,65 @@
+---
+/**
+ * The picture, framed.
+ *
+ * The frame is a Layer-3 token (fr-stage / fr-plate / fr-term). The picture
+ * itself is never altered: no filter, no opacity, no blend, and no transform
+ * on hover — the ring tightens and the mono "原寸で開く" label fades in, and
+ * that is the whole gesture.
+ */
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  evidenceId: string;
+  frame: string;
+  image: { src: string; width: number; height: number };
+  alt: string;
+  /** Art-directed crop height in px. Declared in the caption when present. */
+  cropHeight?: number | null;
+  /** fr-term only: the command strip above the shot. */
+  command?: string | null;
+  eager?: boolean;
+}
+
+const {
+  evidenceId,
+  frame,
+  image,
+  alt,
+  cropHeight = null,
+  command = null,
+  eager = false,
+} = Astro.props;
+---
+
+<div class={`fig ${frame}`} data-ev={evidenceId}>
+  {
+    frame === 'fr-term' && command && (
+      <div class="cmd"><b>$</b><span>{command}</span></div>
+    )
+  }
+  <button class="shot" type="button">
+    {
+      cropHeight ? (
+        <span class="crop" style={`display:block;height:${cropHeight}px`}>
+          <img
+            src={image.src}
+            width={image.width}
+            height={image.height}
+            alt={alt}
+            loading={eager ? 'eager' : 'lazy'}
+          />
+        </span>
+      ) : (
+        <img
+          src={image.src}
+          width={image.width}
+          height={image.height}
+          alt={alt}
+          loading={eager ? 'eager' : 'lazy'}
+        />
+      )
+    }<span class="zm">{ui.evidence.zoom}</span>
+  </button>
+  {frame === 'fr-plate' && <span class="rul"></span>}
+</div>

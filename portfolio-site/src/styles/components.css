@@ -1,0 +1,529 @@
+/* Generated from the frozen prototype stylesheet — see
+   portfolio-art-direction.md (ART_DIRECTION = HELD).
+   Rule bodies are re-emitted verbatim from
+   portfolio-planning/scratchpad/visual-prototype/art-direction/
+   {adcss.CSS, adrender.EXTRA, adrender2.EXTRA2}.
+   Do not restyle here: a visual change needs the freeze re-opened. */
+
+/* ============================================================ 8. NAVIGATION
+   Static, thin, always the same. Position is reported by a mono index and a
+   1px progress hairline — an instrument, not a menu. */
+.ad .nav{position:sticky;top:0;z-index:40;background:var(--paper);
+         border-bottom:1px solid var(--hair)}
+.ad .nav .page{display:flex;align-items:center;height:74px;gap:40px}
+.ad .nav .nm{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.ad .nav .nm i{font-style:normal;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;
+               text-transform:uppercase;color:var(--tx2);display:block;margin-top:1px;font-weight:500}
+.ad .nav ol{display:flex;gap:0;list-style:none;margin:0 0 0 auto;padding:0;align-items:stretch}
+.ad .nav ol li{display:flex}
+.ad .nav ol a{display:flex;align-items:center;gap:9px;font-family:var(--f-mono);font-size:11px;
+              letter-spacing:.16em;text-transform:uppercase;color:var(--tx2);padding:0 18px;
+              position:relative}
+.ad .nav ol a .sq{width:7px;height:7px;background:currentColor;flex:0 0 7px}
+.ad .nav ol a:after{content:"";position:absolute;left:18px;right:18px;bottom:0;height:2px;
+                    background:var(--sig);transform:scaleX(0);transform-origin:0 50%;
+                    transition:transform .18s cubic-bezier(.2,0,0,1)}
+.ad .nav ol a:hover{color:var(--tx)}
+.ad .nav ol a:hover:after,.ad .nav ol a[aria-current]:after{transform:scaleX(1)}
+.ad .nav ol a[aria-current]{color:var(--tx)}
+.ad .nav .mob{display:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+              text-transform:uppercase;color:var(--tx);border:1px solid var(--hair2);padding:7px 12px}
+/* scroll progress — 1px, no colour ramp */
+.ad .nav .prg{position:absolute;left:0;bottom:-1px;height:2px;background:var(--sig);
+              width:var(--p,0%)}
+/* the synthetic-data notice is required on every page (SITE-07).
+   It is set as an instrument strip, not a banner. */
+.ad .syn{background:var(--flag-bg);border-bottom:1px solid var(--hair)}
+.ad .syn .page{display:flex;gap:16px;align-items:baseline;padding-top:10px;padding-bottom:10px;
+               font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;color:var(--flag)}
+.ad .syn b{letter-spacing:.2em;text-transform:uppercase;flex:0 0 auto;font-weight:700}
+.ad .syn span{letter-spacing:0;font-size:12px;line-height:1.7;font-family:var(--f-ui)}
+/* ====================================================== 9. HOVER / FOCUS
+   One gesture only: a 1px rule is drawn from the left in the signal colour. */
+.ad .lk{display:inline-block;position:relative;font-family:var(--f-ui);font-size:14px;
+        font-weight:600;color:var(--tx);padding-bottom:5px}
+.ad .lk:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--sig);
+              transform:scaleX(0);transform-origin:0 50%;transition:transform .18s cubic-bezier(.2,0,0,1)}
+.ad .lk:before{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;background:var(--hair2)}
+.ad .lk:hover:after,.ad .lk:focus-visible:after{transform:scaleX(1)}
+.ad .lk .ar{color:var(--sig);margin-left:8px}
+.ad a:focus-visible,.ad button:focus-visible,.ad summary:focus-visible{
+  outline:2px solid var(--sig);outline-offset:4px}
+.ad .cta{display:inline-flex;align-items:center;gap:14px;font-family:var(--f-ui);font-size:14px;
+         font-weight:600;color:var(--paper);background:var(--tx);padding:15px 26px;
+         position:relative;overflow:hidden}
+.ad .cta i{font-style:normal;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+           opacity:.6}
+.ad .cta:after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--sig);
+               transform:scaleX(0);transform-origin:0 50%;transition:transform .18s cubic-bezier(.2,0,0,1)}
+.ad .cta:hover:after{transform:scaleX(1)}
+/* ==================================================== state chips (mono) */
+.ad .st{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-mono);font-size:10.5px;
+        letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--tx2);
+        border:1px solid var(--hair2);padding:5px 10px;white-space:nowrap}
+.ad .st:before{content:"";width:6px;height:6px;background:currentColor}
+.ad .st.pass{color:var(--pass);border-color:currentColor}
+.ad .st.hold{color:var(--held)}
+.ad .st.stop{color:var(--stop);border-color:currentColor}
+.ad .st.flag{color:var(--flag);border-color:currentColor}
+/* ==================================================== 5. IMAGE TREATMENT
+   Three frames. No rounded corners, no drop shadow, no floating browser
+   chrome, no perspective. The screenshot is never scaled by hover. */
+.ad figure{margin:0}
+.ad .fig{position:relative}
+.ad .fig .shot{display:block;width:100%;padding:0;border:0;background:none;font:inherit;
+               color:inherit;cursor:zoom-in;position:relative}
+.ad .fig .shot img{width:100%;background:#fff}
+.ad .fig .zm{position:absolute;right:0;bottom:0;z-index:2;font-family:var(--f-mono);font-size:10.5px;
+             letter-spacing:.18em;text-transform:uppercase;padding:7px 11px;background:var(--tx);
+             color:var(--paper);opacity:0;transition:opacity .18s linear;pointer-events:none}
+.ad .fig .shot:hover .zm,.ad .fig .shot:focus-visible .zm{opacity:1}
+/* frame A — stage: a tinted plate with generous inset. UI-dense screenshots. */
+.ad .fr-stage{background:var(--stage);padding:44px}
+.ad .fr-stage .shot img{outline:1px solid var(--stage-ring);outline-offset:-1px}
+/* frame B — plate: the image is flush to one edge and cropped. For a work
+   with a single wide screenshot, composition has to do the work. */
+.ad .fr-plate{background:var(--plate);position:relative;padding:28px}
+.ad .fr-plate .shot{overflow:hidden;position:relative;z-index:1}
+.ad .fr-plate .shot img{outline:1px solid var(--stage-ring);outline-offset:-1px}
+.ad .fr-plate .rul{position:absolute;inset:0;pointer-events:none;z-index:0;
+  background:repeating-linear-gradient(to bottom,transparent 0 27px,var(--hair2) 27px 28px)}
+/* frame C — terminal: ink ground, a mono command strip, hairline only. */
+.ad .fr-term{background:#0A0B0D;padding:0}
+.ad .fr-term .cmd{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.04em;color:#8A9199;
+                  padding:14px 20px;border-bottom:1px solid #242830;display:flex;gap:10px}
+.ad .fr-term .cmd b{color:#E58A5E;font-weight:500}
+.ad .fr-term .cmd span{color:#ECEDEA}
+.ad .fr-term .shot{padding:24px}
+.ad .fr-term .shot img{outline:1px solid #2E333A;outline-offset:-1px}
+/* an art-directed crop must say so; the full frame stays one click away */
+.ad .crop{overflow:hidden}
+.ad .crop img{object-fit:cover;object-position:center;width:100%;height:100%}
+/* ================================================ 12. LAYOUT VARIANTS (L2)
+   A work entry picks exactly one. The build refuses two adjacent entries
+   with the same variant, which is what keeps a 20-work index from tiling. */
+.ad .entry{position:relative;padding:0 0 96px}
+.ad .entry .head{display:flex;align-items:baseline;gap:22px;margin:0 0 8px}
+.ad .entry .head .n{font-family:var(--f-mono);font-size:11px;letter-spacing:.2em;color:var(--sig);
+                    font-weight:700}
+.ad .entry .q{font-family:var(--f-ui);font-size:14px;font-weight:600;color:var(--tx2);margin:0 0 14px}
+.ad .entry h3{font-size:38px;line-height:1.3;letter-spacing:-.026em;margin:0 0 14px}
+.ad .entry .why{font-size:16px;line-height:1.85;color:var(--tx2);margin:0 0 22px}
+/* v-stage: the figure takes the bleed and the text sits above it */
+.ad .v-stage .in{padding:96px 0}
+.ad .v-stage .fr-stage{padding:56px 72px}
+/* v-split: 5/7 asymmetry, the plate escaping the right margin */
+.ad .v-split{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);column-gap:64px;
+             align-items:start}
+.ad .v-split .esc{margin-right:calc(-1 * var(--mg));}
+/* v-terminal: the visual is typographic. A mono field table carries it. */
+.ad .fields{border-top:1px solid var(--hair2);font-family:var(--f-mono);font-size:12.5px;
+            letter-spacing:.02em}
+.ad .fields .row{display:grid;grid-template-columns:200px minmax(0,1fr) 62px 68px;
+                 align-items:baseline;border-bottom:1px solid var(--hair);padding:10px 0;
+                 column-gap:20px}
+.ad .fields .row .k{color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ad .fields .row .v{color:var(--tx);font-family:var(--f-min);font-size:15px;letter-spacing:0}
+.ad .fields .row .c{color:var(--tx2);text-align:right;font-variant-numeric:tabular-nums}
+.ad .fields .row .s{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;text-align:right;
+                    color:var(--pass)}
+.ad .fields .row.hit{background:var(--sig-bg)}
+.ad .fields .row.hit .s{color:var(--stop)}
+.ad .fields .row.hit .c{color:var(--stop)}
+.ad .duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,468px);
+          column-gap:56px;align-items:start}
+/* ==================================== the state stepper (the one animation) */
+.ad .step{display:flex;align-items:center;gap:0;margin:0}
+.ad .step li{list-style:none;display:flex;align-items:center;gap:0}
+.ad .step .cn{width:56px;height:1px;background:var(--hair2);position:relative}
+.ad .step .cn:after{content:"";position:absolute;inset:0;background:var(--sig);
+                    transform:scaleX(0);transform-origin:0 50%;
+                    transition:transform .18s cubic-bezier(.2,0,0,1)}
+.ad .step li[data-on] ~ li .cn:after{transform:scaleX(0)}
+.ad .step li[data-on] .cn:after{transform:scaleX(1)}
+/* =============================================================== lists */
+.ad ul.dash{list-style:none;padding:0;margin:0}
+.ad ul.dash li{padding:13px 0 13px 30px;position:relative;border-bottom:1px solid var(--hair);
+               line-height:1.8}
+.ad ul.dash li:first-child{border-top:1px solid var(--hair)}
+.ad ul.dash li:before{content:"";position:absolute;left:0;top:26px;width:16px;height:1px;
+                      background:var(--sig)}
+.ad ol.num{list-style:none;counter-reset:n;padding:0;margin:0}
+.ad ol.num li{counter-increment:n;padding:0 0 18px 44px;position:relative;line-height:1.85}
+.ad ol.num li:before{content:counter(n,decimal-leading-zero);position:absolute;left:0;top:6px;
+                     font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--sig);
+                     font-weight:700}
+/* ============================================================== tables */
+.ad .tw{overflow-x:auto}
+.ad table{font-size:15px;line-height:1.75}
+.ad th,.ad td{text-align:left;padding:15px 20px 15px 0;border-bottom:1px solid var(--hair);
+              vertical-align:top;color:inherit}
+.ad thead th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+             color:var(--tx2);font-weight:600;border-bottom:2px solid var(--rule);padding-bottom:11px}
+.ad thead th .sq{display:inline-block;width:7px;height:7px;margin-right:8px;vertical-align:0}
+.ad tbody th{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+             font-weight:600;color:var(--tx2);width:184px}
+.ad tbody tr:last-child th,.ad tbody tr:last-child td{border-bottom:0}
+.ad code{font-family:var(--f-mono);font-size:13px;background:var(--paper2);padding:1px 6px}
+/* ============================================================= register
+   The work index. One ruled row per work — this is the shape that survives
+   0 → 20 entries without becoming a card grid. */
+.ad .reg{border-top:2px solid var(--rule)}
+/* V5 — the evidence column goes 300 → 420px, and the crop 150 → 260px.
+   The index is where a reader decides which project to open, and it was
+   deciding from prose: at 300x150 the screenshot was a token beside the text,
+   not something anyone could read a product off. Measured on the full page at
+   1440, the three index rows were also the longest stretch of the site with no
+   visual event in it — 2,000px of continuous pale field. At 420x260 that run
+   falls to 1,500px and the rows stop reading as a list of paragraphs.
+   420 and not 520: at 520 the prose column drops to ~360px, and a 16px measure
+   that narrow breaks the implementation-scope lines into four. */
+/* V6 — LARGE EDITORIAL ROWS. The index was three paragraphs with a picture
+   beside each, and at full-page width it was the longest flat run on the site.
+   The row is now composed the way a spread is: a number and a pigment edge on
+   the left margin, the work's name at display size, its answer under it, and a
+   large visual on the right that steps and bleeds by parity.
+
+   Still one ruled row per work. No card, no box, no radius, no shadow — the
+   only things drawn are the hairline between rows, the pigment edge, and the
+   mat around the picture. It survives 0 → 20 entries unchanged.
+
+   `container-type` so the name and the visual are sized against the ROW's own
+   width: this register renders at page width on the homepage and at page width
+   on /work/, and a `cqi` type scale is what keeps one rule correct in both. */
+.ad .reg{container-type:inline-size;overflow-x:clip}
+.ad .reg .r{display:grid;grid-template-columns:64px minmax(0,1fr) clamp(340px,44cqi,640px);
+            column-gap:56px;padding:64px 0;border-bottom:1px solid var(--hair);
+            align-items:start;position:relative}
+.ad .reg .r:after{content:"";position:absolute;left:0;bottom:-1px;height:1px;width:100%;
+                  background:var(--sig);transform:scaleX(0);transform-origin:0 50%;
+                  transition:transform .22s cubic-bezier(.2,0,0,1)}
+.ad .reg .r:hover:after{transform:scaleX(1)}
+.ad .reg .r .no{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;color:var(--tx3);
+                padding-top:9px}
+/* the work's pigment as an EDGE, not a ground: a 9px square over a rule down
+   the margin. Three works, three colours, and no panel is ever filled with one
+   — a tinted row was tried in Phase 5 and measured as no change at all. */
+.ad .reg .r .no .sq{display:block;width:9px;height:9px;background:var(--sig);margin-bottom:12px}
+.ad .reg .r .no:after{content:"";display:block;width:2px;height:88px;background:var(--sig);
+                      opacity:.55;margin-top:14px}
+.ad .reg .r h3{font-size:clamp(32px,3.5cqi,52px);line-height:1.14;margin:0 0 12px;
+               letter-spacing:-.03em}
+.ad .reg .r .cl{font-size:17px;line-height:1.8;color:var(--tx2);margin:0 0 18px;max-width:46ch}
+/* V4 — the labelled facts a row answers with. One block per question: the
+   mono label names it, the line under it answers. Same measure as `.cl`, so
+   the row reads as one column of prose and not as a table that lost its rules. */
+.ad .reg .r .fx{display:block;margin:0 0 12px;max-width:56ch}
+.ad .reg .r .fx .mo{display:block;margin-bottom:1px}
+.ad .reg .r .fx p{margin:0;font-size:14.5px;line-height:1.8;color:var(--tx2)}
+.ad .reg .r .meta{display:flex;gap:10px;flex-wrap:wrap}
+/* The row is itself the link, so the call to action cannot be an <a>. It takes
+   the link's appearance without its behaviour: the whole row is the target.
+   `.lk` and not `.cta` — `.cta` is the standalone button-sized affordance, and
+   a row that already is a link does not need a second one drawn at that size. */
+.ad .reg .r .detail{display:block;margin-top:16px}
+/* the visual, stepped and bled by parity. This is the whole of the rhythm: an
+   odd row's picture runs off the page's right edge and sits at the row's top,
+   an even row's stays inside the margin and starts 72px lower. Scrolling the
+   index then has a beat instead of three identical stops — and the offsets are
+   the page's own margin and the row's own padding, not numbers chosen by eye. */
+.ad .reg .r .thumb{background:var(--stage);padding:16px}
+.ad .reg .r:nth-of-type(odd) .thumb{margin-right:calc(-1 * var(--mg))}
+.ad .reg .r:nth-of-type(even) .thumb{margin-top:72px}
+/* `display:block` lives here now. It was an inline style on the element, next
+   to a `height` this sheet was already declaring — two owners for one box, and
+   the inline half won every time this rule changed. The crop is presentation;
+   it belongs in the component sheet. */
+.ad .reg .r .thumb .crop{display:block;height:380px}
+.ad .reg .r:nth-of-type(even) .thumb .crop{height:300px}
+.ad .reg .r .thumb img{outline:1px solid var(--stage-ring);outline-offset:-1px}
+.ad .reg .empty{padding:34px 0;border-bottom:1px solid var(--hair);font-family:var(--f-mono);
+                font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3)}
+/* ================================================================ foot */
+.ad .foot{border-top:2px solid var(--rule);margin-top:200px}
+.ad .foot .in{padding:56px 0 96px}
+.ad .foot .mark{font-size:76px;line-height:1;letter-spacing:-.04em;font-weight:600;margin:0 0 40px}
+.ad .foot dl{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;margin:0;
+             border-top:1px solid var(--hair);max-width:720px}
+.ad .foot dt,.ad .foot dd{padding:13px 0;border-bottom:1px solid var(--hair);margin:0}
+.ad .foot dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+             color:var(--tx2)}
+.ad .foot dd{font-family:var(--f-mono);font-size:12.5px;color:var(--tx)}
+.ad .foot dd.pending{color:var(--tx3)}
+/* mobile-only: a bottom bar that reports where you are, then gets out of the
+   way. It is not a floating pill and it is not a nav drawer. */
+.ad .mbar{display:none}
+/* ========================================================= 10. MOTION
+   Exactly three moving things exist on this site, and two of them were
+   already frozen. Nothing animates on scroll. Nothing autoplays. */
+.ad .fig,.ad .lk,.ad .reg .r,.ad .nav ol a{transition:none}
+.ad .ev details[open] .prov{animation:ad-open .2s ease-out both}
+@keyframes ad-open{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){
+  .ad *,.ad *:before,.ad *:after{animation:none !important;transition-duration:.01ms !important}
+}
+/* the triptych — three panels, edge to edge, divided by one hairline each.
+   No card, no border box, no radius, no shadow. */
+.ad .mfs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+         border-top:1px solid var(--hair)}
+.ad .mfs .mf{display:block;padding:0 40px 0;position:relative;
+             border-left:1px solid var(--hair)}
+.ad .mfs .mf:first-child{border-left:0;padding-left:72px}
+.ad .mfs .mf:last-child{padding-right:72px}
+.ad .mfs .sq{display:block;height:3px;background:var(--sig);
+             position:absolute;top:-1px;left:0;right:0}
+.ad .mfs .n{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+            text-transform:uppercase;color:var(--tx2);padding:22px 0 10px}
+.ad .mfs .c{display:block;font-size:17px;line-height:1.7;color:var(--tx);
+            min-height:88px;padding-bottom:18px}
+.ad .mfs .strip{display:block;background:var(--stage);padding:10px}
+.ad .mfs .strip .crop{display:block;height:112px;overflow:hidden}
+.ad .mfs .strip img{outline:1px solid var(--stage-ring);outline-offset:-1px}
+.ad .mfs .mf:after{content:"";position:absolute;left:0;right:0;bottom:0;height:1px;
+                   background:var(--sig);transform:scaleX(0);transform-origin:0 50%;
+                   transition:transform .18s cubic-bezier(.2,0,0,1)}
+.ad .mfs .mf:hover:after{transform:scaleX(1)}
+.ad .spine{list-style:none;margin:0;padding:0;display:grid;
+           grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
+.ad .spine li{border-top:1px solid var(--hair2);padding-top:16px}
+.ad .spine .mo{display:block;margin-bottom:10px}
+.ad .spine span:last-child{font-size:16px;line-height:1.8;color:var(--tx2)}
+.ad .toc{list-style:none;margin:0;padding:0;columns:2;column-gap:56px}
+.ad .toc li{border-bottom:1px solid var(--hair);padding:11px 0;break-inside:avoid;
+            display:flex;gap:16px;align-items:baseline;font-size:15px}
+.ad .toc .mo{flex:0 0 52px}
+.ad .lgr{border-top:2px solid var(--rule)}
+.ad .lgr .lrow{display:grid;grid-template-columns:52px 200px minmax(0,1fr);
+               border-bottom:1px solid var(--hair);align-items:baseline}
+.ad .lgr .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--sig);
+            padding:16px 0}
+.ad .lgr .t{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+            color:var(--tx2);padding:17px 0}
+.ad .lgr .v{padding:16px 0;font-size:16px;line-height:1.8}
+.ad .pipe{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--hair)}
+.ad .pipe .pst{background:var(--paper);padding:20px 20px 24px}
+.ad .pipe .pst.on{background:var(--sig-bg)}
+.ad .pipe .k{display:block;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+             color:var(--sig);margin-bottom:12px;font-weight:700}
+.ad .pipe .n{display:block;font-family:var(--f-ui);font-size:14px;font-weight:600;
+             margin-bottom:8px;line-height:1.5}
+.ad .pipe .d{display:block;font-size:13px;line-height:1.7;color:var(--tx2)}
+.ad .entry .q,.ad .msr .q{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+                          text-transform:none;color:var(--tx2)}
+.ad h3{margin-top:0}
+.ad .msr h3{font-size:34px;line-height:1.32;letter-spacing:-.026em;margin:0 0 16px}
+.ad ul li h3{font-size:22px;margin:34px 0 8px}
+/* ---- authoring state. A pending string is marked on the machine side and
+   with a hairline, never with a badge that competes with the type. */
+.ad .pend{border-bottom:1px dotted var(--flag);padding-bottom:1px}
+/* the display never carries the hairline: at 88px it would read as a rule.
+   The rail readout is the machine-side statement for those slots. */
+.ad .dsp .pend,.ad .dsp-s .pend,.ad h2 .pend{border-bottom:0;padding-bottom:0}
+.ad .rsl{display:block;margin-top:18px;font-family:var(--f-mono);font-size:10.5px;
+         letter-spacing:.14em;text-transform:uppercase;color:var(--flag);
+         border-top:1px solid var(--hair);padding-top:8px}
+.ad .ins .rn{display:block;margin-top:10px;font-family:var(--f-mono);font-size:10.5px;
+             letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+/* ---- hero rail: role + the three capabilities, set as instruments */
+.ad .ins .role{display:block;margin-top:12px;font-family:var(--f-ui);font-size:13px;
+               font-weight:600;line-height:1.6;color:var(--tx)}
+.ad .cap3{margin-top:18px;border-top:1px solid var(--hair)}
+.ad .cap3 .cb{display:block;border-bottom:1px solid var(--hair);padding:8px 0;
+              font-size:12.5px;line-height:1.55;color:var(--tx2);font-family:var(--f-ui)}
+.ad .cap3 b{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;
+            text-transform:uppercase;color:var(--sig);font-weight:700;line-height:1.6}
+/* ---- triptych: name, product type, language. Not a claim strip. */
+.ad .mfs .ty{display:block;font-family:var(--f-ui);font-size:13.5px;line-height:1.65;
+             color:var(--tx);min-height:46px;padding-bottom:8px}
+.ad .mfs .lg{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.12em;
+             color:var(--tx2);padding-bottom:14px}
+.ad .mfs.empty0{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+                text-transform:uppercase;color:var(--tx3);border-bottom:1px solid var(--hair);
+                padding:34px 72px}
+/* ---- work entry: the product fact table */
+.ad .spx{border-top:2px solid var(--rule);margin-bottom:34px}
+.ad .spx .r{display:grid;grid-template-columns:176px minmax(0,1fr);
+            border-bottom:1px solid var(--hair);column-gap:24px;align-items:baseline}
+.ad .spx .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+            color:var(--tx2);padding:16px 0}
+.ad .spx .v{padding:15px 0;font-size:16px;line-height:1.8}
+.ad .spx .v i{display:block;font-style:normal;font-family:var(--f-mono);font-size:10.5px;
+              letter-spacing:.1em;color:var(--tx3);margin-top:4px}
+.ad .spx.wide .r{grid-template-columns:280px minmax(0,1fr)}
+.ad .spx .pendv{color:var(--tx3);font-family:var(--f-mono);font-size:12.5px}
+.ad .prob{margin-bottom:34px}
+.ad .prob h4,.ad .impl h4,.ad .dec h4,.ad .scp h4,.ad .notclaim h4{
+  font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;
+  font-weight:700;color:var(--tx2);margin:0 0 14px}
+.ad .prob ol.num{max-width:720px}
+/* ---- implementation scope: a mono token grid. Deliberately not a logo wall:
+   every token is a responsibility this repository actually contains. */
+.ad .impl{margin-bottom:34px}
+.ad .feat{display:flex;flex-wrap:wrap;border-top:1px solid var(--hair);
+          border-left:1px solid var(--hair)}
+.ad .feat span{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;padding:9px 14px;
+               border-right:1px solid var(--hair);border-bottom:1px solid var(--hair);
+               color:var(--tx2);line-height:1.6}
+.ad .feat.sig span{color:var(--sig);font-weight:700}
+.ad .lgs{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px;
+         margin-top:24px}
+.ad .lgs .mo{display:block;margin-bottom:10px}
+/* ---- three scopes, kept apart */
+.ad .scp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--hair2)}
+.ad .scp > div{padding:18px 24px 18px 0}
+.ad .scp > div + div{padding-left:24px;border-left:1px solid var(--hair)}
+.ad .scp ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
+.ad .scp li{padding:0 0 9px 18px;position:relative;color:var(--tx2)}
+.ad .scp li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px}
+.ad .scp .yes h4{color:var(--pass)}
+.ad .scp .yes li:before{background:var(--pass)}
+.ad .scp .no h4{color:var(--stop)}
+.ad .scp .no li:before{background:var(--stop)}
+.ad .scp .orig h4{color:var(--tx3)}
+.ad .scp .orig li:before{background:var(--hair2)}
+/* ---- key engineering decision. Never used as the product description. */
+.ad .dec{margin-bottom:30px;border-left:2px solid var(--sig);padding-left:26px}
+.ad .dec ul{list-style:none;margin:0;padding:0}
+.ad .dec li + li{margin-top:22px}
+.ad .dec h5{font-size:20px;line-height:1.55;font-weight:600;letter-spacing:-.014em;margin:0 0 8px}
+.ad .dec p{margin:0;max-width:720px}
+.ad .meta{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 0}
+.ad .msr .ty,.ad .fld .ty{margin-bottom:14px;color:var(--sig)}
+/* ---- 02 how i build: the workflow, drawn as a ruled instrument list */
+.ad .flow{border-top:2px solid var(--rule)}
+/* …unless the lane key is drawn above it, which then carries the rule */
+.ad .lanes + .flow{border-top:0}
+.ad .flow .fst{display:grid;grid-template-columns:52px minmax(0,232px) 148px minmax(0,1fr) 132px;
+               column-gap:24px;align-items:baseline;border-bottom:1px solid var(--hair);
+               padding:15px 0;position:relative}
+.ad .flow .fst.gate{background:var(--sig-bg)}
+.ad .flow .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--sig);
+             font-weight:700}
+.ad .flow .n{font-family:var(--f-ui);font-size:15px;font-weight:600;color:var(--tx)}
+.ad .flow .o{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+             color:var(--tx2)}
+.ad .flow .o[data-r="human"]{color:var(--tx);font-weight:700}
+.ad .flow .d{font-size:14.5px;line-height:1.7;color:var(--tx2)}
+.ad .flow .g{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+             color:var(--sig);font-weight:700;text-align:right}
+.ad .notclaim{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
+.ad .notclaim ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
+.ad .notclaim li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
+.ad .notclaim li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                        background:var(--stop)}
+.ad .notclaim h4{color:var(--stop)}
+/* ---- 03 stack: language → responsibility → work → framework */
+.ad .stk{border-top:2px solid var(--rule)}
+.ad .stk .srow{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:32px;
+               border-bottom:1px solid var(--hair);padding:20px 0}
+.ad .stk .l{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;color:var(--tx);
+            font-weight:700}
+.ad .stk .rr{display:block}
+.ad .stk .r{display:block;font-size:17px;line-height:1.7;color:var(--tx);margin-bottom:8px}
+.ad .stk .r .sq{display:inline-block;width:8px;height:8px;background:var(--sig);
+                margin-right:11px;vertical-align:1px}
+.ad .stk .f{display:block;font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;
+            color:var(--tx2);line-height:1.8}
+.ad .stk .s{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;
+            color:var(--tx3);margin-top:8px}
+/* ---- 04 principles */
+.ad .spine3{list-style:none;margin:0;padding:0;display:grid;
+            grid-template-columns:repeat(3,minmax(0,1fr));column-gap:40px}
+.ad .spine3 li{border-top:1px solid var(--hair2);padding-top:16px;position:relative}
+.ad .spine3 .sq{display:block;width:9px;height:9px;background:var(--sig);margin-bottom:12px}
+.ad .spine3 .mo{display:block;margin-bottom:8px}
+.ad .spine3 span:last-child{font-size:16px;line-height:1.8;color:var(--tx2)}
+.ad .pdec{border-top:2px solid var(--rule)}
+.ad .pdec .prow{display:grid;grid-template-columns:minmax(0,1fr) 96px;
+                column-gap:28px;border-bottom:1px solid var(--hair);padding:20px 0}
+.ad .pdec .t{font-size:19px;line-height:1.6;font-weight:600;letter-spacing:-.012em;color:var(--tx)}
+.ad .pdec .w{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;color:var(--tx2);
+             text-align:right;padding-top:6px}
+.ad .pdec .w .sq{display:inline-block;width:7px;height:7px;background:var(--sig);margin-right:8px}
+.ad .pdec .y{grid-column:1;font-size:14.5px;line-height:1.8;color:var(--tx2);margin-top:8px;
+             max-width:720px}
+.ad .pdec .s{grid-column:1 / -1;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.1em;
+             color:var(--tx3);margin-top:8px}
+/* ---- register row: product type sits above the purpose */
+.ad .reg .r .ty{font-family:var(--f-ui);font-size:13.5px;color:var(--sig);margin:0 0 8px;
+                font-weight:600}
+.ad .foot .ins .ix{font-size:20px}
+
+/* ============================================ 00 HERO — the poster's planes
+   Phase 6. The first viewport is the one frame the site is judged on, and it
+   was a single surface: everything on it sat on the same paper at the same
+   depth. These are the planes behind the type. They carry no information —
+   `aria-hidden` in the markup — and they cost the sentence nothing, which is
+   the constraint that decided what they are (Hero.astro).
+
+   Not a card. No box, no radius, no shadow, no border: a plate is a change of
+   GROUND whose edges the page's own grid decides. */
+.ad .hf{position:absolute;inset:0;z-index:-2;pointer-events:none;overflow:hidden}
+/* The field, bleeding off three sides so the frame has exactly ONE drawn edge:
+   a vertical seam the display crosses. Full height on purpose — a horizontal
+   edge would have to be placed against a display block whose position depends
+   on the viewport's height, and an edge that lands mid-word at one height and
+   in the gap at another is not a composition, it is a coincidence.
+
+   The seam is the FIELD'S MIDLINE, and `50% + 128px` is that line exactly:
+   the field starts 256px into the page's content box (200px rail + 56px gap),
+   so its midpoint is (100% + 256px) / 2 wherever the container's own margins
+   put it. The viewport terms cancel; this is correct at 1280 and at 1920. */
+.ad .hf-plate{position:absolute;top:0;bottom:0;right:0;left:calc(50% + 128px);
+              background:var(--plate)}
+/* The plane's own internal structure — six columns, drawn faintly enough to be
+   texture. Inside the plate and nowhere else: on open paper the same lines read
+   as banding, and this is the one place they read as a drawn surface. */
+.ad .hf-plate:after{content:"";position:absolute;inset:0;
+                    background-image:repeating-linear-gradient(to right,
+                      color-mix(in srgb, var(--tx) 4%, transparent) 0 1px,
+                      transparent 1px calc(100% / 6))}
+/* Grammar B: a rule drawn from the left in the signal colour, on the stage's
+   floor. It starts at the GATE — the 227px line every `.tr` draws between the
+   rail and the field — and runs off the right of the page. It is a base for the
+   poster, and it is at the floor rather than on the plane's edge because a rule
+   there would cross the display's fourth line at mid-glyph. */
+.ad .hf-base{position:absolute;bottom:0;height:2px;right:0;
+             left:calc((100% - min(100%,1440px)) / 2 + 227px);background:var(--sig)}
+
+/* ================================== the Lead entry — one artefact, three crops
+   Phase 6. See VStage.astro for what is and is not done to the picture: these
+   are crops and occlusion of the SAME public artefact, never a filter and never
+   a second screenshot.
+
+   The stack is offset like sheets on a desk — the one behind shows at the top
+   and the right, the one in front breaks the page's left margin. Both are
+   ringed with the mat's own hairline (`--stage-ring`), because on ink an
+   unringed crop reads as a hole rather than as a sheet. */
+/* `overflow-x:clip`, not `hidden`: the sheet behind is meant to run off the
+   page's edge, and a 96px protrusion past a 1440 container is 96px of
+   horizontal scroll on every screen narrower than the extra margin — measured
+   at 1024 / 1279 / 1280 / 1440 before this line existed. `clip` cuts it at the
+   edge without creating a scroll container, which `hidden` would: the figure
+   row above this is `position:sticky`, and a scroll container between a sticky
+   element and the viewport is how a pinned figure silently stops pinning. */
+.ad .stg{position:relative;overflow-x:clip}
+.ad .lay{position:absolute;display:block;overflow:hidden;pointer-events:none;
+         outline:1px solid var(--stage-ring);outline-offset:-1px}
+.ad .lay img{display:block;max-width:none;position:absolute}
+/* behind: a different part of the same shot, at the subject's own scale, its
+   right edge past the mat's. Only the strip beyond the mat is ever seen — the
+   rest is under an opaque plate — so this is a sheet's edge, not a second
+   picture competing with the first. */
+.ad .lay-b{z-index:0;top:64px;right:-96px;width:420px;height:392px}
+.ad .lay-b img{width:1152px;left:-560px;top:-900px}
+/* in front: a detail at 1.8x, breaking the page's left margin and lying over
+   the subject's lower left. Held inside the figure's own height — it must never
+   reach the caption, which is either fully visible or fully occluded by the
+   text plate (§C) and has no third state. */
+.ad .lay-f{z-index:5;left:24px;top:300px;width:392px;height:264px}
+.ad .lay-f img{width:2040px;left:-300px;top:-330px}
+
+/* ---- 02 how i build: the lanes' own key. Three cells on the flow's grid, so
+   the head sits over the lane it names. Mono at instrument size — this is the
+   diagram's axis, not a heading, and it must not read as one. */
+.ad .lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+           border-top:2px solid var(--rule);margin-bottom:0}
+.ad .lanes span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+                text-transform:uppercase;color:var(--tx3);padding:12px 0 12px 36px}
+.ad .lanes span:first-child{color:var(--tx);font-weight:700}

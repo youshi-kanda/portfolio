@@ -1,0 +1,65 @@
+/* Generated from the frozen prototype stylesheet — see
+   portfolio-art-direction.md (ART_DIRECTION = HELD).
+   Rule bodies are re-emitted verbatim from
+   portfolio-planning/scratchpad/visual-prototype/art-direction/
+   {adcss.CSS, adrender.EXTRA, adrender2.EXTRA2}.
+   Do not restyle here: a visual change needs the freeze re-opened. */
+
+:root{
+  --f-min:"Source Serif 4","Iowan Old Style",Palatino,Georgia,
+          "Noto Serif CJK JP","Noto Serif JP","Hiragino Mincho ProN","Yu Mincho",YuMincho,serif;
+  --f-ui:"Inter","Helvetica Neue",Arial,
+         "Noto Sans CJK JP","Noto Sans JP","Hiragino Sans","Yu Gothic",sans-serif;
+  --f-mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,
+           "Noto Sans Mono CJK JP","Noto Sans CJK JP",monospace;
+}
+/* ============================================================ 6. COLOUR
+   Ground is bone paper / true ink. The three pigments are the only hues that
+   ever appear, and each belongs to exactly one work. */
+.ad{
+  --paper:#F4F2ED; --paper2:#EBE8E0; --plate:#E3DFD5; --ink:#15171A;
+  --tx:#15171A; --tx2:#5C6066; --tx3:#8A8E93;
+  --hair:#CFCABE; --hair2:#A9A396; --rule:#15171A;
+  --stage:#E3DFD5; --stage-ring:#B9B3A5;
+  --flag:#7A5B00; --flag-bg:#F0E5C6;      /* synthetic-data mark — fixed, not a signal */
+  --sig:#14654A; --sig-bg:#DCE9E2;        /* default signal = 01 */
+  --held:#8A8E93; --pass:#14654A; --stop:#A2401C;
+}
+.ad[data-t="dark"]{
+  --paper:#0A0B0D; --paper2:#111316; --plate:#181B1F; --ink:#000;
+  --tx:#ECEDEA; --tx2:#969BA1; --tx3:#6C7278;
+  --hair:#242830; --hair2:#3C424B; --rule:#ECEDEA;
+  /* the mid-neutral mat kept from the previous freeze: the screenshot itself
+     is never filtered, dimmed or blended — only its surroundings change. */
+  --stage:#3E4246; --stage-ring:#666C72;
+  --flag:#D6B65F; --flag-bg:#2A2410;
+  --sig:#63C79A; --sig-bg:#0F2A20;
+  --held:#6C7278; --pass:#63C79A; --stop:#E58A5E;
+}
+/* ------------------------------------------------- layer 3: work pigments */
+.ad [data-w="crm"],.ad.w-crm{--sig:#14654A;--sig-bg:#DCE9E2}
+.ad [data-w="ppm"],.ad.w-ppm{--sig:#1F3F7A;--sig-bg:#DCE2EE}
+.ad [data-w="dfe"],.ad.w-dfe{--sig:#A2401C;--sig-bg:#F2E1D8}
+.ad[data-t="dark"] [data-w="crm"],.ad[data-t="dark"].w-crm{--sig:#63C79A;--sig-bg:#0F2A20}
+.ad[data-t="dark"] [data-w="ppm"],.ad[data-t="dark"].w-ppm{--sig:#7FA6E8;--sig-bg:#111C31}
+.ad[data-t="dark"] [data-w="dfe"],.ad[data-t="dark"].w-dfe{--sig:#E58A5E;--sig-bg:#2B1710}
+/* a band that inverts locally keeps its work pigment.
+   V5 — `--sig` and `--sig-bg` join the set. Every `.inv` band until now also
+   carried `data-w`, so the work pigment below re-declared the signal and the
+   omission never showed. The contact footer is the first band to invert without
+   being about one work, and it was left holding the light ground's #14654A on
+   #0A0B0D — a 1.6:1 section index. These are the same two values
+   `.ad[data-t="dark"]` already uses; the dark token set now states its own
+   default instead of relying on a work to supply one. */
+.ad .inv{--paper:#0A0B0D;--paper2:#111316;--plate:#181B1F;--tx:#ECEDEA;--tx2:#969BA1;
+         --tx3:#6C7278;--hair:#242830;--hair2:#3C424B;--rule:#ECEDEA;
+         --stage:#3E4246;--stage-ring:#666C72;--flag:#D6B65F;--flag-bg:#2A2410;
+         --sig:#63C79A;--sig-bg:#0F2A20;
+         background:var(--paper);color:var(--tx)}
+.ad .inv[data-w="crm"]{--sig:#63C79A;--sig-bg:#0F2A20}
+.ad .inv[data-w="ppm"]{--sig:#7FA6E8;--sig-bg:#111C31}
+.ad .inv[data-w="dfe"]{--sig:#E58A5E;--sig-bg:#2B1710}
+/* ============================================================ foundation */
+.ad{background:var(--paper);color:var(--tx);font-family:var(--f-min);
+    font-size:17px;line-height:1.9;-webkit-font-smoothing:antialiased;
+    font-feature-settings:"palt" 1}

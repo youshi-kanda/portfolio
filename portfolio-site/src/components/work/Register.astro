@@ -1,0 +1,128 @@
+---
+/**
+ * The work index — one ruled row per work.
+ *
+ * This is the shape that survives 0 → 20 entries without becoming a card grid,
+ * which is the property the art direction is protecting. Rows link to the
+ * permalink, never to `#w-<slug>`: on the homepage only the Lead entry is
+ * on the page, so an in-page fragment would resolve for one row and dangle for
+ * the rest.
+ *
+ * V4 — WHAT A ROW HAS TO ANSWER. The row used to carry the product type, the
+ * purpose and a language list. That says what a work IS and leaves the reader
+ * to open the page to learn anything else. The index now answers, per work:
+ * what it is, what it solves, what was built, what the evidence shows, how it
+ * is verified, and where the detail is.
+ *
+ * Every one of those is read off the existing record — `problem`,
+ * `implementationScope`, the work's own Evidence `proves`, `showcase.
+ * verification` — and every label is one the UI registry already carries. No
+ * field was added and no sentence was written for this: an index that needed
+ * new prose per work would be an index that goes stale one work at a time.
+ *
+ * WHAT IS DELIBERATELY MISSING. There is no "current status" row. Nothing in
+ * the content model states where a project stands — `status` and `shipping` are
+ * decisions about this site, not about the project — and inventing 運用中 for
+ * three demos would be exactly the kind of fact this repository's gates exist
+ * to keep out. It needs a field, and a field needs the facts from the person
+ * who has them.
+ *
+ * Empty slots are numbered from the end of the register rather than fixed, so
+ * a full index shows none of them instead of claiming "04 — 未登録" underneath
+ * its twentieth row. The homepage passes `minSlots={0}`: on the register page
+ * an empty slot is the register saying how it grows, while on the homepage it
+ * would be the portfolio volunteering that it is not finished.
+ */
+import { workSource, workVerification } from '../../lib/content/compat.ts';
+import { pad2, workFigure, workHref, workVisual } from '../../lib/content/derive.ts';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  works: readonly Work[];
+  /** For the `proves` line. Rows whose Evidence is absent simply omit it. */
+  evidence?: readonly Evidence[];
+  minSlots?: number;
+}
+
+const { works, evidence = [], minSlots = site.registerMinSlots } = Astro.props;
+const byId = new Map(evidence.map((e) => [e.id, e]));
+
+const slots: number[] = [];
+for (let n = works.length + 1; n <= minSlots; n += 1) slots.push(n);
+
+/** The first thing this work's own Evidence says it shows. */
+const provesFirst = (work: Work): string | null => {
+  const id = work.evidence[0];
+  return (id ? byId.get(id)?.proves[0] : undefined) ?? null;
+};
+---
+
+<div class="reg">
+  {
+    works.map((w, i) => {
+      const tests = workVerification(w);
+      const source = workSource(w);
+      const proves = provesFirst(w);
+      return (
+      <a class="r" href={workHref(w.slug, false)} data-w={w.slug}>
+        <span class="no"><span class="sq" />{pad2(i + 1)}</span>
+        <span>
+          <h3 aria-level="2">{w.title}</h3>
+          <p class="ty">{w.productType}</p>
+          <p class="cl">{w.purpose}</p>
+          {w.problem.length > 0 && (
+            <span class="fx">
+              <span class="mo">{ui.work.problem}</span>
+              <p>{w.problem[0]}</p>
+            </span>
+          )}
+          {w.implementationScope.length > 0 && (
+            <span class="fx">
+              <span class="mo">{ui.work.implementationScope}</span>
+              <p>{w.implementationScope.join(' / ')}</p>
+            </span>
+          )}
+          {proves && (
+            <span class="fx">
+              <span class="mo">{ui.evidence.proves}</span>
+              <p>{proves}</p>
+            </span>
+          )}
+          <span class="meta">
+            <span class="st">{w.languages.join(' · ')}</span>
+            {tests && <span class="st pass">{tests.summary}</span>}
+            {source && <span class="st">{source.access}</span>}
+            <span class="st hold">{workVisual(w).entryVariant}</span>
+          </span>
+          {w.caseStudyPublished && (
+            <span class="detail">
+              <span class="lk">{ui.work.caseStudyCta}<span class="ar">→</span></span>
+            </span>
+          )}
+        </span>
+        <span class="thumb">
+          <span class="crop">
+            <img
+              src={workFigure(w).src}
+              width={workFigure(w).width}
+              height={workFigure(w).height}
+              alt={w.title}
+              loading="lazy"
+            />
+          </span>
+        </span>
+      </a>
+      );
+    })
+  }
+  {
+    slots.map((n) => (
+      <div class="empty">
+        {fill(ui.register.emptySlot, { index: pad2(n) })}
+        {n === works.length + 1 && ui.register.emptySlotHint}
+      </div>
+    ))
+  }
+</div>

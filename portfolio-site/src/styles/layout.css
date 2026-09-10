@@ -1,0 +1,39 @@
+/* Generated from the frozen prototype stylesheet — see
+   portfolio-art-direction.md (ART_DIRECTION = HELD).
+   Rule bodies are re-emitted verbatim from
+   portfolio-planning/scratchpad/visual-prototype/art-direction/
+   {adcss.CSS, adrender.EXTRA, adrender2.EXTRA2}.
+   Do not restyle here: a visual change needs the freeze re-opened. */
+
+/* ======================================================== 2. GRID SYSTEM
+   Four widths. Every block is one of them — never an arbitrary max-width. */
+.ad .page{--mg:72px;max-width:1440px;margin:0 auto;padding:0 var(--mg)}
+/* the two tracks + the gate rule between them */
+.ad .tr{display:grid;grid-template-columns:200px minmax(0,1fr);column-gap:56px;
+        position:relative}
+.ad .tr:before{content:"";position:absolute;left:227px;top:0;bottom:0;width:1px;
+               background:var(--hair)}
+.ad .tr > .ins{grid-column:1}
+.ad .tr > .msr{grid-column:2;max-width:720px}
+/* measure  — prose */
+.ad .tr > .fld{grid-column:2}
+/* field    — figures, tables */
+/* V4: the hero display is sized in `cqi`, so its field has to be a query
+   container. Scoped to the hero — every other field is a plain grid item, and
+   containment is a layout guarantee that should be asked for where it is
+   needed rather than granted everywhere. */
+.ad .hero .tr > .fld{container-type:inline-size}
+.ad .tr > .bleed{grid-column:1 / -1;margin:0 calc(-1 * var(--mg))}
+/* ============================================================ 7. RHYTHM
+   Four densities. A page is legible as composition because the spacing
+   between sections is not one number. */
+.ad .s-open{padding:168px 0 0}
+.ad .s-tight{padding:88px 0 0}
+.ad .s-close{padding:200px 0 0}
+.ad .s-band{padding:0;margin:120px 0 0}
+.ad .s-band > .in{padding:104px 0}
+.ad .s-band.tone{background:var(--paper2)}
+.ad .hero{padding:56px 0 0}
+/* a section head sits on the rule, so the eye lands on a drawn line */
+.ad .shead{border-top:2px solid var(--rule);padding-top:18px;margin-bottom:34px}
+.ad .shead .mo{margin-bottom:6px;display:block}

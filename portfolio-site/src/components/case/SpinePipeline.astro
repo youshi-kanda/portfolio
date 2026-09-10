@@ -1,0 +1,42 @@
+---
+/**
+ * `pipeline` — the spine as the run of stages the data passes through.
+ *
+ * Document Field Extraction has no GUI, so the subject picture is the pipeline
+ * itself. The frozen `.pipe` grid is 4 columns wide (2 at narrow widths), and
+ * this work has 9 stages — the count the spec fixes in CS-13 and CS-15 T-1, not
+ * a number chosen to fit a grid.
+ *
+ * Rather than drop a stage or restyle the grid, the last row is completed with
+ * blank cells. They carry `aria-hidden` so the run reads as 9 stages to a
+ * screen reader, and they keep the ruled grid from showing a torn last row —
+ * `.pipe` paints its gaps from the container, so an incomplete row renders as a
+ * grey slab rather than as empty space.
+ */
+import type { CaseStudy } from '../../lib/content/schema.ts';
+
+interface Props {
+  caseStudy: CaseStudy;
+}
+
+const { caseStudy } = Astro.props;
+const flow = caseStudy.flow;
+
+/** The frozen grid is 4 columns, and 2 at narrow widths; 4 satisfies both. */
+const COLUMNS = 4;
+const fillers = (COLUMNS - (flow.length % COLUMNS)) % COLUMNS;
+---
+
+<div class="pipe">
+  {
+    flow.map((s) => (
+      <div class={s.gate ? 'pst on' : 'pst'}>
+        <span class="k">{s.key}</span>
+        <span class="n">{s.name}</span>
+        <span class="d">{s.what}</span>
+        {s.gate && <span class="k" style="margin:12px 0 0">{s.gate}</span>}
+      </div>
+    ))
+  }
+  {Array.from({ length: fillers }, () => <div class="pst" aria-hidden="true"></div>)}
+</div>

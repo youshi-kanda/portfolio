@@ -1,0 +1,42 @@
+---
+/**
+ * A static sticky bar. Position is reported by a mono index and a 2px
+ * hairline — an instrument, not a menu. No colour ramp, no label that grows.
+ *
+ * The item list is derived: a section that is not on this page (05 FEATURED
+ * EVIDENCE at zero works) does not get a link, because an anchor that resolves
+ * to nothing is a defect rather than a placeholder.
+ */
+import { brandHref, navItems } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  current?: string | null;
+  progress?: number;
+  hasWorks?: boolean;
+  /** Off the homepage, section anchors are rewritten to point back at it. */
+  onHomepage?: boolean;
+}
+
+const { current = null, progress = 0, hasWorks = true, onHomepage = true } = Astro.props;
+const items = navItems(hasWorks, onHomepage);
+---
+
+<nav class="nav">
+  <div class="page">
+    <a class="nm" href={brandHref(onHomepage)}>{site.handle}<i>{site.kicker}</i></a>
+    <ol>
+      {
+        items.map((item) => (
+          <li>
+            <a href={item.href} aria-current={item.label === current ? 'page' : undefined}>
+              <i>{item.index}</i>{item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ol><span class="mob">{ui.nav.mobileIndex}</span>
+  </div>
+  <div class="prg" style={`--p:${progress}%`}></div>
+</nav>

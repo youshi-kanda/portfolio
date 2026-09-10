@@ -1,0 +1,41 @@
+---
+/**
+ * figure → caption → **ledger** → provenance. Step 3 of 4.
+ *
+ * Two columns, same width, same type size: what this screen shows, and what it
+ * is not evidence of. The second column is not a disclaimer in small print —
+ * it carries the same weight as the first, which is the point.
+ *
+ * Frozen by design-freeze §3. Art direction changes the surroundings, never
+ * this component: it keeps both columns even inside an inverted band.
+ */
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  proves: readonly string[];
+  notProves: readonly string[];
+  /**
+   * Depth of the two column headings in the document outline.
+   *
+   * The tag stays `h4` — the frozen stylesheet selects `.ledger h4`, so
+   * changing it would change the rendering. What varies is how deep the
+   * component sits: directly under a section heading on the homepage, one level
+   * further down when a Case Study highlight introduces it. A fixed level would
+   * be wrong in one of those two places.
+   */
+  headingLevel?: number;
+}
+
+const { proves, notProves, headingLevel = 3 } = Astro.props;
+---
+
+<div class="ledger">
+  <div class="yes">
+    <h4 aria-level={headingLevel}>{ui.evidence.proves}</h4>
+    <ul>{proves.map((t) => <li>{t}</li>)}</ul>
+  </div>
+  <div class="no">
+    <h4 aria-level={headingLevel}>{ui.evidence.notProves}</h4>
+    <ul>{notProves.map((t) => <li>{t}</li>)}</ul>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+---
+/**
+ * figure → **caption** → ledger → provenance. Step 2 of 4.
+ *
+ * An art-directed crop must say so, in the caption, where the reader is
+ * already looking. The full frame stays one click away.
+ */
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  evidenceId: string;
+  title: string;
+  caption: string;
+  cropped?: boolean;
+}
+
+const { evidenceId, title, caption, cropped = false } = Astro.props;
+---
+
+<div class="cap"><span class="id">{evidenceId}</span><span class="tx"><b>{title}</b>{caption}{cropped && <> <span class="st flag">{ui.evidence.cropChip}</span></>}</span></div>

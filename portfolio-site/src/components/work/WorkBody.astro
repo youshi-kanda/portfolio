@@ -1,0 +1,85 @@
+---
+/**
+ * The blocks inside a work entry. Identical in every layout variant — only
+ * their arrangement changes, which is what keeps the variants a presentation
+ * choice rather than a content choice.
+ *
+ *   1. what it is        product type / user / purpose, then the problem
+ *   2. what was built    implementation scope, languages, frameworks
+ *   3. why               the key engineering decision, and what was rejected
+ *   4. what it is not    three scopes kept deliberately apart
+ */
+import { workDemoScope } from '../../lib/content/compat.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+const demoScope = workDemoScope(work);
+const fields = ui.work.fieldLabels.map((f) => ({
+  label: f.label,
+  value: work[f.key as 'productType' | 'targetUser' | 'purpose'],
+}));
+---
+
+{/* 1 — what it is */}
+<div class="spx">
+  {
+    fields.map((f) => (
+      <div class="r"><span class="k">{f.label}</span><span class="v">{f.value}</span></div>
+    ))
+  }
+</div>
+<div class="prob">
+  <h4>{ui.work.problem}</h4>
+  <ol class="num">{work.problem.map((t) => <li>{t}</li>)}</ol>
+</div>
+
+{/* 2 — what was built, and in what */}
+<div class="impl">
+  <h4>{ui.work.implementationScope}</h4>
+  <div class="feat">{work.implementationScope.map((t) => <span>{t}</span>)}</div>
+  <div class="lgs">
+    <div>
+      <span class="mo"><b>{ui.work.languages}</b></span>
+      <div class="feat sig">{work.languages.map((t) => <span>{t}</span>)}</div>
+    </div>
+    <div>
+      <span class="mo"><b>{ui.work.frameworks}</b></span>
+      <div class="feat">{work.frameworks.map((t) => <span>{t}</span>)}</div>
+    </div>
+  </div>
+</div>
+
+{/* 3 — the one decision worth reading. Never the product description. */}
+<div class="dec">
+  <h4>{ui.work.keyDecision}</h4>
+  <ul>
+    {
+      work.keyDecision.map((d) => (
+        <li><h5>{d.decision}</h5><p class="note">{d.rationale}</p></li>
+      ))
+    }
+  </ul>
+</div>
+
+{/* 4 — the three scopes, kept apart rather than merged into one ledger */}
+<div class="scp">
+  {demoScope.length > 0 && (
+    <div class="yes">
+      <h4>{ui.work.scope.included}</h4>
+      <ul>{demoScope.map((t) => <li>{t}</li>)}</ul>
+    </div>
+  )}
+  <div class="no">
+    <h4>{ui.work.scope.excluded}</h4>
+    <ul>{work.limitations.map((t) => <li>{t}</li>)}</ul>
+  </div>
+  <div class="orig">
+    <h4>{ui.work.scope.original}</h4>
+    <ul>{work.originalProductScope.map((t) => <li>{t}</li>)}</ul>
+  </div>
+</div>

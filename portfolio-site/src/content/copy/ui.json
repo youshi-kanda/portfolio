@@ -1,0 +1,2538 @@
+[
+  {
+    "id": "ui.nav.mobileIndex",
+    "path": "nav.mobileIndex",
+    "text": "Index",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "NAV",
+    "slot": "mobile 見出し",
+    "purpose": "narrow viewport で節一覧を開くラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:26"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.zoom",
+    "path": "evidence.zoom",
+    "text": "原寸で開く",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "図の hover ラベル",
+    "purpose": "図を原寸で開けることを示す。design-freeze §3 の拡大操作。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:139"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.proves",
+    "path": "evidence.proves",
+    "text": "この画面で確認できること",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "ledger 左段 見出し",
+    "purpose": "この画面から読み取れることの列見出し。design-freeze §3 で凍結。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:162"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.notProves",
+    "path": "evidence.notProves",
+    "text": "Evidence の対象外",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "ledger 右段 見出し",
+    "purpose": "Evidence の対象外の列見出し。design-freeze §3 で凍結。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:163"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceSummary",
+    "path": "evidence.provenanceSummary",
+    "text": "この画像の出所と、拡大",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance expander の summary",
+    "purpose": "出所と拡大を開く操作。design-freeze §3 で文言まで凍結。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:177"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.cropChip",
+    "path": "evidence.cropChip",
+    "text": "crop 表示",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "caption の crop chip",
+    "purpose": "掲載図が crop であることを caption 上で示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:165"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.cropRowLabel",
+    "path": "evidence.cropRowLabel",
+    "text": "掲載の crop",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "crop の事実を provenance の 1 行として持つ。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:166"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.cropRowValue",
+    "path": "evidence.cropRowValue",
+    "text": "レイアウト上の切り抜き。上の「原寸で開く」で全体を表示する",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行の値",
+    "purpose": "crop がレイアウト上の切り抜きであることと、全体の見方を述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:172"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.type",
+    "path": "evidence.provenanceLabels.type",
+    "text": "種別",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "Evidence の種別。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:169"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.source",
+    "path": "evidence.provenanceLabels.source",
+    "text": "出所",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "正本ファイルのパス。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:102"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.dims",
+    "path": "evidence.provenanceLabels.dims",
+    "text": "掲載サイズ",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "掲載サイズ。design-freeze §3 が expander 内に限定した項目。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:169"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.scale",
+    "path": "evidence.provenanceLabels.scale",
+    "text": "倍率",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "掲載倍率。同上。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:170"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.sha",
+    "path": "evidence.provenanceLabels.sha",
+    "text": "SHA256",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "SHA256。同上。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:104"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.provenanceLabels.status",
+    "path": "evidence.provenanceLabels.status",
+    "text": "状態",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "provenance 行ラベル",
+    "purpose": "公開可否の状態。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:76"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.dialog.close",
+    "path": "evidence.dialog.close",
+    "text": "閉じる ESC",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "dialog 閉じるボタン",
+    "purpose": "native <dialog> を閉じる操作と、Escape が効くことの明示。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:757"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.evidence.dialog.footer",
+    "path": "evidence.dialog.footer",
+    "text": "原寸表示。掲載側の crop はレイアウト上の切り抜きで、ここでは全体を表示している。",
+    "kind": "ui-system",
+    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "Evidence component",
+    "slot": "dialog フッター",
+    "purpose": "dialog 側が全体表示であることを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:772"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.fieldLabels.1.label",
+    "path": "work.fieldLabels.1.label",
+    "text": "製品種別",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "meta 行ラベル",
+    "purpose": "製品種別の行ラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:706"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.fieldLabels.2.label",
+    "path": "work.fieldLabels.2.label",
+    "text": "使う人",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "meta 行ラベル",
+    "purpose": "使う人の行ラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:556"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.fieldLabels.3.label",
+    "path": "work.fieldLabels.3.label",
+    "text": "目的",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "meta 行ラベル",
+    "purpose": "目的の行ラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/positioning.py:57"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.problem",
+    "path": "work.problem",
+    "text": "解いている課題",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "ブロック見出し",
+    "purpose": "解いている課題のブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:251"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.implementationScope",
+    "path": "work.implementationScope",
+    "text": "実装した範囲",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "ブロック見出し",
+    "purpose": "実装した範囲のブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:260"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.languages",
+    "path": "work.languages",
+    "text": "Languages",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "ブロック見出し",
+    "purpose": "使用言語のブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:71"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.frameworks",
+    "path": "work.frameworks",
+    "text": "Frameworks / Platform",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "ブロック見出し",
+    "purpose": "フレームワーク / プラットフォームのブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:71"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.scope.included",
+    "path": "work.scope.included",
+    "text": "Public Demo に含まれる",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "scope 列見出し",
+    "purpose": "公開デモに含まれる範囲の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:275"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.scope.excluded",
+    "path": "work.scope.excluded",
+    "text": "この公開デモに含めていない",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "scope 列見出し",
+    "purpose": "公開デモに含めていない範囲の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:99"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.scope.original",
+    "path": "work.scope.original",
+    "text": "元プロダクト側にある範囲",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "scope 列見出し",
+    "purpose": "元プロダクト側にある範囲の列見出し。誤読防止の要。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:277"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.keyDecision",
+    "path": "work.keyDecision",
+    "text": "Key engineering decision",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "ブロック見出し",
+    "purpose": "技術判断のブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:284"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.caseStudyCta",
+    "path": "work.caseStudyCta",
+    "text": "Case Study を読む",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "CTA ラベル",
+    "purpose": "Case Study への導線ラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:222"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.fieldsTableLabel",
+    "path": "work.fieldsTableLabel",
+    "text": "extracted fields ({count})",
+    "kind": "ui-system",
+    "route": "/ · /work/{slug}/",
+    "section": "01 SELECTED WORK",
+    "slot": "表のキャプション",
+    "purpose": "抽出項目表の件数つきキャプション。件数は導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:287"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.workflowLabel",
+    "path": "howIBuild.workflowLabel",
+    "text": "Workflow",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "rail ラベル",
+    "purpose": "工程レールのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:460"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.workflowCount",
+    "path": "howIBuild.workflowCount",
+    "text": "{count} steps",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "rail 件数",
+    "purpose": "工程数。導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adcss.py:115"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.rolesLabel",
+    "path": "howIBuild.rolesLabel",
+    "text": "Roles",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "rail ラベル",
+    "purpose": "役割レールのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:464"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.rolesHead",
+    "path": "howIBuild.rolesHead",
+    "text": "ROLES",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "小節見出し",
+    "purpose": "役割表の見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:466"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.rolesSub",
+    "path": "howIBuild.rolesSub",
+    "text": "誰が何を持つか",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "小節サブ",
+    "purpose": "役割表が何の対応かを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:466"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.intentLabel",
+    "path": "howIBuild.intentLabel",
+    "text": "Intent",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "ブロック見出し",
+    "purpose": "意図のブロック見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:471"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.notClaimed",
+    "path": "howIBuild.notClaimed",
+    "text": "主張しないこと",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "ブロック見出し",
+    "purpose": "主張しないことのブロック見出し。誤読防止の要。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:70"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.sourceLabel",
+    "path": "howIBuild.sourceLabel",
+    "text": "Source",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 HOW I BUILD",
+    "slot": "出所ラベル",
+    "purpose": "節の出所を示すラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adcss.py:25"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.languagesLabel",
+    "path": "stack.languagesLabel",
+    "text": "Languages",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "rail ラベル",
+    "purpose": "言語レールのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:71"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.count",
+    "path": "stack.count",
+    "text": "{count} 件",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "rail 件数",
+    "purpose": "言語の件数。導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:84"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.platformLabel",
+    "path": "stack.platformLabel",
+    "text": "Platform",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "rail ラベル",
+    "purpose": "プラットフォームレールのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:71"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.platformHead",
+    "path": "stack.platformHead",
+    "text": "PLATFORM / CROSS-CUTTING",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "小節見出し",
+    "purpose": "作品をまたぐ層の表見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:516"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.platformSub",
+    "path": "stack.platformSub",
+    "text": "作品をまたぐ層",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "小節サブ",
+    "purpose": "同表が何を並べているかを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:516"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.tableHeaders.detail",
+    "path": "stack.tableHeaders.detail",
+    "text": "内容",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "表ヘッダ",
+    "purpose": "内容の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:279"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.tableHeaders.work",
+    "path": "stack.tableHeaders.work",
+    "text": "作品",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "表ヘッダ",
+    "purpose": "作品の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:77"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.stack.tableHeaders.source",
+    "path": "stack.tableHeaders.source",
+    "text": "出所",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "表ヘッダ",
+    "purpose": "出所の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:102"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.principles.decisionsLabel",
+    "path": "principles.decisionsLabel",
+    "text": "Decisions",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "04 ENGINEERING PRINCIPLES",
+    "slot": "rail ラベル",
+    "purpose": "判断レールのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:524"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.principles.count",
+    "path": "principles.count",
+    "text": "{count} 件",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "04 ENGINEERING PRINCIPLES",
+    "slot": "rail 件数",
+    "purpose": "判断の件数。導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:84"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.principles.head",
+    "path": "principles.head",
+    "text": "KEY TECHNICAL DECISIONS",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "04 ENGINEERING PRINCIPLES",
+    "slot": "小節見出し",
+    "purpose": "技術判断表の見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:553"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.principles.sub",
+    "path": "principles.sub",
+    "text": "作品 / 判断 / 理由 / 出所",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "04 ENGINEERING PRINCIPLES",
+    "slot": "小節サブ",
+    "purpose": "表の 4 列が何かを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:553"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.contact.note",
+    "path": "contact.note",
+    "text": "掲載している画面はすべて合成データで、実顧客・実案件・本番運用の記録ではありません。",
+    "kind": "editorial",
+    "route": "/",
+    "section": "07 CONTACT",
+    "slot": "注記",
+    "purpose": "掲載画面が合成データであることを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "ADAPTED — 2 文目「経歴・稼働条件・料金は事実が確定するまで記載しません。」を TASK-PORTFOLIO-IMPLEMENT-03 §5（未提供 user fact を Production UI に出さない）により削除。1 文目は下記から verbatim。",
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:414"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.mobileBar.work",
+    "path": "mobileBar.work",
+    "text": "01 Work",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "mobile bar",
+    "slot": "mobile bar リンク",
+    "purpose": "01 Work への導線。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:633"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.mobileBar.build",
+    "path": "mobileBar.build",
+    "text": "02 How I build →",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "mobile bar",
+    "slot": "mobile bar リンク",
+    "purpose": "02 How I build への導線。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:634"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.empty.triptych",
+    "path": "empty.triptych",
+    "text": "作品未登録 — SELECTED WORK は 0 件でも成立する",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 SELECTED WORK — 0 件時",
+    "slot": "0 件時の三連図",
+    "purpose": "作品 0 件でも節が成立することを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:130"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.empty.selectedWork",
+    "path": "empty.selectedWork",
+    "text": "01 — 未登録。SELECTED WORK はデータ駆動で、0 件でもこの節は成立する",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 SELECTED WORK — 0 件時",
+    "slot": "0 件時の register",
+    "purpose": "同上。0 件が異常状態ではないことを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:411"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.railLabels.1",
+    "path": "register.railLabels.1",
+    "text": "WORK INDEX",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "rail ラベル",
+    "purpose": "WORK INDEX のレールラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:700"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.railLabels.2",
+    "path": "register.railLabels.2",
+    "text": "Register",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "rail ラベル",
+    "purpose": "同上（英語側）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:26"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.railNote",
+    "path": "register.railNote",
+    "text": "0 → 20 works",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "rail 注記",
+    "purpose": "この index が 0 → 20 件まで同じ規則で伸びることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:422"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.h1",
+    "path": "register.h1",
+    "text": "{count} 件。同じ規則で 20 件まで伸びる。",
+    "kind": "editorial",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "見出し",
+    "purpose": "件数と、同じ規則で 20 件まで伸びることを見出しで言う。件数は導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:454"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.lede",
+    "path": "register.lede",
+    "text": "1 件が 1 行。行の順序・番号・信号色・レイアウト変種はコンテンツ側で宣言します。 ビルドが拒否するのは、変種の種類が足りずに一様な格子へ退化することであって、 隣り合う 2 件が同じ変種を取ること自体ではありません。 行に出るのは製品種別と言語で、主張ではありません。",
+    "kind": "editorial",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "リード",
+    "purpose": "行の構成と、build gate が何を拒否するかを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:703"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.emptySlot",
+    "path": "register.emptySlot",
+    "text": "{index} — 未登録",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "空きスロット",
+    "purpose": "未登録スロットの番号表示。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:462"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.emptySlotHint",
+    "path": "register.emptySlotHint",
+    "text": " · 追加は src/content/work/ に 1 ファイルを足すだけ",
+    "kind": "editorial",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "空きスロット注記",
+    "purpose": "作品追加が 1 ファイル追加で済むことを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:691",
+        "ADAPTED（TASK-PORTFOLIO-IMPLEMENT-01）— 参照先のみ差し替え。原文は `positioning.WORKS に 1 要素を足すだけ` で、このリポジトリに存在しない Python ファイルを指していた。置換後の `src/content/work/` は当リポジトリの実在パス（uiCopyGate U-REFTARGET が実在を検証する）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantRailLabels.1",
+    "path": "register.variantRailLabels.1",
+    "text": "レイアウト変種",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "rail ラベル",
+    "purpose": "レイアウト変種表のレールラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:455"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantRailLabels.2",
+    "path": "register.variantRailLabels.2",
+    "text": "Variant assignment",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "rail ラベル",
+    "purpose": "同上（英語側）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:468"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHead",
+    "path": "register.variantHead",
+    "text": "PROJECT VARIATION SYSTEM",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "小節見出し",
+    "purpose": "変種システム表の見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:470"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantSub",
+    "path": "register.variantSub",
+    "text": "L1 共通システム / L2 レイアウト変種 / L3 作品固有トークン",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "小節サブ",
+    "purpose": "L1 / L2 / L3 の層を述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:470"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.1",
+    "path": "register.variantHeaders.1",
+    "text": "作品",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "作品の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:77"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.2",
+    "path": "register.variantHeaders.2",
+    "text": "製品種別",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "製品種別の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:706"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.3",
+    "path": "register.variantHeaders.3",
+    "text": "言語",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "言語の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:62"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.4",
+    "path": "register.variantHeaders.4",
+    "text": "entry (L2)",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "entry variant の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:719"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.5",
+    "path": "register.variantHeaders.5",
+    "text": "case (L2)",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "case variant の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:719"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantHeaders.6",
+    "path": "register.variantHeaders.6",
+    "text": "signal (L3)",
+    "kind": "ui-system",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表ヘッダ",
+    "purpose": "signal の列見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:719"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.variantNote",
+    "path": "register.variantNote",
+    "text": "変種は閉じた集合です。entry は {names} の {size} 種で、 renderer を持つものだけが集合に入ります。 いまの {count} 件では {floor} 種以上を使うことがビルドの条件です。 作品を足す人が触るのは src/content/work/ の 1 ファイルだけで、 Homepage の component は変更しません。",
+    "kind": "editorial",
+    "route": "/work/",
+    "section": "WORK INDEX",
+    "slot": "表の下の注記",
+    "purpose": "変種が閉じた集合であることと、作品追加時に触るファイルを述べる。件数・下限は導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:725",
+        "ADAPTED（TASK-PORTFOLIO-IMPLEMENT-01）— 参照先のみ差し替え。原文は `positioning.WORKS の 1 要素だけ` で、このリポジトリに存在しない Python ファイルを指していた。置換後の `src/content/work/` は当リポジトリの実在パス（uiCopyGate U-REFTARGET が実在を検証する）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.workPage.railIndex",
+    "path": "workPage.railIndex",
+    "text": "01",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "entry header",
+    "slot": "rail 番号",
+    "purpose": "節番号。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:24"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.workPage.railLabels.1",
+    "path": "workPage.railLabels.1",
+    "text": "SELECTED WORK",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "entry header",
+    "slot": "rail ラベル",
+    "purpose": "節名。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:64"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.workPage.railEntry",
+    "path": "workPage.railEntry",
+    "text": "Entry — {title}",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "entry header",
+    "slot": "rail 作品名",
+    "purpose": "どの作品の entry かをレールに出す。作品名は導出。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:739"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.railLabels.1",
+    "path": "caseStudy.railLabels.1",
+    "text": "CASE STUDY",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "rail ラベル",
+    "purpose": "Case Study ページのレールラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:249"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.contents",
+    "path": "caseStudy.contents",
+    "text": "目次",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "目次見出し",
+    "purpose": "節の一覧であることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:546"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.contentsLabel",
+    "path": "caseStudy.contentsLabel",
+    "text": "Contents",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "目次 rail ラベル",
+    "purpose": "同上（英語側）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:546"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.overview",
+    "path": "caseStudy.sections.overview",
+    "text": "このシステムは何をするか",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-1）",
+    "purpose": "CS-1 このシステムは何をするかの節見出し。CASE_TOC の CS-1 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:432"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.problem",
+    "path": "caseStudy.sections.problem",
+    "text": "想定業務課題",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-2）",
+    "purpose": "CS-2 想定業務課題の節見出し。CASE_TOC の CS-2 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:433"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.currentPractice",
+    "path": "caseStudy.sections.currentPractice",
+    "text": "使う人と、いまのやり方",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-3）",
+    "purpose": "CS-3 使う人と、いまのやり方の節見出し。CASE_TOC の CS-3 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:434"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.requirements",
+    "path": "caseStudy.sections.requirements",
+    "text": "満たすべきこと",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-4）",
+    "purpose": "CS-4 満たすべきことの節見出し。CASE_TOC の CS-4 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:435"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.built",
+    "path": "caseStudy.sections.built",
+    "text": "作ったもの",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-5）",
+    "purpose": "CS-5 作ったものの節見出し。CASE_TOC の CS-5 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:436"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.decisions",
+    "path": "caseStudy.sections.decisions",
+    "text": "なぜこの設計にしたか",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-6）",
+    "purpose": "CS-6 なぜこの設計にしたかの節見出し。CASE_TOC の CS-6 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:437"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.highlights",
+    "path": "caseStudy.sections.highlights",
+    "text": "見どころ",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-7）",
+    "purpose": "CS-7 見どころの節見出し。CASE_TOC の CS-7 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:438"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.role",
+    "path": "caseStudy.sections.role",
+    "text": "実装範囲",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-8）",
+    "purpose": "CS-8 実装範囲の節見出し。CASE_TOC の CS-8 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:382"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.quality",
+    "path": "caseStudy.sections.quality",
+    "text": "品質の担保方法",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-9）",
+    "purpose": "CS-9 品質の担保方法の節見出し。CASE_TOC の CS-9 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:440"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.safety",
+    "path": "caseStudy.sections.safety",
+    "text": "安全性とデータの扱い",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-10）",
+    "purpose": "CS-10 安全性とデータの扱いの節見出し。CASE_TOC の CS-10 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:441"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.delivery",
+    "path": "caseStudy.sections.delivery",
+    "text": "運用と納品物",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-11）",
+    "purpose": "CS-11 運用と納品物の節見出し。CASE_TOC の CS-11 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:442"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.scope",
+    "path": "caseStudy.sections.scope",
+    "text": "できること・含めていないこと",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-12）",
+    "purpose": "CS-12 できること・含めていないことの節見出し。CASE_TOC の CS-12 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:443"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.scale",
+    "path": "caseStudy.sections.scale",
+    "text": "規模の目安",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-13）",
+    "purpose": "CS-13 規模の目安の節見出し。CASE_TOC の CS-13 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:444"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.capabilities",
+    "path": "caseStudy.sections.capabilities",
+    "text": "対応可能な作業の例",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-14）",
+    "purpose": "CS-14 対応可能な作業の例の節見出し。CASE_TOC の CS-14 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:445"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.technical",
+    "path": "caseStudy.sections.technical",
+    "text": "技術詳細",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-15）",
+    "purpose": "CS-15 技術詳細の節見出し。CASE_TOC の CS-15 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:446"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.sections.repository",
+    "path": "caseStudy.sections.repository",
+    "text": "証拠へのリンク",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "節見出し（CS-16）",
+    "purpose": "CS-16 証拠へのリンクの節見出し。CASE_TOC の CS-16 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:447"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.requirementsFunctional",
+    "path": "caseStudy.requirementsFunctional",
+    "text": "機能",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "小見出し",
+    "purpose": "CS-4 の機能要件の小見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/positioning.py:204"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.requirementsConstraints",
+    "path": "caseStudy.requirementsConstraints",
+    "text": "制約",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "小見出し",
+    "purpose": "CS-4 の制約の小見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:128"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.rejected",
+    "path": "caseStudy.rejected",
+    "text": "却下した案",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "判断内ラベル",
+    "purpose": "各判断で却下した案のラベル。CS-6 見出しの「却下した案つき」に対応。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/portfolio-case-study-specification.md:144"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.tradeoff",
+    "path": "caseStudy.tradeoff",
+    "text": "代償",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "判断内ラベル",
+    "purpose": "その判断が何を差し出したかのラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/portfolio-case-study-specification.md:930"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.deliveryHeaders.1",
+    "path": "caseStudy.deliveryHeaders.1",
+    "text": "区分",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-11 の区分列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:63"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.deliveryHeaders.2",
+    "path": "caseStudy.deliveryHeaders.2",
+    "text": "内容",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-11 の内容列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:279"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scopeHeaders.1",
+    "path": "caseStudy.scopeHeaders.1",
+    "text": "Implemented",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-12 の実装済み列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/portfolio-case-study-specification.md:122"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scopeHeaders.2",
+    "path": "caseStudy.scopeHeaders.2",
+    "text": "Not Included",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-12 の含めていない列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/portfolio-case-study-specification.md:150"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scopeHeaders.3",
+    "path": "caseStudy.scopeHeaders.3",
+    "text": "Why",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-12 の理由列。境界に理由を必ず添える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:405"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scaleHeaders.1",
+    "path": "caseStudy.scaleHeaders.1",
+    "text": "項目",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-13 の項目列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:154"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scaleHeaders.2",
+    "path": "caseStudy.scaleHeaders.2",
+    "text": "実測値",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-13 の実測値列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/qa20.py:106"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.scaleHeaders.3",
+    "path": "caseStudy.scaleHeaders.3",
+    "text": "取得方法",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "表ヘッダ",
+    "purpose": "CS-13 の取得方法列。数値の出所を必ず添える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:435"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.technicalCta",
+    "path": "caseStudy.technicalCta",
+    "text": "技術詳細のページへ",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "CTA ラベル",
+    "purpose": "Technical ページへの導線ラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:237"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.evidenceLabel",
+    "path": "caseStudy.evidenceLabel",
+    "text": "Evidence",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "rail ラベル",
+    "purpose": "Evidence を置く節のレールラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:79"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.railLabels.1",
+    "path": "technical.railLabels.1",
+    "text": "TECHNICAL",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "rail ラベル",
+    "purpose": "Technical ページのレールラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:55"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sectionsLabel",
+    "path": "technical.sectionsLabel",
+    "text": "Sections",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "索引レール見出し",
+    "purpose": "節の索引であることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:379"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.about",
+    "path": "technical.sections.about",
+    "text": "このページについて",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-0）",
+    "purpose": "T-0 このページについての節見出し。CS-15 T-0 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:399"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.architecture",
+    "path": "technical.sections.architecture",
+    "text": "Architecture",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-1）",
+    "purpose": "T-1 Architectureの節見出し。CS-15 T-1 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:381"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.why",
+    "path": "technical.sections.why",
+    "text": "Why this architecture",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-2）",
+    "purpose": "T-2 Why this architectureの節見出し。CS-15 T-2 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:381"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.failureModes",
+    "path": "technical.sections.failureModes",
+    "text": "Failure modes",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-3）",
+    "purpose": "T-3 Failure modesの節見出し。CS-15 T-3 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.tradeOffs",
+    "path": "technical.sections.tradeOffs",
+    "text": "Trade-offs",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-4）",
+    "purpose": "T-4 Trade-offsの節見出し。CS-15 T-4 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.tests",
+    "path": "technical.sections.tests",
+    "text": "Tests",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-5）",
+    "purpose": "T-5 Testsの節見出し。CS-15 T-5 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.security",
+    "path": "technical.sections.security",
+    "text": "Security / Data handling",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-6）",
+    "purpose": "T-6 Security / Data handlingの節見出し。CS-15 T-6 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:422"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.limitations",
+    "path": "technical.sections.limitations",
+    "text": "Limitations",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-7）",
+    "purpose": "T-7 Limitationsの節見出し。CS-15 T-7 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:383"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.scale",
+    "path": "technical.sections.scale",
+    "text": "Scale",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（Scale）",
+    "purpose": "規模の節見出し。CS-13 の実測値をエンジニア向けに再掲する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:433"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.sections.links",
+    "path": "technical.sections.links",
+    "text": "Links",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "節見出し（T-8）",
+    "purpose": "T-8 Linksの節見出し。CS-15 T-8 と同一。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:383"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.aboutFields.target",
+    "path": "technical.aboutFields.target",
+    "text": "対象",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "T-0 行ラベル",
+    "purpose": "どの作品を対象にしたページかを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:163"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.aboutFields.claimSource",
+    "path": "technical.aboutFields.claimSource",
+    "text": "公開 claim の正本",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "T-0 行ラベル",
+    "purpose": "公開 claim の正本の所在。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/content.py:424"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.aboutFields.role",
+    "path": "technical.aboutFields.role",
+    "text": "実装形態",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "T-0 行ラベル",
+    "purpose": "実装形態。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/positioning.py:596"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.aboutFields.notIncluded",
+    "path": "technical.aboutFields.notIncluded",
+    "text": "含めていないもの",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "T-0 行ラベル",
+    "purpose": "含めていない範囲。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/positioning.py:58"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.testBreakdownHeaders.1",
+    "path": "technical.testBreakdownHeaders.1",
+    "text": "領域",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "表ヘッダ",
+    "purpose": "テスト内訳の領域列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/positioning.py:688"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.testBreakdownHeaders.2",
+    "path": "technical.testBreakdownHeaders.2",
+    "text": "内容",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "表ヘッダ",
+    "purpose": "テスト内訳の内容列。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:279"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.technical.designDocsHead",
+    "path": "technical.designDocsHead",
+    "text": "設計文書の読む順",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "TECHNICAL",
+    "slot": "小節見出し",
+    "purpose": "設計文書の推奨読み順の見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:436"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  }
+]

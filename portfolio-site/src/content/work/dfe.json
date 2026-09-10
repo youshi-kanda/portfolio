@@ -1,0 +1,201 @@
+{
+  "slug": "dfe",
+  "title": "Document Field Extraction Demo",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 3,
+  "repoPath": "document-field-extraction-demo/",
+  "productType": "帳票の OCR 後処理パイプライン（CLI）",
+  "targetUser": "事務処理担当 + 確認担当",
+  "problem": [
+    "読み取った値のうち、どれをそのまま使ってよく、どれを人が確認すべきかが分からない。",
+    "確信度をページ平均で持つと、はっきり読めた印字と滲んだ手書きが同じ扱いになる。"
+  ],
+  "purpose": "設備点検票の OCR レスポンスから 12 項目を取り出し、項目ごとに確信度を出し、弱いものだけを理由つきで人へ戻す。",
+  "implementationScope": [
+    "Field Extraction（次のラベルで打ち切る抽出窓）",
+    "Normalization（修復せず null を返す）",
+    "Confidence Scoring（ブロック単位）",
+    "Review Gate（4 状態）",
+    "Schema Validation",
+    "Structured JSON 出力",
+    "Safe Errors（コード + 固定文言）"
+  ],
+  "publicDemoScope": [
+    "OCR は実装していない。入力は合成 OCR レスポンス 1 種類",
+    "依存パッケージ 0。npm install が何も取りに行かない",
+    "ネットワークアクセス 0。fetch / XMLHttpRequest / WebSocket を毒化したテストで担保",
+    "fixtures はすべて生成物（合成 PDF・合成 OCR レスポンス・golden ファイル）"
+  ],
+  "limitations": [
+    "OCR の精度の証拠にはならない。この作品は OCR を実行していない。",
+    "レビュー画面は含めていない。判定を返すところまでの実装。",
+    "passed は「確認済み」ではなく「レビュー不要」。値は人が受け入れるまで候補のまま。"
+  ],
+  "originalProductScope": [
+    "元となった業務フローは OCR プロバイダを組み込んでいる。このデモはその後半（抽出・正規化・確信度・検証・レビューゲート）だけを対象にする。"
+  ],
+  "languages": [
+    "JavaScript（Node.js 20+ / ESM）"
+  ],
+  "frameworks": [
+    "依存パッケージ 0",
+    "node:test",
+    "リポジトリ内の schema-validator"
+  ],
+  "platform": [
+    "Node.js 20+",
+    "GitHub Actions"
+  ],
+  "keyDecision": [
+    {
+      "decision": "確信度をページ平均ではなくブロック単位で採点する。",
+      "rationale": "ページ平均は 0.86。手書きの備考は 0.58 のブロックに乗り、乗数の後 0.49 になります。ページ平均だけ見ていると、印字された型番と滲んだ備考が同じ点数になります。"
+    },
+    {
+      "decision": "読めなかった値は、補完せず拒否する。",
+      "rationale": "欠損はページ基準値ではなく 0 点。2026-02-31 は null を返します。静かに直された値は、確認が必要だったことを人に伝えられません。"
+    }
+  ],
+  "tests": {
+    "summary": "157 passed / 40 suites",
+    "count": 157,
+    "source": "npm test（2026-08-15）"
+  },
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "path": "document-field-extraction-demo/"
+    },
+    "demoScope": [
+      "OCR は実装していない。入力は合成 OCR レスポンス 1 種類",
+      "依存パッケージ 0。npm install が何も取りに行かない",
+      "ネットワークアクセス 0。fetch / XMLHttpRequest / WebSocket を毒化したテストで担保",
+      "fixtures はすべて生成物（合成 PDF・合成 OCR レスポンス・golden ファイル）"
+    ],
+    "verification": {
+      "tests": {
+        "summary": "157 passed / 40 suites",
+        "count": 157,
+        "source": "npm test（2026-08-15）"
+      },
+      "verificationId": null
+    }
+  },
+  "evidence": [
+    "DFE-V01"
+  ],
+  "caseStudyPublished": true,
+  "image": {
+    "src": "/img/dfeCli.webp",
+    "width": 1000,
+    "height": 823,
+    "caption": "12 項目を抽出し、項目別の確信度に応じて人による確認が必要な項目を判定。"
+  },
+  "fieldsTable": {
+    "producedBy": "npm run demo",
+    "terminalCommand": "node src/index.js --scenario success",
+    "rows": [
+      {
+        "key": "document_id",
+        "value": "DOC-2026-0142",
+        "confidence": "0.98",
+        "level": "HIGH"
+      },
+      {
+        "key": "equipment_id",
+        "value": "EQ-1001",
+        "confidence": "0.97",
+        "level": "HIGH"
+      },
+      {
+        "key": "inspection_date",
+        "value": "2026-08-15",
+        "confidence": "0.96",
+        "level": "HIGH"
+      },
+      {
+        "key": "location",
+        "value": "Warehouse A",
+        "confidence": "0.89",
+        "level": "MEDIUM"
+      },
+      {
+        "key": "equipment_type",
+        "value": "Packaging Machine",
+        "confidence": "0.87",
+        "level": "MEDIUM"
+      },
+      {
+        "key": "condition",
+        "value": "needs_review",
+        "confidence": "0.90",
+        "level": "HIGH"
+      },
+      {
+        "key": "safety_check_passed",
+        "value": "true",
+        "confidence": "0.95",
+        "level": "HIGH"
+      },
+      {
+        "key": "repair_required",
+        "value": "true",
+        "confidence": "0.93",
+        "level": "HIGH"
+      },
+      {
+        "key": "photo_attached",
+        "value": "false",
+        "confidence": "0.91",
+        "level": "HIGH"
+      },
+      {
+        "key": "issue_description",
+        "value": "Abnormal vibration detected",
+        "confidence": "0.49",
+        "level": "LOW"
+      },
+      {
+        "key": "next_inspection_date",
+        "value": "2026-11-15",
+        "confidence": "0.88",
+        "level": "MEDIUM"
+      },
+      {
+        "key": "inspector_role",
+        "value": "internal",
+        "confidence": "0.56",
+        "level": "LOW"
+      }
+    ]
+  },
+  "visual": {
+    "entryVariant": "v-terminal",
+    "caseVariant": "pipeline",
+    "signal": "弁柄 #A2401C",
+    "frame": "fr-term",
+    "ground": "tone",
+    "texture": "none",
+    "displayCut": "2 行"
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "productType — TASK-PORTFOLIO-POSITIONING-V2 ／ document-field-extraction-demo/README.md「Scope」",
+      "targetUser — content.py WORKS[dfe].users（spec 由来）",
+      "problem — document-field-extraction-demo/README.md 冒頭「The interesting parts」",
+      "purpose — document-field-extraction-demo/README.md「What it does」",
+      "implementationScope — document-field-extraction-demo/README.md「What it does」パイプライン図 ／ src/ のモジュール構成",
+      "publicDemoScope — document-field-extraction-demo/README.md「Scope」「No network access」「Synthetic data」／ package.json",
+      "originalProductScope — document-field-extraction-demo/README.md「Scope」",
+      "languages — package.json（engines.node >= 20 / dependencies 無し / type: module）",
+      "keyDecision — document-field-extraction-demo/README.md「The interesting parts」",
+      "limitations — 同上 ／ content.py WORKS[dfe].limit"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

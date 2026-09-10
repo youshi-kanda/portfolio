@@ -1,0 +1,2017 @@
+/* ============================================================================
+   ART DIRECTION V2 — composition layer (feature/motion-experience-v2)
+   ============================================================================
+
+   This file is ADDITIVE and is the only stylesheet in the site that is allowed
+   to move anything or to recompose anything. The six frozen stylesheets
+   (tokens / base / layout / components / evidence / responsive) are untouched:
+   the freeze stays readable as one diff, and deleting this file plus
+   <MotionStage /> plus the four `data-mx-*` attributes returns the page to
+   a4e8ee8 exactly.
+
+   V2 raises the page from "a well-set engineering portfolio" to a composed
+   LP. It does that with FOUR pieces of visual grammar and no fifth. Every rule
+   below is one of these four, and the section headings say which.
+
+   V2.1 adds NO fifth piece either. It is a composition pass over the same four:
+   the hero's exit is re-timed so the display and the plate stop cutting the
+   frame at the same moment (§4/§C), the register's dividers start where their
+   entries start (§D), the CRM plate's x is derived once instead of written
+   three times (§D), and 02's eight rungs become one path (§B). Copy, Evidence
+   pixels and every product claim are untouched, and so is the mobile
+   composition at every breakpoint below 1024.
+
+     A  SECTION NUMBER   the existing 00 / 01 / 02 promoted from a rail readout
+                         to an oversized background graphic. Same string, read
+                         from the same content object — `data-mx-n` carries it.
+
+     B  GATE / RULE      the design system's one gesture — "a 1px rule is drawn
+                         from the left in the signal colour" (components.css §9)
+                         — promoted to section boundaries, plate edges, and the
+                         responsibility path in 02.
+
+     C  PLATE            a section is covered from below by the next one, as a
+                         physical object, not as an opacity fade. The covering
+                         section is opaque and later in tree order; the covered
+                         section's content lags behind the scroll so the plate's
+                         edge visibly advances over it.
+
+     D  OFFSET           the grid is held and the starts are moved. The register
+                         panels step down and their dividers start with them, the
+                         v-split plate drops, the CRM body plate begins at the
+                         field's first third. Nothing is placed at random: every
+                         offset is measured off a track that the frozen grid
+                         already defines.
+
+   FOUR GATES, and the difference between them is load-bearing:
+
+     (ungated)                     layout / composition. The 100svh stage, the
+                                   sticky rail, the register asymmetry, the
+                                   3-lane workflow, the background numerals.
+                                   None of these move; they are the page.
+     html.mx                       set by an inline script only when the visitor
+                                   has NOT asked for reduced motion. Everything
+                                   that starts hidden (a rule at scaleX(0), a
+                                   row clipped to nothing) is behind this, so
+                                   with JS off or motion off the initial state is
+                                   never applied and the page is simply the
+                                   composed, still layout. Nothing can be
+                                   stranded invisible.
+     prefers-reduced-motion:
+       no-preference               scroll-linked behaviour: the pinned figure,
+                                   the plate lag, the scroll tick, the sequence.
+     min-width: 1024               everything that needs two tracks. Below it
+                                   the rail lies down and the page is a single
+                                   column, so plates, lanes and pins are held.
+
+   No scroll-jacking, no wheel/touch listeners, no scroll-behavior override, no
+   rAF loop. The scroll position is the browser's at all times. Everything
+   continuous is a CSS scroll/view timeline, which runs off the main thread and
+   cannot fight the user's input.
+
+   Cascade: `@layer motion` is declared after `components` in index.css, so
+   these rules win on layer order and never need !important or inflated
+   specificity to beat the frozen sheet. */
+
+@layer motion {
+  .ad {
+    /* Timing. One easing for structure (rules, reveals) and one duration for
+       draws, so the page has a single motion signature rather than eight. */
+    --mx-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --mx-draw: 0.86s;
+
+    /* Height of the fixed chrome above the hero: nav (74px + 1px rule) plus the
+       synthetic-data strip. These are the pre-script values, correct for the
+       shipped type stack, so the first paint is already right; MotionStage
+       re-measures and writes the real numbers back as an inline style ON THIS
+       ELEMENT — a custom property declared here shadows anything inherited from
+       <html>, so writing them to the root would be silently ignored. */
+    --mx-nav: 75px;
+    --mx-chrome: 117px;
+
+    /* Mirrors `.page{--mg}` in layout.css at each breakpoint. `--mg` is declared
+       ON `.page`, and custom properties inherit downward only — a section is
+       `.page`'s PARENT, so it cannot read it. The background numerals are
+       positioned on the section, so they need their own copy. It is a mirror,
+       not a second source: if layout.css ever changes a margin this must be
+       changed with it, which is why the two lists are written in the same
+       breakpoint order. */
+    --mx-mg: 72px;
+  }
+
+  @media (max-width: 1279px) {
+    .ad {
+      --mx-mg: 48px;
+    }
+  }
+  @media (max-width: 1023px) {
+    .ad {
+      --mx-mg: 32px;
+    }
+  }
+  @media (max-width: 767px) {
+    .ad {
+      /* the strip sets `display:block` under 768 and takes two lines */
+      --mx-nav: 59px;
+      --mx-chrome: 124px;
+      --mx-mg: 20px;
+    }
+  }
+
+  /* ==========================================================================
+     1. HERO — 100svh stage
+
+     Not motion: a recomposition. The hero was 512px in a 900px viewport, so the
+     first screen ended on the triptych's top edge and the display shared the
+     fold with three project panels. At 100svh minus the chrome the display gets
+     the viewport it was drawn at 88px for, and the answer line + lede fall to
+     the foot of the stage where they read as a base rather than as a caption.
+
+     `svh` (not `vh`) so the mobile URL bar collapsing does not change the stage
+     height mid-scroll — a `vh` stage is the classic source of a jump that looks
+     like scroll-jacking and is not.
+
+     min-height, never height: at 390px the same content is taller than the
+     stage and must be allowed to grow. Nothing is ever clipped to the fold. */
+  .ad .hero {
+    min-height: calc(100svh - var(--mx-chrome));
+    display: flex;
+  }
+  .ad .hero > .page {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  /* row 1 (rail + display) takes the slack, so row 2 sits on the stage floor */
+  .ad .hero > .page > .tr:first-child {
+    flex: 1 1 auto;
+  }
+  /* The display takes the slack optically, not from the top: centred in the
+     grown row it has air above and below and reads as placed, where anchoring
+     it to the top leaves one 240px hole above the answer line that looks like
+     a missing block rather than a stage. The rail is exempt — it is sticky and
+     `align-self:start` already released it. */
+  .ad .hero > .page > .tr:first-child > .fld {
+    align-self: center;
+  }
+  .ad .hero > .page > .tr:last-child {
+    flex: 0 0 auto;
+    padding-bottom: clamp(40px, 7svh, 72px);
+  }
+
+  /* ==========================================================================
+     2. INSTRUMENT RAIL — sticky
+
+     `align-self:start` is the load-bearing half: a grid item stretches to the
+     row by default, and a stretched item cannot stick. The rail is released to
+     its content height first, then pinned.
+
+     Held below 1024 on purpose. There the rail is not a rail — responsive.css
+     lays it down into a single kicker line above the text (`.ins{display:flex;
+     border-top:2px solid}`), and pinning a full-width horizontal band under the
+     nav would be a second navigation bar, which the design does not have. */
+  @media (min-width: 1024px) {
+    .ad .hero .ins,
+    .ad #work .ins,
+    .ad section[id^='w-'] .ins {
+      position: sticky;
+      top: calc(var(--mx-nav) + 40px);
+      align-self: start;
+    }
+  }
+
+  /* ==========================================================================
+     3. FIXED GRAPHIC LAYER  (grammar B — the gate rule, made continuous)
+
+     The gate rule is the one line the whole design is built around — every
+     section draws it between the rail and the text (`.tr:before`), and it stops
+     and restarts at every section boundary. The fixed layer is that same line,
+     continuous, at the same x, behind the page: the sections scroll and the
+     instrument does not.
+
+     The x math is not re-derived. `.mx-stage` nests a real `.page`, so it
+     inherits the frozen container's max-width, auto margins and `--mg`, and the
+     rule sits at the same `left` the frozen sheet uses at each breakpoint.
+
+     Decorative and `aria-hidden`: it states nothing the page does not. */
+  .ad .mx-stage {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ad .mx-stage {
+      display: block;
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: var(--mx-nav);
+      bottom: 0;
+      z-index: 3;
+      pointer-events: none;
+      /* the layer is only true where the prototype is: it fades out once both
+         00 and 01 have left the viewport, rather than drawing a line down
+         sections it makes no claim about */
+      opacity: 0;
+      transition: opacity 0.5s linear;
+      --mx-sig: #14654a;
+    }
+    .mx-live .ad .mx-stage {
+      opacity: 1;
+    }
+    .ad .mx-stage > .page {
+      height: 100%;
+      position: relative;
+    }
+
+    /* the extended gate rule. A mid neutral at low alpha because it crosses
+       both grounds — bone paper above, ink inside the band — and no fixed
+       element can read the section variable underneath it. Faded at both ends
+       so it reads as a continuing line and not as a bar with two cut edges. */
+    /* `left` on an absolutely positioned child resolves against the padding
+       box, and `.page` carries its margin as padding — so the frozen sheet's
+       227px, which is measured from `.tr` (inside the content box), needs
+       `--mg` added back. Reading the container's own variable is what keeps
+       this aligned at every breakpoint without restating the number. */
+    .ad .mx-rule {
+      position: absolute;
+      left: calc(var(--mg) + 227px);
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        color-mix(in srgb, #8a8e93 34%, transparent) 12% 88%,
+        transparent
+      );
+    }
+
+    /* the position tick. Scroll progress of the document, drawn on the rule in
+       the current work's pigment — the readout the rail cannot give because the
+       rail scrolls away.
+
+       CSS-only, and progressive: `scroll()` carries it, so there is no rAF loop
+       and no scroll listener anywhere in this prototype. Where the timeline is
+       unsupported the tick simply is not drawn — a tick frozen at the top would
+       be a broken instrument, which is worse than no instrument. */
+    .ad .mx-tick {
+      display: none;
+    }
+
+    @supports (animation-timeline: scroll()) {
+      .ad .mx-tick {
+        display: block;
+        position: absolute;
+        left: calc(var(--mg) + 226px);
+        top: 0;
+        width: 3px;
+        height: 64px;
+        background: var(--mx-sig);
+        transition: background-color 0.6s var(--mx-ease);
+        animation: mx-travel linear both;
+        animation-timeline: scroll(root block);
+      }
+      @keyframes mx-travel {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(0, calc(100svh - var(--mx-nav) - 64px), 0);
+        }
+      }
+    }
+
+    /* the frozen sheet narrows the grid at 1279 and drops the gate rule
+       entirely at 1023, where the rail lies down. The fixed layer follows it
+       exactly rather than inventing a line the composition no longer has. */
+    @media (max-width: 1279px) {
+      .ad .mx-rule {
+        left: calc(var(--mg) + 167px);
+      }
+      .ad .mx-tick {
+        left: calc(var(--mg) + 166px);
+      }
+    }
+    @media (max-width: 1023px) {
+      .ad .mx-stage {
+        display: none;
+      }
+    }
+  }
+
+  /* Plates sit above the fixed layer, never under it. A hairline drawn across
+     an Evidence screenshot would be a mark on the evidence; the instrument line
+     passes behind the plates instead. This is a z-order statement only — no
+     filter, no transform, no opacity, nothing is applied to any image.
+
+     This `z-index:4` only holds while nothing between the plate and `body`
+     opens a stacking context. §A's `isolation:isolate` does exactly that on
+     every section carrying a folio, which is why `#evidence` is lifted to 4 as
+     well — see §A. */
+  .ad .ev,
+  .ad .mfs {
+    position: relative;
+    z-index: 4;
+  }
+
+  /* The layer starts under the nav rather than under the whole chrome, so that
+     once the synthetic-data strip has scrolled away the rule reaches the top of
+     the viewport instead of leaving a 42px stub. That means the strip and the
+     layer overlap for the first screen, and SITE-07's notice is the one thing
+     on the page a decorative line may not cross. The strip wins. */
+  .ad .syn {
+    position: relative;
+    z-index: 4;
+  }
+
+  /* ==========================================================================
+     A. SECTION NUMBER — the rail readout as a background graphic
+
+     The page already numbers its sections and already sets those numbers in the
+     instrument face. V2 does not invent a decorative element: it takes the
+     string the rail is printing and sets it once more, very large, behind the
+     section, as the folio of that spread.
+
+     `attr()` is what makes this honest. The numeral is not typed here — it is
+     read off `data-mx-n`, which Hero / SelectedWork / HowIBuild fill from the
+     same `site.*.index` the rail uses. The graphic cannot say 01 while the rail
+     says 02. The `/ ""` alternative text is the accessibility half: generated
+     content is otherwise announced, and this numeral is the rail's number said
+     twice. Where `content: attr() / ""` is unsupported the whole declaration is
+     invalid and no numeral is drawn — the correct fallback for a graphic that
+     carries nothing.
+
+     `isolation:isolate` is load-bearing. The numeral is at `z-index:-1` so the
+     section's own content paints over it; without a stacking context on the
+     section that negative layer escapes to the root, where `body`'s background
+     paints on top of it and the numeral is invisible.
+
+     READ THIS BEFORE ADDING A FOLIO TO A SECTION. The `isolation:isolate` here
+     is not free. It makes every `[data-mx-n]` section a stacking context, and
+     a stacking context TRAPS the `z-index:4` that §3 puts on `.ev` / `.mfs`:
+     the plate can then only outrank things inside its own section, so the
+     fixed instrument layer (§3, `z-index:3`, a child of `body`) paints over
+     the whole section — a hairline drawn across an Evidence screenshot, which
+     is the one thing §3 exists to prevent.
+
+     In V2 the question did not arise: the folio was on `.hero` / `#work` /
+     `#build` only, and none of those contains a plate. V3 extends the folio to
+     `#stack` / `#principles` / `#evidence` / `#about` (see the `::before`
+     block below), and `#evidence` DOES contain an `.ev`. The fix is not here —
+     it is the `.ad #evidence { z-index: 4 }` rule at the end of this section,
+     which lifts the whole trapping context to the plate's own level and so
+     restores the order exactly. That rule is load-bearing, not cosmetic:
+     delete it and the fixed rule crosses the 05 screenshot.
+
+     So: a folio on a section that contains an `.ev` or `.mfs` needs the
+     section raised to `z-index:4` alongside it. `#stack`, `#principles` and
+     `#about` contain no plate and need nothing. */
+  .ad [data-mx-n] {
+    position: relative;
+    isolation: isolate;
+  }
+  .ad [data-mx-n]::before {
+    content: attr(data-mx-n) / '';
+    position: absolute;
+    z-index: -1;
+    pointer-events: none;
+    white-space: nowrap;
+    font-family: var(--f-mono);
+    font-weight: 500;
+    line-height: 0.72;
+    letter-spacing: -0.06em;
+    color: color-mix(in srgb, var(--tx) 6%, transparent);
+    /* right-aligned to the page's own right margin at every viewport, including
+       past 1440 where `.page` stops growing and centres itself */
+    right: calc((100% - min(100%, 1440px)) / 2 + var(--mx-mg));
+  }
+
+  /* 00 — the title spread's folio, and in V4 the poster's back layer.
+
+     V2 parked it in the empty right quadrant, floating clear of every line the
+     page draws: decoration, and it read as decoration. V2.1 moved it into the
+     instrument column at the stage floor, where both its edges were structural
+     — the page's own margin and the gate rule.
+
+     PHASE 6 moves it into the plane. What changed is that the hero now HAS a
+     back layer (components.css, `.hf`), and a background graphic sitting
+     outside it is a third plane doing the second one's job. In the plane the
+     numeral is what the back layer is made OF: oversized, cropped by the
+     stage's top edge and by the page's right margin, behind the display rather
+     than beside it. Still `attr(data-mx-n)` — no numeral is typed anywhere. */
+  .ad .hero::before {
+    top: 0;
+    bottom: auto;
+    line-height: 0.78;
+    font-size: clamp(180px, 24vw, 360px);
+    color: color-mix(in srgb, var(--tx) 7%, transparent);
+  }
+  /* 01 … 06 sit at the head of the section, inside the 168px of open space
+     `.s-open` already puts above the heading. Right of the 720px measure, so
+     the numeral never sits under running text.
+
+     V3 adds 03 / 04 / 05 / 06 to this list and to nothing else: the folio is
+     the page's own numbering, so a page that numbers 00–02 and then stops is
+     the composition running out halfway. The string still comes from
+     `site.<section>.index` via `data-mx-n`, so no numeral is typed anywhere. */
+  .ad #work::before,
+  .ad #build::before,
+  .ad #stack::before,
+  .ad #principles::before,
+  .ad #evidence::before,
+  .ad #about::before {
+    top: 92px;
+    font-size: clamp(110px, 15.5vw, 226px);
+  }
+
+  /* 05 is the one section that takes a folio AND contains an `.ev`.
+     `[data-mx-n]` sets `isolation:isolate`, and a stacking context on the
+     section would trap `.ev{z-index:4}` inside it — the fixed instrument layer
+     (§3, z-index 3) would then paint over the whole section, which is the one
+     thing §3 exists to prevent: a hairline drawn across a screenshot. Raising
+     the section itself to the same 4 restores the order exactly. It is a
+     z-order statement only; nothing is applied to any image. */
+  .ad #evidence {
+    z-index: 4;
+  }
+
+  @media (max-width: 1023px) {
+    /* one column, so the numeral has nowhere to sit beside the text. It stays —
+       §10 allows the section number on mobile — but it drops behind the top of
+       the section and gets smaller, so it reads as a watermark rather than as
+       a second headline competing with a 40px display. */
+    .ad [data-mx-n]::before {
+      color: color-mix(in srgb, var(--tx) 5%, transparent);
+    }
+    /* §10 — the mobile composition is held exactly. Below 1024 there is no gate
+       rule and no rail column to sit in, so the folio returns to the right
+       bleed it had in V2: every value the desktop rule above changed is put
+       back, and nothing about this frame moves. */
+    .ad .hero::before {
+      left: auto;
+      width: auto;
+      text-align: left;
+      right: calc((100% - min(100%, 1440px)) / 2 + var(--mx-mg));
+      font-size: clamp(120px, 30vw, 190px);
+      bottom: auto;
+      top: 8px;
+    }
+    .ad #work::before,
+    .ad #build::before,
+    .ad #stack::before,
+    .ad #principles::before,
+    .ad #evidence::before,
+    .ad #about::before {
+      top: 46px;
+      font-size: clamp(96px, 24vw, 160px);
+    }
+  }
+
+  /* ==========================================================================
+     4. DISPLAY TYPOGRAPHY — drawn in
+
+     On load the display is drawn rather than faded in: a clip from the baseline
+     up, which is how a line of set type appears on a press. Clip only, no
+     translate. The frozen line breaks are a Layer-3 token: nothing in this
+     block touches font-size, letter-spacing, width or line-height, so the cut
+     cannot move.
+
+     V1 also drifted the display and the lede apart on the way out. V2 deletes
+     that: §4 asks for the hero to be COVERED rather than to scroll out, and two
+     exits reading at once — the type sliding up while a plate slides over it —
+     is the composition arguing with itself. The plate is the exit now, and it
+     is stated once, in §C. */
+  .mx .ad .hero .fld,
+  .mx .ad .hero .msr,
+  .mx .ad .hero .ins {
+    animation: mx-draw-in 1.05s var(--mx-ease) both;
+  }
+  .mx .ad .hero .ins {
+    animation-delay: 0.04s;
+  }
+  .mx .ad .hero .fld {
+    animation-delay: 0.12s;
+  }
+  .mx .ad .hero .msr {
+    animation-delay: 0.28s;
+  }
+  @keyframes mx-draw-in {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      /* negative insets so no descender or focus ring is clipped at rest */
+      clip-path: inset(-30% -8% -30% -8%);
+    }
+  }
+
+  /* ==========================================================================
+     C. PLATE — a section is covered from below by the next one
+
+     The mechanism, once, for both boundaries on the page:
+
+       1. the covering section is OPAQUE and is later in tree order. Both
+          sections are `position:relative` with `z-index:auto`, so the painting
+          algorithm puts the later one on top with no z-index anywhere — which
+          is what keeps the fixed layer's 3-vs-4 order (§3) untouched.
+       2. the covered section's CONTENT lags behind the scroll. It is the lag
+          that makes the plate's edge advance over the content instead of
+          travelling with it. Without it both move at the same rate, the overlap
+          is constant, and nothing reads as covering.
+
+     The lag is a translate on `.page` — the section's inner container — while
+     the view timeline is declared on the SECTION. That split is deliberate: a
+     `view()` timeline whose subject is also the element being transformed asks
+     the browser to measure a box that its own animation is moving. Naming the
+     timeline on the untransformed parent removes the question entirely.
+
+     The distances are not arbitrary. 00 is covered by a plate that is opaque
+     from its own top edge, so its lag is free and is set for legibility (176px
+     over 783px of exit ≈ 77% of scroll speed). 01 is covered by a band that
+     starts 120px below it — `.s-band{margin:120px 0 0}` — so its lag is exactly
+     that 120px: the bone section closes the gap as the dark plate arrives and
+     is cut at the moment it touches. It can never poke past the plate's edge.
+
+     Held below 1024 (single column, and §10 does not allow this on mobile) and
+     under reduced motion, where the composition is simply the still overlap. */
+  .ad .hero,
+  .ad #work,
+  .ad #build,
+  .ad section[id^='w-'] {
+    position: relative;
+  }
+
+  /* the plate that covers 00: the work register. Opaque from its own top edge,
+     with a 1px leading rule (grammar B) so the edge that eats the hero is a
+     drawn line and not a colourless seam of bone on bone. */
+  .ad .hero + section {
+    position: relative;
+    background: var(--paper);
+  }
+
+  @media (min-width: 1024px) {
+    .ad .hero + section {
+      /* `.s-tight` is 88px of bone above the register. Closing it to zero does
+         two things at once: the register stops being a strip that follows the
+         hero and becomes the plate that ends it, and the register's own head —
+         `.mfs`'s hairline with the three pigment bars sitting on it — becomes
+         the plate's leading edge.
+
+         That is why no rule is drawn here. A separate 1px edge 26px above the
+         register head was the first attempt and it read as two competing lines;
+         the head is a better edge than anything this layer could add, because
+         it is already the one line on the page that carries all three works'
+         pigment. The hero's own `padding-bottom` is the air between them. */
+      padding-top: 0;
+    }
+  }
+
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .mx .ad .hero {
+        view-timeline: --mx-hero block;
+      }
+      /* V2.1 — the lag starts at the HALF of the exit, not at its beginning.
+         This is the whole of the hero-transition fix, and it is a timing
+         change: not one value of the display's type, width or line break moves.
+
+         V2 ran the lag across the entire exit, which meant the display crossed
+         the nav's edge at 77% of scroll speed. A 100px line of 88px type then
+         spent 129px of scroll sliced horizontally through its x-height, three
+         times over, WHILE the plate was already eating the lede at the foot of
+         the stage. Two unrelated cuts in one frame, and the larger of them
+         looked like the reader had simply stopped at an unlucky pixel.
+
+         Splitting the exit gives each event its own half:
+
+           exit 0–50%    lag 0. The hero travels at exactly scroll speed, so the
+                         display leaves the way anything else on the page
+                         leaves. The slice is as brief as scrolling allows, and
+                         nothing else in the frame is moving differently.
+           exit 50–100%  the full 176px of lag, now spent over half the
+                         distance. At 1440/900 the display's last line clears the
+                         nav at 49.3% of the exit — so the plate begins closing
+                         on the answer line and the lede within a few pixels of
+                         the display's departure, and never at the same time.
+
+         The lag total is unchanged, so the plate still covers exactly what it
+         covered: the hero's foot block. Only the moment it starts moved. */
+      .mx .ad .hero > .page {
+        animation: mx-lag-hero linear both;
+        animation-timeline: --mx-hero;
+        animation-range: exit 50% exit 100%;
+      }
+      .mx .ad #work {
+        view-timeline: --mx-work block;
+      }
+      .mx .ad #work > .page {
+        animation: mx-lag-work linear both;
+        animation-timeline: --mx-work;
+        animation-range: exit 0% exit 100%;
+      }
+      @keyframes mx-lag-hero {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 176px, 0);
+        }
+      }
+      @keyframes mx-lag-work {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 120px, 0);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     G. SECTION TRANSITIONS — two boundaries, two different events
+
+     The page had one transition mechanism and used it twice (§C: the hero and
+     the register are each covered by the section below). Everything after that
+     was `section / margin / section`. Two more boundaries now have an event,
+     and deliberately NOT the same event — a transition applied uniformly to
+     every boundary is a template, which is the thing this composition keeps
+     refusing.
+
+     LEAD → INDEX: the plate. The index is paper and the Lead is ink, so the
+     arriving section is a light plate closing over a dark one. It is pulled up
+     over the band's last 120px — which is the band's own bottom padding, so
+     nothing but ground is covered — and it carries a 1px leading edge in the
+     work's pigment, because an edge that eats a section should be a drawn line
+     and not a colourless seam. The Lead's figure is still pinned by §C while
+     this happens, so what the reader sees is the picture held while the next
+     section passes over it.
+
+     INDEX → 02: the folio straddles. 01…06 sit inside the open space at the
+     head of their section; 02's now starts above its own top edge, so the
+     numeral crosses the boundary and is cut by nothing. It is 7% ink — the
+     crossing is a shift in the ground, not a graphic laid over the index's last
+     row. This is the one place on the page where a section's own mark is
+     allowed outside it, and it is allowed because the numeral is the running
+     order made visible: the order is what continues across a boundary.
+
+     Both are ungated. They are composition, not motion: reduced motion changes
+     neither, and neither moves anything while it is read. */
+  .ad [data-homepage-role='lead'] > .in {
+    /* the plate's travel, given back as ground. §C's rule is that a covering
+       section covers GROUND and never a line of type: the band's own 104px of
+       bottom padding is less than the 120px the index is pulled up by, and the
+       first frame of this transition cut the scope columns mid-sentence. The
+       band now carries the overlap in its own padding, so the plate arrives
+       over ink and stops on the last line's air. */
+    padding-bottom: 224px;
+  }
+  .ad [data-homepage-role='index'] {
+    position: relative;
+    background: var(--paper);
+    margin-top: -120px;
+    border-top: 1px solid var(--sig);
+  }
+  .ad #build::before {
+    top: -72px;
+  }
+
+  /* ==========================================================================
+     E. HERO PARALLAX — three planes, three speeds
+
+     The poster's layers are only layers if they behave like layers. Standing
+     still they are a change of ground and a large numeral; the moment the page
+     starts to move, a plane that travels at exactly the reader's scroll is a
+     pattern printed on the page, and one that lags is behind it.
+
+     So the difference is small and it is spent early: over the FIRST viewport
+     of scroll the back layer gives up 120px and the plane 56px, which is 87%
+     and 94% of scroll speed. Nothing else on the page moves differently.
+
+     NOT ON THE TYPE. The display, the rail and the lede travel at exactly the
+     scroll, and nothing crosses them: both animated elements are behind the
+     text (`z-index:-1` / `-2`) and neither changes size, opacity or colour.
+     Reading during the movement is the requirement that set the values.
+
+     `scroll(root)` rather than the hero's own `view()` timeline, and that is
+     not a preference: a view timeline's `cover` range is already half elapsed
+     for an element sitting at the top of the document, so the composition would
+     load with the parallax part-applied — the still frame would not be the
+     frame this was designed as. A root scroll timeline is at 0 when the page is
+     at 0.
+
+     Transform only, on elements that are out of flow: no layout is read and
+     none is invalidated, so this cannot shift anything or cost a frame. Under
+     reduced motion the whole block is absent and the poster is the still
+     composition it was drawn as. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: scroll()) {
+      .ad .hero::before {
+        animation: mx-hero-back linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 100svh;
+      }
+      .ad .hf {
+        animation: mx-hero-plane linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 100svh;
+      }
+      @keyframes mx-hero-back {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 120px, 0);
+        }
+      }
+      @keyframes mx-hero-plane {
+        from {
+          transform: translate3d(0, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 56px, 0);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     F. LEAD LAYERS — the front sheet moves against the scroll
+
+     The Lead's three crops (components.css) are a still stack until the page
+     moves; then the front one is what proves they are separate sheets. It
+     travels 80px against a scroll that carries the subject plate — 5% of the
+     section's own height — so the overlap CHANGES as the entry passes, which is
+     the whole difference between a stack and a flat collage.
+
+     Its own view timeline, not the hero's: the movement has to be spent while
+     the entry is on screen, and `cover` on the entry itself is exactly that
+     span. The subject plate is pinned by §C for most of it, so the relative
+     movement is read against something stationary.
+
+     Nothing else here moves. No scale on the picture, no opacity, no filter,
+     nothing on the subject figure at all — and the crop that moves is
+     `aria-hidden` and carries no claim, so a reader who never sees the movement
+     has lost no information. Held under reduced motion and below 1024, where
+     the front sheet is a small detail on the mat's corner and sliding it would
+     put it over the caption. */
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .ad [data-homepage-role='lead'] {
+        view-timeline: --mx-lead block;
+      }
+      .ad [data-homepage-role='lead'] .lay-f {
+        animation: mx-lead-front linear both;
+        animation-timeline: --mx-lead;
+        animation-range: cover 0% cover 100%;
+      }
+      @keyframes mx-lead-front {
+        from {
+          transform: translate3d(0, 40px, 0);
+        }
+        to {
+          transform: translate3d(0, -40px, 0);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     D. WORK REGISTER — controlled asymmetry on a held grid
+
+     The three panels were exact thirds with identical starts, which is the one
+     place on the page that reads as a template. They are still one grid, still
+     edge to edge, still divided by a single hairline each — no card, no border
+     box, no radius, no shadow, and not one value of the panel's own type
+     changed. Two things move:
+
+       columns  1.22 / 0.96 / 0.82 of the same three tracks. The lead work — the
+                one 01 opens with and the one that gets the pinned Evidence — is
+                given the widest column, and the register descends from it. The
+                ratios sum to 3, so the strip is exactly as wide as before.
+       starts   panels 2 and 3 begin 30px and 60px lower (grammar D). The
+                pigment bars stay on the top line because they are absolutely
+                positioned at `top:-1px`, and the dividers stay full height
+                because the items still stretch — so the asymmetry is in the
+                content, held inside a grid that has not moved.
+
+     The result reads as a register / film strip: one line across the top, three
+     entries stepping down beneath it.
+
+     ── V2.1 ──────────────────────────────────────────────────────────────────
+     V2's 30/60px step was too small to survive next to three full-height
+     dividers: the eye still read a table with slightly-offset contents. Two
+     things change, and NEITHER of them is a width.
+
+     THE COLUMN RATIOS ARE NOT TOUCHED. `.mfs .strip .crop` is `overflow:hidden`
+     over an image that fills it, so a narrower column IS a different crop of
+     that work's Evidence. 1.22 / 0.96 / 0.82 is what V2 shipped and it is what
+     V2.1 ships; the horizontal paddings are likewise left alone for the same
+     reason. Every pixel of all three strips is byte-identical to V2.
+
+       start   0 / 54 / 112. The same grammar-D move, at a size that reads as a
+               composition rather than as a rounding error. It is not an even
+               ladder — 54 then 58 — so the descent is composed, not stepped.
+       rule    the divider now BEGINS where its entry begins. The frozen
+               `border-left` runs the full height of a stretched grid item,
+               which is the single strongest "cell wall" signal in the block;
+               replacing it with a background rule of the same 1px and the same
+               `--hair` lets the start move with the entry while the foot stays
+               on the register's baseline. One edge held, one edge moved —
+               grammar D again, applied to the rule instead of to the type.
+
+               `border-left-color: transparent`, NOT `border-left: 0`. Deleting
+               the border returns its 1px to the content box, the panel gets 1px
+               wider, and `.crop{overflow:hidden}` over an `object-fit:cover`
+               image means 1px wider IS a different crop: measured, panels 2 and
+               3 went 360→361 and 261→262. Keeping the border's width and taking
+               only its colour holds every strip at the exact pixels V2 shipped.
+               `background-origin: border-box` then lands the replacement rule on
+               the same x the border occupied, and measures its start from the
+               cell's own top rather than from inside the new padding.
+
+     What is deliberately NOT moved: `.sq`, the three pigment bars. They are
+     absolutely positioned at the top of each panel and they are the plate's
+     leading edge (§C) — the one line on the page carrying all three works'
+     pigment. The register's head stays a single unbroken line; everything
+     under it steps. */
+  @media (min-width: 1024px) {
+    .ad .hero + section .mfs {
+      grid-template-columns: 1.22fr 0.96fr 0.82fr;
+    }
+    .ad .hero + section .mfs .mf:nth-child(2),
+    .ad .hero + section .mfs .mf:nth-child(3) {
+      border-left-color: transparent;
+      background-origin: border-box;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(var(--hair), var(--hair));
+    }
+    .ad .hero + section .mfs .mf:nth-child(2) {
+      padding-top: 54px;
+      background-position: 0 54px;
+      background-size: 1px calc(100% - 54px);
+    }
+    .ad .hero + section .mfs .mf:nth-child(3) {
+      padding-top: 112px;
+      background-position: 0 112px;
+      background-size: 1px calc(100% - 112px);
+    }
+  }
+
+  /* ==========================================================================
+     B. SECTION TRANSITION + SIGNAL COLOUR + RULE-DRAW
+
+     One gesture, not three. The design system already has exactly one: "a 1px
+     rule is drawn from the left in the signal colour" (components.css §9),
+     which today only fires on hover. This promotes that same gesture to the
+     scale of a section — so the page gains no new vocabulary, it just uses the
+     word it already had in more places.
+
+     `--sig` resolves inside each section, so the rule that draws across the top
+     of a work band is that work's pigment (常磐 / 藍 / 弁柄) with no colour
+     hardcoded here and no per-slug rule to keep in sync with tokens.css.
+
+     Every drawn state is behind `html.mx`: with JS off, `mx-in` never arrives,
+     and because the scaled-down initial state is behind the same flag the rules
+     are simply present at full length. */
+
+  /* the boundary rule — the leading edge of every work plate */
+  .mx .ad section[id^='w-']::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 2px;
+    background: var(--sig);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--mx-draw) var(--mx-ease);
+    z-index: 5;
+  }
+  .mx .ad section[id^='w-'].mx-in::before {
+    transform: scaleX(1);
+  }
+
+  /* the gate rule, drawn downward as the section arrives */
+  .mx .ad .hero .tr::before,
+  .mx .ad #work .tr::before,
+  .mx .ad #build .tr::before,
+  .mx .ad #stack .tr::before,
+  .mx .ad #principles .tr::before,
+  .mx .ad #evidence .tr::before,
+  .mx .ad #about .tr::before,
+  .mx .ad section[id^='w-'] .tr::before {
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    transition: transform var(--mx-draw) var(--mx-ease) 0.06s;
+  }
+  .mx .ad .mx-in .tr::before {
+    transform: scaleY(1);
+  }
+
+  /* the rule-draw as interaction, on the one instrument that has rules to draw:
+     the hero capability rows. The signal rule is drawn over the existing hair
+     rule, staggered top to bottom, so the rail reads as an instrument coming up
+     rather than as three lines appearing at once. Overlay only — the frozen
+     `border-bottom` is still there underneath and is what carries the row when
+     none of this runs. */
+  .mx .ad .hero .cap3 .cb {
+    position: relative;
+  }
+  .mx .ad .hero .cap3 .cb::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 1px;
+    background: var(--sig);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.62s var(--mx-ease) var(--mx-d, 0s);
+  }
+  .mx .ad .hero.mx-in .cap3 .cb::after {
+    transform: scaleX(1);
+  }
+  .mx .ad .hero .cap3 .cb:nth-child(1) {
+    --mx-d: 0.34s;
+  }
+  .mx .ad .hero .cap3 .cb:nth-child(2) {
+    --mx-d: 0.46s;
+  }
+  .mx .ad .hero .cap3 .cb:nth-child(3) {
+    --mx-d: 0.58s;
+  }
+
+  /* ==========================================================================
+     WORK 01 — CRM: dark / stage / overlap
+
+     The band is 2,687px tall and, past the figure, 1,320px of it is body text
+     beside an empty rail column while the screenshot the text is about has long
+     since scrolled away. Claim and evidence are the site's whole argument and
+     they were never on screen together.
+
+     V1 fixed the timing: the figure row pins under the nav and the body row
+     rises over it. V2 fixes the composition. The body row was a full-bleed
+     rectangle, so the overlap was two stacked blocks with a horizontal cut
+     across the whole page and the Evidence vanished completely. Now the text
+     plate is right-biased: it begins at the gate rule and runs to the page's
+     right edge, which leaves the left of the Evidence uncovered for the whole
+     read. Claim and evidence share the screen instead of taking turns.
+
+     THE EVIDENCE IS NOT TOUCHED. No filter, no opacity, no blend, no transform,
+     no change of crop — and, specifically, no change to the figure's container
+     width either, because `.crop img{object-fit:cover}` means a narrower
+     container IS a different crop. The figure keeps the exact box and the exact
+     pixels it had. The left bias is produced entirely by what the text plate
+     does not cover.
+
+     The plate's left edge is 228px, one pixel right of the frozen gate rule at
+     227px, so the fixed instrument line (§3) stays visible as the seam between
+     the Evidence and the text rather than being buried under the plate.
+
+     `right: calc(-1 * var(--mg))` reaches the page's right edge exactly. V1
+     used two offset box-shadow copies to fake a full-bleed ground; a plate that
+     stops at a chosen x does not need the trick, so the trick is gone.
+
+     Both rows sit above the fixed layer (z 5 / 6 > 3) so the instrument line
+     passes behind the pinned plate.
+
+     Held below 1024: at 390px the figure is most of the viewport, and pinning
+     it would leave the body reading through a letterbox (§10 forbids it). And
+     held under reduced motion — a plate that stays while the page moves under
+     it is the largest movement on the page, whatever the transform count. */
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    /* ── V2.1: ONE x, THREE USES ────────────────────────────────────────────
+       The plate's start is declared once, on the band, and read by all three
+       things that have to agree about it: the plate's own left edge, the
+       shoulder the body text starts at, and the caption's indent.
+
+       V2 wrote them as three separate pixel values (227 / 88 / 256, and again
+       167 / 56 / 188 at the narrower grid) and they did not in fact agree. The
+       plate began at the gate rule, which put its edge 183px into a 1193px
+       screenshot — so the only Evidence left uncovered was the app's dark
+       navigation strip, which is the one part of a screenshot that carries no
+       claim. §4's own test: a visible sidebar is not visible Evidence.
+
+       The value is the FIELD'S FIRST THIRD. The field is the track the figure
+       and the body both live in, and its thirds are already a division this
+       page draws — 02's three responsibility lanes are laid on exactly them.
+       So the plate does not begin at a number chosen to look right; it begins
+       on a line the page already uses at this scale.
+
+       At 1440 that puts the plate's edge 554px into the screenshot: the whole
+       approval-flow panel — the thing the body text beside it is arguing about
+       — stays on screen for the entire read, and the body gets a 595px measure
+       instead of the 937px it had, which is a second problem the same number
+       fixes.
+
+       The caption contract stops being a coincidence. V2 indented the caption
+       to 256px and put the plate at 227px, so "fully visible or fully
+       occluded" held only because that particular caption string happened to
+       be short enough. Sharing one variable makes it structural: the caption
+       starts exactly where the plate starts, so it is either entirely in front
+       of the plate or entirely behind it, for any caption of any length.
+
+       `100%` resolves against the same 1281px box in all three places — `.tr`
+       and the bleed's inner `.page` are both `.page`'s content width by
+       construction — so one declaration is correct for all of them at every
+       viewport, including past 1440 where the container stops growing. */
+    .ad #work + section {
+      --mx-plate: calc(256px + (100% - 256px) / 3);
+    }
+
+    .ad #work + section [data-mx-row='figure'] {
+      position: sticky;
+      top: var(--mx-nav);
+      z-index: 5;
+    }
+    .ad #work + section [data-mx-row='body'] {
+      position: relative;
+      z-index: 6;
+    }
+    /* the right-biased text plate. `z-index:-1` keeps it behind the row's own
+       content but inside the row's stacking context, so it covers the pinned
+       figure (z 5) and nothing else. `--paper` inside `.inv` is the band's own
+       ink, so the ground is the band's, not a colour introduced here.
+
+       The leading edge is a 1px rule in the work's own pigment, sitting on the
+       227px the frozen gate rule already occupies. It is what makes the overlap
+       read as one object laid over another rather than as a rendering seam: a
+       plate with a drawn edge is deliberate, a plate with no edge is a glitch.
+       `border-left` rather than a fourth pseudo-element — `.tr::before` is the
+       frozen gate rule and `::after` is this plate, so the row has no third
+       slot, and box-sizing:border-box (base.css) keeps the edge inside the
+       227px so nothing shifts. */
+    .ad #work + section [data-mx-row='body']::after {
+      content: '';
+      position: absolute;
+      z-index: -1;
+      top: 0;
+      bottom: 0;
+      left: var(--mx-plate);
+      right: calc(-1 * var(--mg));
+      background: var(--paper);
+      border-left: 1px solid var(--sig);
+    }
+    /* grammar D — the text starts inside its plate, not on its edge, so the
+       plate has a shoulder and reads as an object laid over the Evidence.
+
+       Written as a third of `.fld`'s OWN box rather than with `--mx-plate`,
+       and the difference is not cosmetic: `.fld` is a grid item, so a
+       percentage in its padding resolves against its grid AREA — the field,
+       1025px — while the same percentage inside `--mx-plate` resolves against
+       `.tr`'s 1281px for the plate and the caption. Substituting the variable
+       here put the text 2px off the plate's edge instead of 88px inside it,
+       and the shoulder silently disappeared. Two expressions, one line: the
+       field's first third, measured in each box's own terms. */
+    .ad #work + section [data-mx-row='body'] > .fld {
+      padding-left: calc(100% / 3 + 88px);
+    }
+
+    /* The Evidence caption moves off the bleed and onto the measure column.
+       This is the one thing the overlap gets wrong if it is left alone: the
+       plate's edge falls in the middle of the caption, and a caption cut
+       mid-sentence is not an occluded object, it is a different claim. On a
+       site whose whole argument is that a claim and its evidence are shown
+       together, a half-sentence under a screenshot is the one artefact that
+       cannot be allowed to stand.
+
+       V2.1 indents it to the plate's own start rather than to a number that
+       happens to clear it. The caption then begins on the plate's edge, so the
+       plate's arrival covers the whole caption at once and its departure
+       uncovers the whole caption at once — the contract holds by construction
+       and not because this caption is 732px long. The `border-top` still runs
+       the full bleed because padding sits inside the box, so the rule that ties
+       the caption to the figure is unchanged.
+
+       Nothing here touches the image, the crop, the caption's text, its size or
+       its colour. It is a start position, which is what §7 leaves open. */
+    .ad #work + section [data-mx-row='figure'] .ev .cap {
+      padding-left: var(--mx-plate);
+    }
+    /* While the plate is over it the figure row is `inert` (MotionStage) — out
+       of the tab order, out of the accessibility tree. The strip of it that
+       stays visible must therefore stop advertising a click it will not honour:
+       `.fig .shot` is a real button spanning the whole figure and carries
+       `cursor:zoom-in`. The Evidence is still one click away from the caption
+       and the entry CTA, neither of which is ever covered. */
+    .ad #work + section [data-mx-row='figure'][inert] .shot {
+      cursor: default;
+    }
+  }
+  @media (max-width: 1279px) and (min-width: 1024px) {
+    /* the frozen grid narrows to 148px + 40px at 1279, so the field starts at
+       188px instead of 256px (responsive.css §11) and the whole derivation
+       moves with it. Two declarations, because the third and the fourth — the
+       plate's own edge and the caption — read the variable and need no
+       restatement here. The shoulder narrows with the grid, as it did in V2. */
+    .ad #work + section {
+      --mx-plate: calc(188px + (100% - 188px) / 3);
+    }
+    .ad #work + section [data-mx-row='body'] > .fld {
+      padding-left: calc(100% / 3 + 56px);
+    }
+  }
+
+  /* ==========================================================================
+     WORK 02 — PPM: bone / ledger / split
+
+     The three works must not share one transition, or the running order reads
+     as three instances of a template. PPM is the ledger work — its source of
+     truth is a ruled document and its frame is `fr-plate`, the ruled board — so
+     its arrival is a ledger head: the pigment boundary rule with a hairline
+     drawn under it, and the escaping plate dropped below the text column so the
+     5/7 split is asymmetric down as well as across (grammar D).
+
+     No new element: the second rule is the section's own `::after`, and the
+     drop is a margin on the column that already escapes the right margin. */
+  .mx .ad section[id^='w-'].s-open::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 7px;
+    height: 1px;
+    background: var(--hair2);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform var(--mx-draw) var(--mx-ease) 0.16s;
+    z-index: 5;
+  }
+  .mx .ad section[id^='w-'].s-open.mx-in::after {
+    transform: scaleX(1);
+  }
+  @media (min-width: 1024px) {
+    .ad section[id^='w-'].s-open .v-split .esc {
+      margin-top: 84px;
+    }
+  }
+
+  /* ==========================================================================
+     WORK 03 — DFE: terminal / sequence
+
+     DFE has no GUI: its subject picture is the mono field table. So its
+     transition is the one a terminal has — the rows arrive in sequence, each
+     printed from the left, in document order.
+
+     No stagger is written down. Each row carries its own `view()` timeline, so
+     the cascade is the scroll position of that row and nothing else: it is
+     correct at any row count, at any viewport, and it runs backwards when the
+     visitor scrolls back up, which a delay-based stagger cannot do.
+
+     Clip only. No opacity fade, no translate, no permanent ink added to a
+     table that is evidence of an output. Where the timeline is unsupported, or
+     motion is reduced, or JS is off, the rows are simply present. */
+  @media (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .mx .ad section[id^='w-'].tone .fields .row {
+        animation: mx-print linear both;
+        animation-timeline: view(block);
+        animation-range: entry 0% cover 16%;
+      }
+      @keyframes mx-print {
+        from {
+          clip-path: inset(0 100% 0 0);
+        }
+        to {
+          clip-path: inset(-20% -4% -20% 0);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     02 HOW I BUILD — the workflow as a path across three lanes
+
+     Not one word of the section changes. The eight steps, their indices, their
+     owners, their descriptions and the two gate tags are the brief's own
+     strings, rendered from the same `site.howIBuild.workflow` array in the same
+     order. What changes is that the reader can see the thing the list was
+     describing: which of the three parties holds each step, and where
+     responsibility moves.
+
+     ── V2.1 ──────────────────────────────────────────────────────────────────
+     V2 put the steps in lanes and then drew, on every row, a rule running back
+     to the human lane's left edge. Eight full-width horizontals, a border под
+     every row, and a tint filling the whole cell of each gate step: the result
+     was an 8x3 table with the contents shuffled sideways. It answered "who
+     holds this step" and said nothing at all about movement, because a rule
+     that starts in the same place on every row cannot encode a direction.
+
+     V2.1 draws ONE PATH instead of eight rungs.
+
+       lane guides   three faint 1px rules, one at the head of each lane. They
+                     are the field, not the diagram.
+       vertical      each step draws the signal rule down its own lane, for the
+                     height of its own row. That is the step being HELD by that
+                     party.
+       horizontal    a step whose owner differs from the step before it draws a
+                     rule at its top edge, spanning from the previous lane to
+                     its own — and no further. That is responsibility MOVING,
+                     and the length of the rule is the distance it moved.
+
+     Consecutive steps with the same owner draw no horizontal at all, so the
+     eight-rule grid collapses to the five jogs the workflow actually contains:
+
+       01 02 Human ─┐
+       03    ChatGPT ─┐            human → chatgpt
+       04 05 Claude Code ─┐        chatgpt → claude
+       06    ChatGPT ◄────┘        claude → chatgpt
+       07    Claude Code ─┐        chatgpt → claude
+       08    Human ◄──────┘        claude → human
+
+     Segments meet: a jog is at its row's top edge, which is the previous row's
+     bottom edge, where that row's vertical ends. So the five jogs and the eight
+     verticals are one continuous line from 01 to 08 with no join to draw.
+
+     Everything is the design system's one gesture — "a 1px rule is drawn from
+     the left in the signal colour" (components.css §9). No arrow, no node, no
+     curve, no second colour, no library, and nothing thicker than a hairline.
+
+     THE DIRECTION IS IN THE DRAW. A jog that moves right is drawn from its left
+     end; a jog that moves left is drawn from its right end. Both start at the
+     lane responsibility is leaving and finish at the lane receiving it, so the
+     path is not only readable as a shape, it is readable as a sequence.
+
+     Lane assignment and lane CHANGE are both read from the markup, never
+     restated: each row prints its owner into `.o[data-r]`, `:has()` places the
+     row, and `.fst:has(A) + .fst:has(B)` — the adjacent sibling — is how a row
+     learns what the row above it was. Adding a ninth step, or moving 05 to
+     ChatGPT, is an edit to the content file and needs no change here.
+
+     The lane divisions are painted as a background on `.flow` rather than as
+     pseudo-elements, because `.flow` is the grid container here and its
+     pseudo-elements would become grid items and take rows of their own. */
+  @media (min-width: 1024px) {
+    .ad #build .flow {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      column-gap: 0;
+      background:
+        linear-gradient(var(--hair), var(--hair)) 0 0 / 1px 100% no-repeat,
+        linear-gradient(var(--hair), var(--hair)) calc(100% / 3) 0 / 1px 100% no-repeat,
+        linear-gradient(var(--hair), var(--hair)) calc(200% / 3) 0 / 1px 100% no-repeat;
+    }
+    .ad #build .flow .fst {
+      /* the path's own track inside a lane. Stated once: the vertical sits on
+         it, every jog begins and ends on it, and the content clears it.
+
+         It is NOT the lane guide. V2.1's first pass ran the path along the
+         lane walls, and because a jog then began and ended exactly on a wall,
+         every pair of jogs closed a rectangle with the walls between them —
+         the table came back as an outline. Threading the path 18px inside the
+         lane, on the index column's own shoulder, leaves all four corners open:
+         the walls stay the faint field the steps sit in, and the signal line is
+         visibly a separate object travelling through them. */
+      --mx-px: 18px;
+      grid-column: 1;
+      grid-template-columns: 40px minmax(0, 1fr);
+      column-gap: 14px;
+      row-gap: 5px;
+      align-items: baseline;
+      padding: 16px 24px 20px 36px;
+      /* the two things that made it a table. The row rule went because eight
+         full-width horizontals are a grid; the cell fill went because a tint
+         that reaches both lane guides is a table cell however it is coloured.
+         The gate keeps its tint below, inset off the path. */
+      border-bottom: 0;
+      background: none;
+    }
+    .ad #build .flow .fst:has(.o[data-r='chatgpt']) {
+      grid-column: 2;
+    }
+    .ad #build .flow .fst:has(.o[data-r='claude']) {
+      grid-column: 3;
+    }
+    /* the gate steps keep the frozen `--sig-bg`, but as a marked block inside
+       the lane instead of a filled cell: it starts clear of the path, stops on
+       the row's own right padding, and is inset 12px top and bottom so the
+       jogs at the row boundaries never run along its edge. Air on all four
+       sides is what separates a flagged entry from a filled cell — a tint that
+       reaches the boundary is a table however it is coloured. */
+    .ad #build .flow .fst.gate {
+      background: linear-gradient(var(--sig-bg), var(--sig-bg)) 30px 12px /
+        calc(100% - 54px) calc(100% - 24px) no-repeat;
+    }
+    /* one step per row, in the running order the content declares */
+    .ad #build .flow .fst:nth-child(1) {
+      grid-row: 1;
+    }
+    .ad #build .flow .fst:nth-child(2) {
+      grid-row: 2;
+    }
+    .ad #build .flow .fst:nth-child(3) {
+      grid-row: 3;
+    }
+    .ad #build .flow .fst:nth-child(4) {
+      grid-row: 4;
+    }
+    .ad #build .flow .fst:nth-child(5) {
+      grid-row: 5;
+    }
+    .ad #build .flow .fst:nth-child(6) {
+      grid-row: 6;
+    }
+    .ad #build .flow .fst:nth-child(7) {
+      grid-row: 7;
+    }
+    .ad #build .flow .fst:nth-child(8) {
+      grid-row: 8;
+    }
+    /* the internal shape is the one responsive.css already uses when the row
+       has to stack — index at the left, then name / owner / what / tag */
+    .ad #build .flow .k {
+      grid-row: 1 / span 3;
+    }
+    .ad #build .flow .o,
+    .ad #build .flow .d,
+    .ad #build .flow .g {
+      grid-column: 2;
+      text-align: left;
+    }
+    .ad #build .flow .g {
+      margin-top: 4px;
+    }
+
+    /* ---------------------------------------------------------------- the path
+       Geometry is UNGATED, on purpose and against V2's habit. V2 declared the
+       rung's `content` inside `.mx`, so with JS off or motion reduced the
+       diagram simply had no connections in it at all. §5 asks for the final
+       state to be shown statically instead, so everything that IS the drawing
+       lives here and only the two `transform`s that hide it live behind `.mx`.
+
+       `left`/`width` in lane multiples: the row's own box is exactly one lane
+       wide, so -100% and -200% reach the lane before it and the one before
+       that without a single pixel value — correct at every viewport and at any
+       lane width. */
+    .ad #build .flow .fst::after {
+      content: '';
+      position: absolute;
+      left: var(--mx-px);
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--sig);
+    }
+    .ad #build .flow .fst::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      height: 1px;
+      left: var(--mx-px);
+      width: 0;
+      background: var(--sig);
+    }
+    /* responsibility moving right — drawn from the lane it leaves */
+    .ad #build .flow .fst:has(.o[data-r='human']) + .fst:has(.o[data-r='chatgpt'])::before,
+    .ad #build .flow .fst:has(.o[data-r='chatgpt']) + .fst:has(.o[data-r='claude'])::before {
+      left: calc(-100% + var(--mx-px));
+      width: 100%;
+    }
+    .ad #build .flow .fst:has(.o[data-r='human']) + .fst:has(.o[data-r='claude'])::before {
+      left: calc(-200% + var(--mx-px));
+      width: 200%;
+    }
+    /* responsibility coming back — the span is to the right of this lane, so
+       the same rule is written from the other end */
+    .ad #build .flow .fst:has(.o[data-r='chatgpt']) + .fst:has(.o[data-r='human'])::before,
+    .ad #build .flow .fst:has(.o[data-r='claude']) + .fst:has(.o[data-r='chatgpt'])::before {
+      width: 100%;
+    }
+    .ad #build .flow .fst:has(.o[data-r='claude']) + .fst:has(.o[data-r='human'])::before {
+      width: 200%;
+    }
+
+    /* ------------------------------------------------------- the path, drawn
+       Behind `html.mx`: these are the hidden initial states, so with JS off or
+       reduced motion set they are never applied and the path above is simply
+       present, whole, from first paint.
+
+       The stagger is the running order — the path is traced 01 → 08 as the
+       section arrives, which is the same sequence the steps are numbered in.
+       Each row's jog is drawn first and its vertical follows it, so the line
+       is continuous while it is being made and not only once it is finished.
+       `mx-in` is set once by an IntersectionObserver and never removed; there
+       is no scroll listener and no rAF anywhere in this. */
+    .mx .ad #build .flow .fst::after {
+      transform: scaleY(0);
+      transform-origin: 50% 0;
+      transition: transform 0.5s var(--mx-ease) calc(var(--mx-d, 0s) + 0.08s);
+    }
+    .mx .ad #build .flow .fst::before {
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform 0.42s var(--mx-ease) var(--mx-d, 0s);
+    }
+    /* drawn from the right end when responsibility is moving back leftward, so
+       the direction of the draw is the direction of the hand-off */
+    .mx .ad #build .flow .fst:has(.o[data-r='chatgpt']) + .fst:has(.o[data-r='human'])::before,
+    .mx .ad #build .flow .fst:has(.o[data-r='claude']) + .fst:has(.o[data-r='chatgpt'])::before,
+    .mx .ad #build .flow .fst:has(.o[data-r='claude']) + .fst:has(.o[data-r='human'])::before {
+      transform-origin: 100% 50%;
+    }
+    .mx .ad #build.mx-in .flow .fst::after,
+    .mx .ad #build.mx-in .flow .fst::before {
+      transform: none;
+    }
+    .mx .ad #build .flow .fst:nth-child(1) {
+      --mx-d: 0.06s;
+    }
+    .mx .ad #build .flow .fst:nth-child(2) {
+      --mx-d: 0.15s;
+    }
+    .mx .ad #build .flow .fst:nth-child(3) {
+      --mx-d: 0.24s;
+    }
+    .mx .ad #build .flow .fst:nth-child(4) {
+      --mx-d: 0.33s;
+    }
+    .mx .ad #build .flow .fst:nth-child(5) {
+      --mx-d: 0.42s;
+    }
+    .mx .ad #build .flow .fst:nth-child(6) {
+      --mx-d: 0.51s;
+    }
+    .mx .ad #build .flow .fst:nth-child(7) {
+      --mx-d: 0.6s;
+    }
+    .mx .ad #build .flow .fst:nth-child(8) {
+      --mx-d: 0.69s;
+    }
+  }
+
+  /* ==========================================================================
+     02 — THE SCENE: the axis holds, the steps move, one step is current
+
+     Phase 6 (BL-2). The section was a diagram you read and then scrolled past.
+     Two changes make it a scene you move through, and neither adds an element
+     to the page:
+
+     THE KEY PINS. The three lane heads are what the diagram means — which
+     column is whose — and they were only legible while the top of the diagram
+     was on screen. Pinned under the nav they stay legible for all eight steps,
+     which is the whole span in which the answer matters. Sticky is layout, not
+     animation: it is here, ungated, and reduced motion keeps it.
+
+     ONE STEP IS CURRENT. Each step's index lights as it crosses the middle of
+     the viewport — a filled square in the section's pigment, the same mark the
+     register and the mobile bar already use, and the same green the path is
+     drawn in. It travels down the diagram at exactly the reader's scroll, so
+     the thing that is moving is the reader's own position in the process.
+
+     Nothing is dimmed to achieve it. Dimming the other seven steps would make
+     seven eighths of the section harder to read in order to point at one
+     eighth, and the direction is explicit that text stays readable while
+     things move. Only the current mark changes, and its rest state — the
+     state under reduced motion, or with no timeline support — is the
+     unmarked one the section has always had. */
+  .ad #build .lanes {
+    position: sticky;
+    top: var(--mx-nav);
+    z-index: 3;
+    background: var(--paper);
+  }
+  @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+    @supports (animation-timeline: view()) {
+      .ad #build .flow .fst .k {
+        padding: 2px 7px;
+        margin-left: -7px;
+        animation: mx-step-now linear both;
+        animation-timeline: view(block);
+        animation-range: cover 40% cover 62%;
+      }
+      @keyframes mx-step-now {
+        0%,
+        100% {
+          background-color: transparent;
+          color: var(--sig);
+        }
+        22%,
+        78% {
+          background-color: var(--sig);
+          color: var(--paper);
+        }
+      }
+    }
+  }
+
+  /* ==========================================================================
+     02 HOW I BUILD — one vertical timeline below 1024
+
+     §9 asks for a single vertical timeline on mobile and forbids sideways
+     scrolling, and §10 forbids porting the desktop composition down. So the
+     lanes are not shrunk: the section becomes a spine with eight stops.
+
+     The stacked row shape is the one responsive.css already ships below 768;
+     this only extends it up to 1023, where the frozen five-column row is 704px
+     wide and cramped. The spine is a 1px background rule and each stop is the
+     `.sq` square the register, the principles and the mobile bar already use —
+     in the section's own pigment, so nothing new is introduced. */
+  @media (max-width: 1023px) {
+    .ad #build .flow {
+      padding-left: 18px;
+      background: linear-gradient(var(--hair2), var(--hair2)) 0 0 / 1px 100% no-repeat;
+    }
+    .ad #build .flow .fst {
+      grid-template-columns: 44px minmax(0, 1fr);
+      row-gap: 4px;
+      padding: 12px 0;
+    }
+    .ad #build .flow .k {
+      grid-row: 1 / span 3;
+    }
+    .ad #build .flow .o,
+    .ad #build .flow .d,
+    .ad #build .flow .g {
+      grid-column: 2;
+      text-align: left;
+    }
+    .ad #build .flow .fst::after {
+      content: '';
+      position: absolute;
+      left: -21px;
+      top: 17px;
+      width: 7px;
+      height: 7px;
+      background: var(--sig);
+    }
+  }
+
+  /* ==========================================================================
+     ============================  ART DIRECTION V3  ==========================
+     ==========================================================================
+
+     V3 carries the composition of 00–02 into 03–06. It adds NO fifth piece of
+     grammar. Everything below is one of the four V2 already has — A the folio,
+     B the 1px rule drawn from the left in the signal colour, C the plate,
+     D the held grid with moved starts — and the two boundaries that use C
+     (00→01 and 01→work bands) are not touched, because a third and fourth
+     plate would make the page's one physical gesture into a mannerism.
+
+     Two techniques inside B/D are new to this file and are stated once here:
+
+       axis-as-background   a rule that has to START somewhere other than the
+                            top of its box, or has to DRAW, is painted as a
+                            `linear-gradient` background layer rather than as a
+                            border or a pseudo-element. It is the same move
+                            §D already makes on the register's dividers, for
+                            the same reason: `background-position` moves the
+                            rule's start while the box stays exactly where the
+                            frozen grid put it, and `background-size` is
+                            animatable where a border's length is not.
+
+       machine index        `counter(…, decimal-leading-zero)` in the mono face,
+                            with `/ ""` alternative text so nothing new is
+                            announced. It is the same class of generated
+                            content as the folio, and the same numbering
+                            components.css already ships in `ol.num`. It is a
+                            machine ordinal, not copy: no string is authored,
+                            and deleting the rule removes a numeral rather than
+                            a sentence.
+
+     Everything that recomposes is UNGATED — with JS off or reduced motion set,
+     03–06 are the new composition, still. Only the hidden initial states live
+     behind `html.mx`, exactly as §B and 02's path do. Everything spatial is
+     behind `min-width: 1024`, because below it the rail lies down and there is
+     neither a rail column nor a gate to compose against (§9/§10). The folio is
+     the one exception and it was already an exception: 00/01/02 carry it on
+     mobile today, so 03–06 carrying it is what keeps mobile consistent, and it
+     is absolutely positioned, so not one box moves.
+
+     ========================================================================== */
+
+  /* ==========================================================================
+     03 ENGINEERING STACK — two related instruments, each on its own gutter
+
+     The section was two ruled tables of equal weight: four language rows all
+     exactly 99px tall, then a six-row platform table. Nothing said which of
+     them was a group and which was an entry, and the rail column beside them
+     was 200px of empty paper with two lines of 11px mono floating at the top
+     of it. Read as a stack list it is a logo wall with the logos spelled out.
+
+     Three moves, and not one of them touches a string, a font-size or a colour
+     the frozen sheet declares.
+
+       GROUP HEAD   the 2px rule that opens each group stops being an internal
+                    border of `.stk` / `.shead` and becomes a line across the
+                    whole `.tr` — rail and field both, cut by the gate. The
+                    group is then visibly one object that spans the instrument
+                    side and the argument side, which is what a group IS here.
+
+       READOUT      the group's mono label goes sticky, on the rule §2 already
+                    declares for the hero and 01. While the four language rows
+                    are read, "LANGUAGES / 4 件" holds beside them; at the
+                    platform block it changes. The rail stops being empty paper
+                    and becomes the readout it is drawn as everywhere else.
+
+       AXIS         a vertical rule inside the field, and the two groups take
+                    it differently on purpose — in pigment, and in x.
+
+                    Each axis sits in ITS OWN group's gutter, not on a shared
+                    page x. The two groups are two instruments, related but not
+                    the same instrument at two sizes, and each is aligned to the
+                    gutter its own label column opens. See the two declarations
+                    below for why one x cannot serve both.
+
+                    LANGUAGES draws it in each row's OWN pigment — the row
+                    already carries `data-w`, so `--sig` resolves per row with
+                    nothing hardcoded here. Consecutive rows of the same work
+                    therefore fuse into one continuous segment and a change of
+                    work is a change of colour at the row boundary: the four
+                    technologies read as THREE segments, which is the true
+                    shape of the list (Python and TypeScript are one work). No
+                    sibling selector, no slug, and it is correct at any number
+                    of rows or works.
+
+                    PLATFORM draws it once, neutral. That is not a shortcut: the
+                    block's own sub-label says 作品をまたぐ層, so a per-work
+                    pigment there would contradict the copy. One grey axis with
+                    six taps is the copy, drawn.
+
+     The row rules then begin AT the axis rather than at the field's edge
+     (grammar D — one edge held, one edge moved), so the language names sit
+     outside the ruled zone as labels on an instrument instead of as the first
+     cell of a table. */
+  @media (min-width: 1024px) {
+    /* TWO axis x's, and the fact that they differ is the finding, not a
+       leftover. Both are read off the frozen sheet the same way — the middle
+       of the gutter that group's own label column already opens — and neither
+       is a number chosen by eye.
+
+       LANGUAGES  `.stk .srow` declares a 210px label column and a 32px
+                  column-gap, so the gutter's middle is 210 + 16 = 226px.
+
+       PLATFORM   `tbody th` is 184px wide and carries 20px of padding-right,
+                  so the gutter is 164..184 and its middle is 176px — 12px
+                  clear of the layer name, 8px clear of the detail.
+
+       DO NOT UNIFY THESE. It was tried and measured, and the 50px between them
+       is exactly the difference of the two gutter centres, not drift. Both
+       `.stk .srow` and `.tw tbody tr` do have the same border-box left edge
+       (328 at 1440, 236 at 1024, 560.5 at 1920), so a single variable WOULD
+       put one rule at one page x — and that is the problem. `th,td` carry
+       `padding-left:0`, so the detail cell's ink starts exactly at the th's
+       right edge; an axis at 226px therefore lands 42px INSIDE the detail cell
+       and crosses the running text of all six platform rows, at every viewport
+       (measured at 1024 / 1440 / 1920 — the intrusion is 42px in all three).
+       The only way to hold one x without crossing the text is to widen
+       `tbody th` 184px → 236px, which is a change to the frozen table's own
+       column geometry and is out of bounds for this layer.
+
+       So the section is two related instruments, each aligned to its own
+       information gutter — not one instrument drawn at two scales. */
+    .ad #stack {
+      --mx-ax: calc(210px + 16px);
+      --mx-ax2: 176px;
+    }
+
+    /* the group head, across both tracks. Absolutely positioned so it is not a
+       grid item — `.tr` is the grid — and at the same y and the same 2px as
+       the border it extends, so the two are one line and not two. */
+    .ad #stack [data-mx-row]::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 2px;
+      background: var(--rule);
+    }
+    /* the sticky readout. Same offset as §2's rail, so the page has one sticky
+       line and not two. `align-self:start` is the load-bearing half — see §2. */
+    .ad #stack [data-mx-row] > .ins {
+      position: sticky;
+      top: calc(var(--mx-nav) + 40px);
+      align-self: start;
+    }
+    /* the label sits on the group head's own baseline: 20px is `.srow`'s own
+       padding-top, 18px is `.shead`'s. Both are the frozen values, read off the
+       thing the label has to line up with. */
+    .ad #stack [data-mx-row='lang'] > .ins {
+      padding-top: 20px;
+    }
+    .ad #stack [data-mx-row='platform'] > .ins {
+      padding-top: 18px;
+    }
+
+    /* LANGUAGES — the pigment axis and the shortened row rule, as two
+       background layers. `background-origin: border-box` is what makes the
+       segments continuous: the axis then spans the row's border box, so one
+       row's axis ends exactly where the next one's begins and the join is not
+       a 1px gap at every rule. */
+    .ad #stack .stk .srow {
+      border-bottom-color: transparent;
+      background-origin: border-box;
+      background-repeat: no-repeat;
+      background-image:
+        linear-gradient(var(--sig), var(--sig)),
+        linear-gradient(var(--hair), var(--hair));
+      background-position:
+        var(--mx-ax) 0,
+        var(--mx-ax) 100%;
+      background-size:
+        1px 100%,
+        calc(100% - var(--mx-ax)) 1px;
+    }
+
+    /* PLATFORM — one neutral axis, in the TABLE's own gutter (`--mx-ax2`, not
+       `--mx-ax`; see the declaration block above for why the two differ and
+       why merging them crosses the detail text). The table's own rules are
+       LEFT ALONE: a six-row index of layers is a table, and it is allowed to
+       look like one. The axis is what turns it from a list into a reading. */
+    .ad #stack .tw tbody tr {
+      background-origin: border-box;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(var(--hair2), var(--hair2));
+      background-position: var(--mx-ax2) 0;
+      background-size: 1px 100%;
+    }
+  }
+
+  /* the axes drawn — behind `html.mx`, so with JS off or motion reduced the
+     initial state is never applied and the instrument is simply present, whole.
+     The stagger is document order, which is the order the rows are numbered in
+     by the content file. Four language rows and one table; five draws, and not
+     one word animates. */
+  @media (min-width: 1024px) {
+    .mx .ad #stack .stk .srow {
+      background-size:
+        1px 0,
+        calc(100% - var(--mx-ax)) 1px;
+      transition: background-size 0.58s var(--mx-ease) var(--mx-d, 0s);
+    }
+    .mx .ad #stack.mx-in .stk .srow {
+      background-size:
+        1px 100%,
+        calc(100% - var(--mx-ax)) 1px;
+    }
+    .mx .ad #stack .stk .srow:nth-child(1) {
+      --mx-d: 0.08s;
+    }
+    .mx .ad #stack .stk .srow:nth-child(2) {
+      --mx-d: 0.17s;
+    }
+    .mx .ad #stack .stk .srow:nth-child(3) {
+      --mx-d: 0.26s;
+    }
+    .mx .ad #stack .stk .srow:nth-child(4) {
+      --mx-d: 0.35s;
+    }
+    .mx .ad #stack .tw tbody tr {
+      background-size: 1px 0;
+      transition: background-size 0.58s var(--mx-ease) 0.1s;
+    }
+    .mx .ad #stack.mx-in .tw tbody tr {
+      background-size: 1px 100%;
+    }
+    /* the group heads take the section's one gesture, drawn from the left */
+    .mx .ad #stack [data-mx-row]::after {
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform var(--mx-draw) var(--mx-ease);
+    }
+    .mx .ad #stack.mx-in [data-mx-row]::after {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ==========================================================================
+     04 ENGINEERING PRINCIPLES — the index, and a rhythm the content owns
+
+     Eight decisions rendered at exactly 133px each, and three instance panels
+     at exactly 320x129. Measured, not estimated: it is the one place left on
+     the page where every item is the same box, which is the shape §5 rules out
+     — and it is the worst place for it, because this is where the page stops
+     listing technology and starts stating judgement.
+
+     What must NOT happen is a rhythm invented to break the grid. So the rhythm
+     is read off the content:
+
+       `.pdec` carries eight decisions in the order crm crm crm / ppm ppm /
+       dfe dfe dfe. Principles.astro derives `data-mx-grp="open"` by comparing
+       each decision's `work` to the one before it — no slug is written into
+       this file and no string is authored. The three rows that open a work get
+       a long lead, a rule in that work's pigment, and their index in the signal
+       colour; the five that continue one stay tight. Height differences are
+       therefore reading order and structure, exactly as §5 asks, and adding a
+       ninth decision or moving one between works needs no change here.
+
+       `.spine3` takes the WORK REGISTER's own descent (§D): 0 / 26 / 52, with
+       each entry's rule beginning where that entry begins. It is deliberately
+       the register's gesture and not a new one — these are the same three
+       works in the same order 01 lists them in, so the two sections rhyme.
+
+     The index numeral is the rail's own: `var(--f-mono)`, 34px, the size and
+     the face `.ins .ix` is set in. So 04 is not given a new numbering system;
+     it is given the one the page already uses, per decision.
+
+     Both pseudo-elements are absolutely positioned. `.prow` is a grid, and a
+     static pseudo-element on a grid container becomes a grid item — which
+     would put the numeral in the flow and take a track from the row. */
+  .ad #principles .pdec {
+    counter-reset: mx-p;
+  }
+  .ad #principles .pdec .prow {
+    counter-increment: mx-p;
+    position: relative;
+    --mx-pt: 20px;
+  }
+  @media (min-width: 1024px) {
+    /* the shoulder the index hangs in, and the x every row rule now starts at */
+    .ad #principles .pdec .prow {
+      padding: var(--mx-pt) 0 20px 96px;
+      border-bottom-color: transparent;
+      background-origin: border-box;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(var(--hair), var(--hair));
+      background-position: 96px 100%;
+      background-size: calc(100% - 96px) 1px;
+    }
+    .ad #principles .pdec .prow::before {
+      content: counter(mx-p, decimal-leading-zero) / '';
+      position: absolute;
+      left: 0;
+      top: calc(var(--mx-pt) + 2px);
+      font-family: var(--f-mono);
+      font-size: 34px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      font-weight: 500;
+      color: var(--tx3);
+    }
+    /* a work opens: a long lead, the work's pigment on the boundary, and the
+       index in the signal colour. Not on the first row — its boundary is
+       `.pdec`'s own 2px head rule, and a 1px pigment line laid on a 2px ink
+       line is two rules pretending to be one. */
+    .ad #principles .pdec .prow[data-mx-grp='open'] {
+      --mx-pt: 64px;
+    }
+    .ad #principles .pdec .prow[data-mx-grp='open']::before {
+      color: var(--sig);
+    }
+    .ad #principles .pdec .prow[data-mx-grp='open']:not(:first-child)::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 1px;
+      background: var(--sig);
+    }
+
+    /* the instance triad, as a register rather than three cards */
+    .ad #principles .spine3 li {
+      border-top-color: transparent;
+      background-origin: border-box;
+      background-repeat: no-repeat;
+      background-image: linear-gradient(var(--hair2), var(--hair2));
+      background-size: 100% 1px;
+      background-position: 0 0;
+    }
+    .ad #principles .spine3 li:nth-child(2) {
+      padding-top: 42px;
+      background-position: 0 26px;
+    }
+    .ad #principles .spine3 li:nth-child(3) {
+      padding-top: 68px;
+      background-position: 0 52px;
+    }
+  }
+
+  /* drawn: the two group boundaries only. The numerals never move — an index
+     that animates is a decoration, and this one is a readout. */
+  @media (min-width: 1024px) {
+    .mx .ad #principles .pdec .prow[data-mx-grp='open']::after {
+      transform: scaleX(0);
+      transform-origin: 0 50%;
+      transition: transform var(--mx-draw) var(--mx-ease) 0.1s;
+    }
+    .mx .ad #principles.mx-in .pdec .prow[data-mx-grp='open']::after {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ==========================================================================
+     05 FEATURED EVIDENCE — the picture takes the page, the reading takes the
+     measure
+
+     THE EVIDENCE IS NOT TOUCHED. No filter, no opacity, no blend, no transform,
+     no clip, no change of crop — and, specifically, NO CHANGE OF CONTAINER
+     WIDTH, because `.crop img{object-fit:cover}` means a container of a
+     different width IS a different crop of the same file. That is the whole
+     constraint this block is written around, and it is why the move here is a
+     start position and nothing else.
+
+     The problem: the site's entire argument — "here is the actual screen" —
+     was set at 1040px, indented 328px into the field, with 200px of empty
+     paper in the rail column beside it. The register thumbnails above it
+     occupy more of the page than the Evidence does.
+
+     The move is grammar D at its plainest: the grid is HELD and the start is
+     moved. The figure row spans both tracks, and the block's width is pinned
+     to `calc(100% - <the field offset>)` — the same quantity `.tr`'s own
+     `grid-template-columns` and `column-gap` already sum to, so the box is the
+     field's width to the pixel at every viewport. The figure box, the crop box
+     and every pixel inside them are byte-identical to V2.1; only x moved,
+     from the field's start to the page's own margin.
+
+     The gate rule moves with it. On this row there are no longer two tracks to
+     gate, so the frozen 227px line would be a hairline drawn ACROSS a
+     screenshot — the one thing §3 exists to prevent. It goes to the block's own
+     leading edge instead, in the work's pigment, which is exactly what the CRM
+     plate does at 01 (`border-left: 1px solid var(--sig)`). It sits on the
+     first pixel column of the `fr-stage` plate; the image begins 44px further
+     in, so it is on the mount and not on the picture. `z-index:5` puts it over
+     `.ev`'s 4 — without it the plate's own ground would bury it.
+
+     The head row keeps its gate at 227px. So the claim is inside the gate and
+     the evidence is outside it, which is the section's whole sentence.
+
+     The ledger and the provenance narrow to the 720px measure — the page's own
+     measure token, the one `.msr` and `.foot dl` already use. The picture gets
+     the page; the prose about the picture gets the width prose is set at. */
+  @media (min-width: 1024px) {
+    .ad #evidence {
+      --mx-fieldoff: 256px; /* .tr: 200px track + 56px column-gap */
+    }
+    .ad #evidence [data-mx-row='figure'] > .ins {
+      display: none; /* the row's empty rail spacer; there is no rail here now */
+    }
+    .ad #evidence [data-mx-row='figure'] > .fld {
+      grid-column: 1 / -1;
+      grid-row: 1;
+    }
+    .ad #evidence [data-mx-row='figure'] .ev {
+      width: calc(100% - var(--mx-fieldoff));
+    }
+    .ad #evidence [data-mx-row='figure']::before {
+      left: 0;
+      background: var(--sig);
+      z-index: 5;
+    }
+    .ad #evidence .ledger,
+    .ad #evidence .ev details {
+      max-width: 720px;
+    }
+  }
+  @media (max-width: 1279px) and (min-width: 1024px) {
+    /* the frozen grid narrows to 148px + 40px (responsive.css §11) */
+    .ad #evidence {
+      --mx-fieldoff: 188px;
+    }
+  }
+
+  /* ==========================================================================
+     06 ABOUT — back to the human side
+
+     Everything from 01 to 05 is instrument-dense: a register, a path across
+     three lanes, two axes, an index of eight decisions, a screenshot. 06 is
+     where the page stops and answers in the first person, and it was doing it
+     as a 280px / 736px fact table — a CV, set in the same shape as the platform
+     index two sections earlier.
+
+     No fact is added and no fact is removed; `known` is rendered exactly as it
+     was, `sourceRef` and all. What changes is the shape:
+
+       lead      the claim gets 78px of air under it before anything is ruled,
+                 so it is alone in the frame the way a claim in Mincho should
+                 be. `.spx`'s own 30px margin is an inline style on the element
+                 and stays untouched; this is the h2's margin, which is not.
+       rows      the key stops being a column and becomes a mono kicker above
+                 the sentence — which is not a new shape, it is precisely the
+                 one responsive.css already ships for `.spx` below 768. Using
+                 the site's own shape rather than inventing one for the last
+                 section is the point: the reading order is label, then
+                 sentence, which is how a person answers, and a lookup table is
+                 how a form answers.
+       measure   the value is capped at 720px, so the Mincho runs at the width
+                 the rest of the page's prose runs at instead of at 736px,
+                 which is a table cell's width and nothing else's.
+       air       34px of it per row, against 15/16.
+
+     MOTION DENSITY IS THE LOWEST ON THE PAGE, deliberately: 06 draws its gate
+     rule with every other section and does nothing else. The end of a page is
+     not where a new effect is introduced.
+
+     07 CONTACT is KEEP. `.foot`'s 200px lead and its 2px head rule are the
+     frozen transition and this block does not reach them. */
+  @media (min-width: 1024px) {
+    .ad #about .fld > h2 {
+      margin-bottom: 78px;
+    }
+    .ad #about .spx.wide .r {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: 2px;
+      padding: 30px 0 34px;
+    }
+    .ad #about .spx .k,
+    .ad #about .spx .v {
+      padding: 0;
+    }
+    .ad #about .spx .v {
+      max-width: 720px;
+    }
+  }
+}

@@ -1,0 +1,30 @@
+---
+/**
+ * "Case Study を読む →", and only when there is one to read.
+ *
+ * The prototype pointed this at `#case-<id>`, an anchor that was not on the
+ * page. Rather than repoint the label at a page that is not a Case Study, the
+ * call to action is rendered from `caseStudyPublished`: with no Case Study
+ * published, no link claims one. The work's own page is still reachable from
+ * the register at /work/.
+ */
+import { workHref } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+---
+
+{
+  work.caseStudyPublished && (
+    <p style="margin-top:30px">
+      <a class="lk" href={workHref(work.slug, false)}>
+        {ui.work.caseStudyCta}<span class="ar">→</span>
+      </a>
+    </p>
+  )
+}

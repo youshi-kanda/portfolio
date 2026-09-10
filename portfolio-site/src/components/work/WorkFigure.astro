@@ -1,0 +1,47 @@
+---
+/**
+ * The figure inside a work entry: the Evidence component's first two parts
+ * only. An entry shows the screen and says what it is; the ledger and the
+ * provenance record belong to the Evidence section and the Case Study, where
+ * there is room to read them.
+ *
+ * The frame is the work's Layer-3 token. The caption is the work's own, over
+ * the Evidence record's default.
+ */
+import EvidenceComponent from '../evidence/Evidence.astro';
+import { workFigure, workVisual } from '../../lib/content/derive.ts';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+
+interface Props {
+  work: Work;
+  evidence: Evidence;
+  cropHeight?: number | null;
+  eager?: boolean;
+}
+
+const { work, evidence, cropHeight = null, eager = false } = Astro.props;
+
+/**
+ * A DRAWING IS NOT CROPPED. A crop of a UI screenshot is still a UI
+ * screenshot — the plane continues past the edge and the entry is showing a
+ * piece of a surface. A crop of a diagram removes part of the argument: the
+ * variants' crop heights (520 / 430) cut a drawing wherever they happen to
+ * fall, and the part they cut off is as load-bearing as the part they keep.
+ *
+ * So the crop is a property of the figure's KIND, not of the layout variant.
+ * The variant still says how tall a cropped figure is; a diagram simply has
+ * no crop to be that tall, and the caption stops declaring one it did not
+ * take (`cropped` follows this value).
+ */
+const crop = evidence.kind === 'diagram' ? null : cropHeight;
+---
+
+<EvidenceComponent
+  evidence={evidence}
+  frame={workVisual(work).frame}
+  caption={workFigure(work).caption}
+  cropHeight={crop}
+  command={work.fieldsTable?.terminalCommand ?? null}
+  full={false}
+  eager={eager}
+/>

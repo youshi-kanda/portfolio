@@ -1,0 +1,195 @@
+---
+/**
+ * The motion prototype's only markup and its only client JavaScript.
+ *
+ * Two scripts, and the split matters:
+ *
+ *   is:inline    runs before <main> is parsed, so the elements that start
+ *                hidden are already flagged at first paint and nothing flashes
+ *                unstyled. It is the reduced-motion and no-JS gate: if it does
+ *                not run, or the visitor asked for reduced motion, `html.mx` is
+ *                never set, the hidden initial states in motion.css never
+ *                apply, and the page is the frozen composition.
+ *
+ *   module       deferred. Measures the chrome, then three
+ *                IntersectionObservers and one passive `resize`. That is the
+ *                entire listener surface: no scroll, wheel or touch listener,
+ *                no rAF loop, no scroll-behavior — the scroll position is never
+ *                read and never written. Everything continuous — the position
+ *                tick, the hero exit drift — is a CSS scroll/view timeline, so
+ *                it runs off the main thread and cannot fight the user's input.
+ *
+ * Everything here is decorative or observational. Nothing in this component
+ * renders text, and no element it adds carries information the page does not
+ * already state.
+ */
+---
+
+<script is:inline>
+  // The single gate. Reduced motion and no-JS take the same path by
+  // construction, so there is one behaviour to verify rather than two.
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.documentElement.classList.add('mx');
+  }
+</script>
+
+<div class="mx-stage" aria-hidden="true">
+  <div class="page">
+    <i class="mx-rule"></i>
+    <i class="mx-tick"></i>
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement;
+
+  if (root.classList.contains('mx')) {
+    /* ---------------------------------------------------------------- chrome
+       The 100svh stage and every sticky top offset are measured from the nav
+       and the synthetic-data strip. motion.css ships correct static values, so
+       this only re-states them when the visitor's font stack or zoom makes them
+       something else. */
+    const nav = document.querySelector<HTMLElement>('.nav');
+    const syn = document.querySelector<HTMLElement>('.syn');
+    /* Written to `.ad`, not to <html>: motion.css declares the fallbacks on
+       `.ad` itself, and a custom property declared on an element shadows the
+       inherited one — set on the root these would never be read. */
+    const scale = document.querySelector<HTMLElement>('.ad');
+
+    const measure = () => {
+      if (!nav || !scale) return;
+      const navH = Math.round(nav.getBoundingClientRect().height);
+      const synH = syn ? Math.round(syn.getBoundingClientRect().height) : 0;
+      scale.style.setProperty('--mx-nav', `${navH}px`);
+      scale.style.setProperty('--mx-chrome', `${navH + synH}px`);
+    };
+    measure();
+    if (nav) new ResizeObserver(measure).observe(nav);
+    if (syn) new ResizeObserver(measure).observe(syn);
+
+    /* ------------------------------------------------------------- scope
+       00 HERO and 01 SELECTED WORK. Work entries are matched by id shape
+       (`w-<slug>`), so adding or reordering a work needs no change here.
+
+       02 … 06 are in `drawn` but NOT in `current` — see below. */
+    const hero = document.querySelector<HTMLElement>('.hero');
+    const workHead = document.querySelector<HTMLElement>('#work');
+    const workEntries = [...document.querySelectorAll<HTMLElement>('section[id^="w-"]')];
+    const scope = [hero, workHead, ...workEntries].filter((s): s is HTMLElement => s !== null);
+
+    /* V3 adds 02–06 to `drawn` and to nothing else. Each of them has rules that
+       start scaled to nothing and finish at full length, and `mx-in` is the one
+       flag that ends them — a section that is never observed keeps its hidden
+       initial state, which is the one failure mode this whole file is built to
+       make impossible. `current` is deliberately NOT extended: the fixed
+       instrument layer (motion.css §3) claims to be the readout for 00 and 01,
+       and handing it a later section's pigment would make it claim more than it
+       measures. */
+    const later = ['#build', '#stack', '#principles', '#evidence', '#about']
+      .map((sel) => document.querySelector<HTMLElement>(sel))
+      .filter((s): s is HTMLElement => s !== null);
+    const drawnScope = [...scope, ...later];
+
+    /* ------------------------------------------------------- rules drawn once
+       `mx-in` is the end state and is never removed: a rule that redraws every
+       time it re-enters is a page that fidgets. unobserve on first hit. */
+    const drawn = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add('mx-in');
+          drawn.unobserve(entry.target);
+        }
+      },
+      { rootMargin: '0px 0px -12% 0px' },
+    );
+    for (const section of drawnScope) drawn.observe(section);
+
+    /* ------------------------------------------- WORK 01: the covered figure
+       The pinned figure keeps a control — the zoom button on the screenshot —
+       and once the body row has risen over it that control is focusable but
+       invisible. Tabbing to it does not help either: the browser will not
+       scroll a sticky element into view, because as far as scrolling is
+       concerned it is already there. So while it is covered it is `inert`,
+       which is the whole of the fix: out of the tab order, out of the
+       accessibility tree, no pointer target.
+
+       Detection needs no scroll listener. The root is collapsed to a 1px band
+       at the sticky line, so the body row intersects it exactly while its own
+       top is at or above that line — which is exactly when it covers the
+       figure. Coverage and pinning are the same interval by construction: the
+       figure pins for as long as the body takes to climb over it.
+
+       Only where the pin exists — motion.css holds it below 1024, and this
+       whole block is already behind the reduced-motion gate. */
+    const firstWork = document.querySelector<HTMLElement>('#work + section');
+    const figureRow = firstWork?.querySelector<HTMLElement>('[data-mx-row="figure"]') ?? null;
+    const bodyRow = firstWork?.querySelector<HTMLElement>('[data-mx-row="body"]') ?? null;
+    const pinned = matchMedia('(min-width: 1024px)');
+    let covered: IntersectionObserver | null = null;
+
+    const watchCoverage = () => {
+      covered?.disconnect();
+      covered = null;
+      if (!figureRow || !bodyRow) return;
+      if (!pinned.matches) {
+        figureRow.removeAttribute('inert');
+        return;
+      }
+      const top = nav ? Math.round(nav.getBoundingClientRect().height) : 75;
+      const band = Math.max(0, innerHeight - top - 1);
+      covered = new IntersectionObserver(
+        ([entry]) => {
+          if (entry) figureRow.toggleAttribute('inert', entry.isIntersecting);
+        },
+        { rootMargin: `-${top}px 0px -${band}px 0px` },
+      );
+      covered.observe(bodyRow);
+    };
+    watchCoverage();
+    pinned.addEventListener('change', watchCoverage);
+
+    // The band is measured off innerHeight, which a ResizeObserver on the nav
+    // cannot see change. Coalesced, because a drag-resize would otherwise
+    // rebuild the observer on every frame of the drag.
+    let resizing: ReturnType<typeof setTimeout> | undefined;
+    addEventListener(
+      'resize',
+      () => {
+        clearTimeout(resizing);
+        resizing = setTimeout(watchCoverage, 120);
+      },
+      { passive: true },
+    );
+
+    /* --------------------------------------------- signal colour + layer life
+       One band owns the viewport's middle line at a time — the -46%/-46% inset
+       leaves a sliver, so entering a section is what hands the pigment over.
+       The value is read from the section's own computed `--sig`, which means
+       tokens.css stays the only place a work's pigment is written down. */
+    const stage = document.querySelector<HTMLElement>('.mx-stage');
+
+    /* Membership, not a counter. IntersectionObserver reports every target on
+       its first callback — including the ones that are not intersecting — so
+       counting deltas starts the tally at minus the number of off-screen
+       sections and the layer never becomes visible. */
+    const crossing = new Set<Element>();
+
+    const current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            crossing.add(entry.target);
+            const sig = getComputedStyle(entry.target).getPropertyValue('--sig').trim();
+            if (sig && stage) stage.style.setProperty('--mx-sig', sig);
+          } else {
+            crossing.delete(entry.target);
+          }
+        }
+        root.classList.toggle('mx-live', crossing.size > 0);
+      },
+      { rootMargin: '-46% 0px -46% 0px' },
+    );
+    for (const section of scope) current.observe(section);
+  }
+</script>

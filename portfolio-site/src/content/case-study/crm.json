@@ -1,0 +1,290 @@
+{
+  "slug": "crm",
+  "overview": "美容サロンなどの小規模店舗向けに、顧客・来店・売上を 1 か所にまとめ、次に声をかけるべき顧客を見つけ、販促の文案を用意し、人が承認するまでを回す業務システムです。",
+  "leadDisclosure": null,
+  "currentPractice": "使うのは店舗のオーナーと店頭のスタッフで、日常的に触るのは予約表と表計算ソフトです。運用を専任で見る人はいません。台帳・予約・売上は別々にあり、突き合わせは手作業です。文面はオーナーが都度書き、送り先は記憶で決めています。",
+  "requirements": {
+    "functional": [
+      "顧客・来店・売上を 1 か所で見て、顧客の状態を同じ基準で分類し、月次の振り返りを出力する",
+      "販促の文案を下書きさせ、問題になりやすい表現を出す前に検出する",
+      "文案は承認を経ないと承認済みにならない（承認の段階管理／状態遷移）。承認できる人は共同作業者ごとの権限設定（StoreCollaborator）で限定する"
+    ],
+    "constraints": [
+      "権限のないスタッフに氏名・電話・メールを見せない",
+      "AI の契約・API キー無しで全機能を通しで確認できる",
+      "対象を限定して誰が何をしたかを記録し、公開デモとして置いても壊されない"
+    ]
+  },
+  "built": [
+    { "name": "ダッシュボード", "what": "顧客状態の内訳と今月の実績を 1 画面で確認" },
+    { "name": "顧客一覧・顧客詳細", "what": "状態のバッジで分類を判別し、来店履歴と判定理由を見る" },
+    { "name": "施策一覧・施策詳細", "what": "文案の下書き、表現チェック、承認申請、承認" },
+    { "name": "月次レポート", "what": "期間の振り返りを出力" },
+    { "name": "ログイン画面", "what": "デモ用の認証情報を明示した入口" }
+  ],
+  "decisions": [
+    {
+      "title": "画面側と業務ロジック側を分けた。",
+      "context": "権限で見せる情報を変える画面が増えるほど分岐が散らばる。",
+      "decision": "画面（React / TypeScript）と業務ロジック（Django / DRF）を分離した。",
+      "reason": "却下したのは、業務ロジック側が画面まで描く一体構成です。分岐が散らばり、外部へ渡せる仕様の形（API 仕様書の自動生成／drf-spectacular）が残りません。",
+      "tradeoff": "frontend / backend の 2 デプロイ単位と、型定義の二重管理（OpenAPI からの生成は未導入）。",
+      "evidenceRefs": []
+    },
+    {
+      "title": "AI を使う場所を限定し、既定を見本応答にした（provider 抽象化／AI_PROVIDER=mock）。",
+      "context": "顧客状態の分類と表現チェックは決まった規則で判定します（ルールベース）。",
+      "decision": "AI は文案生成に限定し、既定の provider を mock にした。",
+      "reason": "却下したのは、分類と表現チェックも AI に任せる案です。同じ顧客が日によって別の状態になり、理由を説明できません。既定を実 API にする案も、契約が無い人が通しで確認できないため却下しました。",
+      "tradeoff": "表現チェックは辞書ベースで、辞書に無い表現は検出しません（法的判断ではありません）。",
+      "evidenceRefs": []
+    },
+    {
+      "title": "承認を段階で管理し、手順を飛ばした操作を拒否する（BUSINESS_RULE_ERROR）。",
+      "context": "生成された文案が、誰の確認も通らないまま顧客向けに確定してしまう。",
+      "decision": "下書き → 承認待ち → 承認済み の段階を強制し、飛ばした操作を拒否する。",
+      "reason": "却下したのは、生成物をそのまま承認済みにして後から取り消す方式です。外部に出た後では間に合いません。",
+      "tradeoff": null,
+      "evidenceRefs": ["CRM-V06"]
+    }
+  ],
+  "highlights": [
+    {
+      "claim": "AI が書いた文案は、人が承認するまで「下書き」のままです。",
+      "detail": "承認後の画面には「配信（デモでは無効）」と出ますが、このデモに配信機能は含まれていません。",
+      "evidenceRefs": ["CRM-V06"]
+    },
+    {
+      "claim": "同じ画面が、見る人の権限で表示の粒度だけ変わります。",
+      "detail": "同一顧客・同一画面で、氏名・電話・メールだけが伏せ字になります。",
+      "evidenceRefs": []
+    },
+    {
+      "claim": "顧客の状態が同じ基準で分類され、判定理由まで残ります。",
+      "detail": "一覧はバッジで判別でき、詳細に最終来店からの日数と回数が並びます。",
+      "evidenceRefs": []
+    }
+  ],
+  "role": "個人開発です。画面・API・データベース・AI 呼び出し・権限・テストまでを 1 人で実装しました。私的に開発中のプロダクトから公開可能な範囲を切り出したもので、外部配信・代理店管理・本番インフラは含めていません。",
+  "quality": [
+    "画面では気づけない部分 — 承認の段階管理、権限に応じた個人情報の伏せ字表示（Serializer マスキング）、ログイン状態の無効化、CSV 取込の失敗行、AI 呼び出しの差し替え — を自動の動作チェック（pytest）で固定しています。",
+    "領域別は認証 30 / マスキング 19 / 承認 16 / CSV 出力 29 / AI 呼び出し 37。件数は静的な def test_ 定義 480 件、CI 実行ログの実測値は 484 passed（AI CRM CI の main 実行）。",
+    "backend のみで、frontend テストは 0 件です。"
+  ],
+  "safety": [
+    {
+      "name": "権限に応じた個人情報の伏せ字表示（Serializer マスキング）",
+      "what": "一覧は見せて氏名と連絡先は見せない、を同じ画面で分けます。暗号化ではないため、データベースは平文で保持します。"
+    },
+    {
+      "name": "ログイン状態の一括無効化（JWT ／ token_version）",
+      "what": "別端末に残った状態を無効にできます。秒単位の即時失効ではありません。"
+    },
+    {
+      "name": "店舗ごとのデータ分離（店舗スコープ）",
+      "what": "URL を書き換えて他店舗を開けません。行単位セキュリティではありません。"
+    },
+    {
+      "name": "操作の記録（監査ログ）",
+      "what": "承認・顧客情報の変更・CSV 取込を追えます。予約・売上の書き込みは対象外（23 か所 / 7 アプリ）。差戻し理由は入力どおり残ります。"
+    }
+  ],
+  "delivery": [
+    {
+      "key": "渡すもの",
+      "value": "リポジトリ一式、docs/ の Markdown 24 本（連番の設計文書 23 本 + API_CONTRACT.md）、デモデータ投入コマンド python manage.py seed_demo"
+    },
+    {
+      "key": "API 仕様書",
+      "value": "自動生成（drf-spectacular）。静的な仕様ファイルは同梱していないため参照にはローカル起動が必要。同梱の docs/API_CONTRACT.md は strategy-goals 機能を追加するときの契約書（8 エンドポイント）であり、実装済み API の仕様書ではない（この機能はこのデモに未実装）"
+    },
+    {
+      "key": "依頼者側で行うこと",
+      "value": "環境構築とデータ投入。公開する場合は DJANGO_SECRET_KEY の再発行、デモ利用者の削除、DEMO_MODE=false の 3 点（README「Security Notes」の記載どおり）"
+    },
+    {
+      "key": "運用者が回すもの",
+      "value": "取込エラー行の削除コマンド python manage.py purge_import_errors（自動実行なし）"
+    },
+    { "key": "本番運用の体制・監視・バックアップ", "value": "未定義（このデモの範囲外）" }
+  ],
+  "scope": [
+    {
+      "implemented": "AI 文案の生成 + 人の承認",
+      "notIncluded": "外部配信（LINE / メール）",
+      "why": "本番の認証情報・外部サービス運用を持たないため。このリポジトリには 1 行も含めていない"
+    },
+    {
+      "implemented": "施策のチャネル区分の分類",
+      "notIncluded": "チャネルへの送信",
+      "why": "同上。チャネル値は分類のためのメタデータ"
+    },
+    {
+      "implemented": "権限別の個人情報マスキング",
+      "notIncluded": "データベースの暗号化",
+      "why": "マスキングは表示制御。暗号化は別レイヤの要件で、混同させない"
+    },
+    {
+      "implemented": "サーバー側のトークン更新・失効",
+      "notIncluded": "画面側のトークン自動更新",
+      "why": "未実装。401 でログイン画面へ戻す挙動のみ"
+    },
+    {
+      "implemented": "対象操作の監査記録（7 app / 23 か所）",
+      "notIncluded": "予約・売上の書き込みの記録",
+      "why": "現状の実装範囲。README で対象操作を列挙している"
+    },
+    {
+      "implemented": "AI 利用の記録（5 サービス中 3 つ）",
+      "notIncluded": "AI コストの上限制御・集計画面",
+      "why": "制御に必要なデータを取る段階まで"
+    },
+    {
+      "implemented": "backend テスト",
+      "notIncluded": "frontend テスト",
+      "why": "未着手。作品全体の性質として書かない"
+    },
+    {
+      "implemented": "Anthropic API 経路（既定 off）",
+      "notIncluded": "本番運用実績",
+      "why": "実装済みの経路であり、稼働実績ではない"
+    },
+    {
+      "implemented": "公開デモ用の破壊防止（DEMO_MODE）",
+      "notIncluded": "公開 Live Demo",
+      "why": "今回の公開条件に含めていない"
+    }
+  ],
+  "scale": [
+    {
+      "item": "API エンドポイント",
+      "value": "55",
+      "method": "apps/*/urls.py の path() 総数 63 から、下位 urls.py を束ねる include() 8 件を除いた実数。DRF Router は不使用"
+    },
+    {
+      "item": "モデル / アプリ",
+      "value": "26 / 11",
+      "method": "Django のモデルレジストリ（apps.get_models() のうち apps.* 所属）"
+    },
+    {
+      "item": "設計文書",
+      "value": "24 本",
+      "method": "docs/ の Markdown（連番の設計文書 23 本 + API_CONTRACT.md）"
+    },
+    {
+      "item": "backend テスト",
+      "value": "静的 480 件 / CI 実測 484 passed",
+      "method": "grep -rho 'def test_' backend/apps --include=*.py | wc -l = 480（2026-08-20 再計測）／ CI run 32078586978 の 484 passed"
+    },
+    {
+      "item": "frontend テスト",
+      "value": "0 件",
+      "method": "frontend/ 配下に *.test.* / *.spec.* が 0 件（node_modules 除く）"
+    },
+    { "item": "工数", "value": "未計測", "method": "推定値を書かない" }
+  ],
+  "capabilities": [
+    "顧客・予約・売上を扱う社内向け Web 業務システムの新規開発",
+    "権限別に見せる情報を変える管理画面の設計・実装",
+    "生成 AI を業務フローに組み込む際の、人の承認・記録・切替の設計",
+    "REST API + データベース設計を伴うアプリケーション開発"
+  ],
+  "capabilitiesNote": "以下は対応できる作業の種類であり、受注実績ではありません。",
+  "flow": [
+    { "key": "01", "name": "顧客の状態を分類", "owner": "system", "what": "最終来店からの日数と回数を、決まった規則で 6 区分に分ける。AI は使わない。", "gate": null },
+    { "key": "02", "name": "AI が文案を下書き", "owner": "system", "what": "施策の目的とチャネルに合わせて文案を生成する。既定の provider は mock。", "gate": null },
+    { "key": "03", "name": "表現リスクチェック", "owner": "system", "what": "問題になりやすい言い回しを、外へ出る前に辞書ベースで検出する。", "gate": null },
+    { "key": "04", "name": "承認申請", "owner": "human", "what": "文案を承認待ちへ上げる。ここまでは「下書き」のまま。", "gate": null },
+    { "key": "05", "name": "人が承認", "owner": "human", "what": "can_approve_contents を持つ人だけが承認できる。手順を飛ばした操作は拒否する。", "gate": "BUSINESS_RULE_ERROR" },
+    { "key": "06", "name": "監査ログに記録", "owner": "system", "what": "承認・顧客情報の変更・CSV 取込を before-after つきで残す。", "gate": null },
+    { "key": "07", "name": "配信", "owner": "—", "what": "このデモに配信実装は無い。画面に出る「配信（デモでは無効）」は将来形の文言。", "gate": "NOT IMPLEMENTED" }
+  ],
+  "technical": {
+    "architectureSummary": "画面（React 18 / TypeScript / Vite）→ API（Django 5.0 / DRF・/api/v1/）→ AI provider（mock = DEFAULT / anthropic = OPTIONAL）/ DB の 4 層。Django アプリは計 11 個、業務の流れ 7 段（人による承認を含む）。",
+    "whyThisArchitecture": "ドメインが顧客・予約・売上・施策・監査の 5 系統に分かれ、いずれも管理系の CRUD と権限判定が中心である。ORM とマイグレーション、認証・権限の既製レイヤ、drf-spectacular による OpenAPI 自動生成が標準で揃うため、業務ロジックとテストに時間を割ける。監査ログとマスキングを Serializer / 認証クラスという単一の通り道へ集約できることも決め手。同一画面を権限で出し分ける要件があるため、画面側は型で応答形状を固定し、サーバ状態の取得を TanStack Query に寄せて分岐をコンポーネントへ閉じ込めた。",
+    "rejected": [
+      {
+        "option": "Django テンプレートによる一体構成",
+        "why": "画面数は少ないため作れはするが、権限別の出し分けがテンプレート内の条件分岐へ散り、API 契約として外部へ渡せる形（引き継ぎ・別クライアント）が残らない。「引き継げること」を要件に含めたため却下。"
+      },
+      {
+        "option": "SSR フレームワーク（Next.js 等）でのフルスタック構成",
+        "why": "認証・権限・監査をアプリ側で自作する比重が上がり、Django の既製レイヤで済む部分を書き直すことになる。SEO 要件もない。"
+      },
+      {
+        "option": "既製 SaaS CRM のカスタマイズ",
+        "why": "AI 文案の承認フローと権限別マスキングが中核要件であり、外部サービスの拡張点に載せるとロジックが分散する。"
+      }
+    ],
+    "failureModes": [
+      "ログイン状態の失効は秒単位ではない（次アクセス時に token_version 判定）。",
+      "マスクは API 応答時の加工であり、DB は平文。",
+      "画面側のトークン自動更新は未実装（apiClient.ts に TODO）。",
+      "監査は対象操作限定で、reservation / sale の書き込みは対象外。",
+      "表現チェックは辞書ベースで、辞書に無い表現は検出しない（法的判断ではない）。"
+    ],
+    "tradeOffs": [
+      "マスキングを表示層に置いたため、DB 直参照や dump では平文が見える。",
+      "監査を「対象操作の列挙」にしたため、網羅性より可読性を取っている。",
+      "AI 利用ログは 5 サービス中 3 つのみトークン数を保持しており、コスト上限制御はこのデータのままでは組めない。",
+      "frontend / backend の 2 デプロイ単位、型定義の二重管理（OpenAPI からの生成は未導入）、frontend テスト 0 件。"
+    ],
+    "testsSummary": "静的 def test_ 480 件、CI 実測 484 passed（run 32078586978、Python 3.12 / config.settings.test / SQLite in-memory / AI_PROVIDER=mock）。frontend テストは 0 件。",
+    "testBreakdown": [
+      { "area": "認証", "detail": "apps/accounts/tests/test_auth.py（30）" },
+      { "area": "マスキング", "detail": "apps/customers/tests/test_masking.py（19）" },
+      { "area": "承認", "detail": "apps/campaigns/tests/test_approval.py（16）" },
+      { "area": "CSV 出力", "detail": "29" },
+      { "area": "AI 呼び出し", "detail": "apps/ai_core/tests（37）" },
+      { "area": "監査", "detail": "apps/audit/tests/test_audit.py（7）" },
+      { "area": "共同作業者", "detail": "test_collaborators.py（21）" },
+      { "area": "取込エラー保持", "detail": "test_import_error_retention.py（8）" }
+    ],
+    "security": [
+      "apps/customers/utils.py:1-40 と serializers.py:182-202 が to_representation 時にマスク。",
+      "apps/accounts/authentication.py:26-40 で per-request token_version 判定。",
+      "ログイン試行は SimpleRateThrottle。",
+      "監査は apps/audit/services.py の write_audit_log（before-after スナップショット）。",
+      "取込エラー行は PII をマスクして保持し、purge_import_errors で削除する（自動実行なし）。"
+    ],
+    "limitationsNote": "できること・含めていないことの各行に対応。README「Differences from the Original Product Scope」および「AI Architecture」の 5 サービス表を正本とする。",
+    "links": [
+      "ai-crm-demo/backend/apps/",
+      "ai-crm-demo/frontend/src/",
+      "docs/API_CONTRACT.md"
+    ],
+    "designDocs": [
+      "specs/05_業務要件定義書",
+      "specs/06_機能要件定義書",
+      "design/09_データベース設計書",
+      "design/23_アーキテクチャ設計書",
+      "design/20_AIプロンプト設計書"
+    ]
+  },
+  "repository": [
+    { "label": "リポジトリ — ai-crm-demo/", "href": "https://github.com/youshi-kanda/portfolio/tree/main/ai-crm-demo" },
+    { "label": "公開 claim の正本 — README.md", "href": "https://github.com/youshi-kanda/portfolio/blob/main/ai-crm-demo/README.md" },
+    { "label": "CI 定義 — .github/workflows/ai-crm-ci.yml", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/ai-crm-ci.yml" },
+    { "label": "CI 実行ログ — run 32078586978（484 passed）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32078586978" }
+  ],
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "portfolio-case-study-specification.md §17.1（TASK-CS-06 確定版 / 2026-08-20）— CS-1 … CS-16 の本文はこの節が正本",
+      "overview / currentPractice / requirements / built — 同 §17.1 CS-1・CS-3・CS-4・CS-5",
+      "decisions — 同 §17.1 CS-6（判断 1〜3・却下した案つき）",
+      "highlights — 同 §17.1 CS-7",
+      "role — 同 §17.1 CS-8",
+      "quality / safety — 同 §17.1 CS-9・CS-10",
+      "delivery / scope / scale — 同 §17.1 CS-11・CS-12・CS-13",
+      "capabilities — 同 §17.1 CS-14",
+      "technical — 同 §17.1 CS-15 T-1〜T-8",
+      "repository — 同 §17.1 CS-16",
+      "flow — 同 §17.1 CS-6 判断 3 / CS-7-1 / CS-10 監査ログ行 ／ ai-crm-demo/README.md「Key Features (Demo scope)」",
+      "FACT_QA / UNSUPPORTED_CLAIMS = 0 は同 §17.4.4 で走査済み"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

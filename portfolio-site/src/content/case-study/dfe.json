@@ -1,0 +1,272 @@
+{
+  "slug": "dfe",
+  "overview": "書類を読み取った結果から必要な項目を取り出して形を整え、そのまま使える項目と、人が確認すべき項目とを理由つきで選り分ける処理です。",
+  "leadDisclosure": "この作品は OCR を実行していない。入力は合成 OCR レスポンスであり、実装しているのは読み取り後（post-OCR）の項目取り出し・正規化・確認要否の判定である。読み取り精度の数値は持っていない。",
+  "currentPractice": "使うのは、届いた帳票を業務システムへ入力する事務担当と、内容を確認する現場の責任者です。読み取りの仕組みを調整する人はいません。いまは紙や PDF を見ながら手で入力し、判読できない欄は都度現場へ問い合わせています。",
+  "requirements": {
+    "functional": [
+      "帳票の 12 項目を取り出し、日付・区分・チェック欄を決まった形に整える（読み取り後の項目抽出／post-OCR field extraction）",
+      "項目ごとの「読み取り自信度」を出す（Confidence scoring）",
+      "確認が必要な項目だけを、理由つきで振り分ける（Review Gate）"
+    ],
+    "constraints": [
+      "読めない値を勝手に補正・補完しない",
+      "外部サービスへ送らない・追加インストールを要求しない・同じ入力なら毎回同じ出力になる",
+      "エラーに書類の中身・ファイル名・接続情報を載せない"
+    ]
+  },
+  "built": [
+    { "name": "処理を通すコマンド", "what": "取り出した項目と値、自信度、確認が必要な項目とその理由、形式の検証結果が並ぶ" },
+    { "name": "うまくいかない入力を試す切り替え", "what": "読み取り結果が空だった場合などを再現できる" },
+    { "name": "見本の帳票と、その正解データ", "what": "すべて架空で、同じ定義から作られている" },
+    { "name": "出力の形式定義", "what": "次の処理へ渡すデータの形" },
+    { "name": "人が確認して確定する画面", "what": "含めていません。実装範囲は振り分けまで。" }
+  ],
+  "decisions": [
+    {
+      "title": "自信度をページ全体ではなく、項目ごとに出す（Confidence scoring（block 単位））。",
+      "context": "見本の平均は 0.86 ですが、手書きの所見は 0.49 です。",
+      "decision": "確信度をブロック単位で採点し、読めなかった項目は自信度をゼロにする（欠損項目の confidence = 0）。",
+      "reason": "却下したのはページ平均で判定する案です。平均に埋もれると人に回すべき項目が拾われません。",
+      "tradeoff": null,
+      "evidenceRefs": ["DFE-V01"]
+    },
+    {
+      "title": "読めない値を直さず、そのまま人に回す。",
+      "context": "あり得ない日付や、判定できないチェック欄が入力に現れる。",
+      "decision": "補正せず null を返す。チェック欄は有・無・判定できず の 3 状態にする（tri-state checkbox）。取り出す範囲も次の項目名で打ち切る（キーワードアンカー）。",
+      "reason": "却下したのは、あり得ない日付を近い日付へ補正し、チェック欄の判定できない状態を「なし」に寄せる案です。補正すると誰も間違いに気づけません。",
+      "tradeoff": "補正しない方針は review_required の件数を増やす方向に働きます。",
+      "evidenceRefs": ["DFE-V01"]
+    },
+    {
+      "title": "振り分けまでを実装範囲とし、確定画面は作らない（Review Gate）。",
+      "context": "確定画面まで作ると、運用に乗っていると誤読されます。",
+      "decision": "判定を返すところまでを実装範囲とし、読み取りサービスも差し替え口だけ用意する（provider 抽象化）。",
+      "reason": "却下したのは確定画面まで作る案です。",
+      "tradeoff": "差し替えた実例はありません。",
+      "evidenceRefs": []
+    }
+  ],
+  "highlights": [
+    {
+      "claim": "12 項目のうち 10 項目はそのまま使え、2 項目だけが確認に回ります。",
+      "detail": "回るのは手書きの所見（0.49）と点検者の区分（0.56）で、なぜ回るのかも一緒に出ます。その間は確定操作を許可しません（confirm allowed = false）。",
+      "evidenceRefs": ["DFE-V01"]
+    },
+    {
+      "claim": "読めない入力では、合図と決まった文だけを返します。",
+      "detail": "書類の中身も応答の本文も出しません。",
+      "evidenceRefs": []
+    },
+    {
+      "claim": "どの欄がどの項目になるかを対応表で確認できます。",
+      "detail": "左の帳票は表示用の見本で、処理はこれを読み取っていません。",
+      "evidenceRefs": []
+    }
+  ],
+  "role": "個人開発です。項目の取り出し・正規化・自信度・振り分け・形式検証・合成データの生成・テストまでを 1 人で実装しました。読み取りサービス本体は含めておらず、入力は合成された読み取り結果です。",
+  "quality": [
+    "何を確認しているか — 項目を取り出す範囲の打ち切り、チェック欄の 3 状態、あり得ない日付の拒否、欠損の自信度ゼロ、振り分けの 4 状態と理由、出力形式の検証、エラーの形、外部通信が発生しないこと。",
+    "出力が変わっていないことを毎回照合します（Golden file ／回帰テスト）。時計を固定しているため出力は毎回同じです。見本の帳票と正解データも同じ定義から作られます（合成データの単一仕様生成）。すべて架空のデータです。",
+    "出力の形式は毎回確認します（JSON Schema ／スキーマ検証）。依存を持たない部分実装で、未対応のルールは失敗させます。",
+    "自動の動作チェック（node:test）は追加インストールなしで再実行できます。157 passed / 40 suites（2026-08-15 に npm test）。"
+  ],
+  "safety": [
+    {
+      "name": "中身を載せないエラー（Safe error ／コードと固定文のみ）",
+      "what": "エラーやログに書類の中身・ファイル名・接続情報が残りません。"
+    },
+    {
+      "name": "外部サービスに一切データを送らない構成（Zero dependencies ／ no-network）",
+      "what": "通信の入口を塞いだ状態で全パターンを完走させ、ソース走査でも確認しています。実プロバイダに差し替えれば通信は発生するため、「この構成では送らない」の範囲で書いています。"
+    },
+    {
+      "name": "扱うデータはすべて架空",
+      "what": "実際の書類を処理する経路そのものがありません。出力に付く自信度は合成された読み取り結果に埋め込まれた値であり、読み取り精度の実測ではありません。"
+    }
+  ],
+  "delivery": [
+    {
+      "key": "渡すもの",
+      "value": "src/ 一式（JavaScript 12 ファイル）、出力の形式定義 schema/equipment-inspection-output.schema.json、合成データ fixtures/ 3 点、tests/、scripts/、docs/architecture.md"
+    },
+    {
+      "key": "依頼者側で行うこと",
+      "value": "Node 20 以降を用意する（package.json の engines.node = >=20）。インストールするものは無い（dependencies / devDependencies の宣言そのものが無い）"
+    },
+    {
+      "key": "別の帳票へ広げるとき",
+      "value": "src/field-definitions.js と JSON Schema の 2 ファイルを編集する（docs/architecture.md「Extending it」）"
+    },
+    {
+      "key": "読み取りサービスを実物に替えるとき",
+      "value": "annotate() を持つオブジェクトを 1 つ書く。差し替えた実例は無い"
+    },
+    { "key": "確認担当者が使う画面・運用体制", "value": "未定義（振り分けまでが実装範囲）" }
+  ],
+  "scope": [
+    {
+      "implemented": "読み取り後（post-OCR）の項目抽出・正規化・確信度・振り分け",
+      "notIncluded": "OCR エンジンの実行",
+      "why": "このデモの対象外。入力は合成 OCR レスポンス。読み取り精度の数値は持っていない"
+    },
+    {
+      "implemented": "人が確認すべき項目の判定と理由の出力",
+      "notIncluded": "レビュー画面（人が確定する UI）",
+      "why": "実装範囲は振り分けまで。UI を作ると「運用に乗っている」と誤読される"
+    },
+    {
+      "implemented": "passed / review_required / blocked / extraction_failed の判定",
+      "notIncluded": "blocked を再現するデモ経路",
+      "why": "低品質ページの合成 fixture が無い。実装とユニットテストには存在する"
+    },
+    {
+      "implemented": "合成 PDF（視覚用）と合成 OCR レスポンス（入力）",
+      "notIncluded": "PDF からの読み取り",
+      "why": "パイプラインは PDF を読まない。両者は同一仕様から生成している"
+    },
+    {
+      "implemented": "依存ゼロの JSON Schema 部分実装",
+      "notIncluded": "JSON Schema の完全実装",
+      "why": "未対応キーワードは「検証済み」にせず失敗させる方針"
+    },
+    {
+      "implemented": "外部通信なし（毒化 + ソース走査で固定）",
+      "notIncluded": "実プロバイダ接続時の通信遮断",
+      "why": "差し替えれば通信は発生する。「この構成では送らない」の範囲で書く"
+    },
+    {
+      "implemented": "別帳票への差し替え口（2 ファイル + provider 1 メソッド）",
+      "notIncluded": "実際に別帳票へ差し替えた実例",
+      "why": "設計としての説明にとどめ、実績としては書かない"
+    }
+  ],
+  "scale": [
+    {
+      "item": "パイプライン",
+      "value": "9 段（合成 OCR レスポンス → 構造化 JSON）",
+      "method": "DFE-V04 の 9 ボックス。合成 OCR レスポンス起点の数え方"
+    },
+    { "item": "抽出項目", "value": "12", "method": "src/field-definitions.js の定義数" },
+    {
+      "item": "実装",
+      "value": "src/ の JavaScript 12 ファイル",
+      "method": "find src -name '*.js' = 12（src/providers/mock-provider.js を含む）"
+    },
+    {
+      "item": "テスト",
+      "value": "157 passed / 40 suites / 0 failed",
+      "method": "npm test（2026-08-15 実行。2026-08-20 に再実行し同数を確認）／ CI run 32023326504"
+    },
+    {
+      "item": "依存パッケージ",
+      "value": "0",
+      "method": "package.json に dependencies / devDependencies のキー自体が無い。tests/no-network.test.js が検証"
+    },
+    { "item": "工数", "value": "未計測", "method": "推定値を書かない" }
+  ],
+  "capabilities": [
+    "読み取り・自動処理の後処理（項目の取り出し・正規化・確認要否の判定）",
+    "帳票・伝票データの構造化と、連携先へ渡す形式の検証",
+    "入力データの検証ルール設計（補正しない／欠損を区別する方針を含む）",
+    "外部サービスへデータを出せない環境での処理設計"
+  ],
+  "capabilitiesNote": "以下は対応できる作業の種類であり、受注実績ではありません。",
+  "flow": [
+    { "key": "01", "name": "Synthetic OCR Response", "owner": "input", "what": "合成 OCR レスポンス。パイプラインの入力はここから始まる。合成 PDF は表示用の別枠で、読み取っていない。", "gate": null },
+    { "key": "02", "name": "Mock OCR Provider", "owner": "system", "what": "annotate() を持つ差し替え口。既定は mock で、実プロバイダへ差し替えた実例は無い。", "gate": null },
+    { "key": "03", "name": "OCR Response Validation", "owner": "system", "what": "読み取り可能なテキストが無ければ、抽出を継続せず停止する。", "gate": "extraction_failed" },
+    { "key": "04", "name": "Field Extraction", "owner": "system", "what": "次のラベルで打ち切る抽出窓で 12 項目を取り出す。", "gate": null },
+    { "key": "05", "name": "Normalization", "owner": "system", "what": "日付・区分・チェック欄を決まった形に整える。修復せず null を返す。", "gate": null },
+    { "key": "06", "name": "Confidence Scoring", "owner": "system", "what": "ブロック単位で採点する。欠損項目は 0 点。", "gate": null },
+    { "key": "07", "name": "Review Gate", "owner": "system", "what": "passed / review_required / blocked / extraction_failed の 4 状態へ理由つきで振り分ける。", "gate": "confirm_allowed = false" },
+    { "key": "08", "name": "Schema Validation", "owner": "system", "what": "出力を JSON Schema に対して検証する。未対応キーワードは失敗させる。", "gate": null },
+    { "key": "09", "name": "Structured JSON", "owner": "output", "what": "次の処理へ渡す構造化 JSON。人が確定する画面は含めていない。", "gate": null }
+  ],
+  "technical": {
+    "architectureSummary": "Synthetic OCR Response → Mock OCR Provider → OCR Response Validation → Field Extraction → Normalization → Confidence Scoring → Review Gate → Schema Validation → Structured JSON の 9 段。合成 PDF は VISUAL ONLY の別枠で、PDF → OCR の矢印は存在しない。",
+    "whyThisArchitecture": "段ごとに入出力を固定し、プロバイダ境界を src/ocr-response.js の検証済み形状へ寄せた。これにより ①帳票を変える変更は field-definitions.js + schema に閉じる ②読み取りサービスの差し替えは annotate() 1 メソッドに閉じる。",
+    "rejected": [
+      {
+        "option": "confidence をページ単位で持つ設計",
+        "why": "低品質項目が平均に埋もれる。"
+      },
+      {
+        "option": "normalizer が値を補修する設計",
+        "why": "誤りが不可視化する。"
+      },
+      {
+        "option": "レビュー UI まで含める設計",
+        "why": "実装範囲が誤読される。"
+      }
+    ],
+    "failureModes": [
+      "ラベル自体が誤読された場合は欠損として扱われ、検出できない。",
+      "JSON Schema は部分実装で、未対応キーワードは fail-fast。",
+      "blocked はデモ経路が無くユニットテストのみ。",
+      "実プロバイダに差し替えれば通信は発生する。",
+      "empty_text は exit code 1 を返す（scripts/demo.js:83。失敗経路の期待値であってテスト失敗ではない）。"
+    ],
+    "tradeOffs": [
+      "依存ゼロを優先したため Schema 検証は部分実装にとどまる。",
+      "決定性のためクロックを固定しており、実運用では実時刻を渡す。",
+      "補正しない方針は review_required の件数を増やす方向に働く。"
+    ],
+    "testsSummary": "157 passed / 40 suites（2026-08-15 に npm test）。追加インストールなしで再実行できる。",
+    "testBreakdown": [
+      { "area": "extractor", "detail": "tests/extractor.test.js（境界打ち切り）" },
+      { "area": "normalizer", "detail": "日付の Date.UTC 往復・tri-state の語境界" },
+      { "area": "confidence", "detail": "block 解決・欠損 0" },
+      { "area": "review-gate", "detail": "4 状態と理由コード・30% 閾値の blocked" },
+      { "area": "schema-validator", "detail": "部分実装。未対応キーワードは失敗させる" },
+      { "area": "safe-errors", "detail": "assertSafeErrorShape" },
+      { "area": "no-network", "detail": "tests/no-network.test.js:22-140（毒化 + ソース走査 + 依存ゼロ検証）" },
+      { "area": "golden", "detail": "fixtures/expected-output.json との照合" }
+    ],
+    "security": [
+      "safe-errors.js:12-93 が 4 キー固定のエラー形状を保証。",
+      "プロバイダ例外は wrap せず discard。",
+      "no-network テストが fetch / XMLHttpRequest / WebSocket を毒化して全シナリオを走らせる。"
+    ],
+    "limitationsNote": "できること・含めていないことの各行に対応。README「Scope」「No network access」「Synthetic data」を正本とする。",
+    "links": [
+      "document-field-extraction-demo/src/extractor.js:27-72",
+      "document-field-extraction-demo/src/normalizer.js:19-104",
+      "document-field-extraction-demo/src/confidence.js:35-99",
+      "document-field-extraction-demo/src/review-gate.js:42-87",
+      "document-field-extraction-demo/src/schema-validator.js",
+      "document-field-extraction-demo/src/safe-errors.js:12-93",
+      "tests/",
+      "fixtures/expected-output.json"
+    ],
+    "designDocs": ["docs/architecture.md"]
+  },
+  "repository": [
+    { "label": "リポジトリ — document-field-extraction-demo/", "href": "https://github.com/youshi-kanda/portfolio/tree/main/document-field-extraction-demo" },
+    { "label": "公開 claim の正本 — README.md", "href": "https://github.com/youshi-kanda/portfolio/blob/main/document-field-extraction-demo/README.md" },
+    { "label": "CI 定義 — .github/workflows/document-field-extraction-ci.yml", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/document-field-extraction-ci.yml" },
+    { "label": "CI 実行ログ — run 32023326504（tests 157 / pass 157 / fail 0）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32023326504" }
+  ],
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "portfolio-case-study-specification.md §17.3（TASK-CS-06 確定版 / 2026-08-20）— CS-1 … CS-16 の本文はこの節が正本",
+      "leadDisclosure — 同 §17.3 CS-1 直後の Rule DFE-0 宣言文（spec §7「折りたたみに入れない」の指定）",
+      "overview / currentPractice / requirements / built — 同 §17.3 CS-1・CS-3・CS-4・CS-5",
+      "decisions — 同 §17.3 CS-6（判断 1〜3・却下した案つき）",
+      "highlights — 同 §17.3 CS-7",
+      "role — 同 §17.3 CS-8",
+      "quality / safety — 同 §17.3 CS-9・CS-10",
+      "delivery / scope / scale — 同 §17.3 CS-11・CS-12・CS-13",
+      "capabilities — 同 §17.3 CS-14",
+      "technical — 同 §17.3 CS-15 T-1〜T-8",
+      "repository — 同 §17.3 CS-16",
+      "flow — 同 §17.3 CS-15 T-1 の 9 段 ／ assets/document-field-extraction/publish/PUBLISH-MAP.md DFE-V04",
+      "DFE-V01 の対象外事項 — 同 PUBLISH-MAP.md「OCR を実行した Evidence ではない」"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

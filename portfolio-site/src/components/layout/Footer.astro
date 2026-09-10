@@ -1,0 +1,55 @@
+---
+/**
+ * 07 CONTACT.
+ *
+ * Two rows, both of them links this repository can confirm. The prototype had
+ * a third — 連絡先, with the value 未定義 — and a fourth that set
+ * 経歴 / 稼働条件 / 料金 to 未記入. Both are gone (IMPLEMENT-03 §5), along with
+ * the sentence in the note that named the same three categories.
+ *
+ * The earlier reasoning here was that an absent row looks like an oversight
+ * while a 未記入 row says what is true. That holds while the audience is the
+ * people building the site. It stops holding at publication: a visitor reading
+ * 連絡先 — 未定義 does not learn that no address was provided, they learn that
+ * this site has no way to reach anyone, stated by the site itself. Showing
+ * nothing says the same thing more quietly and claims less.
+ *
+ * What stays is the synthetic-data statement, which is a claim about the
+ * screenshots and is required to stay (§10).
+ */
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from './Rail.astro';
+
+const c = site.contact;
+---
+
+{/*
+  V5 — the contact band inverts. Not decoration: measured on the full page at
+  1440, everything after the Lead's plate was one pale field — 53% of the
+  document at a mean luminance of 235 or higher — and the page ended by fading
+  out rather than closing. Inverting the last band gives the scroll a floor,
+  and it is the ground the Lead already uses, so it is the composition's own
+  vocabulary and not a colour introduced at the end.
+
+  `inv` and not a rule of its own: the class is the whole dark token set
+  (tokens.css), so the mark, the rails and the definition list re-resolve
+  against it without this component knowing any colours.
+*/}
+<footer class="foot inv" id="contact">
+  <div class="page">
+    <div class="in">
+      <p class="mark">{site.handle}</p>
+      <div class="tr">
+        <Rail index={sectionNumber('contact')} labels={c.railLabels} />
+        <div class="msr">
+          <dl>
+            {c.rows.map((row) => (<><dt>{row.key}</dt><dd>{row.value}</dd></>))}
+          </dl>
+          <p class="note" style="margin-top:22px">{ui.contact.note}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

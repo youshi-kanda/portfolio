@@ -1,0 +1,108 @@
+---
+/**
+ * /work/ — the register.
+ *
+ * Not a card grid. One ruled row per work, plus the variant assignment table
+ * that states what the closed set currently is and what the build requires of
+ * it at this length. Both are derived: the palette comes from the renderers,
+ * the floor from the row count.
+ */
+import { getCollection } from 'astro:content';
+import EvidenceDialog from '../../components/evidence/EvidenceDialog.astro';
+import Footer from '../../components/layout/Footer.astro';
+import Rail from '../../components/layout/Rail.astro';
+import SectionHead from '../../components/layout/SectionHead.astro';
+import SyntheticBar from '../../components/layout/SyntheticBar.astro';
+import Nav from '../../components/navigation/Nav.astro';
+import Register from '../../components/work/Register.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { pad2, shippingWorks, workVisual } from '../../lib/content/derive.ts';
+import { ENTRY_VARIANTS } from '../../lib/content/schema.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+import { variantFloor } from '../../lib/validation/variant.ts';
+
+const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+const evidence = (await getCollection('evidence')).map((e) => e.data);
+
+const names = ENTRY_VARIANTS.map((v) => v.replace('v-', '')).join(' / ');
+const floor = variantFloor(works.length, ENTRY_VARIANTS.length);
+---
+
+<BaseLayout
+  title={`WORK INDEX — ${fill(ui.register.h1, { count: works.length })}`}
+  description={ui.register.lede}
+>
+  <Nav current="WORK" progress={20} hasWorks={works.length > 0} onHomepage={false} />
+  <SyntheticBar />
+  <main id="register">
+    <section class="hero">
+      <div class="page">
+        <div class="tr">
+          <Rail
+            index={String(works.length)}
+            labels={ui.register.railLabels}
+            note={ui.register.railNote}
+          />
+          <div class="msr">
+            <h1 class="dsp-s">{fill(ui.register.h1, { count: works.length })}</h1>
+            <p class="lede">{ui.register.lede}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="s-tight">
+      <div class="page">
+        <div class="tr">
+          <div class="bleed">
+            <div class="page"><Register works={works} evidence={evidence} /></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="s-open">
+      <div class="page">
+        <div class="tr">
+          <Rail index="L2" labels={ui.register.variantRailLabels} />
+          <div class="fld">
+            <SectionHead label={ui.register.variantHead} sub={ui.register.variantSub} />
+            <div class="tw">
+              <table>
+                <thead>
+                  <tr>{ui.register.variantHeaders.map((h) => <th>{h}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {
+                    works.map((w, i) => (
+                      <tr>
+                        <th>{pad2(i + 1)} {w.title}</th>
+                        <td>{w.productType}</td>
+                        <td>{w.languages.join(' · ')}</td>
+                        <td><code>{workVisual(w).entryVariant}</code></td>
+                        <td><code>{workVisual(w).caseVariant}</code></td>
+                        <td>{workVisual(w).signal}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            </div>
+            <p class="note" style="margin-top:26px">
+              {
+                fill(ui.register.variantNote, {
+                  names,
+                  size: ENTRY_VARIANTS.length,
+                  count: works.length,
+                  floor,
+                })
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <Footer />
+  </main>
+  <EvidenceDialog />
+</BaseLayout>

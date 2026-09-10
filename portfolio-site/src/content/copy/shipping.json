@@ -1,0 +1,419 @@
+[
+  {
+    "id": "home.hero.role.01",
+    "text": "ソフトウェアエンジニア",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — 職種",
+    "purpose": "何のエンジニアかを、最初の viewport で職種名として言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §HERO role candidate"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.hero.role.02",
+    "text": "業務システム / 自動化 / AI活用",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — 領域",
+    "purpose": "その職種がどの領域に向いているかを 1 行で示す。AI は Product 内部の利用と Development Agent としての利用の両方を含む。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe",
+        "site.howIBuild.workflow（Planning・Review / Coding Agent としての AI 利用）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.display.01",
+    "text": "業務の課題を整理し、",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 1 行目",
+    "purpose": "課題 → 実装 → 動く仕組み の順序を display で宣言する（1/3）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "case-study/crm",
+        "case-study/ppm",
+        "case-study/dfe"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.display.02",
+    "text": "画面・API・データ・自動処理へ落とし込み、",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 2 行目",
+    "purpose": "同上（2/3）。作れるものを、抽象語ではなく実装の単位で言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/ppm",
+        "work/dfe"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.display.03",
+    "text": "動く仕組みとして設計・実装する。",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "display 3 行目",
+    "purpose": "同上（3/3）。UI を持たない pipeline も含むよう「システム」ではなく「仕組み」で閉じる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "evidence/CRM-V06",
+        "evidence/PPM-V02",
+        "evidence/DFE-V01"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.lede",
+    "text": "AIや自動処理に任せる範囲と、人が判断する範囲を分けて設計します。実装したことは、テスト・実行記録・人手確認など、作品に合った方法で確認できる形にします。",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "answer 行の下のリード",
+    "purpose": "どういう設計をするエンジニアかを 2 文で言う。件数も、全作品共通の検証手段名も置かない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe",
+        "evidence/CRM-V06"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.01.key",
+    "text": "業務をシステムにする",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 1 軸目 / 軸名",
+    "purpose": "この軸で何ができるかを、工程名ではなく能力として言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/ppm",
+        "case-study/crm"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.01.value",
+    "text": "業務の流れを、画面・API・データへ落とす",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 1 軸目 / 内容",
+    "purpose": "その能力が具体的に何をすることかを 1 行で言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/ppm",
+        "case-study/crm"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.02.key",
+    "text": "任せる範囲を決める",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 2 軸目 / 軸名",
+    "purpose": "この軸で何ができるかを、工程名ではなく能力として言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.02.value",
+    "text": "AI・自動処理と、人が判断する範囲を分ける",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 2 軸目 / 内容",
+    "purpose": "その能力が具体的に何をすることかを 1 行で言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.03.key",
+    "text": "確認できる形で作る",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 3 軸目 / 軸名",
+    "purpose": "この軸で何ができるかを、工程名ではなく能力として言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe",
+        "evidence/CRM-V06"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.hero.capability.03.value",
+    "text": "テスト・実行記録・人手確認で確かめる",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "instrument rail — capability 3 軸目 / 内容",
+    "purpose": "その能力が具体的に何をすることかを 1 行で言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/dfe",
+        "evidence/CRM-V06"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-07T22:24:15Z"
+    }
+  },
+  {
+    "id": "home.works.h2",
+    "text": "何のためのサービスを、どこまで実装したのか。",
+    "route": "/",
+    "section": "01 SELECTED WORK",
+    "slot": "見出し",
+    "purpose": "この節が答える問いを見出しにする。件数はコピーに固定しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-LOCK-01 §Selected Work h2 candidate",
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.works.lede",
+    "text": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",
+    "route": "/",
+    "section": "01 SELECTED WORK",
+    "slot": "リード",
+    "purpose": "各 entry が実際に出すブロックの構成を先に言う。作品の種類にも件数にも依存しないので、いま出ている作品にも、これから足す作品にも同じように当てはまる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "work/crm",
+        "work/ppm",
+        "work/dfe"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-09T10:05:34Z"
+    }
+  },
+  {
+    "id": "home.stack.h2",
+    "text": "どの技術で何を担当し、それがどの作品に入っているか。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "見出し",
+    "purpose": "技術 → 責務 → 作品 の対応を読む節であることを見出しで言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3",
+        "STACK.languages / STACK.platform の行構造"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.stack.lede",
+    "text": "ロゴは並べていません。1 行が「技術 → その技術で担当した責務 → その責務を持つ作品」の対応です。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "リード",
+    "purpose": "ロゴの壁ではなく 1 行が対応関係であることを説明する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3",
+        "portfolio-positioning.md §4"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.stack.note",
+    "text": "この表に無い技術は、公開しているデモでは使っていません。",
+    "route": "/",
+    "section": "03 ENGINEERING STACK",
+    "slot": "表の下の注記",
+    "purpose": "表に無い技術を使っていないことを明示し、範囲を閉じる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "STACK.languages / STACK.platform（各 README 由来）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "home.about.h2",
+    "text": "リポジトリから確認できることだけ。",
+    "route": "/",
+    "section": "06 ABOUT",
+    "slot": "見出し",
+    "purpose": "ABOUT がリポジトリから確認できる事実だけであることを見出しで言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "ABOUT.known（spec CS-8 / 各 README / PUBLISH-MAP.md）",
+        "PROFILE_DATA_STATUS = PENDING_USER_FACTS"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-28T21:20:25Z"
+    }
+  },
+  {
+    "id": "notfound.code",
+    "text": "404",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "instrument rail — index",
+    "purpose": "どの状態のページかを、他の節と同じ rail の index 位置で示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.h1",
+    "text": "ページが見つかりません。",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "見出し",
+    "purpose": "起きたことを 1 行で言う。原因の推測も謝罪も見出しには置かない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.body.01",
+    "text": "URLが変更されたか、",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "リード 1 行目",
+    "purpose": "考えられる理由を 2 つ挙げる（1/2）。断定はしない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.body.02",
+    "text": "ページが存在しない可能性があります。",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "リード 2 行目",
+    "purpose": "同上（2/2）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "notfound.back",
+    "text": "Portfolioへ戻る",
+    "route": "/404.html",
+    "section": "404 NOT FOUND",
+    "slot": "復帰リンク",
+    "purpose": "行き止まりにしない。読者が確実に到達できる 1 つの route を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "TASK-PORTFOLIO-RELEASE-CLOSEOUT-01 §404 shipping copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  }
+]

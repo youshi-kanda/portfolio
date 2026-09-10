@@ -1,0 +1,29 @@
+{
+  "id": "DFE-V01",
+  "kind": "screenshot",
+  "title": "LOW の 2 項目だけが人に戻る",
+  "caption": "12 項目を抽出し、項目別の確信度に応じて人による確認が必要な項目を判定。",
+  "type": "Terminal output（node src/index.js --scenario success）",
+  "sourceFile": "assets/document-field-extraction/publish/01-cli-demo.png",
+  "dims": "1531×1260",
+  "sha": "1f1abc17…",
+  "scale": "等倍 1.000",
+  "status": "PUBLISH READY",
+  "chip": null,
+  "disclosure": null,
+  "proves": [
+    "項目ごとに確信度が出て、LOW の 2 項目だけが人に戻る",
+    "同じ入力なら毎回同じ出力になる（固定クロック / golden ファイル）"
+  ],
+  "notProves": [
+    "OCR の精度の証拠ではない。入力は合成 OCR レスポンス 1 種類のみ",
+    "レビュー画面の証拠ではない。判定を返すところまでしか実装していない"
+  ],
+  "image": {
+    "src": "/img/dfeCli.webp",
+    "width": 1000,
+    "height": 823
+  },
+  "provenanceComplete": true,
+  "diagram": null
+}
