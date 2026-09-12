@@ -468,33 +468,151 @@
   }
 
   /* ==========================================================================
-     4. DISPLAY TYPOGRAPHY — drawn in
+     4. WELCOME — the page sets itself
 
-     On load the display is drawn rather than faded in: a clip from the baseline
-     up, which is how a line of set type appears on a press. Clip only, no
-     translate. The frozen line breaks are a Layer-3 token: nothing in this
-     block touches font-size, letter-spacing, width or line-height, so the cut
-     cannot move.
+     THERE IS NO INTRO SCREEN, and that is the design rather than a shortcut.
+     A curtain has to be got out of the way before the site can begin; what is
+     wanted is the opposite — the feeling that the work has STARTED. So the
+     opening is the hero's own composition being made, in the order a page is
+     made: the ground, then the field it is set on, then the folio, then the
+     sentence, then the instruments, then the rule that closes the stage.
 
-     V1 also drifted the display and the lede apart on the way out. V2 deletes
-     that: §4 asks for the hero to be COVERED rather than to scroll out, and two
-     exits reading at once — the type sliding up while a plate slides over it —
-     is the composition arguing with itself. The plate is the exit now, and it
-     is stated once, in §C. */
+     Every element in it is an element the hero has at rest. Nothing is added
+     for the opening and nothing is thrown away at the end of it, so there is no
+     seam between "welcome" and "hero" to design: the last frame of the sequence
+     IS the first frame of the page. That is also why no logo appears, no
+     percentage counts up, and nothing is generated — a loader would be a second
+     object that exists only to be dismissed.
+
+       0.00  gate       the instrument rule draws down the page
+       0.10  plate      the field sweeps in from the right edge
+       0.28  grid       its columns come up inside it
+       0.36  folio      the section number is drawn into the plane
+       0.44  display    the sentence sets itself, one authored line at a time
+       0.72  rail       the instrument column
+       0.96  lede       the answer line and the paragraph
+       1.10  base       the signal rule sweeps the stage floor
+       1.76  done
+
+     Under a second and two thirds, and the reader can scroll through any of
+     it — nothing is locked, no wheel or touch listener exists, and the scroll
+     position is neither read nor written (see MotionStage). A visitor who
+     scrolls at 0.3s simply takes the composition with them.
+
+     Under reduced motion `html.mx` is never set, none of the hidden initial
+     states below apply, and the page is the finished poster at first paint.
+     That is the whole of the reduced-motion behaviour: not a shorter sequence
+     to maintain, but the same still composition the sequence resolves to.
+
+     Clip, sweep and fade only. Nothing translates, nothing scales, no letter
+     moves: the frozen line breaks and the type scale are Layer-3 tokens, and
+     an opening that moved them would be an opening that redesigns the page. */
+
+  /* the first stroke is the one line the whole design is built around: the
+     gate, drawn from the top. It is the fixed instrument layer (§3), so it is
+     also the only part of the opening that is not inside the hero — the page's
+     instrument arrives, and then the page is set against it. Desktop only:
+     `.mx-stage` is `display:none` below 1024, where the rail lies down and
+     there is no gate to draw. */
+  .mx .ad .mx-rule {
+    transform: scaleY(0);
+    transform-origin: 50% 0;
+    animation: mx-plane-y 0.7s var(--mx-ease) both;
+  }
+  /* then the planes — the sentence is set ON something */
+  .mx .ad .hf-plate {
+    transform: scaleX(0);
+    transform-origin: 100% 50%;
+    animation: mx-plane 0.52s var(--mx-ease) 0.1s both;
+  }
+  .mx .ad .hf-plate::after {
+    opacity: 0;
+    animation: mx-fade-in 0.44s var(--mx-ease) 0.28s both;
+  }
+  .mx .ad .hf-base {
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    animation: mx-plane 0.6s var(--mx-ease) 1.1s both;
+  }
+  /* the folio is drawn into the plane it lives in. `clip-path` and not a
+     transform, because §E gives this same pseudo-element a scroll-driven
+     translate: two animations on one property would be one animation. */
+  .mx .ad .hero::before {
+    clip-path: inset(0 0 100% 0);
+    animation: mx-draw-in 0.6s var(--mx-ease) 0.36s both;
+  }
+
+  /* then the type. A clip from the baseline up, which is how a line of set
+     type appears on a press — no translate, no fade of the glyphs. */
   .mx .ad .hero .fld,
   .mx .ad .hero .msr,
   .mx .ad .hero .ins {
-    animation: mx-draw-in 1.05s var(--mx-ease) both;
-  }
-  .mx .ad .hero .ins {
-    animation-delay: 0.04s;
+    animation: mx-draw-in 0.8s var(--mx-ease) both;
   }
   .mx .ad .hero .fld {
-    animation-delay: 0.12s;
+    animation-delay: 0.44s;
+  }
+  .mx .ad .hero .ins {
+    animation-delay: 0.72s;
   }
   .mx .ad .hero .msr {
-    animation-delay: 0.28s;
+    animation-delay: 0.96s;
   }
+  /* ≥768 the line cut is authored, so the sentence is set line by line rather
+     than as one block. The stagger is the reading order and nothing else: 120ms
+     apart, which is close enough to read as one sentence arriving and far
+     enough apart to see that it is being set. */
+  @media (min-width: 768px) {
+    .mx .ad .hero .fld {
+      animation: none;
+    }
+    .mx .ad .hero .dsp [data-hero-line] {
+      clip-path: inset(0 0 100% 0);
+      animation: mx-draw-in 0.85s var(--mx-ease) both;
+    }
+    .mx .ad .hero .dsp [data-hero-line]:nth-child(1) {
+      animation-delay: 0.44s;
+    }
+    .mx .ad .hero .dsp [data-hero-line]:nth-child(2) {
+      animation-delay: 0.56s;
+    }
+    .mx .ad .hero .dsp [data-hero-line]:nth-child(3) {
+      animation-delay: 0.68s;
+    }
+  }
+  /* MOBILE IS ITS OWN SEQUENCE, not this one slowed down or scaled. The plane
+     is a band across the top there (components.css / responsive.css), so it
+     arrives DOWNWARD from the top edge instead of leftward from the right; the
+     display is one re-flowed paragraph rather than three authored lines, so it
+     is drawn as one block; and the whole thing is a third shorter, because a
+     phone is held closer and waited on less. */
+  @media (max-width: 767px) {
+    .mx .ad .hf-plate {
+      transform: scaleY(0);
+      transform-origin: 50% 0;
+      animation: mx-plane-y 0.42s var(--mx-ease) both;
+    }
+    .mx .ad .hf-plate::after {
+      animation-delay: 0.14s;
+    }
+    .mx .ad .hero::before {
+      animation-duration: 0.5s;
+      animation-delay: 0.18s;
+    }
+    .mx .ad .hero .fld {
+      animation-delay: 0.26s;
+    }
+    .mx .ad .hero .ins {
+      animation-delay: 0.55s;
+    }
+    .mx .ad .hero .msr {
+      animation-delay: 0.7s;
+    }
+    .mx .ad .hf-base {
+      animation-delay: 0.8s;
+    }
+  }
+
   @keyframes mx-draw-in {
     from {
       clip-path: inset(0 0 100% 0);
@@ -502,6 +620,30 @@
     to {
       /* negative insets so no descender or focus ring is clipped at rest */
       clip-path: inset(-30% -8% -30% -8%);
+    }
+  }
+  @keyframes mx-plane {
+    from {
+      transform: scaleX(0);
+    }
+    to {
+      transform: scaleX(1);
+    }
+  }
+  @keyframes mx-plane-y {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes mx-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
@@ -710,6 +852,28 @@
         animation: mx-hero-back linear both;
         animation-timeline: scroll(root block);
         animation-range: 0 100svh;
+      }
+      /* …and with the opening sequence, both at once. The list is restated
+         rather than added to because `animation` is a shorthand: §4's rule and
+         this one both set it, §4's is the more specific of the two (`.mx`), and
+         whichever wins outright takes the other's animation away. Named
+         together they compose — `mx-folio-in` moves `clip-path` on the document
+         timeline, `mx-hero-back` moves `transform` on the scroll timeline, and
+         neither touches the other's property. The no-JS visitor keeps the rule
+         above: parallax, no opening. */
+      .mx .ad .hero::before {
+        animation: mx-draw-in 0.6s var(--mx-ease) 0.36s both,
+          mx-hero-back linear both;
+        animation-timeline: auto, scroll(root block);
+        animation-range: normal, 0 100svh;
+      }
+      @media (max-width: 767px) {
+        .mx .ad .hero::before {
+          animation: mx-draw-in 0.5s var(--mx-ease) 0.18s both,
+            mx-hero-back linear both;
+          animation-timeline: auto, scroll(root block);
+          animation-range: normal, 0 100svh;
+        }
       }
       .ad .hf {
         animation: mx-hero-plane linear both;
