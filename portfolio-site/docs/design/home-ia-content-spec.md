@@ -165,18 +165,24 @@ first viewport 内に、この 4 つが **すべて**入っていること。
 |---|---|---|
 | A（現行 V4） | 業務の課題を整理し、／画面・API・データ・自動処理へ落とし込み、／動く仕組みとして設計・実装する。 | 内容は正しいが **3 行・長い**。「動く仕組み」が弱い（動くだけなら demo でもよい） |
 | B（Issue 提示案） | 業務課題を、使われる Web・AI システムへ。 | **短い。**「使われる」が demo との差を一語で出す。主語述語が省略され、やや広告的 |
-| **C（採用）** | **業務課題を、**／**実際に使われる Web・AI システムへ。** | B を 2 行に割って display の版面を保ちつつ、**「実際に」で「使われる」を実務側へ寄せる。**#4 §13.3 の mobile 4 行以内に収まる |
+| C′ | 業務課題を、／**実際に使われる** Web・AI システムへ。 | **採らない。**「使われる」は**実稼働・利用実績**を含意する。掲載 9 件の稼働状況は repository から確認できず、#5 が「商用実績・利用者数・稼働状況を 1 件も記載していない」と明記した範囲を越える |
+| **C（採用）** | **業務課題を、**／**業務で使える Web・AI システムへ。** | B を 2 行に割って display の版面を保ちつつ、**「業務で使える」= 業務要件への適合の主張に留める。** 稼働実績を主張しない。#4 §13.3 の mobile 4 行以内に収まる |
 
 **採用: C。** 理由 —
 (1) §1.1 の「実際に使える業務システム」をそのまま 1 文にしている。
-(2) 「Web・AI」で守備範囲を、「使われる」で demo でないことを、同時に言える。
+(2) 「Web・AI」で守備範囲を、「業務で使える」で demo でないことを、同時に言える。
 (3) 2 行なので desktop 220px / mobile 4 行以内に収まり、§3 の first viewport 条件を満たす。
+
+**「使われる」を採らない理由（重要）**: 「使われる」は**実際に運用されている**という含意を持つ。
+本 Portfolio は稼働状況・利用者数・商用実績を 1 件も主張しない方針であり（#5 §0）、
+display でそれを含意すると、以降のすべての記述より強い主張を first viewport に置くことになる。
+**「業務で使える」は能力の主張であって、実績の主張ではない。**
 
 ### 4.2 display（確定）
 
 ```
 業務課題を、
-実際に使われる Web・AI システムへ。
+業務で使える Web・AI システムへ。
 ```
 
 - copy key: `home.hero.display.01` / `home.hero.display.02`（**現行 3 行を 2 行に変更**）
@@ -238,7 +244,7 @@ first viewport 内に、この 4 つが **すべて**入っていること。
 | Role | 1 行 |
 | selected technologies | **4〜6 個** |
 | large visual | 16:10 クロップ / 高さ ≥ 320px @1440 |
-| CTA | `Case Study →` 1 本 |
+| CTA | **`caseStudyPublished` が true の Work にのみ `Case Study →` を 1 本。** false の Work は CTA を持たない（§5.0.1） |
 
 **トップページに載せないもの（すべて Case Study 側へ送る）**
 
@@ -251,6 +257,34 @@ API 本数 / migration 数 / tests 本数 / 長い architecture 説明 / CI 詳�
 **非対称リズム**（#4 §10.3）: 広 / 狭 / 広 / 狭 / 広
 広 = `.bleed` 1,296px、狭 = `.msr` 720px。01・03・05 が広。
 
+### 5.0.1 Case Study CTA の条件（既存仕様の踏襲）
+
+**全 Featured に `Case Study →` を固定しない。** `workSchema` の `caseStudyPublished` が唯一の判定条件で、
+これは既存仕様である（schema コメント: *"the site never offers a link whose label promises a page that does not exist"*）。
+
+| `caseStudyPublished` | CTA |
+|---|---|
+| `true` | `Case Study →` を表示 |
+| `false` | **CTA を表示しない。** 代替リンクもプレースホルダも置かない |
+
+**本 IA 時点の実際の値**
+
+| Work | `caseStudyPublished` | トップでの CTA |
+|---|---|---|
+| Featured 01 保険代理店向け AI 相談支援 | `false` | **無し** |
+| Featured 02 採用管理 Web Application | `false` | **無し** |
+| Featured 03 組織向け AI アシスタント基盤 | `false` | **無し** |
+| Featured 04 業務運用 Platform | `false` | **無し** |
+| Featured 05 AI 相談型マーケティング CRM | `true` | `Case Study →` |
+| More 01 Project Progress Manager | `true` | `Case Study →` |
+
+**#7 は新規 Featured 01〜04 の Case Study を制作しない。** それは #8 のスコープである。
+したがって #7 の完成時点で Case Study CTA を持つのは **Featured 05 と More 01 の 2 件のみ**であり、
+これは欠陥ではなく**正しい状態**である。
+
+**禁止事項**: 存在しないページへのリンク / 「Case Study は準備中」等の将来を約束する文言 /
+CTA の位置を空けておくためのプレースホルダ。**無いものは、無いものとして何も置かない。**
+
 ---
 
 ### 5.1 Featured 01
@@ -262,7 +296,7 @@ API 本数 / migration 数 / tests 本数 / 長い architecture 説明 / CI 詳�
 | **copy** | 顧客から聞き取った条件をもとに、どの商品が適用できるかを社内基準に照らして判定し、その根拠を社内ナレッジから検索して提示する相談支援システム。オペレーターが調べて判断していた工程そのものを対象にしている。 |
 | **role** | Frontend / Backend / AI Integration / Database / Auth |
 | **selected tech** | React · TypeScript · Supabase / PostgreSQL · RAG（Embedding / Vector Search）· LLM |
-| **CTA** | Case Study → |
+| **CTA** | **無し**（`caseStudyPublished: false`。Case Study は #8） |
 | 内部 ID | `ANON-AI-01` / slug 案 `ins-ai` |
 
 **title の選定（Q1 の 2 案比較）**
@@ -290,7 +324,7 @@ API 本数 / migration 数 / tests 本数 / 長い architecture 説明 / CI 詳�
 | **copy** | 応募受付から選考、応募者管理、面接日程、合否判定までを 1 つの管理画面に集約した採用管理 Web アプリ。Google Calendar 連携での面接予約と通知、応募者情報の保持期限後の匿名化まで業務フローに含めている。 |
 | **role** | Frontend / Backend / Database / Auth / Infrastructure |
 | **selected tech** | React · TypeScript · Cloudflare Pages / Functions · Cloudflare D1 · Google Calendar API · Twilio |
-| **CTA** | Case Study → |
+| **CTA** | **無し**（`caseStudyPublished: false`。Case Study は #8） |
 | 内部 ID | `ANON-WEBAPP-01` / slug 案 `hire` |
 
 **Q11 の適用（確定事項）**
@@ -315,7 +349,7 @@ Featured 01 の直後に置くことで、**AI も作るし業務アプリも作
 | **copy** | AI 秘書・社内 AI チャット・管理ポータルの 3 つのアプリを、1 つの共通基盤の上に載せた AI Platform。組織単位のテナント分離・権限・監査を基盤側に置き、カレンダーや Slack など業務で使っているサービスと接続している。 |
 | **role** | Architecture / Frontend / Backend / AI Integration / Infrastructure |
 | **selected tech** | TypeScript · React · Supabase / PostgreSQL · RAG（Hybrid Search）· LLM · Google / Slack 連携 |
-| **CTA** | Case Study → |
+| **CTA** | **無し**（`caseStudyPublished: false`。Case Study は #8） |
 | 内部 ID | `ANON-AI-02` / slug 案 `assist` |
 
 **Featured 01 との差**: 01 が業種特化の**縦の深さ**、03 が複数プロダクトを載せる**横の基盤設計**。
@@ -336,7 +370,7 @@ copy でも 01 は「判定」、03 は「基盤に載せる」を主語にし�
 | **copy** | 現場スタッフと管理者が同じ仕組みを別の権限で使う業務運用プラットフォーム。誰が何をどこまで操作できるかと、業務がどの状態からどの状態へ進むかを先に設計として確定させ、日報・マニュアル・通知をその同じ権限モデルの上に載せている。 |
 | **role** | Architecture / Frontend / Backend / Database / Infrastructure |
 | **selected tech** | Next.js · React · Cloudflare Workers · Supabase / PostgreSQL · RBAC / RLS · Web Push |
-| **CTA** | Case Study → |
+| **CTA** | **無し**（`caseStudyPublished: false`。Case Study は #8） |
 | 内部 ID | `ANON-PLATFORM-02` / slug 案 `ops` |
 
 **AI を主題にしない。** lineup 中で「権限 / Role / Scope / 状態遷移 / 管理画面 / 通知 / Multi-tenant」を
@@ -357,7 +391,7 @@ Q7 が「起草した」で確定した場合のみ、#8 以降で Role に `Per
 | **copy** | 公式 LINE を顧客接点として、顧客・予約・売上を 1 か所に整理し、次に誰へ何をすべきかを AI が提案する CRM。**AI の提案は下書きのままで、人が承認するまで確定しない。** |
 | **role** | Frontend / Backend / AI Integration / Database / Testing / CI-CD |
 | **selected tech** | Django REST Framework · PostgreSQL · React / TypeScript · Redis / Celery · LINE Messaging API · PWA |
-| **CTA** | Case Study →（**公開デモあり**。デモ導線を 1 本追加してよい唯一の Featured） |
+| **CTA** | `Case Study →`（`caseStudyPublished: true`）+ **公開デモ導線**。デモ導線を持つ唯一の Featured |
 | 内部 ID | `ANON-AI-03` / slug `crm`（**既存 slug をそのまま使う**） |
 
 **位置づけの変更（Q8 に対する本書の決定）**: **「公開デモ」ではなく「実務向け CRM の、公開できる断面」**として出す。
@@ -418,14 +452,24 @@ More 4 件は **自動化・インフラ・文書 AI・現場業務**を足す�
 
 ### 6.4 More 03 の掲載前提条件（#7 が着手前に確認すること）
 
-#5 §9-1 が「**公開 repository に `.env` が追跡ファイルとして存在するものが 4 件ある**」と記録している。
+#5 §9-1 が「公開 repository に `.env` が追跡ファイルとして存在するものが 4 件ある」と記録しているため、
+**外部 public repository へリンクを出す More 02 / 03 について現況を確認した。**
 
 **More 01 は対象外。** 公開デモが本 repository 内にあり、`scan:public` の対象として継続的に検査されている。
 
-**More 02 / 03 は外部の public repository へのリンクを出す**ため、**リンクを張る前に当該 repository が
-この 4 件に該当しないことを確認する**。該当した場合の扱いは 2 段階:
+| Work | current main tree の現況 | 判定 |
+|---|---|---|
+| **More 02** MinIO Access Management | **`.env` 本体は無い。** `.env.example` / `.env.production.example` は存在する。ただし **`admin-api/cookies.txt` / `file-api/cookies.txt` 等が tracked で存在する** | **リンク前に security 確認が必要** |
+| **More 03** OCR / LLM 文書処理システム | **`.env` 本体は無い。** `.env.example` のみ | 現況では阻害要因を確認していない |
 
-1. リンクのみ取り下げ、掲載は継続（title / one-line / tech は repository 名を含まない）
+**`cookies.txt` の内容は取得していない。** ファイル名から**セッション情報を含む可能性**があるため、
+**内容の確認ではなく「Portfolio から repository リンクを出す前の security 確認事項」として残す。**
+本書はこの判断を行わない（#8 U-05）。
+
+該当した場合の扱いは 2 段階:
+
+1. **リンクのみ取り下げ、掲載は継続。** title / one-line / role / tech は repository 名を含まないため、
+   リンクが無くても More Projects の行としては成立する（§6.6）
 2. 掲載自体を見送る場合、**代替は現行 `dfe`**（§6.5）。文書 AI の軸を空けないための差し替え先として確保する
 
 ### 6.5 現行 3 作品の行き先（本書の決定）
@@ -503,7 +547,10 @@ More 4 件は **自動化・インフラ・文書 AI・現場業務**を足す�
   列 = 操作（`閲覧 / 作成 / 承認 / 管理`）、セル = 可否とスコープ。
 - **dummy data 指定**: **ロール名は一般名詞に置き換える。** 実際のロール名・テナント名・組織名を出さない。
 - **補助 visual（任意）**: 業務の状態遷移図 1 枚。
-- **意図**: 「権限を設計できる」が文章ではなく**図として**見えること。
+- **意図**: **権限モデルとスコープを実装した構造が、図として分かること。**
+- **書かないこと（Q7 未回答のため）**: 「権限を設計できる」「権限設計を策定した」等、
+  **設計の起草者が本人であることを含意する表現。** 図もキャプションも、
+  **実装された構造の説明**に留める。Q7 が「起草した」で確定した場合のみ、#8 以降で追加してよい（§13.4 U-02）。
 
 ### 7.6 Featured 05 — visual brief
 
@@ -761,6 +808,9 @@ CONTACT を**明確な conversion point**にする。現状は窓口が 0 で、
 6. ABOUT / CONTACT のコピー（§9 / §10）
 7. Email を公開しないこと（§10.5）
 8. Featured 02 に repository リンクを張らないこと（§5.2）
+9. **`caseStudyPublished` が false の Work に Case Study CTA を出さないこと**（§5.0.1）。
+   #7 で Case Study を新規制作しない。CTA を持つのは Featured 05 と More 01 の 2 件のみ
+10. **`workSchema` を変更・緩和しないこと**（§13.3）。新規 Work は V4-only（`showcase` のみ）で登録する
 
 ### 13.2 #7 が越える必要のある技術的制約（本書で実地確認済み）
 
@@ -768,27 +818,76 @@ CONTACT を**明確な conversion point**にする。現状は窓口が 0 で、
 |---|---|---|---|
 | **C-1** | **`B-BAND-COUNT` が featured 4 件以上で build を落とす** | `src/lib/validation/band.ts` が `BAND_PANELS = 3` を超えると **ERROR**。`EditorialBand.astro` のコメントにも「4+ で build 失敗」と明記 | **Editorial Band を廃止する**（§2.3）ため、band gate と `EditorialBand.astro` の扱いを決める必要がある。**gate の閾値を上げるのではなく、band という構成物ごと外す**のが本書の方針 |
 | **C-2** | **作品別 pigment `--sig` が 3 slug 分しか無い** | `tokens.css` に `crm` / `ppm` / `dfe` の light / dark / inv、計 9 宣言 | Featured 5 件のうち pigment を持つのは `crm` のみで、**4 件が未割当**。More Projects には **pigment を割り当てない**（§6.6）ため、**`ppm` の藍と `dfe` の弁柄を Featured の 2 件へ割り当て直し、新色は 2 色の追加で足りる。** 割り当て直しと新色はいずれも art direction の判断 → 承認が要る |
-| **C-3** | **`workSchema` が公開 repository 前提の必須項目を持つ** | `repoPath` / `publicDemoScope`(min 1) / `keyDecision`(min 1) / `tests{summary,count,source}` / `image` / `evidence` がすべて必須 | 新規 6 件（Featured 01–04 / More 02–04）は **公開 repository も demo も test 実測値も持たない**。schema をそのまま使うと**埋められない項目を捏造することになる**。→ **§13.3 の content model 決定に従う** |
+| **C-3** | **無し（当初の指摘は誤りだった。§13.3 参照）** | V4 `workSchema` は `showcase` を持ち、非公開 Work をそのまま表現できる | **schema 変更は不要。** 新規 Work は V4-only 状態（`showcase` のみ）で登録する |
 | **C-4** | `check:structure` が `data-hero-line` を 3 に固定 | display 3 行前提 | display 2 行化（§4.2）に合わせ**期待値を更新** |
 | **C-5** | 新規コピーは承認済みコピーとして登録が必要 | `check:attestation` が `copy/shipping.json` の `publication.reviewStatus` を検査 | **新規 copy key**: `home.hero.display.01–02`（改訂）/ `home.hero.lede`（改訂）/ `home.hero.cta.primary` / `.secondary` / `home.about.now.01–03` / `home.contact.h2` / `home.contact.lede` / Featured 5 件と More 4 件の copy。**すべて `authored` として本人承認が要る** |
 | **C-6** | `homepageRole = "lead"` が `crm` に付いている | Lead 構造の入力 | Lead 廃止に伴い**トップでは参照しない**。**データは削除しない**（#4 §14.4 B-4） |
 | **C-7** | `public/img/` に画像が 3 枚しか無い | `crmApproved` / `ppmDash` / `dfeCli` | Featured 05 用に `portfolio-planning/assets/ai-crm/publish/` から**必要枚数を取り込む**（§7.6） |
 
-### 13.3 #7 が最初に決める content model（本書が方針まで確定させたもの）
+### 13.3 新規 Work の content model（schema 変更は不要）
 
-**問題**: 新しい 9 件のうち 6 件は、公開 repository / 公開デモ / テスト実測値を持たない。
-現行 `workSchema`（C-3）はそれらを必須にしている。
+> **訂正。** 本書の初版は「`workSchema` が `repoPath` / `publicDemoScope` / `tests` を必須にしているため、
+> `portfolio-work` という 2 つ目の record 種別が要る」と書いていた。**これは誤りである。**
+> 初版は本リポジトリの外にある **V3 期の別チェックアウト**の `schema.ts` を読んで書かれており、
+> 本ブランチの schema を見ていなかった。**`portfolio-work` の新設方針は撤回する。**
 
-**本書の決定**: **`workSchema` を緩めるのではなく、2 つ目の record 種別を足す。**
+**事実（`src/lib/content/schema.ts` 実機確認）**
 
-| 種別 | 対象 | 必須項目 |
+V4 の `workSchema` は `showcase` を持ち、**公開 repository を持たない Work をそのまま表現できる。**
+
+```
+showcase: {
+  source: { access: 'public-repo' | 'private-repo' | 'none', path: string | null },
+  demoScope: string[],                     // 既定 []。公開できるものが無ければ空でよい
+  verification: { tests: {...} | null,     // 既定 null。公開できる test 実測値が無ければ null
+                  verificationId: string | null }
+}
+```
+
+- `repoPath` / `publicDemoScope` / `tests` は **`optional()` で LEGACY と明記されている**移行用フィールドで、
+  **V4-only の Work では必須ではない。**
+- `source.access` が `public-repo` 以外のとき、`path` は **`null` でなければならない**
+  （`sourceSchema.superRefine`。非公開 repository の所在を public repository に書かせないための制約）。
+
+**schema が定める 3 つの合法状態**（`workSchema.superRefine` のコメント）
+
+| 状態 | 内容 | 本 IA での対象 |
 |---|---|---|
-| `work`（現行・据え置き） | 公開 repository / デモを持つ Work（`crm` / `ppm` / `dfe` / More 02 / More 03） | 現行のまま。`tests` の実測値も現行のまま |
-| **`portfolio-work`（新設）** | 公開 repository を持たない Work（Featured 01–04 / More 04） | `slug` / `title` / `category` / `copy` / `role` / `selectedTech`(4–6) / `image` / `featuredOrder` / `publication` のみ |
+| Legacy-only | `repoPath` + `publicDemoScope` + `tests`、`showcase` 無し | 既存 `crm` / `ppm` / `dfe`（現状のまま） |
+| **V4-only** | **`showcase` のみ。legacy 3 フィールドは持たない** | **新規 6 件すべて** |
+| Dual | 両方（移行中） | 使わない |
 
-**理由**: 現行 schema を optional で緩めると、**公開デモを持つ作品の必須検証まで弱くなる。**
-Truth Gate は「主張できることだけを主張する」ための仕組みであり、
-**主張できることが少ない Work のために、主張の検証を弱めてはならない**（§11.3）。
+legacy 3 フィールドの**部分的な指定は refusal される**（3 つ揃って 1 つの状態）。
+新規 Work は 3 つとも書かないので、この制約に当たらない。
+
+**本書の決定（訂正版）**
+
+> **新規 Work も既存の `work` collection を使う。`workSchema` は変更しない。緩めもしない。**
+> 公開可否・demo・verification は **V4 `showcase` で正直に表現する。**
+
+新規 6 件の `showcase` の書き方:
+
+| Work | `source.access` | `path` | `demoScope` | `verification.tests` |
+|---|---|---|---|---|
+| Featured 01 / 02 / 03 / 04 | `private-repo` | `null` | `[]` | `null` |
+| More 04 農業工程・勤怠管理 | `private-repo` | `null` | `[]` | `null` |
+| More 02 MinIO / More 03 OCR・LLM | `public-repo` | 公開 path | 公開できる範囲を記載 | 公開できる実測値がなければ `null` |
+
+> **Featured 02 は `private-repo` とする。** repository は public に存在するが、
+> **名称に発注元名が含まれるため path を出さない**（Q11 / §5.2）。
+> `access: public-repo` は `path` を必須にするので、path を出さない以上 `public-repo` とは書けない。
+> **これは schema の制約ではなく、Q11 に対する正直な表現である。**
+
+**schema 変更が要らないことの含意**: `validate:content` / `check:attestation` などの検証ゲートは
+**現行のまま新規 Work に適用される。** 検証を弱めずに非公開 Work を載せられる、というのが
+V4 `showcase` の設計意図そのものである（schema コメント: *「a client engagement has a repository that
+exists and cannot be linked. Saying so is a fact about the work」*）。
+
+**ただし `shipping: true` の Work には `image` と `visual` が依然として必須**
+（`workSchema.superRefine`）。これは緩和対象ではなく、**§7 の visual 制作（#7）と
+§13.2 C-2 の pigment 割り当てが先行する**ことを意味する。
+schema コメント自身が「**顔料は 3 作品に 3 色が割り当てられており、4 件目は既定値ではなく決定である**」と
+述べており、C-2 はここでも裏付けられる。
 
 **HOW I BUILD の移設先**: `/how-i-build/` を新設（§8.3）。
 
@@ -800,14 +899,14 @@ Truth Gate は「主張できることだけを主張する」ための仕組み
 | **U-02** | **Q7 — Featured 04 の権限設計は本人が起草したか** | 未回答 | 「起草した」なら Role に `Permission Design` を追加し、copy を「設計した」へ強められる（§5.4） |
 | **U-03** | **Q10 — Featured 03 のアバター素材を使えるか** | 未回答。第三者の肖像・音声の可能性 | 使えない前提で §7.4 を書いた。使えるなら補助 visual の選択肢が増える |
 | **U-04** | **Q17 — ポイント / 会員 Platform の 4 サービスのうち担当はどれか** | 未回答 | 確定すれば More 05 として追加でき、**決済**という未カバー領域が埋まる（§6.3） |
-| **U-05** | **More 01–03 の public repository に追跡された `.env` が無いか** | #5 §9-1 が該当 4 件の存在を記録。repository 名は特定していない | 該当すればリンク取り下げ、または More 03 を `dfe` へ差し替え（§6.4） |
+| **U-05** | **More 02 の tracked `cookies.txt` を、repository リンクを出す前にどう扱うか** | **`.env` 本体は More 02 / 03 のいずれにも無い**（`.env.example` 系のみ）。ただし More 02 に `admin-api/cookies.txt` / `file-api/cookies.txt` 等が tracked で存在する。**内容は取得していない** | 問題なしと確認できればリンクを出す。問題があればリンクのみ取り下げて掲載継続、または More 03 を `dfe` へ差し替え（§6.4） |
 | **U-06** | **`--sig` の再割り当てと新色 2 色**（C-2） | art direction の判断事項 | 承認されれば Featured 5 件に pigment が揃う。されなければ pigment を持たない Featured を neutral で組む |
 | **U-07** | **Q2 — Featured 01 の業種固有の機能名を出してよいか** | 未回答 | 出せれば copy をより具体にできる。本書は一般語で書いてある |
 
 ### 13.5 #7 の作業順（推奨）
 
 1. `site.json` の `sections` を §2.1 の 7 要素へ更新（`contact.label` 付与 / `more` / `capabilities` / `footer` 追加）
-2. content model の追加（§13.3）と、新規 9 件のレコード作成
+2. 新規 6 件のレコードを **V4-only（`showcase` のみ）** で作成（§13.3）。**schema は変更しない**
 3. C-1（Band 廃止）→ C-4（`data-hero-line`）→ C-2（pigment）の順でゲートを通す
 4. `Hero.astro` の圧縮 + CTA 2 つ
 5. `SelectedWork.astro` を Featured gallery へ再構成 / More register を分離
