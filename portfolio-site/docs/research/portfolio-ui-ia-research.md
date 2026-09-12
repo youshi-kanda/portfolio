@@ -7,6 +7,20 @@ Branch: `issue/4-ui-ia-research`（base: `release/portfolio-site-v4`）
 
 このドキュメントは **Research / Design specification** である。実装変更は含まない。
 
+**フェーズと Issue の対応**（本文中のフェーズ参照はすべてこの対応に従う）
+
+| Issue | Phase | 範囲 |
+|---|---|---|
+| [#4](https://github.com/youshi-kanda/portfolio/issues/4)（本 Issue） | Phase 1 | UI / IA 調査とデザイン方針策定 |
+| [#5](https://github.com/youshi-kanda/portfolio/issues/5) | Phase 2 | 全プロジェクト棚卸しと掲載ランク決定。**UI 実装は行わない** |
+| [#6](https://github.com/youshi-kanda/portfolio/issues/6) | Phase 3 | トップページ IA とコンテンツ構成の確定 |
+| [#7](https://github.com/youshi-kanda/portfolio/issues/7) | Phase 4 | Editorial Gallery 方向での UI 再実装 |
+
+> **番号体系の注意**: 本ドキュメントが引用するコード内コメント（`index.astro` / `tokens.css` /
+> `lead-candidate.ts` など）に出てくる「Phase 5」「Phase 6」「Phase 7」は、**V4 移行作業の旧番号体系**
+> であって上表の Phase ではない。混同を避けるため、以降 Issue のフェーズは **`#5` / `#6` / `#7`** と
+> Issue 番号で書き、旧番号を指すときは「V4 移行 Phase 5」のように明示する。
+
 ---
 
 ## 0. 計測方法（この文書の数値の出どころ）
@@ -63,7 +77,7 @@ Branch: `issue/4-ui-ia-research`（base: `release/portfolio-site-v4`）
 IA 案 **A「Editorial Gallery」** を採用する（§10）。要点:
 
 1. **First viewport に製品画面を入れる。** HERO を 783px → 約 560px に圧縮し、作品帯を fold の内側へ上げる。
-2. **3 作品を等価に扱う。** 作品が 3 件しか無い状態で Featured / More Projects を分けるのは、調査結果から見て逆効果（§5-C）。Lead 1 件に 31% を割く現在の構成をやめ、3 件を同じ大きさの Gallery として並べる。
+2. **3 作品を等価に扱う（現行 3 件に対する暫定結論）。** 作品が 3 件しか無い状態で Featured / More Projects を分けるのは、調査結果から見て逆効果（§5-C）。Lead 1 件に 31% を割く現在の構成をやめ、3 件を同じ大きさの Gallery として並べる。**ただしこれは掲載作品が 3 件である現状に対する結論であり、#5 の全プロジェクト棚卸しで公開可能な作品が増えた場合は §10.4 の再判定ルールで判断し直す。**
 3. **HOW I BUILD をトップから外し、CAPABILITIES へ圧縮する。** 方法論は Case Study 側の資産として残す。
 4. **CONTACT を CTA にする。** 現在は nav にリンクすら無く、暗転フッターに GitHub 行が 2 行あるだけ。
 5. **Art Direction は捨てない。** 明朝ディスプレイ・紙/インク・作品別 pigment・罫線・rail は調査で有効性が裏付けられた（§6）。変えるのは**順序と面積**であって語彙ではない。
@@ -130,6 +144,10 @@ Lead work entry（`#w-crm`）は 3,392px（390 幅では 4,199px = 5 画面）�
 - nav に CONTACT が無い（`site.json` の `sections` で `label: null`）
 - フッターは `dl` 2 行（GitHub / リポジトリ）のみ
 - メールアドレス、フォーム、「相談する」に相当する動詞が無い
+- **URL がリンクになっていない。** `Footer.astro` は `<dt>{row.key}</dt><dd>{row.value}</dd>` を出すだけで、
+  コンポーネント内の `<a>` は **0 個**。ビルド後の `dist/index.html` でも
+  `<dd>github.com/youshi-kanda</dd>` という**ただの文字列**で、クリックできない
+  （`data-repo` の hidden span に URL はあるが、Evidence dialog 用で導線ではない）
 
 調査 15 件では、Email を明示しているのが emilkowal.ski / samuelkraft.com / jarocki.me / rauno.me（クリックで clipboard コピー、`Copied` 表示）/ adhamdannaway.com（nav に `contact`）/ seanhalpin.xyz（nav に `Contact` ボタン）/ olaolu.dev（`Contact me` ボタンが y=724、F1 内）。**副業案件獲得を目的に含めるなら、現行は導線が欠落している。**
 
@@ -581,7 +599,7 @@ Work entry のブロック設計:「**大型スクリーンショット（幅い
 
 > **現行サイトへの含意（重要）**
 > 現行の `ENGINEERING STACK`（言語 → 責務 → 作品の対応表）と `ENGINEERING PRINCIPLES`（判断 8 件 + sourceRef）は、marcusmayo の Core Competencies と**表面的には同じ形式**（表と箇条書き）である。決定的に違うのは、現行の各行が `sourceRef`（`ai-crm-demo/README.md`、`spec CS-6 判断 3` 等）を持つことだ。
-> **したがって: 形式が似ていることを理由に捨ててはいけないが、位置は同じ理由で後ろにすべき。** V4 で既にトップから外している判断（`index.astro` のコメント）は、調査結果と整合する。**Phase 2 でも戻さない。**
+> **したがって: 形式が似ていることを理由に捨ててはいけないが、位置は同じ理由で後ろにすべき。** V4 で既にトップから外している判断（`index.astro` のコメント）は、調査結果と整合する。**#6 / #7 でも戻さない。**
 
 ---
 
@@ -654,7 +672,7 @@ body のテキストは `Heffernan, Henry Inc. Released: 01/13/2000 / HHBIOS (C)
 
 **現行サイトだけが、両方とも欠けている。**
 
-### 5-C. 作品が少ないとき Featured / More を分けない
+### 5-C. 作品が少ないとき Featured / More を分けない（件数依存のパターン）
 
 - seanhalpin: 8 件すべて同形式のカード
 - samuelkraft: Projects 配下に均一ブロック
@@ -662,7 +680,13 @@ body のテキストは `Heffernan, Henry Inc. Released: 01/13/2000 / HHBIOS (C)
 - brittanychiang: Projects 4 件を同じ行形式
 - 分けているのは実質 adhamdannaway（`SOME OF MY LATEST WORK` 3 枚 + `portfolio` ページ）のみ
 
-> **判断**: **作品 3 件で Featured / More の 2 段構えを取る合理性は無い。** 現行の「Editorial Band（3 枚のサムネ）→ Lead 1 件を巨大に →  index で 3 件を再掲」は、**同じ 3 作品を 3 回見せている**。これが 10,923px の主因である。
+> **判断（暫定・現行 3 件に対して）**: **作品 3 件で Featured / More の 2 段構えを取る合理性は無い。**
+> 現行の「Editorial Band（3 枚のサムネ）→ Lead 1 件を巨大に →  index で 3 件を再掲」は、
+> **同じ 3 作品を 3 回見せている**。これが 10,923px の主因である。
+>
+> **これは件数に依存する結論である。** 上の観察は「4〜8 件までは分けない例が多い」と読むべきで、
+> 「分けてはいけない」ではない。#5 の全プロジェクト棚卸しで公開可能な作品が増えれば、
+> 同じ観察から逆の結論（分ける）が出る。再判定のルールは §10.4 に置く。
 
 ### 5-D. Register（罫線行）はほぼ全サイトに出る
 
@@ -720,7 +744,7 @@ samuelkraft: 598×280 のプレートで上下をクロップ。
 | # | パターン | 出典 | 採用理由 |
 |---|---|---|---|
 | 1 | **F1 に作品ビジュアルを入れる** | ryanmulligan, seanhalpin, samuelkraft | **First View**。現行は最初の画像が y=1,044（1440）/ y=1,321（390）。業務システムは画面を見ないと理解できないので、テキストだけの F1 は判断材料を与えていない |
-| 2 | **Featured / More を分けない、3 件を等価に** | seanhalpin, samuelkraft, emilkowal.ski, brittanychiang | **Project discovery**。3 件を 3 回見せる現行構成が全長 10,923px の主因。等価に並べれば 1 回で済む |
+| 2 | **Featured / More を分けない、3 件を等価に**（**暫定・#5 の棚卸し後に再判定**） | seanhalpin, samuelkraft, emilkowal.ski, brittanychiang | **Project discovery**。3 件を 3 回見せる現行構成が全長 10,923px の主因。等価に並べれば 1 回で済む。ただし現行 3 件という件数が前提（§10.4） |
 | 3 | **画像はクロップして大きく** | seanhalpin, samuelkraft | **First View / Readability**。112px サムネは装飾。400px 級のクロップは証拠になる |
 | 4 | **作品ブロック = 大画像 + 名前 + 1〜2 行** | samuelkraft, emilkowal.ski | **情報階層**。トップで判断に必要なのは「何のための何か」まで。`problem` / `keyDecision` / `limitations` は Case Study の仕事 |
 | 5 | **非対称 2 カラム（広 / 狭の交互）** | seanhalpin | **視線誘導**。均一グリッドは目が滑る。幅の変化がリズムを作り、作品ごとの重みづけもできる |
@@ -786,7 +810,7 @@ samuelkraft: 598×280 のプレートで上下をクロップ。
 - Case Study / Evidence 資産が「詳細は各作品へ」という明確な役割を得る。
 
 **弱み**
-- 3 件しか無いことが露骨に見える（Lead を膨らませて量を演出できない）。
+- 3 件しか無いことが露骨に見える（Lead を膨らませて量を演出できない）。**#5 の棚卸しで掲載可能な作品が増えれば、この弱みは消えると同時に、Featured / More の分割が必要になる**（§10.4）。
 - 方法論（HOW I BUILD）という現状の差別化要素が前面から退く。
 - 作品間に優劣をつけられないので、「まずこれを見てほしい」という誘導が弱くなる（→ 非対称リズムの「広」側に置くことで部分的に解決）。
 
@@ -850,7 +874,7 @@ samuelkraft: 598×280 のプレートで上下をクロップ。
 ```
 
 **強み**
-- 変更が最小。Phase 2 のコストが最も低い。
+- 変更が最小。#7 のコストが最も低い。
 - Lead 1 件を深く見せるので、1 作品については「どこまで作ったか」が確実に伝わる。
 - 既に稼働しており、検証ゲート（`check:structure` / `validate:content` / `check:attestation`）が全て通っている。
 
@@ -882,6 +906,11 @@ samuelkraft: 598×280 のプレートで上下をクロップ。
 - **C を却下**: 調査で最も明確に不利が示された（§4.12 / §4.16 / §7-1, 7-2）。かつ実装コストが最大で、モバイル問題を何も解かない。
 - **B を保留（部分採用）**: 「守備範囲を先に伝える」という長所は正しいが、専用セクションを作らなくても **HERO の capability 3 組**と **02 CAPABILITIES** で達成できる。作品を後ろに下げる代償に見合わない。
 - **D を却下**: §2 の実測課題がすべて残る。
+
+> **この比較は掲載作品 3 件を前提にしている。** #5 の棚卸しで Featured 3〜4 件 + More 4〜8 件が
+> 確定した場合、案 A は「Featured を等価に並べる gallery + More の register」という形に変わる。
+> セクション順と面積配分の結論（作品を F1 へ / 方法論を圧縮 / Contact を CTA 化）は件数に依存しないが、
+> **01 WORK の内部構造だけは #5 の結果で変わる**。
 
 ---
 
@@ -925,6 +954,10 @@ B の長所（守備範囲を先に伝える）は、HERO の capability 3 組�
 
 **Featured / More を分けない。3 作品を等価に、1 回だけ並べる。**
 
+> **暫定（現行 3 件に対する結論）。** #5 の全プロジェクト棚卸しで公開可能な作品が増えた場合は
+> §10.4 の再判定ルールに従い、Featured（等価な gallery）と More（register）の 2 段構えへ組み替える。
+> その場合も**このブロック設計自体は Featured 側にそのまま使える**ので、設計のやり直しにはならない。
+
 セクション頭: rail（`01` / `SELECTED WORK` / `3 works`）+ h2 + lede（現状の `home.works.h2` / `home.works.lede` をそのまま使える）。
 
 各作品ブロック（3 回反復）:
@@ -943,7 +976,7 @@ B の長所（守備範囲を先に伝える）は、HERO の capability 3 組�
 └─────────────────────────────────────────────────────────┘
 ```
 
-- **非対称リズム**: 3 件を「広 / 狭 / 広」で組む（seanhalpin の 819 / 491 の考え方）。広 = 図版がページ幅いっぱい、狭 = 図版が `.msr` 幅（720px）。どの作品を「広」にするかは Phase 2 の判断（既存の `featuredOrder` / `homepageRole` が使える）。
+- **非対称リズム**: 3 件を「広 / 狭 / 広」で組む（seanhalpin の 819 / 491 の考え方）。広 = 図版がページ幅いっぱい、狭 = 図版が `.msr` 幅（720px）。どの作品を「広」にするかは **#5 の掲載ランクと #6 の IA 確定で決まる**（既存の `featuredOrder` / `homepageRole` が入力に使える）。
 - **図版は縮小せずクロップ**（§5-F）。表示高さの下限を決め、足りなければ横をクロップする。
 - **1 ブロックのテキストは「製品種別 + purpose 1 文 + 言語」まで。** 現行 `Register` の `problem` / `implementationScope` / `proves` / `tests` / `limitations` は Case Study へ送る。
 - **Case Study 導線を各ブロックに 1 つ。** 現行 `ui.work.caseStudyCta` をそのまま使う。
@@ -952,11 +985,37 @@ B の長所（守備範囲を先に伝える）は、HERO の capability 3 組�
 
 > 「Lead を深く見せたい」という現行の意図は捨てない。**深さの置き場所を Case Study に移す**だけである。トップでの役割は「3 件それぞれが何か」を等価に示すことに限定する。
 
-### 10.4 More Projects — どう見せるか
+### 10.4 More Projects — どう見せるか（#5 の棚卸し後に再判定）
 
-**現時点では作らない。** 作品が 3 件であり、調査でも 4〜8 件までは分けないのが一般的（§5-C）。
+**現行 3 件に対する結論: 現時点では作らない。** 調査でも 4〜8 件までは分けない例が大半だった（§5-C）。
 
-**発動条件を決めておく**: 公開作品が **6 件以上**になった時点で、01 の下に罫線 register（`Register.astro` の減量版）を `MORE` として追加する。それまでは `/work/` 一覧ページが archive の役割を担う。
+ただし **これは掲載作品が 3 件であることに依存した暫定結論**であり、#5（全プロジェクト棚卸しと掲載ランク決定）が
+公開可能な作品を洗い出した時点で**必ず再判定する**。#5 の分類軸は Featured 3〜4 件 / More Projects 4〜8 件 /
+Experiments / 非掲載 なので、**棚卸しの結果しだいで分割が必要になる可能性の方が高い**。
+（#6 のたたき台も `FEATURED WORK` と `MORE PROJECTS` を分ける前提で書かれている。）
+
+#### 再判定ルール
+
+| 掲載可能な作品数 | 構成 |
+|---|---|
+| 3 件以下 | **分けない。** 01 WORK に等価な gallery ブロックを並べるだけ（§10.3） |
+| 4〜5 件 | **分けない**が、非対称リズムを「広 / 狭 / 狭 / 広」等に延長する。全長が §12.3 の上限を超えるなら分割へ |
+| **6 件以上** | **分ける。** 01 FEATURED WORK（3〜4 件の gallery ブロック）+ 02 MORE PROJECTS（罫線 register） |
+
+分割する場合の MORE の形: `Register.astro` の減量版（番号 / タイトル / 製品種別 / purpose 1 文 / 言語 /
+Case Study →）。カード grid にはしない（§7-10）。`/work/` 一覧ページは、分割の有無にかかわらず archive の役割を担う。
+
+#### 判定に使う制約（#5 へ渡す）
+
+再判定は件数だけで決まらない。以下は本調査が決めた制約で、#5 の掲載ランク決定の入力になる:
+
+- **1 作品がトップで占める高さ ≤ 900px**、**01 WORK の合計 ≤ 3,200px**（§12.3）。
+  Featured を 4 件にすると gallery だけで 3,600px となり上限を超えるので、**Featured 4 件を採るなら 1 件あたりの高さを 800px へ下げる**。
+- **作品別 pigment は現在 3 作品に 3 色**（`--sig` crm 緑 / ppm 青 / dfe 橙）。
+  **Featured が 4 件になると 4 色目が要る。これは既定値ではなく決定事項**であり、色の追加は art direction の判断になる。
+  More Projects 側は pigment を割り当てず、ニュートラルで並べれば色数を増やさずに済む。
+- **各作品に「16:10 でクロップして高さ 480–560px に耐えるスクリーンショット」があるか**（§11.4）。
+  これが無い作品は Featured に置けない。#5 の確認項目「UI / 画面の見栄え」はこの観点で見る。
 
 ### 10.5 CAPABILITIES（02）— どう見せるか
 
@@ -1039,7 +1098,7 @@ B の長所（守備範囲を先に伝える）は、HERO の capability 3 組�
 - rail のラベル文字列（`SELECTED WORK` 等）→ 節番号のみ残す
 - CAPABILITIES の workflow 図 → トップから除去（デスクトップと同じ）
 
-### 10.10 Phase 2 の受け入れ数値（実測で検証可能）
+### 10.10 受け入れ数値（#7 の完了判定・実測で検証可能）
 
 | 指標 | 現行（実測） | 目標 |
 |---|---|---|
@@ -1080,7 +1139,7 @@ Issue の候補 `Editorial + Graphic + Depth + Interactive` から **`Interactiv
 | `.mo` / `.lb`（モノ 11px, tracking .2em） | 維持 | 維持 | rail の語彙。joshwcomeau の kicker、anandchowdhary の `/NOW` と同じ機能 |
 | 作品名（gallery 内） | h3 24px | **32px** | 図版が大きくなるぶん、キャプションの主語を強める |
 
-> `.dsp` の縮小は art direction の凍結解除を要する（`tokens.css` ヘッダの注記）。Phase 2 の着手前に承認を取ること（§14）。
+> `.dsp` の縮小は art direction の凍結解除を要する（`tokens.css` ヘッダの注記）。**#7 の着手前に限定的な凍結解除の承認を取ること**（§14.4 B-1）。
 
 ### 11.2 Spacing
 
@@ -1278,62 +1337,131 @@ seanhalpin の実測比（§4.11）を基準にする。
 
 ---
 
-## 14. Phase 2 / Phase 3 への引き継ぎ事項
+## 14. 次フェーズ（#5 / #6 / #7）への引き継ぎ事項
 
-### 14.1 Phase 2 着手前に承認が必要なもの（ブロッカー）
+### 14.0 どのフェーズが何を受け取るか
 
-| # | 項目 | 理由 |
+| Issue | Phase | 範囲 | 本章 |
+|---|---|---|---|
+| [#5](https://github.com/youshi-kanda/portfolio/issues/5) | Phase 2 | 全プロジェクト棚卸しと掲載ランク決定。**UI 実装は行わない** | §14.1 |
+| [#6](https://github.com/youshi-kanda/portfolio/issues/6) | Phase 3 | トップページ IA とコンテンツ構成の確定 | §14.2 |
+| [#7](https://github.com/youshi-kanda/portfolio/issues/7) | Phase 4 | Editorial Gallery 方向での UI 再実装 | §14.3 |
+
+**本ドキュメントの結論のうち、件数に依存しないもの**（作品を F1 へ / 方法論を圧縮 / Contact を CTA 化 /
+画像を大きくクロップ / 書体・色・rail・罫線を維持）は #5 の結果を待たずに確定している。
+**件数に依存するもの**（Featured / More を分けるか、非対称リズムの組み方、pigment の色数）は
+#5 の棚卸し後に確定する（§10.4）。
+
+> **番号体系の注意**（再掲）: コード内コメントの「Phase 5 / 6 / 7」は V4 移行作業の旧番号体系であり、
+> 上表の Phase ではない。本章では Issue 番号で書く。
+
+---
+
+### 14.1 Issue #5（Phase 2）— 全プロジェクト棚卸し
+
+**#5 では UI 実装を行わない。** 本ドキュメントが #5 へ渡すのは、掲載ランクを決めるための**制約**である。
+
+#### #5 で確定させること（本ドキュメント由来）
+
+| # | 項目 | 内容 |
 |---|---|---|
-| B-1 | **`.dsp` のサイズ変更（`min(90px,8.65cqi)` → `min(68px,6.6cqi)`）** | `tokens.css` / `base.css` は凍結プロトタイプからの再出力であり、ヘッダに「Do not restyle here: a visual change needs the freeze re-opened.」と明記されている。**art direction の凍結解除の承認が要る** |
-| B-2 | **`site.json` の `sections` 変更**（`build` のラベルを `HOW I BUILD` → `CAPABILITIES`、`contact` の `label` を `null` → `CONTACT`） | nav と節番号の正本。`check:structure` の期待値に影響する |
-| B-3 | **SYNTHETIC DATA 帯の F1 からの移設** | 掲載ポリシーに関わる。**表示を減らすのではなく場所を変える**という理解の共有が要る |
-| B-4 | **Lead work entry のトップからの廃止** | `homepageRole: "lead"` と `lib/review/lead-candidate.ts`（Lead A/B レビュー機構）の前提が変わる。Phase 5 で決めた「Lead = AI CRM」という決定の**扱い**を確認する必要がある |
-| B-5 | **HOW I BUILD 詳細の移設先** | `/work/{slug}/technical/` に入れるか、方法論専用ページを新設するか未決。`site.json.howIBuild` のデータ自体は削らない |
-| B-6 | **Email を公開するか** | 公開しない場合の代替窓口（GitHub Issues / Discussions / フォーム）を決める必要がある |
+| H5-1 | **Featured / More を分けるかの再判定** | §10.4 の再判定ルール。3 件以下 = 分けない / 4〜5 件 = 原則分けない / **6 件以上 = 分ける** |
+| H5-2 | **Featured の件数と 1 件あたりの高さ** | 01 WORK の合計 ≤ 3,200px（§12.3）。Featured 3 件なら 1 件 ≤ 900px、**4 件なら 1 件 ≤ 800px** |
+| H5-3 | **pigment の色数** | 現在は 3 作品に 3 色（`--sig` crm 緑 / ppm 青 / dfe 橙）。**Featured が 4 件になると 4 色目が必要で、これは既定値ではなく art direction の決定事項**。More Projects 側は pigment を割り当てずニュートラルで並べれば色数を増やさずに済む |
+| H5-4 | **掲載に耐える画面があるか** | 各作品に「16:10 でクロップして高さ 480–560px に耐えるスクリーンショット」があるか（§11.4）。無い作品は Featured に置けない。#5 の確認項目「UI / 画面の見栄え」はこの観点で見る |
+| H5-5 | **非対称リズムの組み方** | Featured 3 件なら「広 / 狭 / 広」。件数が変われば組み方も変わる（§11.3） |
 
-### 14.2 Phase 2 で実装するもの（承認後）
+#### #5 では決めないこと
 
-1. `site.json` の `sections` 更新（B-2）
-2. HERO の圧縮 — display サイズ、SYNTHETIC 帯の移設、CTA 2 つの追加
-3. `SelectedWork.astro` の再構成 — Band / Lead / index の 3 構造を、等価な 3 ブロックの gallery に統合
+- セクション順・HERO コピー・CTA 文言（→ #6）
+- CSS / コンポーネントの変更（→ #7）
+- **`homepageRole` / `featuredOrder` などの内部データを先に削除しないこと**（§14.4 B-4）
+
+---
+
+### 14.2 Issue #6（Phase 3）— IA とコンテンツの確定
+
+#### #6 で確定させること
+
+| # | 項目 | 本ドキュメントの提案 |
+|---|---|---|
+| H6-1 | **セクション順と nav ラベル** | §10.1。`site.json` の `sections` を更新（`build` を `CAPABILITIES` へ / `contact` に `label` を付与）。§14.4 B-2 |
+| H6-2 | **Featured / More の情報設計** | §10.3（gallery ブロック = 大型図版 + 作品名 + 製品種別 + purpose 1 文 + 言語 + Case Study →）と §10.4（More = 罫線 register の減量版） |
+| H6-3 | **各セクションの情報量上限** | §12.3（desktop）/ §13.5（mobile）。#6 の成果物「各セクションの情報量上限」に直接対応する |
+| H6-4 | **HERO コピーと CTA 設計** | §10.2。display の一文は現行のまま使える。CTA は primary「作品を見る」/ secondary「連絡する」の 2 つ |
+| H6-5 | **CAPABILITIES の内容** | §10.5。`site.json` の `stack.languages`（language → responsibility → work）が既に対応表を持つので新規データは不要。**技術ロゴの壁にしない**（#7 の完了条件）ための形 |
+| H6-6 | **HOW I BUILD 詳細の移設先** | §14.4 B-5。トップでは lede 1 行 + リンクまで圧縮。詳細（8 ステップ workflow / roles / intent / notClaimed）を `/work/{slug}/technical/` に入れるか方法論ページを新設するかは **#6 で決める**。`site.json.howIBuild` のデータ自体は削らない |
+| H6-7 | **ABOUT の内容** | §10.6。#6 は「人物像・強み・対応領域が分かる内容」を求めており、本ドキュメントの /NOW 型 3〜4 行がこれに対応する。現行の 3 行（実装形態 / 公開範囲 / データ）は削らず展開側へ |
+| H6-8 | **SYNTHETIC 帯の再配置先** | §14.4 B-3。作品図版のキャプションと ABOUT の 2 箇所 |
+| H6-9 | **内部管理用表現の UI 表面からの分離** | #6 の完了条件。本ドキュメントでは `sourceRef`（`spec CS-6 判断 3` 等）や `workVisual(w).entryVariant` の露出が該当する。**Truth 側のデータは残し、表示から外す**方針 |
+
+---
+
+### 14.3 Issue #7（Phase 4）— UI 再実装
+
+#### 実装項目
+
+1. `site.json` の `sections` 更新（#6 で確定した内容を反映）
+2. HERO の圧縮 — display のサイズ、SYNTHETIC 帯の移設、CTA 2 つの追加
+3. `SelectedWork.astro` の再構成 — Band / Lead / index の 3 構造を、#5 / #6 で確定した gallery（+ 必要なら More register）へ統合
 4. 作品図版コンポーネント — 16:10 クロップ、plate + ring、広 / 狭の 2 幅
-5. `HowIBuild.astro` → CAPABILITIES への圧縮（workflow 図の移設）
+5. `HowIBuild.astro` → CAPABILITIES への圧縮（詳細は #6 が決めた移設先へ）
 6. `About.astro` の 2 層化（/NOW + 展開）
-7. `Footer.astro` に CTA と Email コピー
+7. `Footer.astro` に CTA と Email コピー、**および URL のリンク化**（§2.5。現状 `<a>` が 0 個）
 8. `MobileBar` に CONTACT を追加
 9. rail の sticky 化
 10. `motion.css` に図版の進入アニメーションを追加
 
-### 14.3 Phase 2 で触らないもの
+#### 完了判定
+
+§10.10 の 10 指標を、本ドキュメントと同じ方法（`dist/` をローカル配信し 1440×900 / 390×844 で DOM 実測）で
+再計測し、全項目が目標値を満たすこと。
+
+---
+
+### 14.4 判断事項の扱い（PR #13 レビューで確定）
+
+| # | 項目 | 担当 | 確定した扱い |
+|---|---|---|---|
+| B-1 | **`.dsp` のサイズ変更（art direction の凍結解除）** | **#7** | **HERO を fold 内に収めるための限定的な凍結解除を行う。書体・色・基本 grid の再設計までは許可しない。** `tokens.css` / `base.css` は凍結プロトタイプからの再出力で「a visual change needs the freeze re-opened」と明記されているため、着手前に解除の承認を取る |
+| B-2 | **`site.json` の `sections` 変更** | **#6 →（実装は #7）** | #6 で IA を確定してから実施。`check:structure` の期待値に影響する |
+| B-3 | **SYNTHETIC DATA 帯の移設** | **#6 →（実装は #7）** | **方向性は採用。削除ではなく、作品キャプション / ABOUT への再配置。** サイト上の合成データ表明は減らさない |
+| B-4 | **Lead work entry のトップからの廃止** | **#5 → #6** | **現行トップの Lead 構造は廃止方向。ただし #5 の棚卸しで Featured 候補を確定してから最終決定する。`homepageRole` 等の内部データは先に削除しない。** V4 移行 Phase 5 で決めた「Lead = AI CRM」と `lib/review/lead-candidate.ts` の A/B 機構は、#5 の結果が出るまで温存する |
+| B-5 | **HOW I BUILD 詳細の移設先** | **#6** | トップでは圧縮する方針を採用。移設先（`/work/{slug}/technical/` か方法論ページ新設か）は #6 で決定 |
+| B-6 | **Email を公開するか** | **ユーザー判断（未決）** | **未決のまま #5 へ進んでよい。** 公開しない場合は代替窓口（GitHub Issues / Discussions / フォーム）を #6 までに決める |
+
+---
+
+### 14.5 触らないもの（#7 を通して）
 
 - 書体（`--f-min` / `--f-ui` / `--f-mono`）
-- 色トークン（`--paper` / `--ink` / `--sig` 3 色 / `.inv`）
+- 色トークン（`--paper` / `--ink` / `.inv`）。**`--sig` は #5 の Featured 件数しだいで色数の判断が入る**（§14.1 H5-3）
 - `.page` / `.tr` / `.msr` / `.bleed` のグリッド
 - Case Study ページ（`/work/{slug}/`）と Evidence 機構
 - 検証ゲート（`validate:content` / `check:links` / `check:structure` / `check:attestation` / `scan:public`）の**存在**
 - `site.json` の `stack` / `principles` / `evidenceSection` の**データ**（表示位置は変えるが、内容は残す）
+- `homepageRole` / `featuredOrder` などの内部データ（§14.4 B-4）
 
-### 14.4 検証ゲートへの影響（Phase 2 で更新が必要）
+---
+
+### 14.6 検証ゲートへの影響（#7 で更新が必要）
 
 | ゲート | 影響 |
 |---|---|
-| `check:structure` | `data-hero-line` を 3 で固定している。display の行数・要素構成を変えるなら期待値の更新が要る。Band の 3 パネル前提（`B-BAND-COUNT` / `W-BAND-PARTIAL`）も、Band を廃止するなら見直す |
+| `check:structure` | `data-hero-line` を 3 で固定している。display の行数・要素構成を変えるなら期待値の更新が要る。Band の 3 パネル前提（`B-BAND-COUNT` / `W-BAND-PARTIAL`）も、Band を廃止するなら見直す。**#5 で作品が増えると `B-BAND-COUNT`（4 件以上で build 中止）に直接当たる** |
 | `validate:content` | `homepageRole` / `featured` / `featuredOrder` の意味が変わるなら schema 側も |
-| `check:links` | Case Study 導線が 3 本に増える（現行は Lead + index） |
+| `check:links` | Case Study 導線が増える（現行は Lead + index）。Footer の URL をリンク化すると検査対象も増える |
 | `check:attestation` | 新規コピー（CTA の文言、/NOW の 3 行）は**承認済みコピーとして登録が必要**。`src/content/copy/shipping.json` の `publication.reviewStatus` |
 
-### 14.5 Phase 3 以降の検討事項
+---
 
-1. **作品が 6 件以上になったときの MORE セクション**（§10.4 の発動条件）
-2. **方法論ページの独立**（HOW I BUILD の完全版をどこに置くか）
-3. **Evidence をトップに 1 枚だけ戻すか**（`site.json.evidenceSection` は「1 枚だけ先に出す」設計で残っている）。調査では該当する前例が 15 件中 0 件のため、**このサイト固有の判断**になる
-4. **英語版**（採用・案件の対象読者によっては必要）
-5. **OG 画像**（SNS で共有されたときの first view。今回の調査対象外）
-6. **性能計測**（図版が大きくなるため LCP への影響。Phase 2 完了後に Lighthouse で確認）
+### 14.7 それ以降の検討事項
 
-### 14.6 Phase 2 の完了判定
-
-§10.10 の 10 指標を、本ドキュメントと同じ方法（`dist/` をローカル配信し 1440×900 / 390×844 で DOM 実測）で再計測し、全項目が目標値を満たすこと。
+1. **方法論ページの独立**（HOW I BUILD の完全版をどこに置くか。#6 の決定しだいでは別 Issue）
+2. **Evidence をトップに 1 枚だけ戻すか**（`site.json.evidenceSection` は「1 枚だけ先に出す」設計で残っている）。調査では該当する前例が 15 件中 0 件のため、**このサイト固有の判断**になる
+3. **英語版**（採用・案件の対象読者によっては必要）
+4. **OG 画像**（SNS で共有されたときの first view。今回の調査対象外）
+5. **性能計測**（図版が大きくなるため LCP への影響。#7 完了後に Lighthouse で確認）
 
 ---
 
@@ -1345,7 +1473,7 @@ seanhalpin の実測比（§4.11）を基準にする。
 | HERO / Work / Projects / Skills / About / Contact の推奨構成を決定 | §10.2 / §10.3 / §10.4 / §10.5 / §10.6 / §10.7 | ✅ |
 | Editorial Gallery + Engineering Portfolio としての UI 方向性を文章化 | §11（Typography / spacing / grid / image ratio / card shape / border / background / accent / depth / hover / entry / scroll / mobile transition） | ✅ |
 | デスクトップ / モバイル双方の基本方針を定義 | §12 / §13 | ✅ |
-| 次 Phase で実装可能な粒度まで落とし込む | §10.10（受け入れ数値 10 項目）/ §14（ブロッカー 6 件・実装項目 10 件・不変更項目・ゲート影響） | ✅ |
+| 次 Phase で実装可能な粒度まで落とし込む | §10.10（受け入れ数値 10 項目）/ §14（#5 / #6 / #7 への配分・判断事項 6 件・不変更項目・ゲート影響） | ✅ |
 
 ### Issue 本文の追加要求への対応
 
@@ -1355,8 +1483,17 @@ seanhalpin の実測比（§4.11）を基準にする。
 | 各サイトの HERO / PROJECT / UI / その他を記録 | §4 |
 | 採用したい点 / 採用しない点 / 応用方法 | §4 各節 + §6 + §7 |
 | 「おしゃれだから採用」の禁止 | 全評価に視線誘導 / 情報階層 / First View / Readability / Project discovery / Conversion / Responsive のいずれかの根拠を付記 |
-| 現行 Portfolio の維持するもの / 捨てる候補 | §2（課題）+ §6（採用）+ §14.3（触らないもの） |
+| 現行 Portfolio の維持するもの / 捨てる候補 | §2（課題）+ §6（採用）+ §14.5（触らないもの） |
 | 新トップページ案を最低 3 案 | §8（A / B / C + 基準線 D） |
 | 各案の強み / 弱み / 採用向き / 副業向き / 実装難易度 / モバイル相性 | §9 |
 | 最終推奨案 1 つ | §10（案 A） |
 | 実装変更をしない | 本 Issue の成果物はこの Markdown 1 件のみ。`src/` 配下の変更は無い |
+
+---
+
+## 改訂履歴
+
+| 版 | 日付 | 内容 |
+|---|---|---|
+| 1 | 2026-09-12 | 初版（commit `73b89a9`）。17 サイトの実測調査、現行サイトの計測、IA 案 A〜D の比較、案 A の推奨、UI Design Direction |
+| 2 | 2026-09-12 | PR #13 レビュー反映。**(1)** §14 のフェーズ対応を現在の Issue 構成（#5 = 全プロジェクト棚卸し / #6 = IA・コンテンツ確定 / #7 = UI 実装）へ修正し、引き継ぎ事項を 3 つの Issue へ配分。判断事項 B-1〜B-6 の担当と確定した扱いを §14.4 に記録。**(2)** 「3 作品なので Featured / More を分けない」を**現行 3 件に対する暫定結論**と明記し、#5 の棚卸し後の再判定ルールと、判定に使う制約（高さ上限 / pigment の色数 / 掲載に耐える画面の有無）を §10.4 に追加。あわせて §1 / §5-C / §6 / §8 / §9 / §10.3 に同じ但し書きを入れた。**(3)** 実測で確認した追加の課題として、CONTACT の URL が `<a>` ではなくただの文字列である点を §2.5 に追記。実装変更は無し |
