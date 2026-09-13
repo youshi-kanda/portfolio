@@ -16,6 +16,7 @@
 import { getCollection } from 'astro:content';
 import HowIBuild from '../components/home/HowIBuild.astro';
 import Footer from '../components/layout/Footer.astro';
+import Rail from '../components/layout/Rail.astro';
 import SyntheticBar from '../components/layout/SyntheticBar.astro';
 import Nav from '../components/navigation/Nav.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -30,13 +31,16 @@ const h = site.howIBuild;
   <Nav progress={12} hasWorks={works.length > 0} onHomepage={false} />
   <SyntheticBar />
   <main id="how-i-build">
-    {/* The page's own h1. `HowIBuild` opens at h2 because it was written as a
-        homepage section, and it keeps that level here — the heading above it is
-        what makes the document outline start at one. */}
+    {/* The page's own h1, and the ONLY place the method's title and lede are
+        stated. `HowIBuild` carries the same two strings as an `<h2>` because it
+        was written as a homepage section; rendering both printed the title
+        twice, the lede twice and two `M` rails on the one page that uses it
+        (#10). The component's head is suppressed and its rail labels are
+        raised to the rail here, so nothing approved is lost. */}
     <section class="hero">
       <div class="page">
         <div class="tr">
-          <div class="ins"><span class="ix">M</span></div>
+          <Rail index="M" labels={h.railLabels} />
           <div class="msr">
             <h1 class="dsp-s">{h.title}</h1>
             <p class="lede">{h.lede}</p>
@@ -44,7 +48,7 @@ const h = site.howIBuild;
         </div>
       </div>
     </section>
-    <HowIBuild />
+    <HowIBuild heading={false} />
     <Footer />
   </main>
 </BaseLayout>

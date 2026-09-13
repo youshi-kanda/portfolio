@@ -87,6 +87,8 @@
 .ad .s-band > .in{padding:64px 0}
 .ad .hero{padding-top:32px}
 .ad .nav .page{height:58px;gap:0;justify-content:space-between}
+/* the nav is 59px here (58 + its rule); same 5px of rounding clearance */
+.ad section[id]{scroll-margin-top:64px}
 .ad .nav ol{display:none}
 .ad .nav .mob{display:block}
 .ad .syn .page{display:block}
@@ -161,20 +163,6 @@
 .ad .hero .ins{display:block;border-top:2px solid var(--rule);padding-top:12px;margin-top:26px}
 .ad .hero .ins .ix{display:inline-block;font-size:20px;margin:0 14px 0 0}
 .ad .ins .role{display:inline;margin-top:0}
-.ad .cap3{margin-top:14px}
-/* V4 — the axis name goes over its line, not beside it.
-
-   `flex:0 0 44px` was a column sized for a two-character axis name (V3's
-   設計 / 実装 / 検証). V4's names are nine and ten characters, and 44px broke
-   「業務をシステムにする」 into four lines of two or three characters — no
-   overflow and nothing overlapping, but a column that is narrower than the
-   word it holds is not a column.
-
-   Stacking is the same composition desktop already uses (components.css:
-   both the name and the line are blocks, with the row's hairline under them),
-   so this is one breakpoint dropping an override rather than a second layout
-   to maintain. The name keeps its own measure, whatever it is next time. */
-.ad .cap3 .cb{display:block}
 .ad .spx .r,.ad .spx.wide .r{grid-template-columns:minmax(0,1fr);row-gap:2px;padding:12px 0}
 .ad .spx .k,.ad .spx .v{padding:0}
 .ad .lgs{grid-template-columns:1fr;row-gap:22px}

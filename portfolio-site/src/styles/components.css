@@ -11,6 +11,25 @@
 .ad .nav{position:sticky;top:0;z-index:40;background:var(--paper);
          border-bottom:1px solid var(--hair)}
 .ad .nav .page{display:flex;align-items:center;height:74px;gap:40px}
+/* #10 — the nav is sticky and 75px tall (74 + its rule), and it was covering
+   what anchors landed on. `/#work` scrolled the section to y=0 and the nav sat
+   on top of it: the heading measured top 0 / bottom 34 against 75px of chrome,
+   so following WORK from another page arrived at a section whose heading was
+   entirely hidden. #more, #capabilities and #about escaped only because their
+   sections happen to carry 104px of top padding — incidental clearance, not a
+   rule, and the case study / technical TOC targets (#cs2…#cs16, #t0…#t8) had
+   none of it either.
+
+   Every anchor target on the site is `section[id]`, so one declaration states
+   the rule for all of them: an anchor lands with the section's own top edge
+   just below the nav. Nothing moves when the page is merely scrolled — this
+   only applies to scrolling something INTO view.
+
+   80 rather than 75: the browser lands the scroll on a fraction (74.56 was
+   measured against a nav bottom of 75), so a margin equal to the chrome leaves
+   the result to sub-pixel rounding and the heading grazing the rule. The extra
+   5px is clearance, not spacing. */
+.ad section[id]{scroll-margin-top:80px}
 .ad .nav .nm{font-size:17px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
 .ad .nav .nm i{font-style:normal;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;
                text-transform:uppercase;color:var(--tx2);display:block;margin-top:1px;font-weight:500}
@@ -289,8 +308,17 @@
 .ad .spine .mo{display:block;margin-bottom:10px}
 .ad .spine span:last-child{font-size:16px;line-height:1.8;color:var(--tx2)}
 .ad .toc{list-style:none;margin:0;padding:0;columns:2;column-gap:56px}
-.ad .toc li{border-bottom:1px solid var(--hair);padding:11px 0;break-inside:avoid;
+/* #10 — the row was already 51px tall (29px of line box inside 11px of padding
+   each side) but only the 29px belonged to the link, so the case study and
+   technical tables of contents offered 10–15 stacked 29px tap targets on a
+   phone. The padding is moved from the row to its children: the row's height,
+   the baseline the number and the title share, and the rule under it are all
+   unchanged — 11 + 29 + 11 either way — and the link now occupies the whole of
+   it. Nothing is inflated; the hit area is simply given the space the row was
+   already reserving. */
+.ad .toc li{border-bottom:1px solid var(--hair);break-inside:avoid;
             display:flex;gap:16px;align-items:baseline;font-size:15px}
+.ad .toc li > *{padding-block:11px}
 .ad .toc .mo{flex:0 0 52px}
 .ad .lgr{border-top:2px solid var(--rule)}
 .ad .lgr .lrow{display:grid;grid-template-columns:52px 200px minmax(0,1fr);
@@ -327,11 +355,6 @@
 /* ---- hero rail: role + the three capabilities, set as instruments */
 .ad .ins .role{display:block;margin-top:12px;font-family:var(--f-ui);font-size:13px;
                font-weight:600;line-height:1.6;color:var(--tx)}
-.ad .cap3{margin-top:18px;border-top:1px solid var(--hair)}
-.ad .cap3 .cb{display:block;border-bottom:1px solid var(--hair);padding:8px 0;
-              font-size:12.5px;line-height:1.55;color:var(--tx2);font-family:var(--f-ui)}
-.ad .cap3 b{display:block;font-family:var(--f-mono);font-size:10.5px;letter-spacing:.18em;
-            text-transform:uppercase;color:var(--sig);font-weight:700;line-height:1.6}
 /* ---- triptych: name, product type, language. Not a claim strip. */
 .ad .mfs .ty{display:block;font-family:var(--f-ui);font-size:13.5px;line-height:1.65;
              color:var(--tx);min-height:46px;padding-bottom:8px}
@@ -652,7 +675,13 @@
 .ad .cap-t{font-family:var(--f-mono);font-size:12px;line-height:1.9;color:var(--tx);
            margin:0 0 8px}
 .ad .cap-x{font-size:13.5px;line-height:1.8;color:var(--tx3);margin:0}
-.ad .cap-x .sep{margin:0 8px;color:var(--hair2)}
+/* #10 — the separators were `--hair2`, which is a HAIRLINE token: 2.24:1 on
+   --paper, the lowest contrast anywhere on the site. A separator is still
+   text, so it is set in the tertiary TEXT token instead. The token was not
+   moved: --hair2 is used 18 times for actual rules and borders, where a
+   1px line at 2.24:1 is the intended weight, and darkening it would redraw
+   every hairline in the design. */
+.ad .cap-x .sep{margin:0 8px;color:var(--tx3)}
 .ad .cap-m{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:34px 0 0;
            font-size:15.5px;color:var(--tx2)}
 
@@ -722,4 +751,4 @@
           color:var(--tx3);margin:0;display:flex;gap:10px;flex-wrap:wrap}
 .ad .ft-m a{color:var(--tx2);text-decoration:none;border-bottom:1px solid var(--hair)}
 .ad .ft-m a:hover,.ad .ft-m a:focus-visible{color:var(--tx);border-color:var(--sig)}
-.ad .ft-m .sep{color:var(--hair2)}
+.ad .ft-m .sep{color:var(--tx3)}

@@ -106,9 +106,65 @@ function declarations(body: string): [string, string][] {
 
 /* ------------------------------------------------------------------- hiding
 
-   Four ways a stylesheet can make an element unreadable, and the one that
+   Five ways a stylesheet can make an element unreadable, and the one that
    caused #9 is the least obvious of them: `clip-path: inset(0 0 100% 0)` is a
-   box clipped to zero height and reads, in a diff, like a layout nicety. */
+   box clipped to zero height and reads, in a diff, like a layout nicety.
+
+   #10 ADDS THE FIFTH: a zero scale. `transform: scaleX(0)` collapses the box
+   to no area exactly as the clip did, and it is the gesture this sheet reaches
+   for most — every plane in the opening arrives by being scaled up from zero.
+   That is correct FOR DECORATION, and the allowlist keeps it legal there; what
+   the contract could not see until now is the same gesture applied to the
+   sentence. A future `.hero .dsp { transform: scaleY(0) }` would have
+   reproduced #9 with a different property and passed this file.
+
+   The axes are treated independently because either one at zero is enough:
+   `scale(1, 0)` is as invisible as `scale(0)`. */
+
+/** x and y scale factors of a transform list, or null where none is stated. */
+function scaleFactors(value: string): { x: number; y: number } | null {
+  let x: number | null = null;
+  let y: number | null = null;
+  const num = (s: string) => {
+    const n = Number(s.trim());
+    return Number.isFinite(n) ? n : null;
+  };
+  for (const [, fn, argstr] of value.matchAll(/([a-z0-9]+)\(([^)]*)\)/gi)) {
+    const args = argstr!.split(',').map((s) => s.trim());
+    switch (fn!.toLowerCase()) {
+      case 'scale': {
+        const a = num(args[0] ?? '');
+        const b = args.length > 1 ? num(args[1]!) : a;
+        if (a !== null) x = a;
+        if (b !== null) y = b;
+        break;
+      }
+      case 'scalex': { const a = num(args[0] ?? ''); if (a !== null) x = a; break; }
+      case 'scaley': { const a = num(args[0] ?? ''); if (a !== null) y = a; break; }
+      case 'scale3d': {
+        const a = num(args[0] ?? ''); const b = num(args[1] ?? '');
+        if (a !== null) x = a;
+        if (b !== null) y = b;
+        break;
+      }
+      // matrix(a, b, c, d, e, f): a and d are the axis scales. Only the plain
+      // axis-aligned case is judged — a rotated matrix has a non-zero
+      // determinant even with a === 0, and guessing at one would be a test
+      // that fails on correct CSS.
+      case 'matrix': {
+        if (args.length !== 6) break;
+        const [a, b, c, d] = [num(args[0]!), num(args[1]!), num(args[2]!), num(args[3]!)];
+        if (b !== 0 || c !== 0) break;
+        if (a !== null) x = a;
+        if (d !== null) y = d;
+        break;
+      }
+      default: break;
+    }
+  }
+  if (x === null && y === null) return null;
+  return { x: x ?? 1, y: y ?? 1 };
+}
 
 function hidesCompletely(prop: string, value: string): string | null {
   const v = value.toLowerCase();
@@ -116,6 +172,11 @@ function hidesCompletely(prop: string, value: string): string | null {
   if (prop === 'visibility' && (v === 'hidden' || v === 'collapse')) return `visibility: ${v}`;
   if (prop === 'display' && v === 'none') return 'display: none';
   if (prop === 'content-visibility' && v === 'hidden') return 'content-visibility: hidden';
+  if (prop === 'transform' || prop === 'scale') {
+    // `scale: 0` / `scale: 1 0` — the standalone property takes bare numbers
+    const s = prop === 'scale' ? scaleFactors(`scale(${v.split(/\s+/).join(', ')})`) : scaleFactors(v);
+    if (s && (s.x === 0 || s.y === 0)) return `${prop}: ${value}`;
+  }
   if (prop === 'clip-path') {
     const inset = /^inset\(([^)]*)\)/.exec(v);
     if (!inset) return null;
@@ -209,7 +270,19 @@ describe('hero motion contract — motion.css', () => {
   it('parses the whole sheet — no CSS nesting, at least one rule per section', () => {
     const raw = stripComments(readFileSync(CSS_PATH, 'utf8'));
     assert.equal(/^\s*&/m.test(raw), false, 'motion.css に CSS nesting が入った — parser を書き直すこと');
-    assert.ok(rules.length > 200, `rules=${rules.length}: parse が途中で止まっている`);
+    /* #10 — this was `rules.length > 200`, and the cap3 cleanup took the sheet
+       to 195 and failed a test that had found nothing wrong. A magic number
+       here is a guard that has to be renumbered every time the sheet is
+       legitimately edited, and one that is renumbered on a red build is not a
+       guard. Counting the blocks in the source says the same thing exactly —
+       "the parser reached every rule" — and needs no maintenance. */
+    const blocks = (raw.match(/\{/g) ?? []).length;
+    const atRules = (raw.match(/@[a-z-]+[^{;]*\{/gi) ?? []).length;
+    assert.equal(
+      rules.length,
+      blocks - atRules,
+      `rules=${rules.length} だが style rule は ${blocks - atRules} 件ある — parse が途中で止まっている`,
+    );
   });
 
   /* The canary. Without it this file could pass because `hidesCompletely` had
@@ -226,6 +299,49 @@ describe('hero motion contract — motion.css', () => {
     assert.equal(hidesCompletely('clip-path', 'inset(0 0 100% 0)'), 'clip-path: inset(0 0 100% 0)');
     assert.equal(hidesCompletely('clip-path', 'inset(-30% -8%)'), null);
     assert.equal(hidesCompletely('opacity', '1'), null);
+  });
+
+  /* #10 — the same canary for the zero-scale detector. Each of these is a way
+     the sheet could collapse the sentence to nothing, and each of the last
+     four is a transform this sheet legitimately uses on decoration, so the
+     detector has to separate "zero" from "moves" rather than from "transform". */
+  it('recognises a zero scale, on either axis, however it is written', () => {
+    assert.equal(hidesCompletely('transform', 'scale(0)'), 'transform: scale(0)');
+    assert.equal(hidesCompletely('transform', 'scaleX(0)'), 'transform: scaleX(0)');
+    assert.equal(hidesCompletely('transform', 'scaleY(0)'), 'transform: scaleY(0)');
+    assert.equal(hidesCompletely('transform', 'scale(1, 0)'), 'transform: scale(1, 0)');
+    assert.equal(hidesCompletely('transform', 'scale3d(0, 1, 1)'), 'transform: scale3d(0, 1, 1)');
+    assert.equal(hidesCompletely('transform', 'matrix(0, 0, 0, 1, 0, 0)'), 'transform: matrix(0, 0, 0, 1, 0, 0)');
+    assert.equal(hidesCompletely('transform', 'translate3d(0, 6px, 0) scaleX(0)'), 'transform: translate3d(0, 6px, 0) scaleX(0)');
+    assert.equal(hidesCompletely('scale', '0'), 'scale: 0');
+    assert.equal(hidesCompletely('scale', '1 0'), 'scale: 1 0');
+
+    // …and does not fire on the transforms the hero actually uses
+    assert.equal(hidesCompletely('transform', 'translate3d(0, 6px, 0)'), null);
+    assert.equal(hidesCompletely('transform', 'scale(1)'), null);
+    assert.equal(hidesCompletely('transform', 'scaleX(1)'), null);
+    assert.equal(hidesCompletely('transform', 'none'), null);
+    assert.equal(hidesCompletely('transform', 'translate3d(0, 120px, 0)'), null);
+    assert.equal(hidesCompletely('scale', '1'), null);
+  });
+
+  /* The allowlist has to keep doing its job now that scale is a hiding
+     property: the opening is BUILT out of planes scaled up from zero, and if
+     this test could not tell them from the sentence it would have to be
+     deleted the day it shipped. */
+  it('still allows the decorative planes to arrive from a zero scale', () => {
+    const zeroScaled = rules.filter((r) =>
+      r.decls.some(([p, v]) => (p === 'transform' || p === 'scale') && hidesCompletely(p, v)),
+    );
+    assert.ok(
+      zeroScaled.length >= 3,
+      `zero-scale の装飾規則が ${zeroScaled.length} 件しか無い — 検出器か allowlist のどちらかが壊れている`,
+    );
+    assert.deepEqual(
+      zeroScaled.flatMap((r) => heroMeaningfulParts(r.selector)),
+      [],
+      '装飾の zero scale は許可されるが、meaningful hero content の zero scale は許可しない',
+    );
   });
 
   it('finds the hero rules it is supposed to be guarding', () => {
