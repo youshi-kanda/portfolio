@@ -172,6 +172,35 @@ for (const route of PUBLIC_ROUTES) {
   }
 }
 
+// ---- CONTACT_EMAIL ----
+// U-01. The address ships on one approval covering one email, so the rendered
+// section must carry exactly that: one visible address, reachable, once. Two
+// would mean a second channel nobody approved; zero would mean the conversion
+// point regressed to "read the code" while the copy still promises a reply.
+const contactAt = home.indexOf('id="contact"');
+const contactHtml = contactAt < 0 ? '' : home.slice(contactAt, home.indexOf('</section>', contactAt));
+const visibleEmails = [...contactHtml.matchAll(/>([^<>@\s]+@[a-z0-9.-]+\.[a-z]{2,})</gi)].map(
+  (m) => m[1] as string,
+);
+const CONTACT_EMAIL = new Set(visibleEmails).size;
+expect('CONTACT_EMAIL', CONTACT_EMAIL, 1);
+expect('CONTACT_EMAIL_SHOWN', visibleEmails.length, 1);
+
+const MAILTO_LINKS = [...contactHtml.matchAll(/href="mailto:([^"]+)"/g)].map((m) => m[1] as string);
+if (MAILTO_LINKS.length === 0) {
+  failures.push('CONTACT_EMAIL: 住所は出ているが mailto: リンクが無い — 読めるだけで送れない');
+}
+for (const to of MAILTO_LINKS) {
+  if (!visibleEmails.includes(to)) {
+    failures.push(`CONTACT_EMAIL: mailto:${to} が画面に出ている住所と違う`);
+  }
+}
+// The GitHub route must survive alongside it. The two channels have different
+// jobs (#8 §1) and collapsing either into the other is the regression.
+if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
+  failures.push('CONTACT_EMAIL: GitHub 導線が CONTACT から消えている');
+}
+
 // ---- CASE_SPEC_IDS ----
 // The case-study and technical specs number their sections CS-1…CS-16 and
 // T-0…T-8. Those are filing references for documents a reader does not have,
@@ -196,7 +225,8 @@ console.log(
     `ARCHIVE_ROWS = ${ARCHIVE_ROWS} (shipping ${shipping.length}) / ` +
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
-    `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length})`,
+    `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
+    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length})`,
 );
 
 if (failures.length > 0) {

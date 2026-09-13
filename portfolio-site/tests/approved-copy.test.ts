@@ -31,12 +31,12 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-four approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 24);
+  it('covers all twenty-six approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 26);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8);
-    assert.equal(APPROVAL_BATCHES.length, 6);
+    const [homepage, notFound, v4, workLede, issue6, issue8, email] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email);
+    assert.equal(APPROVAL_BATCHES.length, 7);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -90,6 +90,21 @@ describe('approved copy gate', () => {
     );
     assert.match(issue8.task, /PR #17 comment 5651891248/);
 
+    // U-01 — a SEPARATE occasion, 18 minutes after the one above and covering
+    // different strings. Folding these into the batch above would have been
+    // less typing and would have backdated the address to an approval that did
+    // not mention one.
+    assert.deepEqual(
+      [email.by, email.at, [...email.ids]],
+      [
+        'user',
+        '2026-09-13T07:35:52Z',
+        ['home.contact.emailKey', 'home.contact.email', 'ui.contact.emailCta'],
+      ],
+    );
+    assert.match(email.task, /PR #17 comment 5651971896/);
+    assert.notEqual(email.at, issue8.at);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -115,6 +130,7 @@ describe('approved copy gate', () => {
     assert.deepEqual(uiOnly.sort(), [
       'ui.caseStudy.repositoryAuthNote',
       'ui.contact.channels',
+      'ui.contact.emailCta',
       'ui.contact.githubCta',
     ]);
     assert.equal(uiOnly.every((id) => id.startsWith('ui.')), true);
@@ -158,10 +174,10 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 24);
+    assert.equal(approved.length, 26);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      24,
+      26,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.
@@ -329,6 +345,29 @@ describe('approved copy gate', () => {
     }
   });
 
+  /*
+   * U-01. The address is the one piece of personal information this site
+   * publishes, so what it may say is pinned rather than left to review.
+   */
+  it('publishes exactly one contact address, and nothing else personal', () => {
+    const { copy, uiCopy } = loadAll();
+    const all = [...copy, ...uiCopy];
+
+    // Exactly one address, and it is the one that was approved.
+    const withEmail = all.filter((c) => /@[a-z0-9.-]+\.[a-z]{2,}/i.test(c.text));
+    assert.deepEqual(withEmail.map((c) => c.id), ['home.contact.email']);
+    assert.equal(withEmail[0]!.text, 'kanda02.1203@gmail.com');
+
+    // Nothing else personal joined it. A phone number or a postal address
+    // would be a second `user-fact` shipping on the strength of this one's
+    // approval, which covered an email and only an email.
+    for (const c of all) {
+      assert.doesNotMatch(c.text, /\b0\d{1,4}-\d{1,4}-\d{3,4}\b/, `${c.id} に電話番号`);
+      assert.doesNotMatch(c.text, /〒\s*\d{3}-?\d{4}/, `${c.id} に郵便番号`);
+      assert.doesNotMatch(c.text, /(twitter|x)\.com\/|instagram\.com\/|facebook\.com\//i, `${c.id} に SNS`);
+    }
+  });
+
   it('holds the #8 strings at the wording the owner approved', () => {
     const { copy, uiCopy } = loadAll();
     const text = new Map([...copy, ...uiCopy].map((c) => [c.id, c.text]));
@@ -343,10 +382,13 @@ describe('approved copy gate', () => {
       'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
     );
 
-    // The CONTACT strings say READ, never SEND. U-01 is open: this site
-    // publishes no address, so no string here may imply one.
+    // The GITHUB pair still says READ, never SEND — that separation is the
+    // point of having two channels, and it survives U-01 being resolved. The
+    // email CTA is the one string in this section allowed to promise a reply.
     for (const id of ['ui.contact.channels', 'ui.contact.githubCta']) {
       assert.doesNotMatch(text.get(id)!, /問い合わせ|お問合せ|連絡する|相談する|メール/);
     }
+    assert.equal(text.get('ui.contact.emailCta'), 'メールで相談する');
+    assert.equal(text.get('home.contact.emailKey'), '開発のご相談');
   });
 });

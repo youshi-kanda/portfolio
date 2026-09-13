@@ -161,6 +161,33 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.caseStudy.repositoryAuthNote',
     ]),
   }),
+  /**
+   * U-01 — the public contact address, approved on PR #17 comment 5651971896.
+   *
+   * A SEPARATE BATCH, DELIBERATELY. It would have been less typing to add these
+   * three ids to the batch above, and it would have been false: that approval
+   * happened at 07:17:12Z and covered four strings that did not include an
+   * address. One batch is one occasion, and the register of occasions is the
+   * only thing that makes `approvedAt` mean anything.
+   *
+   * `home.contact.email` is this site's FIRST `user-fact`. The classification
+   * has existed since the content model was written and nothing had ever
+   * qualified: only the subject knows their own contact address, so the rule
+   * was that the slot stays empty until they provide it, and #6's search of the
+   * repository turned up nothing but `@example.com` fixtures. The matrix asks a
+   * user-fact for a non-empty value AND an approver, which is exactly the pair
+   * that was missing every time someone might have been tempted to fill it in.
+   */
+  Object.freeze({
+    task: 'ISSUE-8-PUBLIC-EMAIL (PR #17 comment 5651971896)',
+    by: 'user',
+    at: '2026-09-13T07:35:52Z',
+    ids: Object.freeze([
+      'home.contact.emailKey',
+      'home.contact.email',
+      'ui.contact.emailCta',
+    ]),
+  }),
 ]);
 
 /**
@@ -199,6 +226,11 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // on: GitHub is where the work can be READ, and this site still publishes no
   // way to send anyone a message (U-01).
   "home.about.h2": "業務要件を整理し、設計から実装・運用まで形にする。",
+
+  // U-01 — PR #17 comment 5651971896. The address and the label that says what
+  // it is for. The CTA that uses them is ui chrome and lives in ui.json.
+  "home.contact.emailKey": "開発のご相談",
+  "home.contact.email": "kanda02.1203@gmail.com",
 
   // The capability rail — TASK-PORTFOLIO-V4-COPY-APPROVE-01. Three axes, each
   // a name and the line under it, registered as six strings for the same

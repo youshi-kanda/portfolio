@@ -133,16 +133,27 @@ export const ui = {
    * technical pages, /how-i-build/ and /404 (#8 §16). The /work/ archive has
    * carried no strip since #7; it lists works and shows none of them.
    *
-   * NO EMAIL, AND THE CONVERSION POINT IS NOT SOLVED. `channels` says where the
-   * code can be READ. It does not say a message sent to GitHub will arrive,
-   * because a GitHub profile has no inbox — so #8's own success condition
-   * (「CONTACTから最低1つ明確な相談導線がある」) is NOT met by this section.
-   * Publishing an address to meet it would mean choosing, on the owner's
-   * behalf, which of their addresses is public. U-01 stays open and the gap
-   * stays visible rather than being papered over with a CTA that goes nowhere.
+   * TWO CHANNELS, TWO JOBS, AND THEY DO NOT BLUR (U-01 resolved).
+   *
+   *   emailCta   「メールで相談する」 — the one link here that SENDS. It is the
+   *              section's conversion point and #8's success condition
+   *              (「CONTACTから最低1つ明確な相談導線がある」), met at last.
+   *   channels   says where the code can be READ, and
+   *   githubCta  goes there. Neither claims to carry a message: a GitHub
+   *              profile has no inbox, and before the address existed this
+   *              section said so rather than dressing the GitHub link up as a
+   *              way to make contact.
+   *
+   * THE ADDRESS WAITED FOR ITS OWNER. #6 searched the repository and found only
+   * `@example.com` fixtures; publishing anything on that basis would have meant
+   * choosing, for someone else, which of their addresses is public. It is a
+   * `user-fact` in the registry — the first one this site has — which is the
+   * classification that requires a real approver and refuses a
+   * plausible-looking placeholder.
    */
   contact: {
     channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
+    emailCta: 'メールで相談する',
     githubCta: 'GitHub で実装を見る',
   },
 

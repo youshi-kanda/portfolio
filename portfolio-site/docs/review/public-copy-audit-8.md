@@ -13,8 +13,9 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 `npm run qa` = **PASS**。以下は #8 着手前の実測値であり、#7 の状態と #8 の変更を分けるための基準。
 
-> **#8 完了時点の `npm run qa` は PASS。** 公開コピー 4 件は 2026-09-13T07:17:12Z に
-> 本人が PR #17 で承認済み（§6.1）。承認前は意図的に production build を止めていた。
+> **#8 完了時点の `npm run qa` は PASS。** 公開コピーは PR #17 上で 2 回に分けて本人承認済み —
+> 4 文が 2026-09-13T07:17:12Z、公開 Email 関連 3 件が 2026-09-13T07:35:52Z（§6.1）。
+> 承認前は意図的に production build を止めていた。
 
 | 指標 | 値 | 取得方法 |
 |---|---|---|
@@ -69,7 +70,7 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 | # | 場所 | 内容 | 対応 |
 |---|---|---|---|
-| F-1 | 05 CONTACT | 窓口が `<dl>` の 2 行だけで、**明確な CTA が 0 本** | `GitHub で実装を見る →` を 1 本追加。**ただし相談導線としては未達 — §5.5** |
+| F-1 | 05 CONTACT | 窓口が `<dl>` の 2 行だけで、**明確な CTA が 0 本** | **`メールで相談する →`（相談）と `GitHub で実装を見る →`（実装確認）の 2 本**に分けて追加（§5.5） |
 | F-2 | 各 Case Study の CI 実行ログ | **サインインが必要な場合がある**が、その説明が無い | run URL がある節にだけ注記を 1 行（#8 §15） |
 
 ### A — 閲覧者向けとして残す（変更しない）
@@ -90,7 +91,11 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 ## 2. 文字数目標（≤ 2,600）についての報告
 
-**達成していない。3,811 → 3,774 字（−37）。** 理由を隠さずに書く。
+**達成していない。3,811 → 3,811 字（±0）。** 理由を隠さずに書く。
+
+> **内訳**: #8 の整理で −37 字、その後 U-01 の解消で CONTACT に公開 Email と
+> 相談 CTA が入って +37 字。**相談導線を得るための増加**であり、削減目標より
+> Issue #8 の完了条件（「CONTACT から最低 1 つ明確な相談導線がある」）を優先した。
 
 節ごとの内訳（`<main>` 内・空白を除く）:
 
@@ -101,8 +106,8 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 | 02 MORE PROJECTS | 679 | 633 | **−46** |
 | 03 CAPABILITIES | 805 | 805 | 0 |
 | 04 ABOUT | 309 | 317 | +8 |
-| 05 CONTACT | 226 | 227 | +1 |
-| **合計** | **3,811** | **3,774** | **−37** |
+| 05 CONTACT | 226 | 264 | +38 |
+| **合計** | **3,811** | **3,811** | **±0** |
 
 2,600 まで削るには 1,211 字、つまり本文の **32%** を落とす必要がある。
 どこから落とせるかを実際に数えると、次の 3 つしかない。
@@ -118,7 +123,7 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 それは #8 §4 の「数値達成のために意味を壊さない」と #8 §20 の禁止事項の両方に反する。
 **数値ではなく重複を基準に削り、重複は 2 件しか無かった**（D-1 / D-2）という結論になる。
 
-**PR review での決定（2026-09-13）: 3,774 字を accepted とし、Capabilities は変更しない。**
+**PR review での決定（2026-09-13）: 3,811 字を accepted とし、Capabilities は変更しない。**
 
 #8 §17 の「Capabilities が Featured 本文を再説明しないこと」について検討したが、
 現在の 4 カテゴリの構成（**何を任せられるか → 使う技術 → 実例作品**）は
@@ -264,28 +269,36 @@ Case Study 本文の `安全性とデータの扱い` に集約されている�
 
 ---
 
-## 5.5 CONTACT の到達状態（U-01 OPEN）
+## 5.5 CONTACT の到達状態 — **U-01 RESOLVED**
 
-**Issue #8 の完了条件「CONTACT から最低 1 つ明確な相談導線がある」は、現時点で未達である。**
+**Issue #8 の完了条件「CONTACT から最低 1 つ明確な相談導線がある」は達成。**
 
-| 追加したもの | 何ができるか | 相談導線か |
-|---|---|---|
-| `GitHub で実装を見る →` | 公開コードと実装内容を**読める** | **いいえ** |
-| GitHub / リポジトリ の 2 行 | 同上 | **いいえ** |
+本人が 2026-09-13 に公開用 Email を指定したことで、
+**読むための導線と、相談を始めるための導線が別々に存在する**状態になった。
 
-**GitHub profile は問い合わせ窓口ではない。** 受信箱を持たないため、
-閲覧者がここから連絡を開始する手段は無い。CONTACT が現在提供しているのは
-**「何を作る人かを確かめる経路」**であって「相談を始める経路」ではない。
+| 窓口 | 役割 | 表示 | href | CTA |
+|---|---|---|---|---|
+| **Email** | **問い合わせ・相談** | 開発のご相談 / `kanda02.1203@gmail.com` | `mailto:kanda02.1203@gmail.com` | **メールで相談する →** |
+| GitHub | 実装確認 | `github.com/youshi-kanda` ／ `github.com/youshi-kanda/portfolio` | `https://github.com/youshi-kanda` | GitHub で実装を見る → |
 
-**この差を CTA の文言で埋めていない。** 「GitHub で実装を見る」は読むことだけを約束しており、
-「相談する」「お問い合わせ」等の、送信できるかのような語は使っていない。
+**GitHub を問い合わせ窓口として扱っていない。** 節の構成でも語彙でも分けてある:
 
-**未達のまま残す理由**: 公開意思が確認できていない Email を掲載すると、
-**本人に代わってどのアドレスを公開するかを決めることになる**（#6 spec §10.5）。
-**U-01 は OPEN のまま**で、公開専用 Email を追加するかは本人判断待ち。
-2026-09-13 の承認は公開コピー 4 件のみが対象で、**Email は承認対象に含まれていない。**
+- Email ブロックが**先**に来る。相談したい読者が、ソースコードの説明を読み飛ばさずに済む
+- GitHub ブロックは 1 行の説明（「実装例・公開コード・リポジトリは GitHub で確認できます。」）を先に置き、**読むことだけを約束する**
+- CTA の重みも分けた。Email = 600 / GitHub = 400
 
----
+テスト `holds the #8 strings at the wording the owner approved` が、
+**GitHub 側の 2 文に「問い合わせ／連絡する／相談する／メール」が入らないこと**を検査している。
+
+### 掲載した個人情報は Email 1 件のみ
+
+電話番号・住所・本名の追加情報・git commit email・他の Gmail・SNS は**掲載していない。**
+テスト `publishes exactly one contact address, and nothing else personal` が
+**registry 全体で Email が 1 件だけであること**と、電話番号・郵便番号・SNS URL が
+1 つも入らないことを検査する。
+
+`check:structure` の **`CONTACT_EMAIL`（新規）** は、描画結果に対して
+**可視の住所が 1 件だけ / `mailto:` が同じ住所を指す / GitHub 導線が残っている**ことを確認する。
 
 ---
 
@@ -333,6 +346,26 @@ production build が止まり、`npm run qa` は exit 1 になった。**この�
 
 4 段階すべてを揃えた: `APPROVAL_BATCHES` 追加 / `APPROVED_TEXT` 登録 /
 registry 4 行を `approved` + `approvedBy: user` / `PENDING_APPROVAL` を空に。
+
+#### 2 回目の承認 — 公開 Email（U-01）
+
+| | 値 |
+|---|---|
+| approval event | [PR #17 comment 5651971896](https://github.com/youshi-kanda/portfolio/pull/17#issuecomment-5651971896) |
+| `approvedAt` | **2026-09-13T07:35:52Z** |
+| batch | `ISSUE-8-PUBLIC-EMAIL (PR #17 comment 5651971896)` |
+| ids | `home.contact.emailKey` / `home.contact.email` / `ui.contact.emailCta` |
+
+**バッチを分けた。** 1 回目に 3 件を足す方が記述は短いが、**1 回目の承認は 07:17:12Z に
+住所を含まない 4 文を対象に行われた**ものであり、そこへ住所を混ぜれば承認時刻を遡らせることになる。
+**1 バッチ = 1 回の機会**であり、その台帳があって初めて `approvedAt` に意味がある。
+**既存 4 文の approval metadata は変更していない。**
+
+**`home.contact.email` はこのサイト初の `user-fact` である。** 分類自体は content model 制定時から
+存在していたが、該当するものが 1 件も無かった —「本人しか知らない値は、本人が提供するまで埋めない」
+という規則があり、#6 の全走査でも `@example.com` のフィクスチャしか出てこなかった。
+provenance matrix はこのセルに **非空の値と承認者の両方**を要求する。まさにその 2 つが、
+「もっともらしい値で埋めてしまう」誘惑が生じるたびに欠けていたものである。
 
 #### 承認機構に足したもの
 
@@ -390,7 +423,7 @@ legacy フィールドと `showcase` を両方持っている移行途中の状�
 
 | ID | 内容 | 状態 | #8 での扱い |
 |---|---|---|---|
-| **U-01** | 公開 Email | **OPEN（継続）** | **Email を追加していない。** 架空 CTA も作っていない。2026-09-13 の承認は**公開コピー 4 件のみが対象で、Email は対象外**。**GitHub profile は問い合わせ窓口ではないため、Issue #8 完了条件「CONTACT から最低 1 つ明確な相談導線がある」は未達のまま**（§5.5）。公開専用 Email を追加するかは本人判断待ち |
+| **U-01** | 公開 Email | **RESOLVED**（2026-09-13T07:35:52Z） | 本人が `kanda02.1203@gmail.com` を **Portfolio の公開問い合わせ先**として指定・承認（[PR #17 comment 5651971896](https://github.com/youshi-kanda/portfolio/pull/17#issuecomment-5651971896)）。CONTACT に可視テキストと `mailto:` の両方で掲載し、CTA「メールで相談する」を追加。**Issue #8 完了条件「CONTACT から最低 1 つ明確な相談導線がある」は達成**（§5.5） |
 | **U-02** | Q7 権限設計の起草者（ops） | **未回答（hard blocker）** | **ownership を断定していない。** ops の公開文面は #6 のまま（「先に設計として確定させ」— 主語を本人に置いていない）。**Case Study は HOLD**（§3.3） |
 | **U-03** | Q10 avatar（assist） | 未回答 | 今回不使用 |
 | **U-04** | Q17 ポイント基盤の担当範囲 | 未回答 | 今回掲載しないため blocker ではない |
@@ -406,6 +439,8 @@ legacy フィールドと `showcase` を両方持っている移行途中の状�
 - **Truth Gate / sourceRefs / evidence IDs / publication review / attestation** — すべて内部で維持。
   1 件も削除していない。**ゲートは 1 つも緩めていない**（§6.1 — むしろ 4 件で止まっている）。
 - **03 CAPABILITIES** — 変更なし。横断索引として成立しているため（§2）。
+- **Hero の「相談する」** — CONTACT へ送る既存仕様を維持。変更なし。
+- **既存 4 文の approval metadata**（2026-09-13T07:17:12Z）— Email 承認時に変更していない（§6.1）。
 - **Hero / pigment / layout / responsive / motion timing / animation** — #8 §20 の禁止事項。変更なし。
   CSS の追加は CONTACT の 2 行（`.ct-ch` / `.ct-cta`）のみで、削除した注記と追加した CTA の
   余白を埋めるための局所調整である。

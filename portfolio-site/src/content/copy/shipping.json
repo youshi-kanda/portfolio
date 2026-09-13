@@ -408,6 +408,41 @@
     }
   },
   {
+    "id": "home.contact.emailKey",
+    "text": "開発のご相談",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "連絡手段 — Email 行のラベル",
+    "purpose": "Email が何のための窓口かを言う。GitHub 行が実装確認であるのに対し、こちらが相談窓口であることを行ラベルで分ける。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "PR #17 comment 5651971896（2026-09-13T07:35:52Z）— 本人が公開問い合わせ先として指定・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:35:52Z"
+    }
+  },
+  {
+    "id": "home.contact.email",
+    "text": "kanda02.1203@gmail.com",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "連絡手段 — 公開 Email",
+    "purpose": "Portfolio の公開問い合わせ先。本人しか Authority を持たない値であり、本人が公開用として指定するまで掲載しなかった（U-01）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "user-fact",
+      "sourceRefs": [
+        "PR #17 comment 5651971896（2026-09-13T07:35:52Z）— 本人が公開問い合わせ先として指定・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:35:52Z"
+    }
+  },
+  {
     "id": "home.hero.cta.secondary",
     "text": "相談する",
     "route": "/",

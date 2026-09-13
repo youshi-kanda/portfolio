@@ -699,8 +699,19 @@
 /* #8 — the channels line sits ABOVE the rows it describes, and the CTA below
    them. The disclaimer that used to close this section is gone (§16), so the
    last thing in the band is now the way out of it rather than a caveat. */
-.ad .ct-ch{margin:0 0 26px;max-width:56ch}
+.ad .ct-ch{margin:38px 0 26px;max-width:56ch}
 .ad .ct-cta{margin:26px 0 0}
+/* U-01 — the email block leads the section and is separated from the GitHub
+   block by a rule, because the two answer different questions and a reader
+   scanning for "how do I reach this person" must not land in the second.
+   An address is one unbreakable token in a proportional face, so the value
+   cell gets `anywhere`: at 320px the column is ~200px and a 22-character
+   address would otherwise push the page into a horizontal scroll. */
+.ad .ct-mail{margin-bottom:0}
+.ad .ct-d dd a{overflow-wrap:anywhere}
+/* The GitHub CTA is the quieter of the two. Same component, less weight —
+   the section has one primary action and this is not it. */
+.ad .ct-cta .lk-q{font-weight:400;opacity:.82}
 
 /* --------------------------------------------------------------- FOOTER
    Identification, not a call to action — CONTACT above it does the asking. */

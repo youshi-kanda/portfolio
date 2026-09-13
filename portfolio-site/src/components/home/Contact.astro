@@ -33,6 +33,7 @@
  * is a separate element with a separate job: this asks for something, that
  * identifies the site.
  */
+import { copyText } from '../../lib/content/copy.ts';
 import { sectionNumber } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
@@ -40,6 +41,16 @@ import Rail from '../layout/Rail.astro';
 
 const c = site.contact;
 const index = sectionNumber('contact');
+
+/**
+ * The address, and the label that says what it is for. Both come from the copy
+ * registry rather than `site.json`, because the email is a `user-fact` — a
+ * value only its owner has the authority to publish — and the registry is where
+ * a fact carries the approver that makes it publishable. `site.json` has no
+ * approval record, so an address entered there would ship on nobody's say-so.
+ */
+const email = await copyText('home.contact.email');
+const emailKey = await copyText('home.contact.emailKey');
 
 /** A row whose value is a bare host/path we can safely resolve to https. */
 const hrefOf = (value: string): string | null =>
@@ -65,6 +76,28 @@ const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
         <div class="msr">
           <h2 class="ct-h">{c.h2}</h2>
           <p class="lede m0 ct-l">{c.lede}</p>
+
+          {/*
+            ASK FIRST, VERIFY SECOND. The address and its CTA come before the
+            GitHub block because they answer different questions and only one of
+            them is what this section is for. A reader who has decided to get in
+            touch should not have to read past a paragraph about source code to
+            find out how.
+          */}
+          <dl class="ct-d ct-mail">
+            <dt>{emailKey}</dt>
+            <dd><a href={`mailto:${email}`}>{email}</a></dd>
+          </dl>
+          <p class="ct-cta">
+            <a class="lk" href={`mailto:${email}`}>
+              {ui.contact.emailCta}<span class="ar">→</span>
+            </a>
+          </p>
+
+          {/*
+            The second block is about reading, and says so in its own words
+            before it offers a link. Nothing in it implies a reply.
+          */}
           <p class="note ct-ch">{ui.contact.channels}</p>
           <dl class="ct-d">
             {
@@ -81,7 +114,7 @@ const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
           {
             github && (
               <p class="ct-cta">
-                <a class="lk" href={github}>
+                <a class="lk lk-q" href={github}>
                   {ui.contact.githubCta}<span class="ar">→</span>
                 </a>
               </p>
