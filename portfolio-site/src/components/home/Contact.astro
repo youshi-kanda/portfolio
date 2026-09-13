@@ -19,10 +19,15 @@
  * section carries the channels that exist and no placeholder for the one that
  * does not.
  *
- * WHAT THE GITHUB CTA DOES NOT SAY. It says "GitHubを見る", not "連絡する". A
+ * WHAT THE GITHUB CTA DOES NOT SAY. It says "GitHub を見る", not "連絡する". A
  * GitHub profile is a place to read what someone has published; it has no
  * inbox. A button promising a message would be the same invention as an
  * invented address, wearing a verb instead of an @ sign (#8 §6).
+ *
+ * WHICH MEANS THIS SECTION DOES NOT YET DO ITS JOB. #8's completion condition
+ * asks for 「最低1つ明確な相談導線」, and reading someone's code is not one. The
+ * gap is left visible rather than filled with a CTA that goes nowhere; U-01
+ * (a public address) is the open decision that would close it.
  *
  * The band inverts, as it did before — it gives the scroll a floor. The FOOTER
  * is a separate element with a separate job: this asks for something, that
@@ -45,7 +50,7 @@ const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
 /**
  * The CTA points at the profile row, not at a hardcoded URL — one row is the
  * owner's account and the other is this repository, and a button labelled
- * "GitHubを見る" that landed on the source of the page you are already reading
+ * "GitHub を見る" that landed on the source of the page you are already reading
  * would be the wrong one of the two. Null when no row resolves, which is what
  * keeps the CTA from rendering with nowhere to go.
  */

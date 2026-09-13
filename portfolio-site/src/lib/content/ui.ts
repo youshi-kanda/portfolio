@@ -128,17 +128,22 @@ export const ui = {
    * on the site, but CONTACT is the one section whose job is to be used, and
    * the last thing a reader met there was a statement about what the screens
    * are NOT. The claim now sits where the screens are: every figure carries its
-   * own caption, 04 ABOUT keeps the full sentence among its premises, and
-   * /work/ and the Case Studies keep the strip (#8 §16).
+   * own caption, 04 ABOUT keeps the full sentence among its premises, and the
+   * strip stays on the pages that ARE the screens — /work/<slug>/, their
+   * technical pages, /how-i-build/ and /404 (#8 §16). The /work/ archive has
+   * carried no strip since #7; it lists works and shows none of them.
    *
-   * NO EMAIL, STILL. `channels` says GitHub holds public information worth
-   * reading; it does not say a message sent there will arrive. A GitHub profile
-   * has no inbox, and a CTA implying one would be an address this site invented
-   * on the owner's behalf (#8 §6 / U-01).
+   * NO EMAIL, AND THE CONVERSION POINT IS NOT SOLVED. `channels` says where the
+   * code can be READ. It does not say a message sent to GitHub will arrive,
+   * because a GitHub profile has no inbox — so #8's own success condition
+   * (「CONTACTから最低1つ明確な相談導線がある」) is NOT met by this section.
+   * Publishing an address to meet it would mean choosing, on the owner's
+   * behalf, which of their addresses is public. U-01 stays open and the gap
+   * stays visible rather than being papered over with a CTA that goes nowhere.
    */
   contact: {
-    channels: '開発のご相談・実装内容については、GitHubの公開情報もご確認いただけます。',
-    githubCta: 'GitHubを見る',
+    channels: '実装内容や公開コードは、GitHub でご確認いただけます。',
+    githubCta: 'GitHub を見る',
   },
 
   mobileBar: {
@@ -233,7 +238,7 @@ export const ui = {
      * under every repository list would be a caveat about links that do not
      * need one.
      */
-    repositoryAuthNote: 'GitHubへのサインインが必要な場合があります',
+    repositoryAuthNote: 'GitHub へのサインインが必要な場合があります。',
   },
 
   /**

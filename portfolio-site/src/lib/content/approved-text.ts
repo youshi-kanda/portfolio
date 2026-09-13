@@ -128,31 +128,55 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'home.hero.cta.secondary',
     ]),
   }),
-  /**
-   * Issue #8 — the public-copy pass. One id, and it is a REWORD: 04 ABOUT's
-   * heading said 「リポジトリから確認できることだけ。」, which states the site's
-   * sourcing policy. That is a true sentence and the wrong heading for the
-   * section it opens: a reader who has just finished the work arrives at ABOUT
-   * asking what kind of engineer built it, and was answered with a statement
-   * about citation practice. The policy did not go anywhere — `about.known`
-   * still carries the premises directly underneath, and every fact on this site
-   * still has to name its source to ship.
-   *
-   * THE SENTENCE IS THE OWNER'S OWN. The #8 work brief specifies the direction
-   * and gives the heading verbatim (§5: 「業務を理解して、動く仕組みまで作る。」).
-   * It is recorded as `authored` / approved by `user` because the user wrote
-   * it — not because this pass wrote something and then approved it. Any
-   * sentence #8 had composed itself would not be in this table; it would be
-   * waiting for the PR review, which is the approval event #8 has and the one
-   * it may not sign on the owner's behalf before it happens.
-   */
-  Object.freeze({
-    task: 'ISSUE-8-PUBLIC-COPY',
-    by: 'user',
-    at: '2026-09-12T07:28:05Z',
-    ids: Object.freeze(['home.about.h2']),
-  }),
 ]);
+
+/**
+ * Strings #8 changed that are WAITING for an approval event, and therefore are
+ * not in the table above.
+ *
+ * WHY THIS LIST EXISTS AND WHY IT IS NOT AN APPROVAL. The first draft of #8
+ * recorded these under a batch stamped `user` / `2026-09-12T07:28:05Z`. That
+ * timestamp is when Issue #8 was OPENED. Nobody approved a sentence at that
+ * moment — the issue did not contain these sentences, and an approval event is
+ * a person reading a specific string and saying yes to it, not the creation
+ * time of the ticket that later led to it. Recording it that way asserted an
+ * event that did not happen, which is the exact failure mode `A-BATCH` exists
+ * to catch, committed in the table `A-BATCH` reads from.
+ *
+ * So the batch was withdrawn. These ids now carry `reviewStatus: in_review`,
+ * `approvedBy: null`, `approvedAt: null` in their registries, and the Truth
+ * Gate refuses a production build while they do (`T-UNAPPROVED`). THAT IS THE
+ * CORRECT BEHAVIOUR AND IT WAS NOT WEAKENED: the gate's rule is that shipping
+ * copy is approved copy, and these are not approved yet.
+ *
+ * TO CLEAR IT, after the owner confirms the wording on PR #17: add a batch
+ * above whose `at` is when they actually said yes, add each string to
+ * APPROVED_TEXT, and set each registry row to `approved` with the same
+ * by / at. Until then the build stops here on purpose.
+ */
+export const PENDING_APPROVAL: readonly { id: string; text: string; registry: string }[] =
+  Object.freeze([
+    Object.freeze({
+      id: 'home.about.h2',
+      text: '業務を理解して、動く仕組みまで作る。',
+      registry: 'copy/shipping.json',
+    }),
+    Object.freeze({
+      id: 'ui.contact.channels',
+      text: '実装内容や公開コードは、GitHub でご確認いただけます。',
+      registry: 'copy/ui.json',
+    }),
+    Object.freeze({
+      id: 'ui.contact.githubCta',
+      text: 'GitHub を見る',
+      registry: 'copy/ui.json',
+    }),
+    Object.freeze({
+      id: 'ui.caseStudy.repositoryAuthNote',
+      text: 'GitHub へのサインインが必要な場合があります。',
+      registry: 'copy/ui.json',
+    }),
+  ]);
 
 export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.role.01": "ソフトウェアエンジニア",
@@ -180,7 +204,6 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.stack.h2": "どの技術で何を担当し、それがどの作品に入っているか。",
   "home.stack.lede": "ロゴは並べていません。1 行が「技術 → その技術で担当した責務 → その責務を持つ作品」の対応です。",
   "home.stack.note": "この表に無い技術は、公開しているデモでは使っていません。",
-  "home.about.h2": "業務を理解して、動く仕組みまで作る。",
 
   // 404 — TASK-PORTFOLIO-RELEASE-CLOSEOUT-01. The document a visitor reaches by
   // typing a URL that is not on this site. The two body lines are separate rows

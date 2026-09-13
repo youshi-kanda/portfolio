@@ -294,14 +294,15 @@
     "slot": "見出し",
     "purpose": "ABOUT が答える問い —「どういう考え方で作る人か」— を見出しにする。出典方針の宣言は前提条件の行が引き受ける。",
     "publication": {
-      "reviewStatus": "approved",
+      "reviewStatus": "in_review",
       "sourceType": "authored",
       "sourceRefs": [
-        "Issue #8 作業指示 §5 ABOUT（依頼者の記述をそのまま使用）",
-        "portfolio-site/docs/design/home-ia-content-spec.md §9.1（#6 / PR #15 merged）— ABOUT の役割"
+        "Issue #8 作業指示 §5 ABOUT — 見出しの方向と文案",
+        "portfolio-site/docs/design/home-ia-content-spec.md §9.1（#6 / PR #15 merged）— ABOUT の役割",
+        "portfolio-site/src/content/site.json: about.now（本文 3 行。この見出しが要約している事実）"
       ],
-      "approvedBy": "user",
-      "approvedAt": "2026-09-12T07:28:05Z"
+      "approvedBy": null,
+      "approvedAt": null
     }
   },
   {

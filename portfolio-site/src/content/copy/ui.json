@@ -1002,40 +1002,41 @@
   {
     "id": "ui.contact.channels",
     "path": "contact.channels",
-    "text": "開発のご相談・実装内容については、GitHubの公開情報もご確認いただけます。",
+    "text": "実装内容や公開コードは、GitHub でご確認いただけます。",
     "kind": "editorial",
     "route": "/",
     "section": "05 CONTACT",
     "slot": "連絡手段の上の 1 行",
-    "purpose": "公開されている窓口が GitHub であることを述べる。GitHub profile に受信箱があるとは言わない（U-01 未決）。",
+    "purpose": "GitHub で何が読めるかを述べる。問い合わせ窓口だとは言わない（U-01 OPEN）。",
     "publication": {
-      "reviewStatus": "approved",
+      "reviewStatus": "in_review",
       "sourceType": "authored",
       "sourceRefs": [
-        "Issue #8 作業指示 §6 CONTACT（依頼者の記述をそのまま使用）"
+        "#8 PR #17 review コメント — 依頼者が指定した文面",
+        "portfolio-site/docs/design/home-ia-content-spec.md §10.5（#6 / PR #15 merged）— Email 未確定のため GitHub のみを出す根拠"
       ],
-      "approvedBy": "user",
-      "approvedAt": "2026-09-12T07:28:05Z"
+      "approvedBy": null,
+      "approvedAt": null
     }
   },
   {
     "id": "ui.contact.githubCta",
     "path": "contact.githubCta",
-    "text": "GitHubを見る",
+    "text": "GitHub を見る",
     "kind": "ui-system",
     "route": "/",
     "section": "05 CONTACT",
     "slot": "GitHub への CTA ラベル",
     "purpose": "GitHub の公開情報へ送る 1 本の CTA。メッセージ送信を約束する語を使わない。",
     "publication": {
-      "reviewStatus": "approved",
+      "reviewStatus": "in_review",
       "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "Issue #8 作業指示 §6 CONTACT「GitHub CTA: GitHubを見る」（依頼者の記述をそのまま使用）"
+        "#8 PR #17 review コメント — 依頼者が指定したラベル"
       ],
-      "approvedBy": "user",
-      "approvedAt": "2026-09-12T07:28:05Z"
+      "approvedBy": null,
+      "approvedAt": null
     }
   },
   {
@@ -2597,20 +2598,21 @@
   {
     "id": "ui.caseStudy.repositoryAuthNote",
     "path": "caseStudy.repositoryAuthNote",
-    "text": "GitHubへのサインインが必要な場合があります",
+    "text": "GitHub へのサインインが必要な場合があります。",
     "kind": "editorial",
     "route": "/work/{slug}/",
     "section": "Case Study — 証拠へのリンク",
     "slot": "CI 実行ログへのリンクの下の注記",
     "purpose": "CI の実行ログが署名なしでは開けない場合があることを、必要な節にだけ短く添える。",
     "publication": {
-      "reviewStatus": "approved",
+      "reviewStatus": "in_review",
       "sourceType": "authored",
       "sourceRefs": [
-        "Issue #8 作業指示 §15 GitHub / CI links（依頼者の記述をそのまま使用）"
+        "#8 PR #17 review コメント — 依頼者が指定した文面",
+        "Issue #8 §完了条件「CIログの認証要件を必要箇所で明記」"
       ],
-      "approvedBy": "user",
-      "approvedAt": "2026-09-12T07:28:05Z"
+      "approvedBy": null,
+      "approvedAt": null
     }
   }
 ]

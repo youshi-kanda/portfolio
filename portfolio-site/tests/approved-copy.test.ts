@@ -9,8 +9,12 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { APPROVAL_BATCHES, APPROVED_TEXT } from '../src/lib/content/approved-text.ts';
-import { loadCopy } from '../src/lib/content/load.ts';
+import {
+  APPROVAL_BATCHES,
+  APPROVED_TEXT,
+  PENDING_APPROVAL,
+} from '../src/lib/content/approved-text.ts';
+import { loadAll, loadCopy } from '../src/lib/content/load.ts';
 import { approvedCopyGate } from '../src/lib/validation/approved-copy.ts';
 import { codes } from './helpers.ts';
 
@@ -27,15 +31,18 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-four approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 24);
+  it('covers all twenty-three approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 23);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8);
-    assert.equal(APPROVAL_BATCHES.length, 6);
+    const [homepage, notFound, v4, workLede, issue6] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6);
+    assert.equal(APPROVAL_BATCHES.length, 5);
     assert.deepEqual(
-      // 6 before #8. `home.about.h2` left for the #8 batch that approved its
-      // current text — one batch per id, the same move the display lines made.
+      // 6 before #8. `home.about.h2` was REWORDED there and left this batch,
+      // because the batch approved 「リポジトリから確認できることだけ。」 and
+      // that sentence is no longer on the site. It did not move to a new batch:
+      // no approval event has happened for the sentence that replaced it, so
+      // the id is in PENDING_APPROVAL and in no batch at all.
       [homepage.by, homepage.at, homepage.ids.length],
       ['user', '2026-08-28T21:20:25Z', 5],
     );
@@ -57,14 +64,6 @@ describe('approved copy gate', () => {
       [workLede.by, workLede.at, [...workLede.ids]],
       ['user', '2026-09-09T10:05:34Z', ['home.works.lede']],
     );
-    // #8 — one id, and a REWORD rather than a new slot. The heading is the
-    // owner's own sentence, taken verbatim from the #8 work brief, which is why
-    // it can carry an approval at all: nothing #8 composed itself is in here.
-    assert.deepEqual(
-      [issue8.by, issue8.at, [...issue8.ids]],
-      ['user', '2026-09-12T07:28:05Z', ['home.about.h2']],
-    );
-
     // A reworded string moves to the batch that approved its current text.
     // Being listed in both would leave no way to say which event approved the
     // sentence that ships, and `A-BATCH` fails the build for exactly that.
@@ -72,7 +71,6 @@ describe('approved copy gate', () => {
     assert.equal(v4.ids.includes('home.hero.lede'), false);
     assert.equal(issue6.ids.includes('home.hero.lede'), true);
     assert.equal(homepage.ids.includes('home.about.h2'), false);
-    assert.equal(issue8.ids.includes('home.about.h2'), true);
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
@@ -110,15 +108,22 @@ describe('approved copy gate', () => {
   });
 
   it('has every approved copy row attributed, and says so', () => {
-    // the counterpart to APPROVAL_ATTRIBUTION in validate-content: this
-    // collection is 24/24, and the reported debt is entirely elsewhere
+    // The counterpart to APPROVAL_ATTRIBUTION in validate-content: every row
+    // in this collection that CLAIMS approval names who and when. 24 before #8;
+    // `home.about.h2` is 23rd-plus-one no longer, because it is in_review and
+    // claims nothing. The invariant is about the approved ones, so it is
+    // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 24);
+    assert.equal(approved.length, 23);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      24,
+      23,
     );
+    // And the unapproved one is unapproved in the full sense, not half-set.
+    const pending = rows.filter((r) => r.publication.reviewStatus !== 'approved');
+    assert.deepEqual(pending.map((r) => r.id), ['home.about.h2']);
+    assert.equal(pending.every((r) => !r.publication.approvedBy && !r.publication.approvedAt), true);
   });
 
   it('holds the capability rail as three approved pairs in the registry', () => {
@@ -183,17 +188,20 @@ describe('approved copy gate', () => {
   });
 
   it('reports the id, the approved text and the current text', () => {
+    // Was driven through `home.about.h2`, which #8 took out of the snapshot —
+    // an id with no approved text cannot drift from one. Any approved id
+    // demonstrates the same message, so the test names one it still has.
     const copy = structuredClone(loadCopy());
-    const target = copy.find((c) => c.id === 'home.about.h2');
+    const target = copy.find((c) => c.id === 'home.works.h2');
     assert.ok(target);
     const before = target.text;
-    target.text = 'リポジトリから分かることだけ。';
+    target.text = '何のためのサービスを、どこまで作ったのか。';
 
     const [finding] = approvedCopyGate(copy, asApproved);
     assert.ok(finding);
-    assert.match(finding.message, /home\.about\.h2/);
+    assert.match(finding.message, /home\.works\.h2/);
     assert.match(finding.message, new RegExp(before));
-    assert.match(finding.message, /リポジトリから分かることだけ。/);
+    assert.match(finding.message, /何のためのサービスを、どこまで作ったのか。/);
   });
 
   it('fails when an approved string is missing from the registry', () => {
@@ -242,6 +250,39 @@ describe('approved copy gate', () => {
       ...APPROVAL_BATCHES[4]!.ids,
     ]) {
       assert.doesNotMatch(APPROVED_TEXT[id]!, /\d+\s*(作品|つの動くデモ|tests|passed)/);
+    }
+  });
+
+  /*
+   * The waiting room, held shut from both sides.
+   *
+   * #8 changed four public strings and has no approval event for any of them.
+   * The failure this guards against is the tidy one: someone flips a row to
+   * `approved` to get a green build, and the site then ships a sentence under
+   * an approval nobody gave. Both halves are asserted, because either half
+   * alone can be satisfied while the defect is present — a batch entry with no
+   * registry change, or a registry change with no batch, each look fine from
+   * the other side.
+   */
+  it('keeps unapproved #8 copy out of the snapshot AND out of the registries', () => {
+    assert.equal(PENDING_APPROVAL.length, 4);
+
+    const { copy, uiCopy } = loadAll();
+    const rows = new Map([...copy, ...uiCopy].map((c) => [c.id, c]));
+    const batched = new Set(APPROVAL_BATCHES.flatMap((b) => [...b.ids]));
+
+    for (const p of PENDING_APPROVAL) {
+      // Not approved anywhere in the approval machinery.
+      assert.equal(APPROVED_TEXT[p.id], undefined, `${p.id} は未承認のはず`);
+      assert.equal(batched.has(p.id), false, `${p.id} がバッチに入っている`);
+
+      // And the row that actually ships still says so itself.
+      const row = rows.get(p.id);
+      assert.ok(row, `${p.id} が registry に無い`);
+      assert.equal(row.text, p.text, `${p.id} の文面が PENDING_APPROVAL と違う`);
+      assert.notEqual(row.publication.reviewStatus, 'approved');
+      assert.equal(row.publication.approvedBy, null);
+      assert.equal(row.publication.approvedAt, null);
     }
   });
 });

@@ -6,16 +6,41 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { runGates } from '../src/lib/validation/index.ts';
 import { truthGate } from '../src/lib/validation/truth.ts';
-import { bundleWith, codes, realContent, sampleWork } from './helpers.ts';
+import {
+  bundleWith,
+  codes,
+  exceptPendingApproval,
+  pendingApprovalOnly,
+  realContent,
+  sampleWork,
+} from './helpers.ts';
 
 const run = (works: ReturnType<typeof sampleWork>[], mode: 'production' | 'development' = 'production') =>
   runGates(bundleWith(works), { mode });
 
 describe('truth gate', () => {
-  it('passes the shipping content in production', () => {
+  /*
+   * WAS "passes the shipping content in production", AND NO LONGER DOES.
+   *
+   * #8 changed four public strings and has no approval event for them, so the
+   * production build is blocked — correctly. Asserting `errors === []` here
+   * would mean either faking the approvals or deleting the copy, so the test
+   * now states the stronger thing it always meant: the ONLY thing standing
+   * between this content and a production build is those four approvals.
+   *
+   * A fifth error of any kind still fails. When the owner approves the wording,
+   * `pendingApprovalOnly` returns nothing and both lists are empty again.
+   */
+  it('is blocked in production by exactly the four pending approvals, and nothing else', () => {
     const result = runGates(realContent(), { mode: 'production' });
-    assert.deepEqual(result.errors, [], JSON.stringify(result.errors, null, 2));
-    assert.equal(result.ok, true);
+    assert.deepEqual(
+      exceptPendingApproval(result.errors),
+      [],
+      JSON.stringify(exceptPendingApproval(result.errors), null, 2),
+    );
+    assert.equal(pendingApprovalOnly(result.errors).length, 4);
+    // The build does NOT pass, and the suite says so out loud.
+    assert.equal(result.ok, false);
   });
 
   it('fails a shipping work that is not approved', () => {
@@ -30,7 +55,7 @@ describe('truth gate', () => {
     const w = sampleWork();
     w.publication.reviewStatus = 'approved';
     assert.deepEqual(
-      run([w]).errors.filter((e) => e.code === 'T-UNAPPROVED'),
+      exceptPendingApproval(run([w]).errors).filter((e) => e.code === 'T-UNAPPROVED'),
       [],
     );
   });

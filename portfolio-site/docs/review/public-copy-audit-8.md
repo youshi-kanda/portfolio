@@ -13,6 +13,9 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 `npm run qa` = **PASS**。以下は #8 着手前の実測値であり、#7 の状態と #8 の変更を分けるための基準。
 
+> **#8 完了時点では `npm run qa` は PASS しない。** 公開コピー 4 件が承認待ちで
+> production build が止まるため（§6.1）。これは想定どおりで、承認を偽装して通していない。
+
 | 指標 | 値 | 取得方法 |
 |---|---|---|
 | top page body copy | **3,811 字** | `dist/index.html` の `<main>` 内可視テキスト、空白を除いた文字数 |
@@ -66,7 +69,7 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 | # | 場所 | 内容 | 対応 |
 |---|---|---|---|
-| F-1 | 05 CONTACT | 窓口が `<dl>` の 2 行だけで、**明確な CTA が 0 本** | `GitHubを見る →` を 1 本追加（#8 §6） |
+| F-1 | 05 CONTACT | 窓口が `<dl>` の 2 行だけで、**明確な CTA が 0 本** | `GitHub を見る →` を 1 本追加（#8 §6）。**ただし相談導線としては未達 — §5.5** |
 | F-2 | 各 Case Study の CI 実行ログ | **サインインが必要な場合がある**が、その説明が無い | run URL がある節にだけ注記を 1 行（#8 §15） |
 
 ### A — 閲覧者向けとして残す（変更しない）
@@ -115,9 +118,14 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 それは #8 §4 の「数値達成のために意味を壊さない」と #8 §20 の禁止事項の両方に反する。
 **数値ではなく重複を基準に削り、重複は 2 件しか無かった**（D-1 / D-2）という結論になる。
 
-**未決として残す 1 点**: #8 §17 は「Capabilities が Featured 本文を再説明しないこと」を求めている。
-現在の 4 カテゴリの「何を任せられるか」は Featured の実装範囲と語彙が重なる。
-ただしこれは #6 で確定した文面のため、**#8 が独断で書き換えず、PR review の判断に残す。**
+**PR review での決定（2026-09-13）: 3,773 字を accepted とし、Capabilities は変更しない。**
+
+#8 §17 の「Capabilities が Featured 本文を再説明しないこと」について検討したが、
+現在の 4 カテゴリの構成（**何を任せられるか → 使う技術 → 実例作品**）は
+**Portfolio の横断索引として成立している** — 作品を縦に読む 01 FEATURED に対して、
+能力から作品を引く経路を与えており、再掲ではなく別の入口である。
+
+**2,600 達成のためだけに Featured / Capabilities を削らない。** 文字数目標は達成しない。
 
 ---
 
@@ -136,7 +144,7 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 | Business Context | ✓ | ✓ | ✓ | ✓ |
 | Problem（真の業務課題） | ✓ | **✗** | △ | **✗** |
 | What was built | ✓ | ✓ | ✓ | ✓ |
-| Role | △ (Q5) | ✓ | △ (Q6) | △ (Q7) |
+| Role | ✓ (Q5 回答済) | ✓ | △ (Q6) | △ (Q7) |
 | Key decision + **却下した案** | ✗ | ✗ | ✗ | ✗ |
 | 使う人と、いまのやり方 | ✗ | ✗ | ✗ | ✗ |
 | 満たすべきこと（機能 / 制約） | △ | △ | △ | △ |
@@ -160,12 +168,38 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
    #5 / #6 はプロダクトの**内容**を記録しているが、却下案・テスト件数・
    「いまのやり方」は記録していない。埋めれば、それは調査結果ではなく創作である。
 
+### 3.2.1 本人回答（2026-09-13）と、blocker / constraint の区別
+
+**この会話で 2 件の Human Question に回答を得た。**
+
+| Q | 回答 | 種別 |
+|---|---|---|
+| **Q5** `ANON-AI-01`（ins-ai）の生成 AI 開発環境経由コミットは本人の作業か | **YES** — 生成 AI 開発環境経由のコミットも、本人が指示・設計・実装を進めた作業 | **担当範囲の確定** |
+| **Q11** `ANON-WEBAPP-01`（hire）の発注元名を出してよいか | **NO** — 発注元名は出さない | **copy constraint** |
+
+**この 2 つを混同しないために、未決事項を 2 種類に分けて記録する。**
+
+| 種別 | 意味 | 例 |
+|---|---|---|
+| **copy constraint** | **公開してよい語彙を制限する。** 制限を守った書き方をすれば公開は成立する。Case Study の可否そのものは左右しない | Q11（発注元名を出さない）／ **Q2**（業種固有機能名 — 使わなければ回避できる） |
+| **hard blocker** | **回答が無いと Case Study 自体が成立しない。** 書けば設問を先取りするか、根拠の無い主張になる | **Q12**（掲載可否そのもの）／ **Q7**（ops の起草者性）／ **Q6**（assist の担当範囲）／ Evidence 不在 ／ 必須項目の根拠不足 |
+
+**Q5 が YES になったことで、ins-ai の HOLD 理由から担当範囲が外れた。**
+残る理由は §3.2 の 2 つ（Evidence 不在・必須項目の根拠不足）だけであり、
+**「担当範囲が曖昧だから出せない」ではなく「Case Study として書く材料が無い」**が正しい説明になる。
+
+**Q11 が NO で確定したことで、hire の repository link は "未回答だから保留" ではなくなった。**
+#5 §9-3 が「公開 repository の名称そのものに発注元名が含まれる」と記録しているため、
+**リンクを出すこと自体が回答に反する。** withheld は保留ではなく**確定した結論**である（§4）。
+
+---
+
 ### 3.3 各 Work の判定
 
 | Work | 判定 | 決め手 |
 |---|---|---|
-| **ins-ai** | **HOLD** | 業種名は Q1 で確認済みだが、**Q2（業種固有の機能名）と Q5（生成 AI 開発環境経由 commit の帰属）が未回答**。Q5 は #5 が *「Portfolio に『担当: フルスタック / AI 実装』と書けるかはこの回答で決まる」* と明記した項目で、Case Study の `role` はまさにそれを 1 段落で書く節である。加えて §3.2 の 2 つの壁 |
-| **hire** | **HOLD** | **Q12「匿名 Case Study として掲載するか」が未回答。** これは Case Study を作ってよいかを直接問う設問であり、未回答のまま作るのは設問の先取りになる。さらに Q11（発注元名）も未回答で、#5 §9-3 が *「公開 repository の名称そのものに発注元名が含まれる」* と記録している。加えて §3.2 |
+| **ins-ai** | **HOLD** | **§3.2 の 2 つの壁のみ** — Evidence が無く、`currentPractice` / 却下した案 / `testsSummary` 等の必須項目に直接根拠が無い。**担当範囲は blocker ではない**（Q5 回答済 → §3.2.1） |
+| **hire** | **HOLD** | **Q12「匿名 Case Study として掲載するか」が未回答** — Case Study を作ってよいかを直接問う設問で、これは hard blocker。加えて §3.2 の 2 つの壁。**Q11 は回答済**（発注元名を出さない）で、これは copy constraint であり blocker ではない |
 | **assist** | **HOLD** | **Q6「要件定義・プロダクト判断まで担当したか、実装のみか」が未回答。** Case Study の `decisions` は設計判断の帰属を本人に寄せる節なので、Q6 の答えが出るまで書けない。Q10（アバター素材）は U-03 により今回不使用。加えて §3.2 |
 | **ops** | **HOLD** | **Q7「権限設計は本人が起草したか、受領したか」が未回答**（#8 §11 が名指し）。#5 は本 Work の Featured 理由の第 1 位を *「権限設計を成果物として見せられる数少ない Work」* としており、**Case Study を書けば必ず起草者性に触れる**。触れずに書くと Featured 理由が消える。加えて §3.2 |
 
@@ -180,8 +214,8 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 
 | Work | 必要な回答 | それに加えて必要な作業 |
 |---|---|---|
-| ins-ai | Q2 / Q5 | 公開可能な Evidence の作成方針（Q9 の (a)〜(d) のどれを採るか） |
-| hire | Q11 / Q12 | 同上 |
+| ins-ai | **なし**（本人回答は揃っている） | 公開可能な Evidence の作成方針（Q9）と、必須項目の根拠となる 1 次情報 |
+| hire | **Q12** | 同上 |
 | assist | Q6 | 同上 |
 | ops | **Q7** | 同上 |
 
@@ -199,13 +233,13 @@ Branch: `issue/8-public-copy-case-study` / Base: `release/portfolio-site-v4` / S
 | Work | access | linkPolicy | DOM に URL | 理由 |
 |---|---|---|---|---|
 | crm / ppm / dfe | public-repo | **linked** | あり（Case Study 4 本ずつ） | 本 repository 内の公開デモ。`scan:public` の継続対象 |
-| **hire** | public-repo | **withheld** | **なし** | #5 §9-3 — **repository 名そのものに発注元名が含まれる。** Q11 / Q12 未回答（#8 §12） |
+| **hire** | public-repo | **withheld** | **なし** | **Q11 回答済 —「発注元名は出さない」。** #5 §9-3 が *「公開 repository の名称そのものに発注元名が含まれる」* と記録しているため、**repository へリンクすると repo 名から発注元名が読める。** 回答を守るには withheld が唯一の選択肢（#8 §12） |
 | **minio** | public-repo | **withheld** | **なし** | #8 §13 — `cookies.txt` 系 tracked file の security 確認が未完了。**内容は取得も表示もしていない**。U-05 |
 | **docai** | public-repo | **withheld** | **なし** | #8 §14 — §6.4 は現況で `.env` 本体なし・`.env.example` のみと記録しているが、**public-safe を確定できていない**。`showcase.source.path` も未記録で、リンクを出すには URL を新たに構成することになる。**不確実なので withheld 維持** |
 | ins-ai / assist / ops / agri | private-repo | withheld | なし | 非公開 |
 
 **CI リンク**: 3 本（各 Case Study の run URL 1 本）。#8 §15 のとおり、
-run URL を持つ節にだけ `GitHubへのサインインが必要な場合があります` を 1 行添えた。
+run URL を持つ節にだけ `GitHub へのサインインが必要な場合があります。` を 1 行添えた。
 **CI を能力の主証拠にはしていない** — 「証拠へのリンク」節の 4 本目であり、本文はこれを主役にしていない。
 
 ---
@@ -219,9 +253,38 @@ run URL を持つ節にだけ `GitHubへのサインインが必要な場合が�
 | 01 FEATURED の各図 | `Reconstructed interface / dummy data` × 4、CRM は実画面の説明 | 変更なし。**この粒度で十分** |
 | 04 ABOUT `データ` 行 | 全文 1 文 | 変更なし。#6 spec §9.3 が指定した移設先 |
 | **05 CONTACT** | 全文 1 文（**4 回目**） | **削除。** 転換点の最後に置く文ではない |
-| `/work/` · Case Study の帯 | あり | 変更なし。その画面を修飾する節なので残す |
+| `/work/<slug>/` · その technical · `/how-i-build/` · `/404` の帯 | あり | 変更なし。その画面を修飾する節なので残す |
+
+> **訂正**: 本書の初版と PR 本文は残る場所を「`/work/` · Case Study の帯」と書いていたが、
+> **`/work/` アーカイブに `SyntheticBar` は無い**（#7 で外れている）。
+> `SyntheticBar` を描画しているのは `/work/<slug>/` · `/work/<slug>/technical/` ·
+> `/how-i-build/` · `/404` の 4 ルートで、`/work/` 一覧は作品を列挙するだけで画面を出さない。
 
 Case Study 本文の `安全性とデータの扱い` に集約されている記述は、そのまま。
+
+---
+
+## 5.5 CONTACT の到達状態（U-01 OPEN）
+
+**Issue #8 の完了条件「CONTACT から最低 1 つ明確な相談導線がある」は、現時点で未達である。**
+
+| 追加したもの | 何ができるか | 相談導線か |
+|---|---|---|
+| `GitHub を見る →` | 公開コードと実装内容を**読める** | **いいえ** |
+| GitHub / リポジトリ の 2 行 | 同上 | **いいえ** |
+
+**GitHub profile は問い合わせ窓口ではない。** 受信箱を持たないため、
+閲覧者がここから連絡を開始する手段は無い。CONTACT が現在提供しているのは
+**「何を作る人かを確かめる経路」**であって「相談を始める経路」ではない。
+
+**この差を CTA の文言で埋めていない。** 「GitHub を見る」は読むことだけを約束しており、
+「相談する」「お問い合わせ」等の、送信できるかのような語は使っていない。
+
+**未達のまま残す理由**: 公開意思が確認できていない Email を掲載すると、
+**本人に代わってどのアドレスを公開するかを決めることになる**（#6 spec §10.5）。
+**U-01 は OPEN のまま**で、公開専用 Email を追加するかは本人判断待ち。
+
+---
 
 ---
 
@@ -231,28 +294,63 @@ Case Study 本文の `安全性とデータの扱い` に集約されている�
 
 | 区分 | 件数 | 中身 |
 |---|---|---|
-| **approved / source-derived（#6 以前）** | — | 01 FEATURED / 03 CAPABILITIES / 04 ABOUT 本文 / 00 HERO。**#8 は 1 字も変えていない** |
-| **#8 で本人の文面を採用（`ISSUE-8-PUBLIC-COPY`）** | **4** | `home.about.h2` / `ui.contact.channels` / `ui.contact.githubCta` / `ui.caseStudy.repositoryAuthNote` |
-| **#8 が自分で書いた公開コピー** | **0** | — |
+| **approved（#6 以前）** | 23 | 01 FEATURED / 03 CAPABILITIES / 04 ABOUT 本文 / 00 HERO。**#8 は 1 字も変えていない** |
+| **#8 で変更・新規（`in_review` / 未承認）** | **4** | `home.about.h2` / `ui.contact.channels` / `ui.contact.githubCta` / `ui.caseStudy.repositoryAuthNote` |
 | **internal / non-shipping** | — | `sourceRef` / `reviewStatus` / spec ID / 描画 variant 名。全部データとしては維持 |
 
-**「#8 が自分で書いた公開コピーが 0 件」が、この registry 整理の要点である。**
-新規の 4 件はいずれも **#8 作業指示に本人が書いた文そのまま**で、
-`sourceRefs` にその出所を書いてある。
+#### 承認メタデータの訂正（重要）
 
-- `home.about.h2` = 「業務を理解して、動く仕組みまで作る。」← #8 §5
-- `ui.contact.channels` = 「開発のご相談・実装内容については、GitHubの公開情報もご確認いただけます。」← #8 §6
-- `ui.contact.githubCta` = 「GitHubを見る」← #8 §6
-- `ui.caseStudy.repositoryAuthNote` = 「GitHubへのサインインが必要な場合があります」← #8 §15
+**本 PR の初版には、実際には発生していない承認イベントが記録されていた。**
 
-この site の gate は **出荷される文字列に `reviewStatus = approved` を要求する**（`T-UNAPPROVED`）。
-したがって「#8 が書いた新しい文を in_review のまま出荷する」経路は**存在しない** —
-出すなら承認が要り、承認が無いなら出せない。**#8 はこれを緩めず、後者を選んだ**:
-自分で文を書かず、本人の文だけを採用した。
+初版はこの 4 件を `reviewStatus: approved` / `approvedBy: "user"` /
+`approvedAt: "2026-09-12T07:28:05Z"` として、`ISSUE-8-PUBLIC-COPY` というバッチにまとめていた。
 
-**PR merge 前に「本人承認済み」を先取りした箇所は無い。**
-上の 4 件は「PR review で承認される予定」ではなく「**すでに本人が書いた文**」として記録している。
-文面そのものの最終確認は PR review で行う。
+**この timestamp は Issue #8 が作成された時刻である。**
+その時点で本人がこの 4 文を読んで承認した事実は無い。
+そもそも Issue #8 の本文にこの 4 文は含まれていない。
+**承認イベントとは「本人が特定の文字列を読んで可と言った瞬間」**であって、
+その後の作業のきっかけになったチケットの作成時刻ではない。
+初版の記録は、`A-BATCH` が検出するために存在するまさにその種類の捏造を、
+`A-BATCH` が読むテーブルの中で行っていた。
+
+**したがってバッチを撤回した。** 現在の状態:
+
+| | 値 |
+|---|---|
+| `reviewStatus` | `in_review`（4 件とも） |
+| `approvedBy` / `approvedAt` | `null`（4 件とも） |
+| `APPROVED_TEXT` | `home.about.h2` を**削除**（23 件） |
+| `APPROVAL_BATCHES` | `ISSUE-8-PUBLIC-COPY` を**削除**（5 バッチ） |
+| 新設 | `PENDING_APPROVAL` — 承認待ちの 4 件を、承認では**ない**ものとして明示的に列挙 |
+
+#### gate は緩めていない。**止まっている。**
+
+`T-UNAPPROVED` は出荷文字列に `approved` を要求する。4 件は `approved` ではない。
+**したがって production build は通らない。これは正しい挙動であり、回避していない。**
+
+```
+4 error(s) — production build は通りません:
+  [ERROR T-UNAPPROVED] copy/home.about.h2 は shipping だが reviewStatus = in_review。
+  [ERROR T-UNAPPROVED] copy/ui.contact.channels は shipping だが reviewStatus = in_review。
+  [ERROR T-UNAPPROVED] copy/ui.contact.githubCta は shipping だが reviewStatus = in_review。
+  [ERROR T-UNAPPROVED] copy/ui.caseStudy.repositoryAuthNote は shipping だが reviewStatus = in_review。
+```
+
+**他に error は 1 件も無い。** `--dev`（`in_review` を警告へ降格）では Truth Gate が PASS するため、
+**production を止めているのはこの 4 件の承認だけ**であることが確認できる。
+
+#### 承認後にやること
+
+本人が PR #17 で文面を確定したら:
+
+1. `APPROVAL_BATCHES` に**実際に可と言った時刻**でバッチを 1 つ追加する
+2. `APPROVED_TEXT` に 4 件を登録する
+3. registry の 4 行を `approved` + 同じ by / at にする
+4. `PENDING_APPROVAL` から 4 件を外す
+
+テスト `keeps unapproved #8 copy out of the snapshot AND out of the registries` が、
+**この 4 段階が揃わない限り通らない**ようにしてある
+（片側だけ `approved` にする／バッチだけ足す、のどちらも失敗する）。
 
 ### 6.2 W-SITE-UNMANAGED
 
@@ -300,13 +398,13 @@ legacy フィールドと `showcase` を両方持っている移行途中の状�
 
 | ID | 内容 | 状態 | #8 での扱い |
 |---|---|---|---|
-| **U-01** | 公開 Email | **未回答** | **Email を追加していない。** 架空 CTA も作っていない。GitHub を公開窓口として構成し、`channels` は「公開情報を確認できる」と言うに留め、**受信箱があるとは言っていない** |
-| **U-02** | Q7 権限設計の起草者（ops） | **未回答** | **ownership を断定していない。** ops の公開文面は #6 のまま（「先に設計として確定させ」— 主語を本人に置いていない）。**Case Study は HOLD**（§3.3） |
+| **U-01** | 公開 Email | **OPEN（継続）** | **Email を追加していない。** 架空 CTA も作っていない。**GitHub profile は問い合わせ窓口ではないため、Issue #8 完了条件「CONTACT から最低 1 つ明確な相談導線がある」は現時点で未達**（§7.1）。公開専用 Email を追加するかは本人判断待ち |
+| **U-02** | Q7 権限設計の起草者（ops） | **未回答（hard blocker）** | **ownership を断定していない。** ops の公開文面は #6 のまま（「先に設計として確定させ」— 主語を本人に置いていない）。**Case Study は HOLD**（§3.3） |
 | **U-03** | Q10 avatar（assist） | 未回答 | 今回不使用 |
 | **U-04** | Q17 ポイント基盤の担当範囲 | 未回答 | 今回掲載しないため blocker ではない |
 | **U-05** | MinIO `cookies.txt` | **未確認** | **repo link は withheld 維持。ファイル内容は取得も表示もしていない。** Case Study も追加していない |
 | **U-06** | pigment | #7 で現状維持決定済み | 変更なし |
-| **U-07** | 業種固有の機能名 | Q1 のみ確認済み / **Q2 未回答** | **確認できない名称を新規公開していない。** ins-ai の「保険代理店」は #6 spec §9.4 が *「Q1 で確認済みの例外」* と明記した既存表記 |
+| **U-07** | 業種固有の機能名 | Q1 回答済 / **Q2 未回答** | **確認できない名称を新規公開していない。** ins-ai の「保険代理店」は #6 spec §9.4 が *「Q1 で確認済みの例外」* と明記した既存表記。**Q2 は copy constraint** — 業種固有機能名を使わなければ回避でき、Case Study の hard blocker ではない |
 | **U-08**（新規） | `docai` repository link の public-safe 確認 | **未実施** | withheld 維持（§4）。`.env.example` のみという §6.4 の記録は、**リンク公開の十分条件ではない** |
 
 ---
@@ -314,7 +412,8 @@ legacy フィールドと `showcase` を両方持っている移行途中の状�
 ## 8. 変更していないもの
 
 - **Truth Gate / sourceRefs / evidence IDs / publication review / attestation** — すべて内部で維持。
-  1 件も削除していない。
+  1 件も削除していない。**ゲートは 1 つも緩めていない**（§6.1 — むしろ 4 件で止まっている）。
+- **03 CAPABILITIES** — 変更なし。横断索引として成立しているため（§2）。
 - **Hero / pigment / layout / responsive / motion timing / animation** — #8 §20 の禁止事項。変更なし。
   CSS の追加は CONTACT の 2 行（`.ct-ch` / `.ct-cta`）のみで、削除した注記と追加した CTA の
   余白を埋めるための局所調整である。

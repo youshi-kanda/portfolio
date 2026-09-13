@@ -5,6 +5,7 @@
  * the schema and the content drift apart. Starting from the shipping data and
  * mutating a clone means the fixtures cannot rot silently.
  */
+import { PENDING_APPROVAL } from '../src/lib/content/approved-text.ts';
 import { loadAll, loadWorks, type ContentBundle } from '../src/lib/content/load.ts';
 import type { Work } from '../src/lib/content/schema.ts';
 
@@ -79,3 +80,30 @@ export function bundleWith(works: Work[]): Bundle {
 
 export const codes = (findings: readonly { code: string }[]): string[] =>
   findings.map((f) => f.code);
+
+/**
+ * The four `T-UNAPPROVED` errors #8 left behind on purpose.
+ *
+ * #8 changed four public strings and has no approval event for any of them, so
+ * the live content genuinely does not pass a production build. Tests that were
+ * written to mean "nothing ELSE is wrong" have to say that, and `bundleWith`
+ * hands every fixture the real copy registries, so they all inherit these four.
+ *
+ * THIS IS NOT A SUPPRESSION. `validate:content` and `astro build` still fail on
+ * them, which is the whole point; what this does is stop four known, wanted
+ * errors from drowning out a fifth unknown one. It is pinned to the exact ids
+ * in `PENDING_APPROVAL`, so an unrelated `T-UNAPPROVED` still fails, and the
+ * day those four are approved this filter matches nothing and every caller goes
+ * back to asserting an empty list without being edited.
+ */
+const isPendingApproval = (f: { code: string; message: string }): boolean =>
+  f.code === 'T-UNAPPROVED' &&
+  PENDING_APPROVAL.some((p) => f.message.startsWith(`copy/${p.id} `));
+
+export const pendingApprovalOnly = <T extends { code: string; message: string }>(
+  findings: readonly T[],
+): T[] => findings.filter(isPendingApproval);
+
+export const exceptPendingApproval = <T extends { code: string; message: string }>(
+  findings: readonly T[],
+): T[] => findings.filter((f) => !isPendingApproval(f));
