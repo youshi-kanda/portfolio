@@ -1,0 +1,284 @@
+name: Deploy Portfolio Production
+
+# Production. The only trigger is a push to `main` that touches the production
+# artifact or this file — no `workflow_dispatch`, no `pull_request`, no release
+# branch. Staging is a separate workflow with a separate root
+# (`deploy-staging.yml` -> /var/www/portfolio-stg); the two never cross.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "portfolio-site/**"
+      - ".github/workflows/deploy-production.yml"
+
+permissions:
+  contents: read
+
+# Never cancel a production deploy in flight. A run cancelled between the
+# rsync and the atomic switch would leave the release directory half-written
+# with no pointer moved; a run cancelled during rollback is worse. Queue
+# instead.
+concurrency:
+  group: portfolio-production
+  cancel-in-progress: false
+
+env:
+  PROD_ORIGIN: https://portfolio.neppepe.net
+  RELEASES_DIR: /var/www/portfolio-releases
+  LIVE_ROOT: /var/www/portfolio
+
+jobs:
+  deploy:
+    name: Build, release, activate, smoke
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://portfolio.neppepe.net
+
+    defaults:
+      run:
+        working-directory: portfolio-site
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: portfolio-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The gate. `qa` is the project's own definition of green — Truth Gate,
+      # tests, build, links, structure, attestation, public-safe scan. A bare
+      # `npm run build` is never what gets deployed: `check:links`,
+      # `check:structure` and `scan:public` all run *after* the build and are
+      # what prove the canonical URLs, the sitemap and robots.txt in `dist/`
+      # agree with the pages actually emitted.
+      - name: QA gate
+        run: npm run qa
+
+      # `qa` already built `dist/`. This rebuild is deliberate and cheap: it
+      # guarantees the tree we upload is the one the gate just inspected, even
+      # if a future `qa` stage were to mutate `dist/`.
+      - name: Build
+        run: npm run build
+
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          # Pinned from the secret. StrictHostKeyChecking stays on and
+          # `ssh-keyscan` is never run here — a key learned at deploy time
+          # authenticates nothing.
+          cat > ~/.ssh/config <<'SSHCFG'
+          Host portfolio-prod
+            IdentityFile ~/.ssh/id_ed25519
+            IdentitiesOnly yes
+            UserKnownHostsFile ~/.ssh/known_hosts
+            StrictHostKeyChecking yes
+            BatchMode yes
+            ConnectTimeout 15
+            ServerAliveInterval 20
+          SSHCFG
+          chmod 600 ~/.ssh/config
+
+      # Decide once whether the deploy account writes /var/www directly or via
+      # a passwordless sudo rule, and fail loudly if it can do neither. The
+      # atomic switch renames an entry *inside* /var/www, so write+execute on
+      # that directory — not just on the release tree — is the real requirement.
+      - name: Probe remote privileges
+        id: probe
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+          mode=$(ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            'if [ -w /var/www ] && [ -x /var/www ]; then echo direct;
+             elif sudo -n true 2>/dev/null; then echo sudo;
+             else echo none; fi')
+          echo "remote privilege mode: $mode"
+          if [ "$mode" = "none" ]; then
+            echo "::error::The deploy account can neither write /var/www nor run passwordless sudo. The atomic switch cannot be performed. Fix the host, do not weaken the deploy." >&2
+            exit 1
+          fi
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+
+      # Upload into a per-SHA release directory. Never into the live root:
+      # a partially-rsynced document root is a live site serving half a build.
+      # `--delete` makes a re-run of the same SHA converge on the same tree
+      # rather than accumulating leftovers.
+      - name: Upload release
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          MODE: ${{ steps.probe.outputs.mode }}
+        run: |
+          set -euo pipefail
+          RELEASE="$RELEASES_DIR/$GITHUB_SHA"
+          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n "; else SUDO=""; fi
+
+          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            "${SUDO}mkdir -p '$RELEASE'"
+
+          rsync_args=(-rlptz --delete --chmod=D755,F644
+                      -e "ssh -F $HOME/.ssh/config -p $VPS_PORT")
+          if [ "$MODE" = "sudo" ]; then
+            rsync_args+=(--rsync-path="sudo -n rsync")
+          fi
+          rsync "${rsync_args[@]}" dist/ "$VPS_USER@$VPS_HOST:$RELEASE/"
+
+      # A release is activated only if it is complete. Every one of these is
+      # something the site cannot serve correctly without.
+      - name: Verify release contents
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            bash -s -- "$RELEASES_DIR/$GITHUB_SHA" <<'REMOTE'
+          set -eu
+          RELEASE="$1"
+          fail=0
+          for f in index.html 404.html robots.txt; do
+            if [ -s "$RELEASE/$f" ]; then echo "ok    $f"
+            else echo "MISSING or empty: $f"; fail=1; fi
+          done
+          if ls "$RELEASE"/sitemap*.xml >/dev/null 2>&1; then
+            echo "ok    $(cd "$RELEASE" && ls sitemap*.xml | tr '\n' ' ')"
+          else
+            echo "MISSING: sitemap*.xml"; fail=1
+          fi
+          if [ -d "$RELEASE/_astro" ] && [ -n "$(ls -A "$RELEASE/_astro")" ]; then
+            echo "ok    _astro/ ($(ls -1 "$RELEASE/_astro" | wc -l) file(s))"
+          else
+            echo "MISSING or empty: _astro/"; fail=1
+          fi
+          echo "release file count: $(find "$RELEASE" -type f | wc -l)"
+          [ "$fail" -eq 0 ] || { echo "release is incomplete — refusing to activate"; exit 1; }
+          REMOTE
+
+      # The switch. Preconditions are asserted, not assumed: the live root must
+      # already be a symlink (the one-time migration in the runbook makes it
+      # one) and it must sit on the same filesystem as the replacement, or the
+      # rename is not atomic.
+      #
+      # `ln -sfn` is NOT used: when the destination is a symlink to a
+      # directory it can resolve *through* the link and create the new link
+      # inside the old release. A fresh temp link renamed over the old one is
+      # a single rename(2) — no instant where the document root is absent.
+      - name: Activate release (atomic)
+        id: activate
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          MODE: ${{ steps.probe.outputs.mode }}
+        run: |
+          set -euo pipefail
+          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            bash -s -- "$LIVE_ROOT" "$RELEASES_DIR" "$GITHUB_SHA" "$MODE" <<'REMOTE'
+          set -eu
+          LIVE_ROOT="$1"; RELEASES_DIR="$2"; SHA="$3"; MODE="$4"
+          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n"; else SUDO=""; fi
+          RELEASE="$RELEASES_DIR/$SHA"
+
+          if [ ! -L "$LIVE_ROOT" ]; then
+            echo "FATAL: $LIVE_ROOT is not a symlink."
+            echo "The one-time migration in portfolio-site/DEPLOY.md has not been run."
+            echo "Refusing to deploy rather than converting the live root mid-deploy."
+            exit 1
+          fi
+          [ -d "$RELEASE" ] || { echo "FATAL: $RELEASE is not a directory"; exit 1; }
+
+          # Same filesystem, or rename(2) is EXDEV and the swap is not atomic.
+          dev_live=$($SUDO stat -c %d "$(dirname "$LIVE_ROOT")")
+          dev_rel=$($SUDO stat -c %d "$RELEASES_DIR")
+          if [ "$dev_live" != "$dev_rel" ]; then
+            echo "FATAL: $(dirname "$LIVE_ROOT") and $RELEASES_DIR are on different filesystems."
+            echo "An atomic rename is not possible. Refusing to deploy."
+            exit 1
+          fi
+
+          PREVIOUS_TARGET=$(readlink -f "$LIVE_ROOT")
+          echo "previous target: $PREVIOUS_TARGET"
+          echo "new target:      $RELEASE"
+
+          if [ "$PREVIOUS_TARGET" = "$RELEASE" ]; then
+            echo "live root already points at this release — nothing to switch"
+          else
+            # Recorded before the switch, so rollback has a target even if the
+            # run dies immediately after.
+            printf '%s\n' "$PREVIOUS_TARGET" | $SUDO tee "$RELEASES_DIR/previous" >/dev/null
+            TMP="$(dirname "$LIVE_ROOT")/.$(basename "$LIVE_ROOT").new.$$"
+            $SUDO ln -s "$RELEASE" "$TMP"
+            $SUDO mv -T "$TMP" "$LIVE_ROOT"
+          fi
+          echo "live root now: $LIVE_ROOT -> $(readlink "$LIVE_ROOT")"
+          REMOTE
+
+      # Everything below runs against the public origin, so it tests nginx,
+      # TLS and the artifact together — not just the files on disk.
+      - name: Production smoke
+        id: smoke
+        run: bash ../.github/scripts/production-smoke.sh
+
+      # Only ever after a successful activation. A failure in checkout, npm,
+      # the QA gate, SSH configuration, upload or verification means the live
+      # root was never touched, so there is nothing to roll back and moving
+      # the pointer would be the only change the run made.
+      - name: Roll back to previous release
+        if: failure() && steps.activate.outcome == 'success'
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+          MODE: ${{ steps.probe.outputs.mode }}
+        run: |
+          set -euo pipefail
+          echo "::warning::Production smoke failed after activation — rolling back."
+          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
+            bash -s -- "$LIVE_ROOT" "$RELEASES_DIR" "$MODE" <<'REMOTE'
+          set -eu
+          LIVE_ROOT="$1"; RELEASES_DIR="$2"; MODE="$3"
+          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n"; else SUDO=""; fi
+
+          [ -f "$RELEASES_DIR/previous" ] || { echo "FATAL: no previous pointer at $RELEASES_DIR/previous"; exit 1; }
+          PREV=$(cat "$RELEASES_DIR/previous")
+          [ -n "$PREV" ] && [ -d "$PREV" ] || { echo "FATAL: previous target '$PREV' is not a directory"; exit 1; }
+
+          echo "rolling back to: $PREV"
+          TMP="$(dirname "$LIVE_ROOT")/.$(basename "$LIVE_ROOT").rollback.$$"
+          $SUDO ln -s "$PREV" "$TMP"
+          $SUDO mv -T "$TMP" "$LIVE_ROOT"
+          echo "live root now: $LIVE_ROOT -> $(readlink "$LIVE_ROOT")"
+          REMOTE
+
+      # The failed release directory is left in place on purpose — it is the
+      # evidence. Nothing here prunes releases automatically.
+      - name: Re-smoke after rollback
+        if: failure() && steps.activate.outcome == 'success'
+        run: |
+          set -uo pipefail
+          echo "--- / ---"
+          curl -sS -o /dev/null -w 'status=%{http_code}\n' --max-time 20 "$PROD_ORIGIN/" || true
+          echo "--- /no-such-page/ ---"
+          curl -sS -o /dev/null -w 'status=%{http_code}\n' --max-time 20 "$PROD_ORIGIN/no-such-page/" || true
+          echo "Rollback complete. This run stays FAILED — the release was not accepted."
