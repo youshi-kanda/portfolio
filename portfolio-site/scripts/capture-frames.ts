@@ -109,6 +109,67 @@ async function settle(cdp: Cdp) {
   }
 }
 
+/**
+ * Photograph the clip only once the page has STOPPED CHANGING.
+ *
+ * #9 carried this one over as tooling debt, and it is worth stating what it
+ * cost. `document.fonts.ready` plus a fixed wait produced a reduced-motion
+ * still whose measurements were all correct — the display read 64px, top 131,
+ * height 141 — while the PIXELS showed a visibly smaller sentence with
+ * everything below it 24px high. It looked exactly like a reduced-motion
+ * layout difference, which is a defect the page does not have. A review frame
+ * that invents a defect is worse than no frame, and this one was about to be
+ * reviewed as evidence.
+ *
+ * The cause is that `fonts.ready` answers for the faces the document ASKED
+ * for. This site has no @font-face at all — the stacks are system-local — so
+ * the CJK face arrives through the fallback chain, which that promise knows
+ * nothing about. There is no event to wait on, and any fixed delay is a guess
+ * that is too long on a fast machine and too short on a cold one.
+ *
+ * So the wait is not a duration and not an event: shoot, pause, shoot again,
+ * and accept the frame only when two consecutive photographs are byte
+ * identical. PNG of the same pixels is deterministic here — same encoder, same
+ * settings, same surface — so identical bytes mean an unchanged surface.
+ *
+ * Bounded, never open-ended: after STABLE_TIMEOUT_MS it gives up, logs
+ * `timeout`, and returns the last frame it took so the pack is still produced
+ * — with the caller told, in the log, which frames are not trustworthy.
+ */
+const STABLE_INTERVAL_MS = 220;
+const STABLE_TIMEOUT_MS = 8000;
+
+async function stableShot(
+  cdp: Cdp,
+  clip: { x: number; y: number; width: number; height: number; scale: number },
+  label: string,
+): Promise<{ data: string; stable: boolean; ms: number; shots: number }> {
+  const shoot = async () =>
+    (await cdp.send("Page.captureScreenshot", {
+      format: "png", clip, captureBeyondViewport: true, fromSurface: true,
+    })).data as string;
+
+  const started = Date.now();
+  let previous: string | null = null;
+  let shots = 0;
+
+  while (Date.now() - started < STABLE_TIMEOUT_MS) {
+    const data = await shoot();
+    shots += 1;
+    if (previous !== null && previous === data) {
+      return { data, stable: true, ms: Date.now() - started, shots };
+    }
+    previous = data;
+    await sleep(STABLE_INTERVAL_MS);
+  }
+  const data = previous ?? (await shoot());
+  console.log(
+    `  timeout        ${label} — ${STABLE_TIMEOUT_MS}ms 経っても 2 枚が一致しない。` +
+      `このフレームは不安定なまま書き出した（font swap / 動き続ける要素を疑うこと）`,
+  );
+  return { data, stable: false, ms: Date.now() - started, shots };
+}
+
 async function connect(): Promise<Cdp> {
   const res = await fetch(`http://127.0.0.1:${PORT}/json/new?about:blank`, { method: "PUT" });
   const target = await res.json();
@@ -205,7 +266,11 @@ async function captureMode(cdp: Cdp, outDir: string, blind: boolean) {
       if (document.readyState === "complete") return r(1);
       addEventListener("load", () => r(1), { once: true });
     })`);
-    await cdp.eval(`document.fonts.ready.then(() => 1)`);
+    const fonts = await cdp.eval<{ status: string; faces: number }>(
+      `document.fonts.ready.then(() => ({ status: document.fonts.status, faces: document.fonts.size }))`,
+    );
+    console.log(`  FONT_STABLE    ${f.name.padEnd(13)} fonts.status=${fonts.status} faces=${fonts.faces}` +
+      `${fonts.faces === 0 ? " — @font-face 無し。CJK は fallback 解決なので fonts.ready では足りない" : ""}`);
     await settle(cdp);
 
     const before = await cdp.eval<number>(`document.documentElement.scrollHeight`);
@@ -233,9 +298,7 @@ async function captureMode(cdp: Cdp, outDir: string, blind: boolean) {
       ? { x: 0, y: 0, width: f.viewport.width, height: docH, scale: 1 }
       : { x: 0, y: scrollY, width: f.viewport.width, height: f.viewport.height, scale: 1 };
 
-    const shot = await cdp.send("Page.captureScreenshot", {
-      format: "png", clip, captureBeyondViewport: true, fromSurface: true,
-    });
+    const shot = await stableShot(cdp, clip, `${blind ? "BLIND" : "REAL"} ${f.name}`);
     await writeFile(join(outDir, f.name + ".png"), Buffer.from(shot.data, "base64"));
 
     facts[f.name] = {
@@ -243,8 +306,12 @@ async function captureMode(cdp: Cdp, outDir: string, blind: boolean) {
       docHeight: docH, docHeightBeforeBlind: blind ? before : undefined,
       blindDelta: blind ? +(((docH - before) / before) * 100).toFixed(2) + "%" : undefined,
       blind: blindInfo, size: { w: clip.width, h: clip.height },
+      capture: { stable: shot.stable, settleMs: shot.ms, shots: shot.shots },
     };
-    console.log(`  ${blind ? "BLIND" : "REAL "}  ${f.name.padEnd(13)} ${clip.width}x${clip.height} scrollY=${scrollY}`);
+    console.log(
+      `  ${blind ? "BLIND" : "REAL "}  ${f.name.padEnd(13)} ${clip.width}x${clip.height} scrollY=${scrollY}` +
+        `  ${shot.stable ? "CAPTURE_STABLE" : "CAPTURE_UNSTABLE"} ${shot.ms}ms/${shot.shots}shots`,
+    );
   }
   await writeFile(join(outDir, "geometry.json"), JSON.stringify(facts, null, 1));
 }

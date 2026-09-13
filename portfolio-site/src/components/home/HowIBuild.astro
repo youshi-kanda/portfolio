@@ -14,9 +14,24 @@ import SectionHead from '../layout/SectionHead.astro';
 
 interface Props {
   detail?: boolean;
+  /**
+   * #10 — whether this section states its own title.
+   *
+   * It was written as a homepage section, so it opens with its own rail,
+   * `<h2>` and lede. /how-i-build/ then wrapped it in a page that opens with
+   * the SAME two strings — `site.howIBuild.title` and `.lede` — as an `<h1>`
+   * and a `.lede`, because a page needs an h1 of its own. Both rendered, so
+   * the only page that uses this component printed its title twice, its lede
+   * twice and two `M` rails, one under the other.
+   *
+   * The page passes `heading={false}` and supplies the rail labels to its own
+   * `Rail` instead, so no approved string is dropped — the head is stated
+   * once, at the level the document outline needs.
+   */
+  heading?: boolean;
 }
 
-const { detail = false } = Astro.props;
+const { detail = false, heading = true } = Astro.props;
 const b = site.howIBuild;
 /**
  * #7 — this is a page of its own now (/how-i-build/), not a section of the
@@ -30,13 +45,15 @@ const index = 'M';
 
 <section class="s-open" id="build" data-mx-n={index}>
   <div class="page">
-    <div class="tr">
-      <Rail index={index} labels={b.railLabels} />
-      <div class="msr">
-        <h2>{b.title}</h2>
-        <p class="claim">{b.lede}</p>
+    {heading && (
+      <div class="tr">
+        <Rail index={index} labels={b.railLabels} />
+        <div class="msr">
+          <h2>{b.title}</h2>
+          <p class="claim">{b.lede}</p>
+        </div>
       </div>
-    </div>
+    )}
 
     <div class="tr" style="margin-top:44px">
       <div class="ins">
@@ -97,7 +114,10 @@ const index = 'M';
       <div class="msr">
         <ul class="dash">{b.intent.map((t) => <li>{t}</li>)}</ul>
         <div class="notclaim">
-          <h4 aria-level="3">{ui.howIBuild.notClaimed}</h4>
+          {/* One level up when this section states no heading of its own:
+              with `heading={false}` there is no h2 above this, so level 3
+              would skip from the page's h1. */}
+          <h4 aria-level={heading ? 3 : 2}>{ui.howIBuild.notClaimed}</h4>
           <ul>{b.notClaimed.map((t) => <li>{t}</li>)}</ul>
         </div>
       </div>
