@@ -4,12 +4,24 @@
  *
  * Two scripts, and the split matters:
  *
- *   is:inline    runs before <main> is parsed, so the elements that start
- *                hidden are already flagged at first paint and nothing flashes
- *                unstyled. It is the reduced-motion and no-JS gate: if it does
- *                not run, or the visitor asked for reduced motion, `html.mx` is
- *                never set, the hidden initial states in motion.css never
- *                apply, and the page is the frozen composition.
+ *   is:inline    runs before <main> is parsed, so the decorative layers that
+ *                start at nothing are already flagged at first paint and
+ *                nothing flashes unstyled. It is the reduced-motion and no-JS
+ *                gate: if it does not run, or the visitor asked for reduced
+ *                motion, `html.mx` is never set, the decorative initial states
+ *                in motion.css never apply, and the page is the frozen
+ *                composition.
+ *
+ *                `html.mx` MEANS "MOTION ENHANCEMENT IS AVAILABLE" AND NOTHING
+ *                ELSE. It is not a content gate, and #9 is the issue that made
+ *                that a rule rather than an intention: motion.css used to hang
+ *                the hero's display, rail and lede off `.mx` with a hidden
+ *                initial state, so the class arriving meant the sentence
+ *                leaving for up to 0.96s. Nothing a reader has to read may be
+ *                behind this class, behind the module below, or behind an
+ *                animation finishing — see motion.css §4 and
+ *                tests/hero-motion-contract.test.ts, which is what actually
+ *                holds the line.
  *
  *   module       deferred. Measures the chrome, then three
  *                IntersectionObservers and one passive `resize`. That is the
