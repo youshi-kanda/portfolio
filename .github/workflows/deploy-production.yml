@@ -23,10 +23,17 @@ concurrency:
   group: portfolio-production
   cancel-in-progress: false
 
+# The whole deploy lives under one directory that `deployer` owns outright.
+# Nothing here runs `sudo`: the account has no passwordless rule, and handing a
+# sudo password to Actions is not a design this repository will carry. Every
+# root-owned change is done once, by a human, in the migration runbook
+# (portfolio-site/DEPLOY.md §3).
 env:
   PROD_ORIGIN: https://portfolio.neppepe.net
-  RELEASES_DIR: /var/www/portfolio-releases
-  LIVE_ROOT: /var/www/portfolio
+  LIVE_BASE: /var/www/portfolio-live
+  RELEASES_DIR: /var/www/portfolio-live/releases
+  CURRENT_LINK: /var/www/portfolio-live/current
+  PREVIOUS_FILE: /var/www/portfolio-live/previous
 
 jobs:
   deploy:
@@ -70,168 +77,167 @@ jobs:
       - name: Build
         run: npm run build
 
+      # Host, user and port go into ~/.ssh/config rather than into every step,
+      # so the connection is described once and no step has to reassemble it.
       - name: Configure SSH
         env:
           VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
           VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
         run: |
+          set -euo pipefail
           install -m 700 -d ~/.ssh
           printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
-          # Pinned from the secret. StrictHostKeyChecking stays on and
-          # `ssh-keyscan` is never run here — a key learned at deploy time
-          # authenticates nothing.
-          cat > ~/.ssh/config <<'SSHCFG'
-          Host portfolio-prod
-            IdentityFile ~/.ssh/id_ed25519
-            IdentitiesOnly yes
-            UserKnownHostsFile ~/.ssh/known_hosts
-            StrictHostKeyChecking yes
-            BatchMode yes
-            ConnectTimeout 15
-            ServerAliveInterval 20
-          SSHCFG
+          # Written, never echoed. `known_hosts` comes from the secret and
+          # StrictHostKeyChecking stays on: `ssh-keyscan` is never run here,
+          # because a host key learned at deploy time authenticates nothing.
+          umask 077
+          {
+            echo 'Host portfolio-prod'
+            echo "  HostName $VPS_HOST"
+            echo "  User $VPS_USER"
+            echo "  Port $VPS_PORT"
+            echo '  IdentityFile ~/.ssh/id_ed25519'
+            echo '  IdentitiesOnly yes'
+            echo '  UserKnownHostsFile ~/.ssh/known_hosts'
+            echo '  StrictHostKeyChecking yes'
+            echo '  BatchMode yes'
+            echo '  ConnectTimeout 15'
+            echo '  ServerAliveInterval 20'
+          } > ~/.ssh/config
           chmod 600 ~/.ssh/config
 
-      # Decide once whether the deploy account writes /var/www directly or via
-      # a passwordless sudo rule, and fail loudly if it can do neither. The
-      # atomic switch renames an entry *inside* /var/www, so write+execute on
-      # that directory — not just on the release tree — is the real requirement.
-      - name: Probe remote privileges
-        id: probe
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
+      # Fail before uploading anything if the host is not in the shape the
+      # migration leaves it in. Each of these is a precondition of the atomic
+      # switch, and none of them is something a deploy should quietly fix:
+      # they are all root-owned changes, and this job has no root.
+      - name: Assert host preconditions
         run: |
           set -euo pipefail
-          mode=$(ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            'if [ -w /var/www ] && [ -x /var/www ]; then echo direct;
-             elif sudo -n true 2>/dev/null; then echo sudo;
-             else echo none; fi')
-          echo "remote privilege mode: $mode"
-          if [ "$mode" = "none" ]; then
-            echo "::error::The deploy account can neither write /var/www nor run passwordless sudo. The atomic switch cannot be performed. Fix the host, do not weaken the deploy." >&2
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" <<'REMOTE'
+          set -eu
+          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"
+          fail=0
+          note() { echo "  $*"; }
+
+          echo "whoami: $(id -un)"
+
+          for d in "$LIVE_BASE" "$RELEASES_DIR"; do
+            if [ -d "$d" ] && [ -w "$d" ] && [ -x "$d" ]; then
+              note "ok    writable: $d ($(stat -c '%U:%G %a' "$d"))"
+            else
+              note "FAIL  not a writable directory: $d"
+              fail=1
+            fi
+          done
+
+          # The switch renames an entry inside $LIVE_BASE, so the link itself
+          # must already exist and must be a symlink. Converting a real
+          # directory into a symlink mid-deploy is exactly the operation this
+          # design exists to avoid.
+          if [ -L "$CURRENT_LINK" ]; then
+            note "ok    $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
+          else
+            note "FAIL  $CURRENT_LINK is not a symlink"
+            fail=1
+          fi
+
+          if [ "$fail" -ne 0 ]; then
+            echo
+            echo "The one-time migration in portfolio-site/DEPLOY.md §3 has not been run,"
+            echo "or its ownership step did not take. Refusing to deploy."
             exit 1
           fi
-          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          REMOTE
 
-      # Upload into a per-SHA release directory. Never into the live root:
+      # Upload into a per-SHA release directory. Never into the served tree:
       # a partially-rsynced document root is a live site serving half a build.
       # `--delete` makes a re-run of the same SHA converge on the same tree
       # rather than accumulating leftovers.
       - name: Upload release
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          MODE: ${{ steps.probe.outputs.mode }}
         run: |
           set -euo pipefail
           RELEASE="$RELEASES_DIR/$GITHUB_SHA"
-          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n "; else SUDO=""; fi
-
-          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            "${SUDO}mkdir -p '$RELEASE'"
-
-          rsync_args=(-rlptz --delete --chmod=D755,F644
-                      -e "ssh -F $HOME/.ssh/config -p $VPS_PORT")
-          if [ "$MODE" = "sudo" ]; then
-            rsync_args+=(--rsync-path="sudo -n rsync")
-          fi
-          rsync "${rsync_args[@]}" dist/ "$VPS_USER@$VPS_HOST:$RELEASE/"
+          ssh portfolio-prod "mkdir -p '$RELEASE'"
+          # D755/F644: readable by the nginx worker (www-data), not writable by
+          # it. The mode comes from here rather than from whatever the runner's
+          # checkout happened to produce.
+          rsync -rlptz --delete --chmod=D755,F644 dist/ "portfolio-prod:$RELEASE/"
 
       # A release is activated only if it is complete. Every one of these is
       # something the site cannot serve correctly without.
       - name: Verify release contents
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
         run: |
           set -euo pipefail
-          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            bash -s -- "$RELEASES_DIR/$GITHUB_SHA" <<'REMOTE'
+          ssh portfolio-prod bash -s -- "$RELEASES_DIR/$GITHUB_SHA" <<'REMOTE'
           set -eu
           RELEASE="$1"
           fail=0
           for f in index.html 404.html robots.txt; do
-            if [ -s "$RELEASE/$f" ]; then echo "ok    $f"
-            else echo "MISSING or empty: $f"; fail=1; fi
+            if [ -s "$RELEASE/$f" ]; then echo "  ok    $f"
+            else echo "  FAIL  missing or empty: $f"; fail=1; fi
           done
           if ls "$RELEASE"/sitemap*.xml >/dev/null 2>&1; then
-            echo "ok    $(cd "$RELEASE" && ls sitemap*.xml | tr '\n' ' ')"
+            echo "  ok    $(cd "$RELEASE" && ls sitemap*.xml | tr '\n' ' ')"
           else
-            echo "MISSING: sitemap*.xml"; fail=1
+            echo "  FAIL  missing: sitemap*.xml"; fail=1
           fi
           if [ -d "$RELEASE/_astro" ] && [ -n "$(ls -A "$RELEASE/_astro")" ]; then
-            echo "ok    _astro/ ($(ls -1 "$RELEASE/_astro" | wc -l) file(s))"
+            echo "  ok    _astro/ ($(ls -1 "$RELEASE/_astro" | wc -l) file(s))"
           else
-            echo "MISSING or empty: _astro/"; fail=1
+            echo "  FAIL  missing or empty: _astro/"; fail=1
           fi
-          echo "release file count: $(find "$RELEASE" -type f | wc -l)"
+          echo "  release file count: $(find "$RELEASE" -type f | wc -l)"
           [ "$fail" -eq 0 ] || { echo "release is incomplete — refusing to activate"; exit 1; }
           REMOTE
 
-      # The switch. Preconditions are asserted, not assumed: the live root must
-      # already be a symlink (the one-time migration in the runbook makes it
-      # one) and it must sit on the same filesystem as the replacement, or the
-      # rename is not atomic.
+      # The switch. One rename(2), inside a directory this account owns.
       #
-      # `ln -sfn` is NOT used: when the destination is a symlink to a
-      # directory it can resolve *through* the link and create the new link
-      # inside the old release. A fresh temp link renamed over the old one is
-      # a single rename(2) — no instant where the document root is absent.
+      # `ln -sfn` is NOT used: when the destination is a symlink to a directory
+      # it can resolve *through* the link and create the new link inside the
+      # old release. A fresh temp link renamed over the old one is a single
+      # rename(2) — no instant in which `current` is absent.
       - name: Activate release (atomic)
         id: activate
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          MODE: ${{ steps.probe.outputs.mode }}
         run: |
           set -euo pipefail
-          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            bash -s -- "$LIVE_ROOT" "$RELEASES_DIR" "$GITHUB_SHA" "$MODE" <<'REMOTE'
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$GITHUB_SHA" <<'REMOTE'
           set -eu
-          LIVE_ROOT="$1"; RELEASES_DIR="$2"; SHA="$3"; MODE="$4"
-          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n"; else SUDO=""; fi
+          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"; PREVIOUS_FILE="$4"; SHA="$5"
           RELEASE="$RELEASES_DIR/$SHA"
 
-          if [ ! -L "$LIVE_ROOT" ]; then
-            echo "FATAL: $LIVE_ROOT is not a symlink."
-            echo "The one-time migration in portfolio-site/DEPLOY.md has not been run."
-            echo "Refusing to deploy rather than converting the live root mid-deploy."
-            exit 1
-          fi
-          [ -d "$RELEASE" ] || { echo "FATAL: $RELEASE is not a directory"; exit 1; }
+          [ -L "$CURRENT_LINK" ] || { echo "FATAL: $CURRENT_LINK is not a symlink"; exit 1; }
+          [ -d "$RELEASE" ]      || { echo "FATAL: $RELEASE is not a directory"; exit 1; }
 
           # Same filesystem, or rename(2) is EXDEV and the swap is not atomic.
-          dev_live=$($SUDO stat -c %d "$(dirname "$LIVE_ROOT")")
-          dev_rel=$($SUDO stat -c %d "$RELEASES_DIR")
-          if [ "$dev_live" != "$dev_rel" ]; then
-            echo "FATAL: $(dirname "$LIVE_ROOT") and $RELEASES_DIR are on different filesystems."
+          if [ "$(stat -c %d "$LIVE_BASE")" != "$(stat -c %d "$RELEASES_DIR")" ]; then
+            echo "FATAL: $LIVE_BASE and $RELEASES_DIR are on different filesystems."
             echo "An atomic rename is not possible. Refusing to deploy."
             exit 1
           fi
 
-          PREVIOUS_TARGET=$(readlink -f "$LIVE_ROOT")
+          PREVIOUS_TARGET=$(readlink -f "$CURRENT_LINK")
           echo "previous target: $PREVIOUS_TARGET"
           echo "new target:      $RELEASE"
 
           if [ "$PREVIOUS_TARGET" = "$RELEASE" ]; then
-            echo "live root already points at this release — nothing to switch"
+            echo "current already points at this release — nothing to switch"
           else
             # Recorded before the switch, so rollback has a target even if the
             # run dies immediately after.
-            printf '%s\n' "$PREVIOUS_TARGET" | $SUDO tee "$RELEASES_DIR/previous" >/dev/null
-            TMP="$(dirname "$LIVE_ROOT")/.$(basename "$LIVE_ROOT").new.$$"
-            $SUDO ln -s "$RELEASE" "$TMP"
-            $SUDO mv -T "$TMP" "$LIVE_ROOT"
+            printf '%s\n' "$PREVIOUS_TARGET" > "$PREVIOUS_FILE"
+            TMP="$LIVE_BASE/.current.new.$$"
+            ln -s "$RELEASE" "$TMP"
+            mv -T "$TMP" "$CURRENT_LINK"
           fi
-          echo "live root now: $LIVE_ROOT -> $(readlink "$LIVE_ROOT")"
+          echo "current now: $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
           REMOTE
 
       # Everything below runs against the public origin, so it tests nginx,
@@ -241,34 +247,29 @@ jobs:
         run: bash ../.github/scripts/production-smoke.sh
 
       # Only ever after a successful activation. A failure in checkout, npm,
-      # the QA gate, SSH configuration, upload or verification means the live
-      # root was never touched, so there is nothing to roll back and moving
-      # the pointer would be the only change the run made.
+      # the QA gate, SSH configuration, the precondition assert, upload or
+      # release verification means `current` was never moved. There is nothing
+      # to roll back, and moving the pointer would be the only change the run
+      # made.
       - name: Roll back to previous release
         if: failure() && steps.activate.outcome == 'success'
-        env:
-          VPS_HOST: ${{ secrets.VPS_HOST }}
-          VPS_USER: ${{ secrets.VPS_USER }}
-          VPS_PORT: ${{ secrets.VPS_PORT }}
-          MODE: ${{ steps.probe.outputs.mode }}
         run: |
           set -euo pipefail
           echo "::warning::Production smoke failed after activation — rolling back."
-          ssh -F ~/.ssh/config -p "$VPS_PORT" "$VPS_USER@$VPS_HOST" \
-            bash -s -- "$LIVE_ROOT" "$RELEASES_DIR" "$MODE" <<'REMOTE'
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$CURRENT_LINK" "$PREVIOUS_FILE" <<'REMOTE'
           set -eu
-          LIVE_ROOT="$1"; RELEASES_DIR="$2"; MODE="$3"
-          if [ "$MODE" = "sudo" ]; then SUDO="sudo -n"; else SUDO=""; fi
+          LIVE_BASE="$1"; CURRENT_LINK="$2"; PREVIOUS_FILE="$3"
 
-          [ -f "$RELEASES_DIR/previous" ] || { echo "FATAL: no previous pointer at $RELEASES_DIR/previous"; exit 1; }
-          PREV=$(cat "$RELEASES_DIR/previous")
+          [ -f "$PREVIOUS_FILE" ] || { echo "FATAL: no previous pointer at $PREVIOUS_FILE"; exit 1; }
+          PREV=$(cat "$PREVIOUS_FILE")
           [ -n "$PREV" ] && [ -d "$PREV" ] || { echo "FATAL: previous target '$PREV' is not a directory"; exit 1; }
 
           echo "rolling back to: $PREV"
-          TMP="$(dirname "$LIVE_ROOT")/.$(basename "$LIVE_ROOT").rollback.$$"
-          $SUDO ln -s "$PREV" "$TMP"
-          $SUDO mv -T "$TMP" "$LIVE_ROOT"
-          echo "live root now: $LIVE_ROOT -> $(readlink "$LIVE_ROOT")"
+          TMP="$LIVE_BASE/.current.rollback.$$"
+          ln -s "$PREV" "$TMP"
+          mv -T "$TMP" "$CURRENT_LINK"
+          echo "current now: $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
           REMOTE
 
       # The failed release directory is left in place on purpose — it is the
