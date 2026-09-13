@@ -29,7 +29,7 @@ function v4Only(showcase: Work['showcase']): Work {
 }
 
 const showcase = {
-  source: { access: 'public-repo', path: 'rin/' },
+  source: { access: 'public-repo', linkPolicy: 'linked', path: 'rin/' },
   demoScope: ['V4 の公開範囲'],
   verification: { tests: { summary: 'V4 summary', count: 12, source: 'V4 source' }, verificationId: null },
 } satisfies Work['showcase'];
@@ -38,7 +38,11 @@ describe('transitional accessors', () => {
   it('reads the legacy fields when they are the only ones present', () => {
     const w = sampleWork();
     assert.equal(workRepoPath(w), w.repoPath);
-    assert.deepEqual(workSource(w), { access: 'public-repo', path: w.repoPath });
+    assert.deepEqual(workSource(w), {
+      access: 'public-repo',
+      linkPolicy: 'linked',
+      path: w.repoPath,
+    });
     assert.deepEqual(workDemoScope(w), w.publicDemoScope);
     assert.deepEqual(workVerification(w), w.tests);
   });
@@ -54,7 +58,7 @@ describe('transitional accessors', () => {
     // "there is a repository and it cannot be linked" is a fact about the work.
     // Null here would say something different and false: that none exists.
     const w = v4Only({
-      source: { access: 'private-repo', path: null },
+      source: { access: 'private-repo', linkPolicy: 'withheld', path: null },
       demoScope: [],
       verification: { tests: null, verificationId: 'rin-authority-v1' },
     });

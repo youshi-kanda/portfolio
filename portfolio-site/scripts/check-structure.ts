@@ -10,15 +10,20 @@
  * What belongs here: invariants about the SHAPE of what shipped, which no
  * component can see from the inside because each one only knows its own part.
  *
- *   HERO_CAPABILITY_ROWS  the capability rail is three capability axes, each a
- *                         name and the line under it, and all six strings are
- *                         registry copy. A migration that changes the copy must
- *                         hand over three rows in the same commit — the rail is
- *                         never allowed to pass through a two-row state, which
- *                         is what it would do if the rows were moved one at a
- *                         time out of the two places V3 kept them (site.json,
- *                         and a derivation over the work list).
- *   HERO_DISPLAY_LINES    the display is cut into three lines by hand, and each
+ *   CAPABILITY_CATEGORIES 03 CAPABILITIES draws every category the content
+ *                         declares. The capability rail left the hero in #7 and
+ *                         was re-cut here into four things a reader can hand
+ *                         over, so the check followed it: the expected number is
+ *                         computed from `site.capabilities`, which holds the
+ *                         rendered section against the editorial decision rather
+ *                         than against a number typed twice.
+ *   FEATURED_BLOCKS       01 FEATURED WORK draws one block per featured work.
+ *                         Not "some": a work promoted in the content and missing
+ *                         from the page is a decision the page silently
+ *                         overruled.
+ *   MORE_ROWS             02 MORE PROJECTS draws one row per `more` work, on the
+ *                         same terms.
+ *   HERO_DISPLAY_LINES    the display is cut into lines by hand, and each
  *                         line is an element carrying `data-hero-line`. V3
  *                         counted `<br>`, which measures the authoring and not
  *                         the result: the V4 copy shipped three `<br>`s and
@@ -29,37 +34,27 @@
  *                         longer fits wraps inside its own box where a viewport
  *                         check finds it, instead of disappearing into the
  *                         line after it.
- *   EDITORIAL_BAND_PANELS the band composes three panels or is not drawn. The
- *                         expected number is computed from the content — the
- *                         featured shipping works — so this holds the RENDERED
- *                         band against the editorial decision rather than
- *                         against a number typed twice. `B-BAND-COUNT` has
- *                         already refused four or more before a build gets
- *                         here; this catches the other direction, a band that
- *                         drew a different number than the content asked for.
- *   LEAD_ENTRIES          the homepage leads with one work entry or with none.
- *                         `T-MULTI-LEAD` has already refused two claimants in
- *                         the content; this is the rendered side of the same
- *                         rule, and it is a separate question — content naming
- *                         one Lead and the page drawing two would satisfy the
- *                         gate and still be two.
- *   WORK_INDEX_ROWS       the index lists every shipping work. Not "some" and
- *                         not "the featured ones": the Editorial Band is the
- *                         selection, and an index that quietly dropped a work
- *                         would leave it reachable from nowhere on this page.
- *   WORK_ENTRIES          the homepage and the register list the same works.
- *                         They are rendered by different components from one
- *                         list, so a set that differs means one of them dropped
- *                         a work rather than that the site has fewer.
+ *   LEAD_ENTRIES          zero. The Lead was retired in #7; a residual one would
+ *                         mean a work introduced twice on one page.
+ *   ARCHIVE_ROWS          /work/ lists every shipping work. It is the archive,
+ *                         so a work missing HERE is a work reachable from
+ *                         nowhere — which is the defect the old WORK_INDEX_ROWS
+ *                         guarded when the homepage was the index.
+ *   WORK_ENTRIES          every work on the homepage is in the archive. A
+ *                         SUBSET now, not an equality: `dfe` ships, keeps its
+ *                         page, and is deliberately on neither homepage tier,
+ *                         so the archive is allowed to hold more. What is still
+ *                         refused is the other direction — a work the homepage
+ *                         shows and the archive does not.
  *
  * Run over `dist/` for the same reason the link check is: these are properties
  * of the artifact, and every one of them looks correct in the component that
  * produced it.
  */
 import { readFileSync } from 'node:fs';
-import { featuredWorks, shippingWorks } from '../src/lib/content/derive.ts';
+import { shippingWorks } from '../src/lib/content/derive.ts';
 import { loadWorks } from '../src/lib/content/load.ts';
-import { BAND_PANELS } from '../src/lib/validation/band.ts';
+import { site } from '../src/lib/content/site.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const read = (route: string): string => readFileSync(`${DIST}${route}`, 'utf8');
@@ -73,15 +68,14 @@ const expect = (label: string, actual: unknown, wanted: unknown): void => {
 
 const home = read('index.html');
 
-// ---- HERO_CAPABILITY_ROWS ----
-const cap3 = /<div class="cap3">([\s\S]*?)<\/div>/.exec(home)?.[1] ?? '';
-const HERO_CAPABILITY_ROWS = [...cap3.matchAll(/<span class="cb">/g)].length;
-expect('HERO_CAPABILITY_ROWS', HERO_CAPABILITY_ROWS, 3);
+// ---- CAPABILITY_CATEGORIES ----
+const CAPABILITY_CATEGORIES = [...home.matchAll(/<div class="cap-i">/g)].length;
+expect('CAPABILITY_CATEGORIES', CAPABILITY_CATEGORIES, site.capabilities.categories.length);
 
 // ---- HERO_DISPLAY_LINES ----
 const display = /<h1 class="dsp">([\s\S]*?)<\/h1>/.exec(home)?.[1] ?? '';
 const HERO_DISPLAY_LINES = [...display.matchAll(/\sdata-hero-line\b/g)].length;
-expect('HERO_DISPLAY_LINES', HERO_DISPLAY_LINES, 3);
+expect('HERO_DISPLAY_LINES', HERO_DISPLAY_LINES, 2);
 // A line forced onto one row by `white-space:nowrap` would satisfy the count
 // while running past the measure — the defect this check exists to catch,
 // wearing the check's own answer. The display may not carry it.
@@ -89,58 +83,76 @@ if (/white-space\s*:\s*nowrap/.test(display)) {
   failures.push('HERO_DISPLAY_LINES: display に white-space:nowrap がある — 収まっていないものを収まって見せている');
 }
 
-// ---- EDITORIAL_BAND_PANELS ----
+// The band is gone (#7 C-1). A residual panel would mean a work introduced
+// twice on one page, which is the defect its removal exists to prevent.
 const works = loadWorks();
-const featured = featuredWorks(works);
-const EDITORIAL_BAND_PANELS = [...home.matchAll(/\sdata-band-panel\b/g)].length;
-expect(
-  'EDITORIAL_BAND_PANELS',
-  EDITORIAL_BAND_PANELS,
-  featured.length === BAND_PANELS ? BAND_PANELS : 0,
-);
+const BAND_RESIDUE = [...home.matchAll(/\sdata-band-panel\b/g)].length;
+expect('BAND_RESIDUE', BAND_RESIDUE, 0);
 
 // ---- LEAD_ENTRIES ----
 const LEAD_ENTRIES = [...home.matchAll(/\sdata-homepage-role="lead"/g)].length;
-if (LEAD_ENTRIES > 1) {
-  failures.push(`LEAD_ENTRIES = ${LEAD_ENTRIES} — Homepage が先頭に置く entry は 1 件か 0 件`);
-}
+expect('LEAD_ENTRIES', LEAD_ENTRIES, 0);
 
-// ---- WORK_INDEX_ROWS ----
-// The index is one section, and `data-w` is on more than one kind of element,
-// so the count is taken inside that section rather than over the document.
-// Nothing on this page nests a <section>, which is what makes the slice sound.
+// ---- FEATURED_BLOCKS / MORE_ROWS ----
 const shipping = shippingWorks(works);
-const indexAt = home.indexOf('data-homepage-role="index"');
-const indexHtml =
-  indexAt < 0 ? '' : home.slice(indexAt, home.indexOf('</section>', indexAt));
-const WORK_INDEX_ROWS = [...indexHtml.matchAll(/<a class="r"[^>]*\sdata-w="/g)].length;
-expect('WORK_INDEX_ROWS', WORK_INDEX_ROWS, shipping.length);
+const FEATURED_BLOCKS = [...home.matchAll(/\sdata-featured-block\b/g)].length;
+expect('FEATURED_BLOCKS', FEATURED_BLOCKS, works.filter((w) => w.homepage === 'featured').length);
+
+const moreAt = home.indexOf('id="more"');
+const moreHtml = moreAt < 0 ? '' : home.slice(moreAt, home.indexOf('</section>', moreAt));
+const MORE_ROWS = [...moreHtml.matchAll(/class="r[^"]*"[^>]*\sdata-w="/g)].length;
+expect('MORE_ROWS', MORE_ROWS, works.filter((w) => w.homepage === 'more').length);
+
+// ---- ARCHIVE_ROWS ----
+const archive = read('work/index.html');
+const ARCHIVE_ROWS = [...archive.matchAll(/class="r[^"]*"[^>]*\sdata-w="/g)].length;
+expect('ARCHIVE_ROWS', ARCHIVE_ROWS, shipping.length);
 
 // ---- WORK_ENTRIES ----
 const marked = (html: string): Set<string> =>
   new Set([...html.matchAll(/\sdata-w="([^"]+)"/g)].map((m) => m[1] as string));
 const onHome = marked(home);
-const inRegister = marked(read('work/index.html'));
+const inRegister = marked(archive);
 const WORK_ENTRIES = onHome.size;
 
 if (WORK_ENTRIES === 0) failures.push('WORK_ENTRIES = 0 — homepage に作品が 1 件も出ていない');
 const missing = [...onHome].filter((slug) => !inRegister.has(slug));
-const extra = [...inRegister].filter((slug) => !onHome.has(slug));
-if (missing.length > 0 || extra.length > 0) {
+if (missing.length > 0) {
   failures.push(
-    `WORK_ENTRIES: / と /work/ の作品集合が違う` +
-      `${missing.length > 0 ? ` — /work/ に無い: ${missing.join(' ')}` : ''}` +
-      `${extra.length > 0 ? ` — / に無い: ${extra.join(' ')}` : ''}`,
+    `WORK_ENTRIES: homepage にあって /work/ に無い作品がある — ${missing.join(' ')}。` +
+      `archive は homepage の上位集合であること`,
   );
 }
 
+// ---- PUBLIC_INTERNAL ----
+// Internal vocabulary must not reach a reader. These are renderer names, gate
+// field values and review bookkeeping: each is checkable as a literal, and each
+// leaked onto a public page before #7.
+const INTERNAL_TOKENS = [
+  'v-stage', 'v-split', 'v-terminal',
+  'sourceRef', 'reviewStatus', 'publicDemoScope', 'spec CS-',
+  'public-repo', 'private-repo', 'linkPolicy',
+  'data-homepage-role="lead"',
+];
+let PUBLIC_INTERNAL = 0;
+for (const route of ['index.html', 'work/index.html']) {
+  const html = read(route);
+  for (const token of INTERNAL_TOKENS) {
+    if (html.includes(token)) {
+      PUBLIC_INTERNAL += 1;
+      failures.push(`PUBLIC_INTERNAL: /${route === 'index.html' ? '' : route.replace('index.html', '')} に内部語 ${token} が出ている`);
+    }
+  }
+}
+
 console.log(
-  `HERO_CAPABILITY_ROWS = ${HERO_CAPABILITY_ROWS} / ` +
-    `HERO_DISPLAY_LINES = ${HERO_DISPLAY_LINES} / ` +
-    `EDITORIAL_BAND_PANELS = ${EDITORIAL_BAND_PANELS} (featured ${featured.length}) / ` +
-    `LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
-    `WORK_INDEX_ROWS = ${WORK_INDEX_ROWS} (shipping ${shipping.length}) / ` +
-    `WORK_ENTRIES = ${WORK_ENTRIES}`,
+  `HERO_DISPLAY_LINES = ${HERO_DISPLAY_LINES} / ` +
+    `FEATURED_BLOCKS = ${FEATURED_BLOCKS} / ` +
+    `MORE_ROWS = ${MORE_ROWS} / ` +
+    `CAPABILITY_CATEGORIES = ${CAPABILITY_CATEGORIES} / ` +
+    `ARCHIVE_ROWS = ${ARCHIVE_ROWS} (shipping ${shipping.length}) / ` +
+    `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
+    `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL}`,
 );
 
 if (failures.length > 0) {
