@@ -151,6 +151,33 @@
     display: flex;
   }
 
+  /* …EXCEPT ON /work/, WHICH NO LONGER HAS A HERO TO STAGE.
+
+     The rule above reserves 420px because a homepage hero has something to
+     fill it: two display lines, a lede and two CTAs, with row 2 sitting on the
+     stage floor. The archive header used to have the same shape — a heading
+     and a four-sentence lede — and the #7 visual review removed the lede and
+     two of the three rail lines as implementation talk (see work/index.astro).
+     What is left is a count and a page name, ~68px of content in a 420px
+     stage, so the remaining 298px was not editorial whitespace: it was the
+     hole the deleted copy left, held open by a rule written for a different
+     page.
+
+     `#register` is `/work/`'s own `<main>` and nothing else uses it — the
+     homepage's `<main>` is unnamed, the work entries carry `data-w`, and
+     /how-i-build/ and /404.html have their own ids. So the homepage stage is
+     untouched and its measured first-visual Y stays where the visual review
+     fixed it.
+
+     min-height only. `display:flex`, the column direction, the type and the
+     grid are all left as they are, and the section falls to its natural
+     height — the breathing under the header is `.tr:last-child`'s existing
+     floor padding, which is why no padding, margin or replacement height is
+     added here. */
+  .ad #register > .hero {
+    min-height: 0;
+  }
+
   .ad .hero > .page {
     flex: 1;
     display: flex;
