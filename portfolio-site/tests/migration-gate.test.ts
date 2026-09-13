@@ -13,10 +13,25 @@ import { runGates } from '../src/lib/validation/index.ts';
 import { isDual, migrationGate } from '../src/lib/validation/migration.ts';
 import { bundleWith, clone, codes, legacyWork, realContent, sampleWork } from './helpers.ts';
 
+/**
+ * The works that still carry the legacy half, in collection order.
+ *
+ * `realContent().works` used to be all-Dual, so "the first work" was always a
+ * usable fixture. #7 added seven V4-only records, and whichever of them loads
+ * first would make `agreeing()` spread an undefined `publicDemoScope`. Picking
+ * by the field the fixture actually needs says what the test requires instead
+ * of relying on load order.
+ */
+function dualWorks(): Work[] {
+  const works = realContent().works.filter((w) => w.repoPath !== undefined);
+  if (works.length === 0) throw new Error('fixture: Dual な作品が無い');
+  return works;
+}
+
 /** The V4 record that says exactly what the sample work's legacy fields say. */
 function agreeing(w: Work): NonNullable<Work['showcase']> {
   return {
-    source: { access: 'public-repo', path: w.repoPath! },
+    source: { access: 'public-repo', linkPolicy: 'linked', path: w.repoPath! },
     demoScope: [...w.publicDemoScope!],
     verification: { tests: { ...w.tests! }, verificationId: null },
   };
@@ -37,7 +52,7 @@ const run = (works: Work[]) => migrationGate(works, 'production');
  * A-CHANGED and would say nothing about the gate under test.
  */
 function withConflict(): Work[] {
-  const [first, ...rest] = realContent().works;
+  const [first, ...rest] = [...dualWorks(), ...realContent().works.filter((w) => w.repoPath === undefined)];
   const showcase = agreeing(first!);
   return [
     {
@@ -99,7 +114,7 @@ describe('dual migration state', () => {
 
   it('fails when the V4 record calls a public source private', () => {
     const findings = run([
-      dual((s) => ({ ...s, source: { access: 'private-repo', path: null } })),
+      dual((s) => ({ ...s, source: { access: 'private-repo', linkPolicy: 'withheld', path: null } })),
     ]);
     assert.deepEqual(codes(findings), ['T-DUAL-CONFLICT']);
     assert.match(findings[0]!.message, /showcase\.source/);
@@ -107,7 +122,7 @@ describe('dual migration state', () => {
 
   it('fails when the V4 record points at a different path', () => {
     const findings = run([
-      dual((s) => ({ ...s, source: { access: 'public-repo', path: 'other-demo/' } })),
+      dual((s) => ({ ...s, source: { access: 'public-repo', linkPolicy: 'linked', path: 'other-demo/' } })),
     ]);
     assert.deepEqual(codes(findings), ['T-DUAL-CONFLICT']);
   });
@@ -141,7 +156,7 @@ describe('dual migration state', () => {
     const findings = run([
       dual((s) => ({
         ...s,
-        source: { access: 'public-repo', path: 'other-demo/' },
+        source: { access: 'public-repo', linkPolicy: 'linked', path: 'other-demo/' },
         demoScope: [],
         verification: { ...s.verification, tests: null },
       })),
@@ -171,8 +186,9 @@ describe('dual migration state', () => {
   });
 
   it('keeps W-DUAL-SOURCE a warning, which never fails a build', () => {
-    const works = realContent().works;
-    const [first, ...rest] = works;
+    const [first, ...others] = dualWorks();
+    const rest = realContent().works.filter((w) => w.slug !== first!.slug);
+    void others;
     const agreed = { ...clone(first!), showcase: agreeing(first!) };
     const result = runGates(bundleWith([agreed, ...rest]), { mode: 'production' });
     assert.equal(result.ok, true);

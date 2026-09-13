@@ -1,0 +1,50 @@
+---
+/**
+ * /how-i-build/ — the method, in full.
+ *
+ * It used to be 2,220px of the homepage, between the work and the profile. The
+ * page's job is to say what this engineer builds and show it; a reader who
+ * wants the eight-step workflow, the roles table and the list of things that
+ * are deliberately NOT claimed is a reader who has already decided to go
+ * deeper, and this is where they land.
+ *
+ * NOTHING WAS REWRITTEN FOR THIS PAGE. It renders `HowIBuild.astro` against the
+ * same `site.json` data the homepage rendered — the component moved, the words
+ * did not. The homepage keeps the one sentence it all supports, plus a link
+ * here (03 CAPABILITIES).
+ */
+import { getCollection } from 'astro:content';
+import HowIBuild from '../components/home/HowIBuild.astro';
+import Footer from '../components/layout/Footer.astro';
+import SyntheticBar from '../components/layout/SyntheticBar.astro';
+import Nav from '../components/navigation/Nav.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { shippingWorks } from '../lib/content/derive.ts';
+import { site } from '../lib/content/site.ts';
+
+const works = shippingWorks((await getCollection('work')).map((e) => e.data));
+const h = site.howIBuild;
+---
+
+<BaseLayout title={`HOW I BUILD — ${site.handle}`} description={h.lede}>
+  <Nav progress={12} hasWorks={works.length > 0} onHomepage={false} />
+  <SyntheticBar />
+  <main id="how-i-build">
+    {/* The page's own h1. `HowIBuild` opens at h2 because it was written as a
+        homepage section, and it keeps that level here — the heading above it is
+        what makes the document outline start at one. */}
+    <section class="hero">
+      <div class="page">
+        <div class="tr">
+          <div class="ins"><span class="ix">M</span></div>
+          <div class="msr">
+            <h1 class="dsp-s">{h.title}</h1>
+            <p class="lede">{h.lede}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <HowIBuild />
+    <Footer />
+  </main>
+</BaseLayout>

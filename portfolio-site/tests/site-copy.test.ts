@@ -63,11 +63,12 @@ describe('site.json copy coverage', () => {
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
     assert.equal(managed.length, 3);
-    // 132 before V4 Phase 3, 123 after it: the hero's two authored capability
-    // rows and the five derive templates left site.json for the copy registry.
-    // Phase 4 took three more — the nav labels of the sections that left the
-    // homepage, which are now neither rendered nor listed.
-    assert.equal(unmanaged.length, 120);
+    // 120 before #7, 183 after it. The jump is 02 MORE PROJECTS, 03
+    // CAPABILITIES, ABOUT's `now` and CONTACT's heading and lede: all of it is
+    // copy the user approved in #6, entered where the section content it
+    // belongs to already lives. Registering it is Copy Migration's job and it
+    // is #8's scope — this gate reports the debt, which is what it is for.
+    assert.equal(unmanaged.length, 183);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -75,8 +76,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /120 件/);
-    // one finding, not 120 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /183 件/);
+    // one finding, not 183 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

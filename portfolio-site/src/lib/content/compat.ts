@@ -33,12 +33,32 @@ import type { Tests, Work, WorkSource } from './schema.ts';
  * Null only when the work states nothing at all about its source.
  */
 export function workSource(work: Work): WorkSource | null {
-  if (work.repoPath) return { access: 'public-repo', path: work.repoPath };
+  if (work.repoPath) return { access: 'public-repo', linkPolicy: 'linked', path: work.repoPath };
   return work.showcase?.source ?? null;
 }
 
-/** The public path, when there is one to give. */
-export const workRepoPath = (work: Work): string | null => workSource(work)?.path ?? null;
+/**
+ * Whether this site publishes a way into the work's source (#7 C-8).
+ *
+ * The one place the two halves of the question are combined. A component that
+ * asked `access === 'public-repo'` on its own would link a repository this
+ * portfolio has decided not to name, and it would be RIGHT about the access
+ * while doing it — which is exactly why no component gets to ask.
+ */
+export function workSourceIsLinkable(work: Work): boolean {
+  const s = workSource(work);
+  return s?.access === 'public-repo' && s.linkPolicy === 'linked';
+}
+
+/**
+ * The public path, and only when it may actually be shown.
+ *
+ * Returns null for a withheld source even though the record could not hold a
+ * path for one anyway. Both sides state the rule so that neither is the only
+ * thing standing between a client's name and the page.
+ */
+export const workRepoPath = (work: Work): string | null =>
+  workSourceIsLinkable(work) ? (workSource(work)?.path ?? null) : null;
 
 /** What a visitor can actually run in public. Empty when nothing is public. */
 export function workDemoScope(work: Work): readonly string[] {

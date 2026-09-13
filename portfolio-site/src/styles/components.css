@@ -527,3 +527,168 @@
 .ad .lanes span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
                 text-transform:uppercase;color:var(--tx3);padding:12px 0 12px 36px}
 .ad .lanes span:first-child{color:var(--tx);font-weight:700}
+
+.ad #work.s-open{padding-top:26px}
+/* the section head is a line, not a spread: the work below it is the content */
+.ad #work.s-open > .page > .tr h2{font-size:24px;line-height:1.45;margin:0;max-width:34ch}
+/* The section head is one line high. Stacked rail labels made it 135px — taller
+   than the heading beside them — which is the rail describing itself. */
+.ad #work.s-open > .page > .tr > .ins{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 14px}
+.ad #work.s-open > .page > .tr > .ins .ix{font-size:20px}
+.ad #more.s-open,.ad #capabilities.s-open,.ad #about.s-open{padding-top:104px}
+
+/* ============================================================ #7 GALLERY
+   The Editorial Gallery's own components. Everything here composes from the
+   existing vocabulary — `.page` / `.tr` / `.ins` / `.msr` / `.fld`, the
+   hairlines, `--sig`, `--plate`, `.lk`, `.mo` — and introduces no colour, no
+   type family and no grid of its own. No card, no radius, no shadow: the only
+   things drawn are rules, plates and space. */
+
+/* ---------------------------------------------------------- hero CTAs
+   Two affordances, and they are allowed to look like what they are. The
+   primary is the page's one filled control; the secondary is a rule. Sized
+   for a 44px touch target without a box big enough to compete with the
+   display above it. */
+/* `.hcta` is the ROW. It is deliberately not called `.cta`: that name is
+   already the design system's filled control, and a container wearing it
+   inherited the control's own ground — which drew the whole row as one black
+   bar with an empty box inside it. */
+.ad .hcta{display:flex;gap:14px;align-items:stretch;margin-top:30px;flex-wrap:wrap}
+.ad .hcta .cta{min-height:48px;text-decoration:none}
+.ad .hcta .cta .ar{color:var(--paper);opacity:.7}
+.ad .cta-ghost{display:inline-flex;align-items:center;justify-content:center;
+               font-family:var(--f-ui);font-size:14px;font-weight:600;
+               min-height:48px;padding:0 26px;text-decoration:none;
+               color:var(--tx);border:1px solid var(--hair2);
+               transition:border-color .18s ease,color .18s ease}
+.ad .cta-ghost:hover,.ad .cta-ghost:focus-visible{border-color:var(--tx)}
+
+/* ---------------------------------------------------- 01 FEATURED WORK
+   One block per work. The rhythm is broad / narrow by position: `data-width`
+   is on the article, so the two widths are one rule and not two components. */
+.ad .fw{padding:56px 0 0;position:relative}
+.ad .fw:first-of-type{padding-top:10px}
+.ad .fw-t{font-size:clamp(26px,2.5vw,36px);line-height:1.2;letter-spacing:-.025em;
+          margin:0;font-weight:600}
+/* The block's rail is one line, like the section head's. Stacked, the index and
+   the category were taller than the title they label. */
+.ad .fw > .page > .tr:first-child > .ins{display:flex;flex-wrap:wrap;align-items:baseline;
+                                         gap:0 14px}
+.ad .fw > .page > .tr:first-child > .ins .ix{font-size:18px}
+.ad .fw > .page > .tr:first-child > .ins .ix:before{display:inline-block;margin:0 8px 0 0;
+                                                    vertical-align:middle}
+.ad .fw-c{font-size:16px;line-height:1.75;color:var(--tx2);margin:0 0 14px;max-width:64ch}
+/* the figure sits on the mat, never filtered — only its surroundings change */
+.ad .fw-f{margin:22px 0 0}
+.ad .fw-f .crop{display:block;background:var(--stage);padding:10px;
+                box-shadow:inset 0 0 0 1px var(--stage-ring)}
+/* Cropped to a band, not scaled to the source ratio. 16:10 across the 1,296px
+   broad field is 810px of picture — more than the spec allows a whole block —
+   so the height is set and the sides are cropped (§7.1). */
+.ad .fw-f .crop img{display:block;aspect-ratio:auto;height:310px;object-fit:cover}
+.ad .fw-f figcaption{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;
+                     color:var(--tx3);margin-top:8px;line-height:1.4}
+.ad .fw-m{margin:14px 0 0}
+.ad .fw-m .fx{display:block;margin:0 0 6px;max-width:70ch}
+.ad .fw-m .fx .mo{display:block;margin-bottom:2px}
+.ad .fw-m .fx p{margin:0;font-size:14.5px;line-height:1.65;color:var(--tx2)}
+.ad .fw[data-width="narrow"] .fw-f .crop img{height:262px}
+.ad .fw-l{margin-top:6px}
+/* the work's pigment as an edge on the rail, the same device the register uses */
+.ad .fw .ins .ix:before{content:"";display:block;width:9px;height:9px;
+                        background:var(--sig);margin-bottom:10px}
+
+/* ------------------------------------------- register, compact (.reg-c)
+   02 MORE PROJECTS and /work/. No figure column, no fact blocks: title,
+   category, one line, technologies, and a link only where a page exists.
+   The area difference from a FEATURED block is the whole point — this tier
+   says "also mine" without saying "equally the point". */
+.ad .reg-c .r{grid-template-columns:64px minmax(0,1fr) 180px;column-gap:40px;
+              padding:10px 0;align-items:baseline}
+.ad .reg-c .r .no{padding-top:2px}
+.ad .reg-c .r .no .sq{margin-bottom:0}
+.ad .reg-c .r .no:after{display:none}
+.ad .reg-c .r h3{font-size:19px;line-height:1.25;letter-spacing:-.02em;margin:0 0 2px}
+.ad .reg-c .r .meta{display:flex;gap:0 16px;flex-wrap:wrap;align-items:baseline;
+                    line-height:1.45;min-width:0}
+.ad .reg-c .r .ty{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;
+                  text-transform:uppercase;color:var(--tx3);margin:0}
+.ad .reg-c .r .cl{font-size:14.5px;line-height:1.6;color:var(--tx2);margin:0 0 4px;
+                  max-width:76ch;display:-webkit-box;-webkit-line-clamp:1;
+                  -webkit-box-orient:vertical;overflow:hidden}
+/* Plain text, not a chip. `.st` is the state-chip from the design system — a
+   bordered box with a leading square, drawn to make a STATUS stand out. A list
+   of technologies is not a status, and four chips per row turned a register
+   that is supposed to read quietly into a row of buttons. */
+.ad .reg-c .r .meta .st{display:inline;border:0;padding:0;white-space:normal;
+                        font-weight:400;text-transform:none;letter-spacing:.04em;
+                        font-family:var(--f-mono);font-size:11.5px;color:var(--tx3);
+                        overflow-wrap:anywhere;min-width:0}
+.ad .reg-c .r .meta .st:before{display:none}
+/* MORE PROJECTS carries no work pigment (spec §6.6): the tier is neutral, and
+   a coloured mark per row would give four works the same emphasis device the
+   five FEATURED blocks use. */
+.ad .reg-c .r .no .sq{background:var(--hair2)}
+.ad .reg-c .r .rl{text-align:right}
+/* A row with no detail page is not a link and is not drawn as a disabled one:
+   it has the same ink as every other row and simply does not react. */
+.ad .reg-c .r-flat{cursor:default}
+.ad .reg-c .r-flat:after{display:none}
+.ad .more-all{margin-top:28px}
+
+/* ------------------------------------------------------ 03 CAPABILITIES
+   Four rows. What you can hand over, what it is done with, and the works that
+   are the evidence — in that order, because the last one is what makes the
+   first checkable. Not a logo wall and not a grid of proficiency meters. */
+.ad .cap-l{border-top:2px solid var(--rule)}
+.ad .cap-i{display:grid;grid-template-columns:64px minmax(0,1fr);column-gap:40px;
+           padding:30px 0;border-bottom:1px solid var(--hair)}
+.ad .cap-i .no{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+               color:var(--tx3);padding-top:7px}
+.ad .cap-b h3{font-size:22px;line-height:1.4;letter-spacing:-.02em;margin:0}
+.ad .cap-en{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;
+            text-transform:uppercase;color:var(--tx3);margin:3px 0 12px}
+.ad .cap-w{font-size:15.5px;line-height:1.85;color:var(--tx2);margin:0 0 12px;max-width:62ch}
+.ad .cap-t{font-family:var(--f-mono);font-size:12px;line-height:1.9;color:var(--tx);
+           margin:0 0 8px}
+.ad .cap-x{font-size:13.5px;line-height:1.8;color:var(--tx3);margin:0}
+.ad .cap-x .sep{margin:0 8px;color:var(--hair2)}
+.ad .cap-m{display:flex;gap:18px;align-items:baseline;flex-wrap:wrap;margin:34px 0 0;
+           font-size:15.5px;color:var(--tx2)}
+
+/* ---------------------------------------------------------------- ABOUT */
+.ad .ab-now{max-width:62ch;margin-top:26px}
+.ad .ab-now p{font-size:17px;line-height:1.95;color:var(--tx);margin:0 0 14px}
+.ad .ab-now p:last-child{margin-bottom:0}
+
+/* -------------------------------------------------------------- CONTACT
+   The band inverts, as the old contact footer did: it gives the scroll a
+   floor. `.inv` is the whole dark token set, so nothing here names a colour. */
+.ad .contact{border-top:2px solid var(--rule);margin-top:120px}
+.ad .contact .in{padding:64px 0 72px}
+/* 20ch broke 「AI 活用」 across two lines. Japanese has no space to break at,
+   so the measure has to be wide enough that the line ends where the sentence
+   does — `word-break:keep-all` then holds compounds together. */
+.ad .ct-h{font-size:clamp(26px,2.6vw,34px);line-height:1.45;letter-spacing:-.02em;
+          margin:0 0 16px;max-width:32ch;word-break:keep-all;overflow-wrap:anywhere}
+.ad .ct-l{margin-bottom:34px}
+.ad .ct-d{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;margin:0;
+          border-top:1px solid var(--hair);max-width:720px}
+.ad .ct-d dt,.ad .ct-d dd{padding:13px 0;border-bottom:1px solid var(--hair);margin:0}
+.ad .ct-d dt{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+             text-transform:uppercase;color:var(--tx2)}
+.ad .ct-d dd{font-family:var(--f-mono);font-size:12.5px;color:var(--tx)}
+.ad .ct-d dd a{color:var(--tx);text-decoration:none;border-bottom:1px solid var(--hair2);
+               padding-bottom:2px;transition:border-color .18s ease}
+.ad .ct-d dd a:hover,.ad .ct-d dd a:focus-visible{border-color:var(--sig)}
+
+/* --------------------------------------------------------------- FOOTER
+   Identification, not a call to action — CONTACT above it does the asking. */
+.ad .foot{margin-top:0}
+.ad .foot .in{padding:44px 0 56px}
+.ad .foot .mark{font-size:clamp(34px,4.4vw,56px);margin:0 0 18px}
+.ad .ft-m{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.06em;
+          color:var(--tx3);margin:0;display:flex;gap:10px;flex-wrap:wrap}
+.ad .ft-m a{color:var(--tx2);text-decoration:none;border-bottom:1px solid var(--hair)}
+.ad .ft-m a:hover,.ad .ft-m a:focus-visible{color:var(--tx);border-color:var(--sig)}
+.ad .ft-m .sep{color:var(--hair2)}

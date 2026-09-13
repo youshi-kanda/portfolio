@@ -61,21 +61,67 @@ describe('content schema', () => {
     for (const c of uiCopy) assert.doesNotThrow(() => uiCopySchema.parse(c));
   });
 
-  it('requires the entry figure of a work that ships, and only of one', () => {
-    // A figure is the work's rendering. Demanding one from a work that does
-    // not render would mean the only way to register it is to point at
-    // somebody else's image or invent one.
+  it('requires the entry figure of a work DRAWN WITH ONE, and only of those', () => {
+    // The rule is "draws a figure", not "ships". It used to be `shipping`,
+    // which meant the same thing while every shipping work was a full-size
+    // homepage entry. #7 added two kinds that ship without a figure anywhere:
+    // a MORE PROJECTS row, and an archive-only work. Asking `shipping` there
+    // would demand a picture for a row with nowhere to put one, and the only
+    // way to satisfy it is to attach one that stands for nothing — which is
+    // the defect this check was written to prevent, arriving from the other
+    // side.
+    //
+    // Two things draw a figure, and the four cases below are exhaustive over
+    // them:
+    //   featured             a FEATURED WORK gallery block
+    //   evidence.length > 0  /work/<slug>/ is emitted, and renders the entry
     const w = clone(sampleWork()) as Record<string, unknown>;
     delete w['image'];
+    const parse = (over: Record<string, unknown>) =>
+      workSchema.parse({ ...w, ...over });
 
-    assert.throws(() => workSchema.parse({ ...w, shipping: true }), /image/);
-    assert.doesNotThrow(() => workSchema.parse({ ...w, shipping: false }));
+    // 1. featured + shipping, no image — FAIL
+    assert.throws(
+      () => parse({ shipping: true, featured: true, homepage: 'featured', evidence: [] }),
+      /image/,
+    );
+    // 2. not featured + shipping + has Evidence, no image — FAIL
+    assert.throws(
+      () => parse({ shipping: true, featured: false, homepage: 'more', evidence: ['CRM-V06'] }),
+      /image/,
+    );
+    // 3. not featured + shipping + no Evidence, no image — PASS
+    assert.doesNotThrow(() =>
+      parse({ shipping: true, featured: false, homepage: 'more', evidence: [] }),
+    );
+    // 4. not shipping, no image — PASS
+    assert.doesNotThrow(() =>
+      parse({ shipping: false, featured: false, homepage: undefined, evidence: [] }),
+    );
 
-    // and the accessor is total for everything a renderer can reach
+    // and the accessor is still total for everything a renderer can reach
     assert.equal(workFigure(sampleWork()).src, sampleWork().image?.src);
     assert.throws(
-      () => workFigure(workSchema.parse({ ...w, shipping: false })),
+      () => workFigure(parse({ shipping: false, featured: false, homepage: undefined, evidence: [] })),
       /描画された/,
+    );
+  });
+
+  it('keeps featured and homepage agreeing, so neither can drift', () => {
+    // One fact in two fields. The schema is what keeps them together rather
+    // than the next person remembering to change both.
+    const w = clone(sampleWork()) as Record<string, unknown>;
+    assert.throws(
+      () => workSchema.parse({ ...w, featured: true, homepage: 'more' }),
+      /homepage/,
+    );
+    assert.throws(
+      () => workSchema.parse({ ...w, featured: false, homepage: 'featured' }),
+      /homepage/,
+    );
+    assert.throws(
+      () => workSchema.parse({ ...w, featured: true, homepage: undefined }),
+      /homepage/,
     );
   });
 

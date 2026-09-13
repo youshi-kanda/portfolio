@@ -27,12 +27,12 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-three approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 23);
+  it('covers all twenty-four approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 24);
 
-    const [homepage, notFound, v4, workLede] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede);
-    assert.equal(APPROVAL_BATCHES.length, 4);
+    const [homepage, notFound, v4, workLede, issue6] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6);
+    assert.equal(APPROVAL_BATCHES.length, 5);
     assert.deepEqual(
       [homepage.by, homepage.at, homepage.ids.length],
       ['user', '2026-08-28T21:20:25Z', 6],
@@ -43,7 +43,13 @@ describe('approved copy gate', () => {
     );
     assert.deepEqual(
       [v4.by, v4.at, v4.ids.length],
-      ['user', '2026-09-07T22:24:15Z', 11],
+      // 11 before #7. `home.hero.role.02` and the three display lines left for
+      // the #6 batch that approved their current text — one batch per id.
+      ['user', '2026-09-07T22:24:15Z', 6],
+    );
+    assert.deepEqual(
+      [issue6.by, issue6.at, issue6.ids.length],
+      ['user', '2026-09-13T00:13:13Z', 6],
     );
     assert.deepEqual(
       [workLede.by, workLede.at, [...workLede.ids]],
@@ -54,7 +60,8 @@ describe('approved copy gate', () => {
     // Being listed in both would leave no way to say which event approved the
     // sentence that ships, and `A-BATCH` fails the build for exactly that.
     assert.equal(homepage.ids.includes('home.hero.lede'), false);
-    assert.equal(v4.ids.includes('home.hero.lede'), true);
+    assert.equal(v4.ids.includes('home.hero.lede'), false);
+    assert.equal(issue6.ids.includes('home.hero.lede'), true);
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
@@ -93,13 +100,13 @@ describe('approved copy gate', () => {
 
   it('has every approved copy row attributed, and says so', () => {
     // the counterpart to APPROVAL_ATTRIBUTION in validate-content: this
-    // collection is 23/23, and the reported debt is entirely elsewhere
+    // collection is 24/24, and the reported debt is entirely elsewhere
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 23);
+    assert.equal(approved.length, 24);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      23,
+      24,
     );
   });
 
@@ -203,17 +210,26 @@ describe('approved copy gate', () => {
     assert.match(findings[0]!.message, /home\.works\.h2/);
   });
 
-  it('ships the V4 hero copy the user approved, verbatim', () => {
-    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務の課題を整理し、');
-    assert.equal(APPROVED_TEXT['home.hero.display.02'], '画面・API・データ・自動処理へ落とし込み、');
-    assert.equal(APPROVED_TEXT['home.hero.display.03'], '動く仕組みとして設計・実装する。');
-    assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / 自動化 / AI活用');
+  it('ships the hero copy the user approved in #6, verbatim', () => {
+    // Two lines, not three, and the claim is fitness rather than track record:
+    // 「実際に使われる」 would say these works are in live use, which is a
+    // claim this site makes nowhere else (#6 spec §4.1).
+    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務課題を、');
+    assert.equal(APPROVED_TEXT['home.hero.display.02'], '業務で使える Web・AI システムへ。');
+    assert.equal(APPROVED_TEXT['home.hero.display.03'], undefined);
+    assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');
+    assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '実績を見る');
+    assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '相談する');
 
     // No count anywhere in the V4 hero and work copy. That is the property
     // that let `heroLede` and `capabilityVerify` be deleted rather than turned
     // into literals — a static string with a "3" in it is the defect those
     // derivations existed to prevent.
-    for (const id of [...APPROVAL_BATCHES[2]!.ids, ...APPROVAL_BATCHES[3]!.ids]) {
+    for (const id of [
+      ...APPROVAL_BATCHES[2]!.ids,
+      ...APPROVAL_BATCHES[3]!.ids,
+      ...APPROVAL_BATCHES[4]!.ids,
+    ]) {
       assert.doesNotMatch(APPROVED_TEXT[id]!, /\d+\s*(作品|つの動くデモ|tests|passed)/);
     }
   });

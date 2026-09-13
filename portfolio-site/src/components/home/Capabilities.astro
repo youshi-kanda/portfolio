@@ -1,0 +1,84 @@
+---
+/**
+ * 03 CAPABILITIES — what can be handed over, not what is known.
+ *
+ * Four categories, each: what you can hand over, the technologies it is done
+ * with, and the works that are the evidence. The third part is why this is not
+ * a self-assessment. A logo wall or a set of proficiency bars states a claim
+ * nobody can check; a category that names three works on the same page is
+ * making a claim the reader has already scrolled past the proof of.
+ *
+ * `examples` holds SLUGS and resolves to titles here. A category that spelled
+ * its examples in prose would go stale the first time a work was renamed, and
+ * could name a work the site does not have — `capabilitiesGate` refuses an
+ * unknown slug before a build gets this far.
+ *
+ * HOW I BUILD IS ONE LINE AND A LINK. The eight-step workflow, the roles table,
+ * the intent and the not-claimed list were 2,220px of the homepage. None of it
+ * is deleted: /how-i-build/ renders the whole of it from the same `site.json`
+ * data. What stays here is the sentence it all supports.
+ */
+import { sectionNumber } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import Rail from '../layout/Rail.astro';
+
+interface Props {
+  works: readonly Work[];
+}
+
+const { works } = Astro.props;
+const c = site.capabilities;
+const index = sectionNumber('capabilities');
+const titleOf = new Map(works.map((w) => [w.slug, w.title]));
+
+const categories = c.categories.map((cat) => ({
+  ...cat,
+  /** Slugs the site does not ship are dropped rather than printed raw. */
+  works: cat.examples.flatMap((slug) => {
+    const title = titleOf.get(slug);
+    return title ? [{ slug, title }] : [];
+  }),
+}));
+---
+
+<section class="s-open" id="capabilities" data-mx-n={index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={index} labels={c.railLabels} />
+      <div class="msr"><h2>{c.h2}</h2></div>
+    </div>
+    <div class="tr">
+      <div class="ins"></div>
+      <div class="fld">
+        <div class="cap-l">
+          {
+            categories.map((cat) => (
+              <div class="cap-i">
+                <span class="no">{cat.key}</span>
+                <div class="cap-b">
+                  <h3>{cat.title}</h3>
+                  <p class="cap-en">{cat.titleEn}</p>
+                  <p class="cap-w">{cat.what}</p>
+                  <p class="cap-t">{cat.tech.join(' · ')}</p>
+                  <p class="cap-x">
+                    {cat.works.map((w, i) => (
+                      <>
+                        {i > 0 && <span class="sep">／</span>}
+                        <span data-w={w.slug}>{w.title}</span>
+                      </>
+                    ))}
+                  </p>
+                </div>
+              </div>
+            ))
+          }
+        </div>
+        <p class="cap-m">
+          <span>{c.methodLede}</span>
+          <a class="lk" href="/how-i-build/">{c.methodLink}<span class="ar">→</span></a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

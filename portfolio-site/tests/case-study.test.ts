@@ -19,13 +19,22 @@ import { bundleWith, clone, codes, realContent, sampleWork } from './helpers.ts'
 const production = { mode: 'production' } as const;
 
 describe('case study', () => {
-  it('publishes a Case Study for every shipping work', () => {
+  it('pairs a Case Study with exactly the works that declare one', () => {
+    // NOT "every shipping work" any more. #7 ships ten works and three Case
+    // Studies: the other seven are #8's scope, and a site that only allowed a
+    // work to ship once its Case Study was written would be a site that cannot
+    // publish work in the order the work actually gets done.
+    //
+    // What still has to hold is the pairing: `caseStudyPublished` is the flag
+    // every CTA renders from, so a work claiming one without a record behind it
+    // would offer a link to a page that is not there.
     const { works, caseStudies } = realContent();
     const paired = publishedCaseStudies(works, caseStudies);
-    assert.deepEqual(
-      paired.map((p) => p.work.slug),
-      shippingWorks(works).map((w) => w.slug),
-    );
+    const claimed = shippingWorks(works)
+      .filter((w) => w.caseStudyPublished)
+      .map((w) => w.slug);
+    assert.deepEqual(paired.map((p) => p.work.slug), claimed);
+    assert.deepEqual(claimed, ['crm', 'ppm', 'dfe']);
   });
 
   it('derives the route from the slug rather than naming a work', () => {
@@ -175,9 +184,16 @@ describe('case study', () => {
     }
   });
 
-  it('gives the three works three different case variants', () => {
+  it('gives each published Case Study a different case variant', () => {
+    // Scoped to the works that HAVE a Case Study. Uniqueness across all ten
+    // shipping works is not reachable — there are three implemented spine
+    // renderers — and demanding it would be demanding a renderer per work
+    // rather than a variety of them where they are actually drawn.
     const { works } = realContent();
-    const variants = shippingWorks(works).map((w) => workVisual(w).caseVariant);
+    const variants = shippingWorks(works)
+      .filter((w) => w.caseStudyPublished)
+      .map((w) => workVisual(w).caseVariant);
+    assert.equal(variants.length, 3);
     assert.equal(new Set(variants).size, variants.length);
   });
 

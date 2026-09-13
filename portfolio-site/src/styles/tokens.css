@@ -36,11 +36,31 @@
   --sig:#63C79A; --sig-bg:#0F2A20;
   --held:#6C7278; --pass:#63C79A; --stop:#E58A5E;
 }
-/* ------------------------------------------------- layer 3: work pigments */
+/* ------------------------------------------------- layer 3: work pigments
+   #7 C-2 — the set goes from three to five, approved for this change only.
+   FEATURED WORK is five blocks and a pigment belongs to exactly one work, so
+   three could not dress five. Two of the new assignments re-use hues the set
+   already had (藍 / 弁柄), because `ppm` moved to MORE PROJECTS and `dfe` to
+   the archive, and neither tier carries a pigment — so the hue was free rather
+   than duplicated. Only 紫紺 and 葡萄 are new ink.
+
+   Every value below clears WCAG AA for text against its own ground
+   (light on --paper #F4F2ED, dark on #0A0B0D): 5.71:1 at worst, 9.15:1 at
+   best. Nothing here is restricted to decorative use.
+
+   paper / ink / type / grid are untouched. */
 .ad [data-w="crm"],.ad.w-crm{--sig:#14654A;--sig-bg:#DCE9E2}
+.ad [data-w="ins-ai"],.ad.w-ins-ai{--sig:#4A3A6B;--sig-bg:#E2DDEC}   /* 紫紺 — new */
+.ad [data-w="hire"],.ad.w-hire{--sig:#1F3F7A;--sig-bg:#DCE2EE}       /* 藍 */
+.ad [data-w="assist"],.ad.w-assist{--sig:#6E2C4A;--sig-bg:#F0DEE5}   /* 葡萄 — new */
+.ad [data-w="ops"],.ad.w-ops{--sig:#A2401C;--sig-bg:#F2E1D8}         /* 弁柄 */
 .ad [data-w="ppm"],.ad.w-ppm{--sig:#1F3F7A;--sig-bg:#DCE2EE}
 .ad [data-w="dfe"],.ad.w-dfe{--sig:#A2401C;--sig-bg:#F2E1D8}
 .ad[data-t="dark"] [data-w="crm"],.ad[data-t="dark"].w-crm{--sig:#63C79A;--sig-bg:#0F2A20}
+.ad[data-t="dark"] [data-w="ins-ai"],.ad[data-t="dark"].w-ins-ai{--sig:#A79AD0;--sig-bg:#1C1628}
+.ad[data-t="dark"] [data-w="hire"],.ad[data-t="dark"].w-hire{--sig:#7FA6E8;--sig-bg:#111C31}
+.ad[data-t="dark"] [data-w="assist"],.ad[data-t="dark"].w-assist{--sig:#D794AC;--sig-bg:#2A1019}
+.ad[data-t="dark"] [data-w="ops"],.ad[data-t="dark"].w-ops{--sig:#E58A5E;--sig-bg:#2B1710}
 .ad[data-t="dark"] [data-w="ppm"],.ad[data-t="dark"].w-ppm{--sig:#7FA6E8;--sig-bg:#111C31}
 .ad[data-t="dark"] [data-w="dfe"],.ad[data-t="dark"].w-dfe{--sig:#E58A5E;--sig-bg:#2B1710}
 /* a band that inverts locally keeps its work pigment.
@@ -57,6 +77,10 @@
          --sig:#63C79A;--sig-bg:#0F2A20;
          background:var(--paper);color:var(--tx)}
 .ad .inv[data-w="crm"]{--sig:#63C79A;--sig-bg:#0F2A20}
+.ad .inv[data-w="ins-ai"]{--sig:#A79AD0;--sig-bg:#1C1628}
+.ad .inv[data-w="hire"]{--sig:#7FA6E8;--sig-bg:#111C31}
+.ad .inv[data-w="assist"]{--sig:#D794AC;--sig-bg:#2A1019}
+.ad .inv[data-w="ops"]{--sig:#E58A5E;--sig-bg:#2B1710}
 .ad .inv[data-w="ppm"]{--sig:#7FA6E8;--sig-bg:#111C31}
 .ad .inv[data-w="dfe"]{--sig:#E58A5E;--sig-bg:#2B1710}
 /* ============================================================ foundation */

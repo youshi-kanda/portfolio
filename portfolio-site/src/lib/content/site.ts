@@ -65,6 +65,36 @@ const siteSchema = z.object({
   registerMinSlots: z.number().int().nonnegative(),
 
   selectedWork: z.object(railed),
+  /** 02 MORE PROJECTS — #7. Rail and heading only; the rows come from work/. */
+  moreProjects: z.object({ ...railed, h2: z.string().min(1) }).strict(),
+  /**
+   * 03 CAPABILITIES — #7, spec §8.
+   *
+   * Four things a reader can hand over, each with the technologies it is done
+   * with and the works that are the evidence. `examples` holds work SLUGS, not
+   * titles: a category that named its examples in prose would go stale the
+   * first time a work was renamed, and this way the section cannot claim a work
+   * the site does not have — `capabilitiesGate` refuses an unknown slug.
+   */
+  capabilities: z
+    .object({
+      ...railed,
+      h2: z.string().min(1),
+      categories: z.array(
+        z.object({
+          key: z.string().min(1),
+          title: z.string().min(1),
+          titleEn: z.string().min(1),
+          what: z.string().min(1),
+          tech: z.array(z.string().min(1)).min(1).max(6),
+          examples: z.array(z.string().min(1)).min(1),
+        }),
+      ),
+      /** The one line HOW I BUILD keeps on the homepage, plus its link label. */
+      methodLede: z.string().min(1),
+      methodLink: z.string().min(1),
+    })
+    .strict(),
   howIBuild: z.object({
     ...railed,
     title: z.string().min(1),
@@ -143,6 +173,13 @@ const siteSchema = z.object({
   about: z
     .object({
       ...railed,
+      /**
+       * #7 — the short statement of how this engineer works, which ABOUT did
+       * not have. `known` stays exactly as it was and moves below it: the
+       * premises were never the introduction, they were the fine print under
+       * one.
+       */
+      now: z.array(z.string().min(1)).min(1),
       known: z.array(
         z.object({
           key: z.string().min(1),
@@ -155,6 +192,8 @@ const siteSchema = z.object({
   contact: z
     .object({
       ...railed,
+      h2: z.string().min(1),
+      lede: z.string().min(1),
       rows: z.array(
         z.object({ key: z.string().min(1), value: z.string().min(1) }).strict(),
       ),

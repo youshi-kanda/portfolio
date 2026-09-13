@@ -107,7 +107,8 @@ export const copyPublicationSchema = basePublicationSchema.extend({
  * decision Content is not making. `signal` still carries the V3 string and is
  * still what the renderers read until CONTRACT.
  */
-export const PALETTE_KEYS = ['a', 'b', 'c'] as const;
+/** #7 C-2 — five, since FEATURED WORK is five blocks and each holds one. */
+export const PALETTE_KEYS = ['a', 'b', 'c', 'd', 'e'] as const;
 
 export const visualSchema = z.object({
   entryVariant: z.string().min(1),
@@ -135,27 +136,55 @@ export const visualSchema = z.object({
  */
 export const SOURCE_ACCESS = ['public-repo', 'private-repo', 'none'] as const;
 
+/**
+ * #7 C-8 — whether THIS SITE publishes a way to reach the source.
+ *
+ * Separate from `access`, because they answer different questions and the
+ * answers come apart. `access` is a fact about the work: the repository is
+ * public, or it is private, or there is none. `linkPolicy` is a decision about
+ * the portfolio: we show the way in, or we withhold it.
+ *
+ * The case that forced the split is a work whose repository is genuinely
+ * public but whose NAME carries the client's. Before this field the record had
+ * two seats and neither was true — `public-repo` demanded a path that cannot be
+ * shown, and `private-repo` would have bought the client's privacy with a false
+ * statement about the work. A gate that makes honesty inexpressible gets
+ * answered with a lie, so the seat is what had to change.
+ *
+ * `withheld` is inert on a source that is not public: there was never a link to
+ * withhold. It is `public-repo` + `linked` that means "there is a way in and we
+ * publish it", and only that pair carries a path.
+ */
+export const LINK_POLICIES = ['linked', 'withheld'] as const;
+
 export const sourceSchema = z
   .object({
     access: z.enum(SOURCE_ACCESS),
-    /** Public path, e.g. `ai-crm-demo/`. Null whenever access is not public. */
+    /** Defaults to `linked`: a public path that exists was always published. */
+    linkPolicy: z.enum(LINK_POLICIES).default('linked'),
+    /**
+     * Public path, e.g. `ai-crm-demo/`. Null unless the source is BOTH public
+     * and linked — a withheld path is the client's name spelled sideways, and
+     * keeping it out of the record is the point of withholding it.
+     */
     path: z.string().min(1).nullable().default(null),
   })
   .superRefine((s, ctx) => {
-    if (s.access === 'public-repo' && !s.path) {
+    const linkable = s.access === 'public-repo' && s.linkPolicy === 'linked';
+    if (linkable && !s.path) {
       ctx.addIssue({
         code: 'custom',
         path: ['path'],
-        message: 'access = public-repo なら path が要る。公開している場所を言えない公開は無い。',
+        message: 'access = public-repo かつ linkPolicy = linked なら path が要る。公開している場所を言えない公開は無い。',
       });
     }
-    if (s.access !== 'public-repo' && s.path) {
+    if (!linkable && s.path) {
       ctx.addIssue({
         code: 'custom',
         path: ['path'],
         message:
-          `access = ${s.access} に path を書かない。` +
-          '非公開リポジトリの所在は Public Repository に置かない。',
+          `access = ${s.access} / linkPolicy = ${s.linkPolicy} に path を書かない。` +
+          'リンクしない source の所在を Public Repository に保存しない。',
       });
     }
   });
@@ -196,6 +225,9 @@ export const showcaseSchema = z.object({
  */
 export const HOMEPAGE_ROLES = ['lead'] as const;
 
+/** #7 — the two homepage tiers. Absent means the work is archive-only. */
+export const HOMEPAGE_PLACEMENTS = ['featured', 'more'] as const;
+
 const imageSchema = z.object({
   src: z.string().min(1),
   width: z.number().int().positive(),
@@ -224,6 +256,24 @@ const workBase = z.object({
   publicDemoScope: z.array(z.string().min(1)).min(1).optional(),
   limitations: z.array(z.string().min(1)),
   originalProductScope: z.array(z.string().min(1)),
+
+  /**
+   * #7 — what the homepage says about this work, in the spec's own terms.
+   *
+   * `role` and `selectedTech` are not derivable from the fields above. The
+   * spec fixes the public order as Problem → What was built → Role → Selected
+   * Technology, and the last two have no home in the V3 record: `languages`
+   * is what the code is written in, which is a different question from the
+   * four-to-six technologies a reader should take away, and nothing at all
+   * states how much of the work was this engineer's.
+   *
+   * Both default to empty so every V3 record stays valid, and both are read
+   * through derive.ts so a work without them falls back rather than renders a
+   * gap — see `workSelectedTech`.
+   */
+  role: z.array(z.string().min(1)).default([]),
+  /** The 4–6 the homepage shows. Falls back to `languages` when empty. */
+  selectedTech: z.array(z.string().min(1)).default([]),
 
   // what it is written in
   languages: z.array(z.string().min(1)).min(1),
@@ -274,8 +324,27 @@ const workBase = z.object({
 
   /**
    * V4. Absent on every work but the one the homepage leads with.
+   *
+   * #7 retired the Lead, so nothing composes the homepage from this any more.
+   * It is kept because deleting it would destroy the record of a decision
+   * (V4 Phase 5) that was made deliberately — see the spec's rule that data
+   * outlives the presentation that used it.
    */
   homepageRole: z.enum(HOMEPAGE_ROLES).optional(),
+
+  /**
+   * #7 — where this work appears on the homepage, if it does.
+   *
+   * Three states, and the third is the one the V3 record could not hold: a
+   * work that ships, keeps its page under /work/, and is deliberately NOT on
+   * the homepage. `shipping` could not say it, because turning that off would
+   * take the work off its own archive page too.
+   *
+   *   'featured'  01 FEATURED WORK — a gallery block with a figure
+   *   'more'      02 MORE PROJECTS — one ruled row
+   *   absent      archive only; reachable from /work/ and from nowhere else
+   */
+  homepage: z.enum(HOMEPAGE_PLACEMENTS).optional(),
 
   /**
    * V4 — `repoPath`, `publicDemoScope` and `tests` restated as one record.
@@ -347,12 +416,33 @@ export const workSchema = workBase.superRefine((w, ctx) => {
   // presentation. One rule, two fields: `shipping` is the predicate every page
   // filters on (`shippingWorks`), so the schema asks for these under exactly
   // the circumstances a renderer reaches for them.
-  if (w.shipping && !w.image) {
+  // #7 — the rule is "drawn with a figure", and `shipping` stopped meaning
+  // that when MORE PROJECTS and the archive became figure-less rows. Two
+  // things draw one: a FEATURED gallery block, and the /work/<slug>/ entry,
+  // which exists exactly when the work's Evidence resolves. Asking `shipping`
+  // now would demand a figure for a row that has nowhere to put one — and the
+  // only way to satisfy it would be to attach a picture that stands for
+  // nothing, which is the defect this check was written to prevent.
+  const drawsFigure = w.featured || w.evidence.length > 0;
+  if (w.shipping && drawsFigure && !w.image) {
     ctx.addIssue({
       code: 'custom',
       path: ['image'],
       message:
-        'shipping = true なら image が要る。出荷する作品は必ず描画され、描画には figure が要る。',
+        'featured な作品、または Evidence を持つ（= /work/<slug>/ が出る）作品には image が要る。' +
+        '図版付きで描画されるのに figure が無い。',
+    });
+  }
+
+  // One fact, two fields — so the schema is what keeps them agreeing rather
+  // than the next person remembering to change both.
+  if (w.featured !== (w.homepage === 'featured')) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['homepage'],
+      message:
+        `featured = ${w.featured} と homepage = ${w.homepage ?? '(なし)'} が食い違っている。` +
+        'FEATURED WORK に出る作品は featured = true かつ homepage = "featured"。',
     });
   }
 

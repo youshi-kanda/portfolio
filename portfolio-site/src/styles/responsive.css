@@ -278,3 +278,115 @@
   .ad #build .lanes{position:static;display:flex;flex-wrap:wrap;gap:0 18px}
   .ad .lanes span{padding:10px 0 12px}
 }
+
+/* ==================================================== #7 GALLERY — TABLET
+   1024–1279: the rhythm survives, because two widths are still distinguishable
+   at this page width. Nothing recomposes. */
+@media (max-width:1279px){
+  .ad .reg-c .r{grid-template-columns:56px minmax(0,1fr) 180px;column-gap:28px}
+  .ad .cap-i{grid-template-columns:56px minmax(0,1fr);column-gap:28px}
+}
+/* 768–1023: the rail lies down with everything else (the block above already
+   collapses `.tr`), and the compact register loses its third track — the CTA
+   moves under the row rather than being squeezed beside it. */
+@media (max-width:1023px){
+  .ad .reg-c .r{grid-template-columns:56px minmax(0,1fr);row-gap:10px}
+  .ad .reg-c .r .rl{grid-column:2;text-align:left}
+  .ad .cap-i{grid-template-columns:1fr;row-gap:6px}
+  .ad .cap-i .no{padding-top:0}
+}
+
+/* ==================================================== #7 GALLERY — MOBILE
+   ≤767. One column, and the asymmetry is DROPPED rather than scaled: at a
+   single width there is no second width to alternate with, so `data-width`
+   stops meaning anything and every block is composed the same way.
+
+   The reading order a FEATURED block takes here is the spec's (§12.2):
+   title → visual → short copy → role/tech → CTA. It is already the DOM order,
+   so nothing is reordered visually — which is what keeps the tab order and the
+   reading order the same thing.
+
+   Nothing is laid out horizontally. There is no horizontal scroll container on
+   this page at any width. */
+@media (max-width:767px){
+/* Side by side, not stacked. Two short labels fit at 390 and the stack cost
+   88px of a first viewport that has to reach the first figure. Each still
+   clears the 48px touch target. They wrap to two rows below 340. */
+.ad .hcta{gap:10px;margin-top:22px}
+.ad .hcta .cta,.ad .cta-ghost{flex:1 1 auto;min-height:48px;padding:0 14px;
+                              font-size:13.5px;justify-content:center}
+
+/* The hero is a stage on desktop and a heading on a phone. `display:block`
+   undoes the flex stage as well as its height: with `flex:1` on the first row
+   the hero kept distributing slack even at `min-height:0`, so the fold still
+   ended above the first work. */
+.ad .hero{min-height:0;padding-top:24px;display:block}
+.ad .hero > .page{display:block}
+.ad .dsp{font-size:32px;line-height:1.28;margin-bottom:14px}
+.ad .hero .lede{margin-bottom:0}
+
+/* Section and block rails lie down, as they do at every width below 1024 —
+   but they were still stacking their labels, which put 150px of rail above a
+   24px heading. */
+.ad #work.s-open{padding-top:14px}
+.ad #work.s-open > .page > .tr > .ins,
+.ad .fw > .page > .tr:first-child > .ins{display:flex;flex-wrap:wrap;align-items:baseline;
+                                         gap:0 12px;margin:0 0 6px;padding-top:0}
+.ad #work.s-open > .page > .tr h2{font-size:19px;line-height:1.45;max-width:28ch}
+/* The rail keeps its index and its name. The sub-label and the count are the
+   desktop instrument's readout, and laid down at 375px they wrapped to a second
+   line sitting above a two-line heading. */
+/* `.lb ~ .lb`, not `:nth-of-type(2)`: the rail's children are all spans, so
+   nth-of-type counted the index as the first one and hid the section's NAME
+   while keeping its sub-label. */
+.ad #work.s-open > .page > .tr > .ins .lb ~ .lb,
+.ad #work.s-open > .page > .tr > .ins .rn{display:none}
+
+.ad .fw{padding-top:38px}
+.ad .fw:first-of-type{padding-top:6px}
+.ad .fw-t{font-size:21px;letter-spacing:-.02em;line-height:1.28}
+.ad .fw-c{font-size:16px}
+.ad .fw-f{margin-top:14px}
+.ad .fw-f .crop{padding:10px}
+/* The floor the spec sets for a mobile figure: ≥200px, taken by cropping the
+   sides rather than by scaling the whole picture down to fit. A reconstructed
+   interface that has been shrunk until nothing in it can be read is not
+   evidence of anything. */
+.ad .fw-f .crop img{aspect-ratio:auto;height:236px;min-height:200px;object-fit:cover}
+.ad .fw-m{margin-top:20px}
+
+/* Two tracks, not one: the number keeps its own narrow column so the row does
+   not spend a whole line on it. */
+.ad .reg-c .r{grid-template-columns:30px minmax(0,1fr);row-gap:4px;column-gap:10px;
+              padding:12px 0}
+.ad .reg-c .r .no{padding-top:2px}
+.ad .reg-c .r .no .sq{margin-bottom:0}
+.ad .reg-c .r h3{font-size:17px;line-height:1.25;margin-bottom:1px}
+.ad .reg-c .r .cl{font-size:14px;line-height:1.55;margin-bottom:3px}
+.ad .reg-c .r .meta{grid-column:2;font-size:11px;line-height:1.5;gap:0 10px}
+.ad .reg-c .r .meta .st{font-size:11px}
+/* The arrow goes, not the link: a linked row IS the anchor, and the whole row
+   is the touch target. Drawn on its own line it cost 37px of a tier the spec
+   caps at under 100. Rows with no detail page never had one. */
+.ad .reg-c .r .rl{display:none}
+/* A technology list is one long string with no break opportunities of its own.
+   Without this it runs past the row and `overflow-x:clip` on `.reg` hides the
+   end of it — the worst of both, since nothing looks wrong. */
+.ad .reg-c .r .meta .st{overflow-wrap:anywhere}
+
+.ad .cap-b h3{font-size:19px}
+.ad .cap-w{font-size:15px}
+.ad .contact{margin-top:112px}
+.ad .contact .in{padding:56px 0 64px}
+.ad .ct-d{grid-template-columns:110px minmax(0,1fr)}
+.ad .foot .in{padding:32px 0 40px}
+}
+/* 320: the narrowest supported width. The figure floor drops to 180px and the
+   contact list stops being two columns — a 110px term track leaves 170px for a
+   URL, which wraps mid-host. */
+@media (max-width:389px){
+.ad .fw-f .crop img,
+.ad .fw[data-width="narrow"] .fw-f .crop img{height:196px;min-height:180px}
+.ad .ct-d{grid-template-columns:1fr}
+.ad .ct-d dt{border-bottom:0;padding-bottom:2px}
+}

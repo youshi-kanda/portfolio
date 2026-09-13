@@ -12,10 +12,23 @@ export const clone = <T>(value: T): T => structuredClone(value);
 
 export const realContent = () => loadAll();
 
-/** The first shipping work, deep-cloned so a test can mutate it freely. */
+/**
+ * A shipping work that still carries the legacy fields, deep-cloned.
+ *
+ * PREFERS A DUAL RECORD, and that is the whole point. These are MIGRATE-period
+ * fixtures: a test that means "a work with both field sets" used to get one by
+ * taking the first work in the running order, because every work had both. #7
+ * added seven V4-only records and put four of them ahead of `crm`, so the plain
+ * "first work" now answers with a record that has no legacy half — and the
+ * migration tests would have gone on passing while silently testing nothing.
+ *
+ * Falls back to the first work when no Dual record is left, which is the state
+ * at CONTRACT; the tests that need the legacy half will fail loudly then, which
+ * is the correct moment for them to be deleted.
+ */
 export function sampleWork(overrides: Partial<Work> = {}): Work {
   const works = loadWorks().sort((a, b) => a.featuredOrder - b.featuredOrder);
-  const base = works[0];
+  const base = works.find((w) => w.repoPath !== undefined) ?? works[0];
   if (!base) throw new Error('fixture: src/content/work が空');
   return { ...clone(base), ...overrides };
 }

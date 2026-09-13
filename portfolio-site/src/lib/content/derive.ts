@@ -52,17 +52,22 @@ export function leadWork(works: readonly Work[]): Work | null {
 /**
  * The entry figure of a work that is being rendered.
  *
- * `image` is optional on the record and required of every shipping work by the
- * schema, so this is total for anything a page can reach: every renderer draws
- * from `shippingWorks`. The throw states that invariant rather than defending
- * against it — reaching it means a non-shipping work was handed to a renderer,
- * which is a routing defect and not a missing image.
+ * `image` is optional on the record and required by the schema of exactly the
+ * works that are DRAWN with one — featured blocks, and works whose Evidence
+ * resolves and so get an entry screen at /work/<slug>/. That is the same set
+ * every caller here draws from, which is what makes this total.
+ *
+ * #7 narrowed that rule from `shipping`: a MORE PROJECTS row and an
+ * archive-only work both ship and neither has anywhere to put a figure. So
+ * reaching this throw now means a figure-less work was handed to a renderer
+ * that draws one — a routing defect, not a missing image.
  */
 export function workFigure(work: Work): NonNullable<Work['image']> {
   if (!work.image) {
     throw new Error(
       `work/${work.slug} に image が無いのに描画された。` +
-        `描画されるのは shipping の作品だけで、shipping なら image は schema が要求する。`,
+        `図版付きで描画されるのは featured か Evidence を持つ作品だけで、` +
+        `その場合 image は schema が要求する。`,
     );
   }
   return work.image;
@@ -71,8 +76,10 @@ export function workFigure(work: Work): NonNullable<Work['image']> {
 /**
  * How a work being rendered is drawn.
  *
- * Total on the same terms as `workFigure`: `visual` is required of every
- * shipping work by the schema, and only shipping works reach a renderer.
+ * `visual` is still required of every SHIPPING work, not narrowed the way
+ * `image` was. A pigment and a variant are assigned when a work is prepared
+ * for the page, and every shipping work is on a page — the archive draws the
+ * ones the homepage does not.
  */
 export function workVisual(work: Work): NonNullable<Work['visual']> {
   if (!work.visual) {
@@ -117,6 +124,71 @@ export function featuredEvidence(
   }
   return null;
 }
+
+/**
+ * Whether `/work/<slug>/` is actually emitted for this work.
+ *
+ * Restates the page's own `getStaticPaths`: the route exists exactly when the
+ * work's first Evidence id resolves to a record. A row that links without
+ * asking this is a dead link the moment a work ships before its Evidence does
+ * — which is the state every work added by #7 is in, deliberately, because
+ * their Case Studies belong to #8.
+ *
+ * The alternative — linking anyway and letting `check:links` catch it — moves
+ * the decision from the component that knows the answer to a script that finds
+ * out afterwards.
+ */
+export function workHasDetailPage(
+  work: Work,
+  evidence: readonly Evidence[],
+): boolean {
+  const first = work.evidence[0];
+  if (!first) return false;
+  return evidence.some((e) => e.id === first);
+}
+
+/**
+ * Whether anything may render the words "Case Study" for this work.
+ *
+ * ONE FIELD, AND DELIBERATELY NOT THE OTHER. `caseStudyPublished` is the whole
+ * condition — the same one `EntryCta` has always used. `workHasDetailPage` asks
+ * a different question, and #7 first wrote the gallery and the register against
+ * that one because for the three works shipping at the time the two answers
+ * happened to coincide.
+ *
+ * They are not the same question. A work whose Evidence resolves gets a page at
+ * /work/<slug>/ whether or not its Case Study body exists — the route renders
+ * the entry screen either way, on purpose, so a work is reachable from the
+ * moment its facts are sourced. Labelling that link "Case Study を読む" would
+ * promise CS-1…CS-16 and deliver the entry screen.
+ *
+ * So: this decides the LABEL. `workHasDetailPage` decides whether a row is a
+ * link at all. Keeping them in two functions is what stops the coincidence
+ * from being rediscovered as a rule.
+ */
+export const workShowsCaseStudyCta = (work: Work): boolean => work.caseStudyPublished;
+
+/**
+ * The technologies the page shows for a work, in the order the record states.
+ *
+ * `selectedTech` is the editorial pick (4–6, spec §5.0); `languages` is what
+ * the code is written in. A V3 record has only the second, so it answers with
+ * that rather than showing nothing — the fallback is what lets the field be
+ * added to ten records one at a time instead of all at once.
+ */
+export const workSelectedTech = (work: Work): readonly string[] =>
+  work.selectedTech.length > 0 ? work.selectedTech : work.languages;
+
+/**
+ * The homepage tiers. `featured` and `more` are disjoint by schema refinement,
+ * and a shipping work in neither is archive-only — reachable from /work/ and
+ * from nowhere else, which is where `dfe` now lives.
+ */
+export const featuredHomepageWorks = (works: readonly Work[]): Work[] =>
+  shippingWorks(works).filter((w) => w.homepage === 'featured');
+
+export const moreHomepageWorks = (works: readonly Work[]): Work[] =>
+  shippingWorks(works).filter((w) => w.homepage === 'more');
 
 /**
  * A section's displayed number: its position in the running order.

@@ -155,15 +155,17 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 120 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 123 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
     const all = [...copy, ...uiCopy];
     const presentation = all.filter((c) => c.publication.claimType === 'presentation');
     const fact = all.filter((c) => c.publication.claimType === 'fact');
-    assert.equal(presentation.length, 120);
-    assert.equal(fact.length, 30);
+    // #7 added three ui-system labels (Role / Selected technology / the
+    // archive CTA) and two authored hero CTAs.
+    assert.equal(presentation.length, 123);
+    assert.equal(fact.length, 31);
     // ui-system is the registry's own word for label / heading / button, which
     // is what presentation means on this axis. Nothing else was reclassified.
     assert.equal(

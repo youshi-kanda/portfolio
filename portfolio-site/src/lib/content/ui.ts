@@ -73,6 +73,9 @@ export const ui = {
       original: '元プロダクト側にある範囲',
     },
     keyDecision: 'Key engineering decision',
+    /** #7 — the two labelled facts a FEATURED block ends with. */
+    role: 'Role',
+    selectedTech: 'Selected technology',
     caseStudyCta: 'Case Study を読む',
     fieldsTableLabel: 'extracted fields ({count})',
   },
@@ -128,8 +131,8 @@ export const ui = {
   },
 
   mobileBar: {
-    work: '01 Work',
-    build: '02 How I build →',
+    work: 'Work',
+    contact: 'Contact →',
   },
 
   /** 0 works is a supported state, not an error state. */
@@ -150,6 +153,8 @@ export const ui = {
       'ビルドが拒否するのは、変種の種類が足りずに一様な格子へ退化することであって、 ' +
       '隣り合う 2 件が同じ変種を取ること自体ではありません。 ' +
       '行に出るのは製品種別と言語で、主張ではありません。',
+    /** #7 — 02 MORE PROJECTS' route into the full archive. */
+    allWorksCta: '作品一覧へ',
     emptySlot: '{index} — 未登録',
     // ADAPTED — reference target only (was: positioning.WORKS に 1 要素を足すだけ)
     emptySlotHint: ' · 追加は src/content/work/ に 1 ファイルを足すだけ',

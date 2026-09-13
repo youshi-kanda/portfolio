@@ -1,0 +1,83 @@
+{
+  "slug": "agri",
+  "title": "農業工程・勤怠管理",
+  "status": "published",
+  "shipping": true,
+  "featured": false,
+  "featuredOrder": 9,
+  "homepage": "more",
+  "productType": "業務管理 / Multi-tenant",
+  "targetUser": "農園の現場作業員と管理者",
+  "problem": [
+    "現場作業員と管理者で、使う端末と画面が分かれる（現場はスマートフォン、管理は PC）。"
+  ],
+  "purpose": "現場作業員はスマートフォンでワンタップ打刻と GPS 付き作業ログ、管理者は PC で工程・スタッフ・レポートを見るマルチテナント業務管理。",
+  "implementationScope": [
+    "ワンタップ打刻",
+    "GPS 付き作業ログ",
+    "工程管理",
+    "招待制ユーザー管理",
+    "管理者ダッシュボード"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "Next.js"
+  ],
+  "platform": [
+    "Firebase"
+  ],
+  "role": [
+    "Frontend",
+    "Backend",
+    "Database",
+    "Auth"
+  ],
+  "selectedTech": [
+    "Next.js",
+    "TypeScript",
+    "Firebase"
+  ],
+  "keyDecision": [
+    {
+      "decision": "現場向けと管理者向けで画面を分けた。",
+      "rationale": "「現場はスマホ、管理は PC」という利用者の分離が、そのまま画面構成に出ている。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "visual": {
+    "entryVariant": "v-stage",
+    "caseVariant": "ledger",
+    "signal": "鈍色 #5C6066",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "none",
+    "displayCut": "1 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "private-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 04（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §4 `ANON-BIZ-01`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

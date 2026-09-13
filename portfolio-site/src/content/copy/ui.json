@@ -580,6 +580,46 @@
     }
   },
   {
+    "id": "ui.work.role",
+    "path": "work.role",
+    "text": "Role",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "項目ラベル",
+    "purpose": "Featured ブロックの Role 行のラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-site/docs/design/home-ia-content-spec.md §5.0（#6 / PR #15 merged）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.selectedTech",
+    "path": "work.selectedTech",
+    "text": "Selected technology",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "項目ラベル",
+    "purpose": "Featured ブロックの技術行のラベル。技術一覧ではなく「選んだもの」であることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-site/docs/design/home-ia-content-spec.md §5.0（#6 / PR #15 merged）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
     "id": "ui.howIBuild.workflowLabel",
     "path": "howIBuild.workflowLabel",
     "text": "Workflow",
@@ -1002,12 +1042,12 @@
   {
     "id": "ui.mobileBar.work",
     "path": "mobileBar.work",
-    "text": "01 Work",
+    "text": "Work",
     "kind": "ui-system",
     "route": "/",
     "section": "mobile bar",
     "slot": "mobile bar リンク",
-    "purpose": "01 Work への導線。",
+    "purpose": "モバイル下部バーの WORK 導線ラベル。節番号は running order から導出して前置する。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "source-derived",
@@ -1020,14 +1060,14 @@
     }
   },
   {
-    "id": "ui.mobileBar.build",
-    "path": "mobileBar.build",
-    "text": "02 How I build →",
+    "id": "ui.mobileBar.contact",
+    "path": "mobileBar.contact",
+    "text": "Contact →",
     "kind": "ui-system",
     "route": "/",
-    "section": "mobile bar",
+    "section": "05 CONTACT",
     "slot": "mobile bar リンク",
-    "purpose": "02 How I build への導線。",
+    "purpose": "モバイル下部バーの CONTACT 導線ラベル。#7 で HOW I BUILD から差し替え（CONTACT 3 導線のうちの 1 本）。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "source-derived",
@@ -1430,6 +1470,26 @@
       "sourceRefs": [
         "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:725",
         "ADAPTED（TASK-PORTFOLIO-IMPLEMENT-01）— 参照先のみ差し替え。原文は `positioning.WORKS の 1 要素だけ` で、このリポジトリに存在しない Python ファイルを指していた。置換後の `src/content/work/` は当リポジトリの実在パス（uiCopyGate U-REFTARGET が実在を検証する）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.allWorksCta",
+    "path": "register.allWorksCta",
+    "text": "作品一覧へ",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 MORE PROJECTS",
+    "slot": "アーカイブ導線ラベル",
+    "purpose": "/work/ アーカイブへの導線ラベル。「すべての」と言わないのは、全称は照合できる主張であってラベルではないため（W-CLAIM-SUSPECT）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-site/docs/design/home-ia-content-spec.md §6.6（#6 / PR #15 merged）"
       ],
       "approvedBy": null,
       "approvedAt": null

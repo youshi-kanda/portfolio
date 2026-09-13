@@ -32,15 +32,17 @@ describe('homepage derivation at 0 / 1 / 3 works', () => {
   });
 
   it('never offers a nav anchor for a section that is not on the page', () => {
-    // Every anchor the nav can emit is one the homepage renders. The V4 Top
-    // carries five sections and offers three of them: the intro is reached by
-    // the masthead and the contact block is the page's own foot.
-    const anchors = ['#work', '#build', '#about'];
-    assert.deepEqual(navItems(false).map((n) => n.href), anchors);
-    // No section depends on the work list today, so the two agree. The filter
-    // is still exercised in the row below, and is what let 05 FEATURED
-    // EVIDENCE be dropped rather than left pointing at nothing.
-    assert.deepEqual(navItems(true).map((n) => n.href), anchors);
+    // Every anchor the nav can emit is one the homepage renders. #7's running
+    // order is seven sections and offers five: the intro is reached by the
+    // masthead and the footer is the page's own foot.
+    const withWorks = ['#work', '#more', '#capabilities', '#about', '#contact'];
+    assert.deepEqual(navItems(true).map((n) => n.href), withWorks);
+    // 01 and 02 both depend on the work list, so at zero works the nav drops
+    // them rather than offering an anchor to a section that is not drawn.
+    assert.deepEqual(
+      navItems(false).map((n) => n.href),
+      ['#capabilities', '#about', '#contact'],
+    );
   });
 
   it('drops a nav entry whose section needs works, when there are none', () => {
@@ -65,7 +67,7 @@ describe('homepage derivation at 0 / 1 / 3 works', () => {
     // A bare "#build" there resolves to nothing — this is the dead-anchor
     // defect the browser probe caught.
     const offHome = navItems(true, false).map((n) => n.href);
-    assert.deepEqual(offHome, ['/#work', '/#build', '/#about']);
+    assert.deepEqual(offHome, ['/#work', '/#more', '/#capabilities', '/#about', '/#contact']);
     for (const href of offHome) assert.equal(href.startsWith('#'), false);
   });
 
@@ -81,8 +83,12 @@ describe('homepage derivation at 0 / 1 / 3 works', () => {
     assert.equal(featured.evidence.id, site.evidenceSection.featured);
 
     // drop the work that owns the declared pick, and the section follows the
-    // list rather than keeping the stale screenshot it was just showing
-    const reordered = shippingWorks(works).slice(1);
+    // list rather than keeping the stale screenshot it was just showing.
+    // Only works WITH evidence can be picked, so the list is narrowed to those
+    // first — #7 added seven works that carry none, and slicing the full list
+    // would only have removed a work that was never a candidate.
+    const withEvidence = shippingWorks(works).filter((w) => w.evidence.length > 0);
+    const reordered = withEvidence.slice(1);
     const next = featuredEvidence(reordered, evidence);
     assert.ok(next);
     assert.equal(next.work.slug, reordered[0]!.slug);
@@ -110,7 +116,11 @@ describe('homepage derivation at 0 / 1 / 3 works', () => {
   it('orders works by featuredOrder, not by collection order', () => {
     const { works } = realContent();
     const order = shippingWorks(works).map((w) => w.slug);
-    assert.deepEqual(order, ['crm', 'ppm', 'dfe']);
+    assert.deepEqual(order, [
+      'ins-ai', 'hire', 'assist', 'ops', 'crm',   // 01 FEATURED WORK
+      'ppm', 'minio', 'docai', 'agri',            // 02 MORE PROJECTS
+      'dfe',                                      // archive only
+    ]);
   });
 
   it('links in-page on the homepage and by permalink everywhere else', () => {
