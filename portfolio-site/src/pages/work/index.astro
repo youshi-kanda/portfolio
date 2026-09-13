@@ -1,31 +1,36 @@
 ---
 /**
- * /work/ — the register.
+ * /work/ — the archive. Every work the site ships, including the ones on
+ * neither homepage tier.
  *
- * Not a card grid. One ruled row per work, plus the variant assignment table
- * that states what the closed set currently is and what the build requires of
- * it at this length. Both are derived: the palette comes from the renderers,
- * the floor from the row count.
+ * #7 TOOK THE MACHINE OFF THIS PAGE. It used to end with a variant assignment
+ * table: one row per work, printing `entryVariant`, `caseVariant` and the
+ * pigment name, under a note stating the diversity floor the build enforces.
+ * That is the rendering contract talking to itself in public. `v-terminal` is
+ * the name of a renderer; a visitor reading it learns nothing about the work
+ * and something about our source tree.
+ *
+ * The gate that table described is untouched — `variantGate` still refuses a
+ * register that degenerates into one layout, and `/work/` is still where the
+ * count it uses comes from. It simply no longer reports its own workings to
+ * the reader. Not displayed and not verified are different states.
+ *
+ * Rows link only where `/work/<slug>/` exists (see Register.astro).
  */
+
 import { getCollection } from 'astro:content';
 import EvidenceDialog from '../../components/evidence/EvidenceDialog.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Rail from '../../components/layout/Rail.astro';
-import SectionHead from '../../components/layout/SectionHead.astro';
 import SyntheticBar from '../../components/layout/SyntheticBar.astro';
 import Nav from '../../components/navigation/Nav.astro';
 import Register from '../../components/work/Register.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { pad2, shippingWorks, workVisual } from '../../lib/content/derive.ts';
-import { ENTRY_VARIANTS } from '../../lib/content/schema.ts';
+import { shippingWorks } from '../../lib/content/derive.ts';
 import { fill, ui } from '../../lib/content/ui.ts';
-import { variantFloor } from '../../lib/validation/variant.ts';
 
 const works = shippingWorks((await getCollection('work')).map((e) => e.data));
 const evidence = (await getCollection('evidence')).map((e) => e.data);
-
-const names = ENTRY_VARIANTS.map((v) => v.replace('v-', '')).join(' / ');
-const floor = variantFloor(works.length, ENTRY_VARIANTS.length);
 ---
 
 <BaseLayout
@@ -61,47 +66,6 @@ const floor = variantFloor(works.length, ENTRY_VARIANTS.length);
       </div>
     </section>
 
-    <section class="s-open">
-      <div class="page">
-        <div class="tr">
-          <Rail index="L2" labels={ui.register.variantRailLabels} />
-          <div class="fld">
-            <SectionHead label={ui.register.variantHead} sub={ui.register.variantSub} />
-            <div class="tw">
-              <table>
-                <thead>
-                  <tr>{ui.register.variantHeaders.map((h) => <th>{h}</th>)}</tr>
-                </thead>
-                <tbody>
-                  {
-                    works.map((w, i) => (
-                      <tr>
-                        <th>{pad2(i + 1)} {w.title}</th>
-                        <td>{w.productType}</td>
-                        <td>{w.languages.join(' · ')}</td>
-                        <td><code>{workVisual(w).entryVariant}</code></td>
-                        <td><code>{workVisual(w).caseVariant}</code></td>
-                        <td>{workVisual(w).signal}</td>
-                      </tr>
-                    ))
-                  }
-                </tbody>
-              </table>
-            </div>
-            <p class="note" style="margin-top:26px">
-              {
-                fill(ui.register.variantNote, {
-                  names,
-                  size: ENTRY_VARIANTS.length,
-                  count: works.length,
-                  floor,
-                })
-              }
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
     <Footer />
   </main>
   <EvidenceDialog />
