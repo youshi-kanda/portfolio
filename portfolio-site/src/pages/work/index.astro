@@ -10,10 +10,33 @@
  * the name of a renderer; a visitor reading it learns nothing about the work
  * and something about our source tree.
  *
- * The gate that table described is untouched — `variantGate` still refuses a
- * register that degenerates into one layout, and `/work/` is still where the
- * count it uses comes from. It simply no longer reports its own workings to
- * the reader. Not displayed and not verified are different states.
+ * #7 VISUAL REVIEW TOOK THE REST OF IT OFF THE HEADER. The table was gone but
+ * the hero still opened with the same voice: a heading that promised the index
+ * 「同じ規則で 20 件まで伸びる」 and a four-sentence lede on row composition,
+ * declared-in-content ordering and what the build refuses. Those sentences are
+ * true and they are about the site's implementation, not about the work — the
+ * first thing a reader met on the archive was our validation design. The header
+ * is now the count and the name of the page, nothing else.
+ *
+ * `ui.register.h1`, `.lede` and `.railNote` ARE NOT DELETED. They stay in
+ * `ui.ts` and in `src/content/copy/ui.json`, registered and approved, so the
+ * copy gate still holds them (U-UNMANAGED / U-DRIFT are unchanged and no gate
+ * was relaxed to land this). Not rendered and not registered are different
+ * states — the same distinction the variant table note above records. What
+ * changed is only which registered strings this page draws.
+ *
+ * No copy was authored for the replacement. The h1 reuses `railLabels[0]`, the
+ * label already approved for this page under exactly this name; the count is
+ * derived from `works.length` as it always was; the description reuses the
+ * approved homepage WORK heading, which asks the question this list answers.
+ *
+ * THE SYNTHETIC BAR IS NOT ON THIS PAGE. It states that the SCREENS are
+ * synthetic, and this page renders no screens — `Register` draws no thumbnail
+ * (see Register.astro). A disclaimer whose subject is absent still occupies the
+ * first band under the masthead, so the archive led with a caveat about images
+ * it does not show. The bar is untouched everywhere it has a subject: the work
+ * entry pages, the Case Studies, /how-i-build/ and /404.html all keep it, and
+ * `site.synthetic` is unchanged.
  *
  * Rows link only where `/work/<slug>/` exists (see Register.astro).
  */
@@ -22,35 +45,39 @@ import { getCollection } from 'astro:content';
 import EvidenceDialog from '../../components/evidence/EvidenceDialog.astro';
 import Footer from '../../components/layout/Footer.astro';
 import Rail from '../../components/layout/Rail.astro';
-import SyntheticBar from '../../components/layout/SyntheticBar.astro';
 import Nav from '../../components/navigation/Nav.astro';
 import Register from '../../components/work/Register.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import { copyText } from '../../lib/content/copy.ts';
 import { shippingWorks } from '../../lib/content/derive.ts';
-import { fill, ui } from '../../lib/content/ui.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
 
 const works = shippingWorks((await getCollection('work')).map((e) => e.data));
 const evidence = (await getCollection('evidence')).map((e) => e.data);
+
+/** The page's own name, from the rail label registered for it. */
+const h1 = ui.register.railLabels[0];
+/**
+ * The meta description. `ui.register.lede` used to fill this slot, which put
+ * the build's refusal rules into the tab title's neighbour and into a search
+ * result. This is the approved homepage WORK heading — the question this
+ * archive is a list of answers to.
+ */
+const description = await copyText('home.works.h2');
 ---
 
-<BaseLayout
-  title={`WORK INDEX — ${fill(ui.register.h1, { count: works.length })}`}
-  description={ui.register.lede}
->
+<BaseLayout title={`${h1} — ${site.handle}`} description={description}>
   <Nav current="WORK" progress={20} hasWorks={works.length > 0} onHomepage={false} />
-  <SyntheticBar />
   <main id="register">
     <section class="hero">
       <div class="page">
         <div class="tr">
-          <Rail
-            index={String(works.length)}
-            labels={ui.register.railLabels}
-            note={ui.register.railNote}
-          />
+          {/* The count alone. `Register` and `0 → 20 works` were the other two
+              rail lines; both described the register as a mechanism. */}
+          <Rail index={String(works.length)} />
           <div class="msr">
-            <h1 class="dsp-s">{fill(ui.register.h1, { count: works.length })}</h1>
-            <p class="lede">{ui.register.lede}</p>
+            <h1 class="dsp-s">{h1}</h1>
           </div>
         </div>
       </div>

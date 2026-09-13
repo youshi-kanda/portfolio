@@ -133,6 +133,11 @@ const INTERNAL_TOKENS = [
   'sourceRef', 'reviewStatus', 'publicDemoScope', 'spec CS-',
   'public-repo', 'private-repo', 'linkPolicy',
   'data-homepage-role="lead"',
+  // The /work/ header's own implementation talk, removed at the #7 visual
+  // review. The strings stay registered in ui.json; what must not come back is
+  // this page RENDERING them. Each literal below is a fragment of one of the
+  // three: the h1's growth promise, the lede's degeneracy rule, the rail note.
+  '20 件まで', '一様な格子', '0 → 20 works',
 ];
 let PUBLIC_INTERNAL = 0;
 for (const route of ['index.html', 'work/index.html']) {
