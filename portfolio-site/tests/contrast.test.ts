@@ -82,6 +82,15 @@ const light = (name: string) => token('.ad{', name);
 const dark = (name: string) => token('.ad[data-t="dark"]{', name);
 const inv = (name: string) => token('.ad .inv{', name);
 
+type Theme = 'light' | 'dark';
+
+/** A `--sig` declaration, and the theme whose grounds it is drawn against. */
+interface Pigment {
+  selector: string;
+  sig: string;
+  theme: Theme;
+}
+
 const AA_NORMAL = 4.5;
 const AA_NON_TEXT = 3; // WCAG 1.4.11 — focus rings and other UI boundaries
 
@@ -146,18 +155,96 @@ describe('text contrast — tokens.css', () => {
     );
   });
 
-  it('keeps the focus ring visible against every ground it is drawn on', () => {
-    // `--sig` in all its work pigments; the ring is `2px solid var(--sig)`
-    const pigments = [...TOKENS.matchAll(/--sig\s*:\s*(#[0-9a-fA-F]{6})/g)].map(([, c]) => c!);
-    assert.ok(pigments.length >= 8, `--sig の値が ${pigments.length} 件しか読めていない`);
-    const grounds = [light('paper'), light('paper2'), light('plate'), dark('paper'), dark('paper2'), dark('plate')];
+  /* THE FOCUS RING PAIRING TABLE.
+
+     `--sig` is not one colour: it is a default plus a work pigment per case,
+     declared twice over for light and for dark. The ring is `2px solid
+     var(--sig)`, so what matters is the pigment against the surfaces of ITS
+     OWN theme — a light pigment is never drawn on a dark plate.
+
+     This test used to take `Math.max` over all six grounds, light and dark
+     together, and pass a pigment if its single best ground cleared 3:1. That
+     is not the contract the test name states. Every light pigment is bright
+     against a dark ground by construction, so the assertion could not fail
+     for a light pigment no matter how invisible it was on real paper — and
+     the reverse for dark. The table below pairs each pigment with the grounds
+     it can actually land on and requires ALL of them, which is `Math.min`
+     with the failing pair named. */
+
+  const SURFACES = ['paper', 'paper2', 'plate'] as const;
+
+  /** The grounds a pigment of each theme can be drawn on. */
+  const GROUNDS: Record<Theme, string[]> = {
+    light: SURFACES.map(light),
+    // `.inv` restates the dark surfaces rather than inheriting them. Both are
+    // listed instead of assuming they agree: if one set drifts, the pigments
+    // are checked against the union and the drift shows up here.
+    dark: [...new Set([...SURFACES.map(dark), ...SURFACES.map(inv)])],
+  };
+
+  /** Every `--sig` the sheet declares, with the theme that owns it. */
+  function pigments(): Pigment[] {
+    // comments are stripped first: tokens.css annotates these rules inline,
+    // and a stray brace in prose would otherwise cut a block in the wrong place
+    const sheet = TOKENS.replace(/\/\*[\s\S]*?\*\//g, '');
+    return [...sheet.matchAll(/([^{}]+)\{([^}]*)\}/g)]
+      .map(([, selector, body]) => ({ selector: selector!.trim().replace(/\s+/g, ' '), body: body! }))
+      .filter(({ body }) => /--sig\s*:/.test(body))
+      .map(({ selector, body }) => ({
+        selector,
+        sig: /--sig\s*:\s*(#[0-9a-fA-F]{6})/.exec(body)![1]!,
+        // a `.inv` band is dark whichever theme it is nested in
+        theme: (/\[data-t="dark"\]|\.inv/.test(selector) ? 'dark' : 'light') as Theme,
+      }));
+  }
+
+  /** Every (pigment, ground) pair below the non-text minimum. No best-of. */
+  function ringFailures(all: Pigment[]): string[] {
     const failures: string[] = [];
-    for (const sig of pigments) {
-      // each pigment belongs to one theme; it only has to clear the best of
-      // the two grounds it can legitimately appear on
-      const best = Math.max(...grounds.map((g) => contrast(sig, g)));
-      if (best < AA_NON_TEXT) failures.push(`--sig ${sig}: best ${best.toFixed(2)}:1`);
+    for (const { selector, sig, theme } of all) {
+      for (const ground of GROUNDS[theme]) {
+        const ratio = contrast(sig, ground);
+        if (ratio < AA_NON_TEXT) failures.push(`${selector} --sig ${sig} on ${theme} ${ground}: ${ratio.toFixed(2)}:1`);
+      }
     }
-    assert.deepEqual(failures, [], `focus ring が非テキスト最低比 (${AA_NON_TEXT}:1) を満たしていない`);
+    return failures;
+  }
+
+  it('keeps the focus ring visible against every ground it is drawn on', () => {
+    const all = pigments();
+    assert.ok(all.length >= 8, `--sig の値が ${all.length} 件しか読めていない`);
+    for (const theme of ['light', 'dark'] as const) {
+      assert.ok(
+        all.some((p) => p.theme === theme),
+        `${theme} の --sig が 1 件も読めていない（pairing table が片側しか見ていない）`,
+      );
+      assert.ok(GROUNDS[theme].length >= 3, `${theme} の ground が ${GROUNDS[theme].length} 面しか読めていない`);
+    }
+    assert.deepEqual(
+      ringFailures(all),
+      [],
+      `focus ring が、実際に描かれる ground のどれかで非テキスト最低比 (${AA_NON_TEXT}:1) を下回っている`,
+    );
+  });
+
+  /* The canary for the pairing, and the reason this test was rewritten. Both
+     fixtures passed the old best-of-six assertion; both are rings a viewer
+     could not see. If either stops failing here, the table has gone back to
+     accepting a ground the pigment is never drawn on. */
+  it('fails a pigment that misses on a ground it is actually drawn on', () => {
+    // 1. wrong theme entirely — dark's #63C79A is 1.85:1 on light --paper and
+    //    1.55:1 on light --plate, while clearing 9.5:1 on the dark grounds the
+    //    old Math.max was letting it borrow
+    const wrongTheme = ringFailures([{ selector: '.ad .canary', sig: '#63C79A', theme: 'light' }]);
+    assert.equal(wrongTheme.length, 3, `light の 3 面すべてで落ちること: ${JSON.stringify(wrongTheme)}`);
+
+    // 2. right theme, one surface short — 3.54:1 on --paper and 3.23:1 on
+    //    --paper2, but 2.97:1 on --plate. Any best-of would call this a pass
+    const oneGround = ringFailures([{ selector: '.ad .canary', sig: '#8A8058', theme: 'light' }]);
+    assert.equal(oneGround.length, 1, `--plate だけで落ちること: ${JSON.stringify(oneGround)}`);
+    assert.match(oneGround[0]!, /on light #E3DFD5: 2\.97:1$/);
+
+    // and the control: a pigment that clears every ground of its theme
+    assert.deepEqual(ringFailures([{ selector: '.ad .canary', sig: light('tx'), theme: 'light' }]), []);
   });
 });
