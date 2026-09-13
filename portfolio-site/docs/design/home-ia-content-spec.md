@@ -422,10 +422,30 @@ copy に「デモ」の語を出さない。合成データである旨は図版
 
 | # | title | one-line | role / category | selected tech | link |
 |---|---|---|---|---|---|
-| 01 | **Project Progress Manager** | Google スプレッドシートを正本にしたまま、複数プロジェクトの進捗・依存・判断待ちを登録から集計まで完結させる進捗管理アドオン | Automation / 情報設計 | GAS · Google Sheets · GitHub API | **公開デモあり** |
+| 01 | **Project Progress Manager** | Google スプレッドシートを正本にしたまま、複数プロジェクトの進捗・依存・判断待ちを登録から集計まで完結させる進捗管理アドオン | Automation / 情報設計 | Google Apps Script · Google Sheets · HTML Service · LockService | **公開デモあり** |
 | 02 | **MinIO Access Management** | オブジェクトストレージのバケット・ユーザー・ポリシー・招待・監査ログ・期限付き共有リンクを扱う GUI 管理コンソール | Infrastructure / Auth | MinIO · TypeScript · Docker · Google OAuth 2.0 | **公開 repository** |
 | 03 | **OCR / LLM 文書処理システム** | 通帳の画像・PDF から取引データを抽出して CSV 出力する Web アプリ。2 系統の LLM を併用し、処理の進捗を WebSocket で返す | Document AI / Full-stack | React · TypeScript · Python · PostgreSQL · WebSocket | **公開 repository**（§6.4 の確認後） |
 | 04 | **農業工程・勤怠管理** | 現場作業員はスマートフォンでワンタップ打刻と GPS 付き作業ログ、管理者は PC で工程・スタッフ・レポートを見るマルチテナント業務管理 | 業務管理 / Multi-tenant | Next.js · TypeScript · Firebase | 非公開 |
+
+### 6.1.1 More 01 の technologies は公開デモの範囲で書く（訂正）
+
+初版は More 01 の tech を `GAS · Google Sheets · GitHub API` と書いていた。**`GitHub API` は誤り。**
+
+`GitHub API` / 外部 API 連携は **#5 が `ANON-PM-01` の実装元**（Git を事実源にする PM 伴走側）について
+記録した事実であり、**本 Portfolio が掲載する公開デモには存在しない。**
+公開デモの README は逆に、**外部 HTTP 呼び出しを 1 行も持たないこと**を明言している
+（`gas-project-management-demo/README.md`: 「HTTP 呼び出し（`UrlFetchApp`）を 1 行も持たないことを
+テストで担保しています」）。
+
+**確定 tech**（同 README 「Technology」節で確認できるものだけ）:
+
+```
+Google Apps Script · Google Sheets · HTML Service · LockService
+```
+
+**原則（全 More Projects に適用）**: **掲載するのは公開デモ / 公開 repository で確認できる技術だけ。**
+実装元にあって公開断面に無い技術を tech 列に書かない。**同じ名前の Work であっても、
+載せているのは公開断面であり、公開断面が持たない能力を公開断面の名で主張しない。**
 
 ### 6.2 この 4 件を選んだ理由
 
@@ -807,7 +827,7 @@ CONTACT を**明確な conversion point**にする。現状は窓口が 0 で、
 5. Capabilities 4 カテゴリと実例の対応（§8.2）
 6. ABOUT / CONTACT のコピー（§9 / §10）
 7. Email を公開しないこと（§10.5）
-8. Featured 02 に repository リンクを張らないこと（§5.2）
+8. Featured 02 に repository リンクを張らないこと（§5.2）。**かつ source を `private-repo` と記録しないこと**（§13.3.1）
 9. **`caseStudyPublished` が false の Work に Case Study CTA を出さないこと**（§5.0.1）。
    #7 で Case Study を新規制作しない。CTA を持つのは Featured 05 と More 01 の 2 件のみ
 10. **`workSchema` を変更・緩和しないこと**（§13.3）。新規 Work は V4-only（`showcase` のみ）で登録する
@@ -823,6 +843,7 @@ CONTACT を**明確な conversion point**にする。現状は窓口が 0 で、
 | **C-5** | 新規コピーは承認済みコピーとして登録が必要 | `check:attestation` が `copy/shipping.json` の `publication.reviewStatus` を検査 | **新規 copy key**: `home.hero.display.01–02`（改訂）/ `home.hero.lede`（改訂）/ `home.hero.cta.primary` / `.secondary` / `home.about.now.01–03` / `home.contact.h2` / `home.contact.lede` / Featured 5 件と More 4 件の copy。**すべて `authored` として本人承認が要る** |
 | **C-6** | `homepageRole = "lead"` が `crm` に付いている | Lead 構造の入力 | Lead 廃止に伴い**トップでは参照しない**。**データは削除しない**（#4 §14.4 B-4） |
 | **C-7** | `public/img/` に画像が 3 枚しか無い | `crmApproved` / `ppmDash` / `dfeCli` | Featured 05 用に `portfolio-planning/assets/ai-crm/publish/` から**必要枚数を取り込む**（§7.6） |
+| **C-8** | **`sourceSchema` が「public だがリンクしない」を表現できない** | `public-repo` は `path` 必須 / それ以外は `path` 禁止。**2 状態しか無い** | Featured 02 は **public repository が実在するのに URL を出せない**（Q11）。`source` に**実際の可視性**と**リンク方針**を分けて持たせる最小の追加が要る → **§13.3.1** |
 
 ### 13.3 新規 Work の content model（schema 変更は不要）
 
@@ -869,14 +890,75 @@ legacy 3 フィールドの**部分的な指定は refusal される**（3 つ�
 
 | Work | `source.access` | `path` | `demoScope` | `verification.tests` |
 |---|---|---|---|---|
-| Featured 01 / 02 / 03 / 04 | `private-repo` | `null` | `[]` | `null` |
+| Featured 01 / 03 / 04 | `private-repo` | `null` | `[]` | `null` |
+| **Featured 02 採用管理 Web App** | **`public-repo`（事実）+ リンク方針 `withheld`** | **`null`** | `[]` | `null` |
 | More 04 農業工程・勤怠管理 | `private-repo` | `null` | `[]` | `null` |
 | More 02 MinIO / More 03 OCR・LLM | `public-repo` | 公開 path | 公開できる範囲を記載 | 公開できる実測値がなければ `null` |
 
-> **Featured 02 は `private-repo` とする。** repository は public に存在するが、
-> **名称に発注元名が含まれるため path を出さない**（Q11 / §5.2）。
-> `access: public-repo` は `path` を必須にするので、path を出さない以上 `public-repo` とは書けない。
-> **これは schema の制約ではなく、Q11 に対する正直な表現である。**
+> **訂正 — Featured 02 を `private-repo` とする方針は撤回する。**
+> **source repository は public に実在する。** public なものを `private-repo` と記録すれば、
+> Q11 を守るために**別の嘘をつく**ことになる。詳細と #7 への要求は **§13.3.1**。
+
+### 13.3.1 Featured 02 — 「公開されているが、Portfolio からはリンクしない」の表現（#7 への要求）
+
+**事実**
+
+1. source repository は **public に実在する**
+2. ただし **repository 名に発注元名が含まれる**
+3. Q11 により、Portfolio は **repository 名も URL も出さない**
+
+**Q11 は「repository link を出さない」ことで満たされる。** source の可視性を偽る必要はない。
+
+**現行 schema では表現できない（実機確認）**
+
+`sourceSchema.superRefine` は次の 2 つを強制する。
+
+| 現行ルール | Featured 02 に当てはめると |
+|---|---|
+| `access === 'public-repo'` なら `path` が必須 | path を出せないので `public-repo` と書けない |
+| `access !== 'public-repo'` なら `path` は書けない | `private-repo` と書けば path は不要だが、**access が事実と異なる** |
+
+つまり現行 schema は **「public / linked」と「private / unlinked」の 2 つしか表現できず、
+「public に存在するが、こちらの判断でリンクしない」が表現できない。**
+
+**#7 への要求（本書が決めるのはここまで。フィールド名は実装時に決めてよい）**
+
+> **`source` に「実際の可視性」と「Portfolio からリンクするか」の 2 つを分けて持たせること。**
+> 少なくとも **「public repository が存在する」＋「Portfolio では URL を出さない」** が
+> **事実どおり**に表現できること。
+
+参考の形（名称は #7 が既存 schema との整合を見て決めてよい）:
+
+```
+source: {
+  access: 'public-repo',      // 実際の可視性 — 事実
+  linkPolicy: 'withheld',     // Portfolio のリンク方針（既定 'linked'）
+  path: null                  // withheld なので書かない
+}
+```
+
+refinement の対応方針:
+
+| 条件 | path |
+|---|---|
+| `public-repo` かつ `linkPolicy: 'linked'` | **必須**（現行の「公開している場所を言えない公開は無い」を維持） |
+| `public-repo` かつ `linkPolicy: 'withheld'` | **`null` でなければならない** |
+| `private-repo` / `none` | `null`（現行のまま） |
+
+**`withheld` でも `path` を `null` に強制するのが要点。** 発注元名を含む path を
+repository に書かせないという現行 refinement の**安全側の意図をそのまま保つ**うえで、
+`access` を事実どおり `public-repo` と書けるようにする。
+
+> **これは C-3 とは性質が異なる。** C-3 は schema の誤読に基づく**不要な**新設提案だった。
+> こちらは schema を実機確認したうえで、**現行 schema が表現できない事実が実在する**ことによる
+> 最小の追加である。**`workSchema` 本体・record 種別・検証ゲートは変更しない。**
+> なお `linkPolicy` を足さずに `access: 'none'` で代用してはならない。source は存在するので偽になる。
+
+**UI 側の帰結**: Featured 02 は **repository リンクも公開デモ導線も持たない**（§5.2 / §13.1-8）。
+`caseStudyPublished: false` により Case Study CTA も持たない（§5.0.1）。
+**Featured 02 はトップで外部リンクを 1 本も持たない Work である。** これは欠陥ではなく Q11 の帰結である。
+
+---
 
 **schema 変更が要らないことの含意**: `validate:content` / `check:attestation` などの検証ゲートは
 **現行のまま新規 Work に適用される。** 検証を弱めずに非公開 Work を載せられる、というのが
@@ -906,7 +988,8 @@ schema コメント自身が「**顔料は 3 作品に 3 色が割り当てら�
 ### 13.5 #7 の作業順（推奨）
 
 1. `site.json` の `sections` を §2.1 の 7 要素へ更新（`contact.label` 付与 / `more` / `capabilities` / `footer` 追加）
-2. 新規 6 件のレコードを **V4-only（`showcase` のみ）** で作成（§13.3）。**schema は変更しない**
+2. 新規 6 件のレコードを **V4-only（`showcase` のみ）** で作成（§13.3）。**`workSchema` 本体は変更しない**
+   - 先に **C-8**（`sourceSchema` にリンク方針を分離）を入れる。Featured 02 のレコードはこれに依存する（§13.3.1）
 3. C-1（Band 廃止）→ C-4（`data-hero-line`）→ C-2（pigment）の順でゲートを通す
 4. `Hero.astro` の圧縮 + CTA 2 つ
 5. `SelectedWork.astro` を Featured gallery へ再構成 / More register を分離
