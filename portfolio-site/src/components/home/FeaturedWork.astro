@@ -1,0 +1,139 @@
+---
+/**
+ * 01 FEATURED WORK — five works, each introduced exactly once.
+ *
+ * THE SHAPE. One block per work: index and category on the rail, the title,
+ * one or two sentences, a large figure, then Role and Selected technology, in
+ * that order. The order is the spec's (§1.2) and it is the argument the page is
+ * making — Problem, what was built, who built it, and only then what it was
+ * built with. A gallery that led with the stack would be proving a different
+ * claim than the one this portfolio is for.
+ *
+ * WHAT IS NOT HERE. API counts, migration counts, test counts, CI detail,
+ * architecture prose, limitations, provenance. All of it is still on the work
+ * record and still gated; the Case Study renders it. A homepage block that
+ * carried it measured 3,392px for one work, which is four screens to introduce
+ * one thing.
+ *
+ * READING ORDER. Title, figure, then the sentence — the same order at every
+ * width, and the order the spec fixes for mobile (§12.2). Putting the prose
+ * above the figure read reasonably on a wide screen and cost 115px before the
+ * first picture, which is what kept 01 below the fold; more to the point, it
+ * meant desktop and mobile were two different arguments about what a reader
+ * should meet first.
+ *
+ * THE RHYTHM. broad / narrow / broad / narrow / broad, by position. Not by
+ * importance — every block says the same things — so the eye gets a beat
+ * instead of five identical stops. Mobile drops it (responsive.css): at one
+ * column there is no second width to alternate with.
+ *
+ * CASE STUDY LINKS. Only where the page exists — `workHasDetailPage`, which
+ * restates the route's own getStaticPaths. Four of these five have no Case
+ * Study yet (that is #8), and their blocks end after the technologies with no
+ * link, no "準備中" and no greyed-out affordance. A portfolio that labels its
+ * own gaps is describing its backlog.
+ */
+import {
+  pad2,
+  workFigure,
+  workHasDetailPage,
+  workHref,
+  workSelectedTech,
+  sectionNumber,
+} from '../../lib/content/derive.ts';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import { copyText } from '../../lib/content/copy.ts';
+
+interface Props {
+  works: readonly Work[];
+  evidence: readonly Evidence[];
+}
+
+const { works, evidence } = Astro.props;
+const index = sectionNumber('work');
+const h2 = await copyText('home.works.h2');
+
+const blocks = works.map((work, i) => ({
+  work,
+  n: pad2(i + 1),
+  /** broad / narrow / broad / narrow / broad — position, not rank. */
+  broad: i % 2 === 0,
+  linked: workHasDetailPage(work, evidence),
+  figure: workFigure(work),
+  eager: i === 0,
+}));
+---
+
+<section class="s-open" id="work" data-mx-n={index}>
+  <div class="page">
+    <div class="tr">
+      <Rail index={index} labels={site.selectedWork.railLabels} note={`${works.length} works`} />
+      <div class="msr"><h2>{h2}</h2></div>
+    </div>
+  </div>
+
+  {
+    blocks.map(({ work: w, n, broad, linked, figure, eager }) => (
+      <article
+        class="fw"
+        data-w={w.slug}
+        data-featured-block
+        data-width={broad ? 'broad' : 'narrow'}
+      >
+        <div class="page">
+          <div class="tr">
+            <Rail index={n} labels={[w.productType]} />
+            <div class="msr">
+              <h3 class="fw-t">{w.title}</h3>
+            </div>
+          </div>
+          <div class="tr">
+            <div class="ins" />
+            <div class={broad ? 'fld' : 'msr'}>
+              <figure class="fw-f">
+                <span class="crop">
+                  <img
+                    src={figure.src}
+                    width={figure.width}
+                    height={figure.height}
+                    alt={w.title}
+                    loading={eager ? 'eager' : 'lazy'}
+                  />
+                </span>
+                {/* Small, and next to the picture rather than over the page:
+                    the statement belongs to the image, not to the portfolio. */}
+                <figcaption>{figure.caption}</figcaption>
+              </figure>
+            </div>
+          </div>
+          <div class="tr">
+            <div class="ins" />
+            <div class="msr">
+              <p class="fw-c">{w.purpose}</p>
+              <div class="fw-m">
+                {w.role.length > 0 && (
+                  <span class="fx">
+                    <span class="mo">{ui.work.role}</span>
+                    <p>{w.role.join(' / ')}</p>
+                  </span>
+                )}
+                <span class="fx">
+                  <span class="mo">{ui.work.selectedTech}</span>
+                  <p>{workSelectedTech(w).join(' · ')}</p>
+                </span>
+              </div>
+              {linked && (
+                <a class="lk fw-l" href={workHref(w.slug, false)}>
+                  {ui.work.caseStudyCta}<span class="ar">→</span>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      </article>
+    ))
+  }
+</section>

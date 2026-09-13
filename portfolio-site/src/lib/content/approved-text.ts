@@ -79,11 +79,6 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     by: 'user',
     at: '2026-09-07T22:24:15Z',
     ids: Object.freeze([
-      'home.hero.role.02',
-      'home.hero.display.01',
-      'home.hero.display.02',
-      'home.hero.display.03',
-      'home.hero.lede',
       'home.hero.capability.01.key',
       'home.hero.capability.01.value',
       'home.hero.capability.02.key',
@@ -105,15 +100,41 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-09T10:05:34Z',
     ids: Object.freeze(['home.works.lede']),
   }),
+  /**
+   * Issue #6 — the Home IA / Content Specification, reviewed over three rounds
+   * and merged as PR #15. The hero was rewritten there and the two CTAs were
+   * specified there, so this batch is the approval event for both.
+   *
+   * The display lost a line: three became two, and `home.hero.display.03` left
+   * the registry with the sentence it held. The wording changed for a reason
+   * recorded in the spec (§4.1) — 「実際に使われる」 implies works in live
+   * use, and this site claims no operating status anywhere else, so the
+   * strongest claim on the page would have been the one nobody can source.
+   * 「業務で使える」 is fitness, not track record.
+   */
+  Object.freeze({
+    task: 'ISSUE-6-HOME-IA-CONTENT-SPEC',
+    by: 'user',
+    at: '2026-09-13T00:00:00Z',
+    ids: Object.freeze([
+      'home.hero.display.01',
+      'home.hero.display.02',
+      'home.hero.lede',
+      'home.hero.role.02',
+      'home.hero.cta.primary',
+      'home.hero.cta.secondary',
+    ]),
+  }),
 ]);
 
 export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.role.01": "ソフトウェアエンジニア",
-  "home.hero.role.02": "業務システム / 自動化 / AI活用",
-  "home.hero.display.01": "業務の課題を整理し、",
-  "home.hero.display.02": "画面・API・データ・自動処理へ落とし込み、",
-  "home.hero.display.03": "動く仕組みとして設計・実装する。",
-  "home.hero.lede": "AIや自動処理に任せる範囲と、人が判断する範囲を分けて設計します。実装したことは、テスト・実行記録・人手確認など、作品に合った方法で確認できる形にします。",
+  "home.hero.role.02": "業務システム / AI 活用 / 業務自動化",
+  "home.hero.display.01": "業務課題を、",
+  "home.hero.display.02": "業務で使える Web・AI システムへ。",
+  "home.hero.lede": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+  "home.hero.cta.primary": "実績を見る",
+  "home.hero.cta.secondary": "相談する",
 
   // The capability rail — TASK-PORTFOLIO-V4-COPY-APPROVE-01. Three axes, each
   // a name and the line under it, registered as six strings for the same

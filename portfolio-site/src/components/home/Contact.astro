@@ -1,0 +1,65 @@
+---
+/**
+ * 05 CONTACT — the conversion point.
+ *
+ * Three routes reach it and this is the third: the nav (`site.sections` gives
+ * `contact` a label now), the hero's secondary CTA, and the end of the page.
+ * Before #7 there were none — the section existed, carried two URLs as plain
+ * text, and was not in the nav.
+ *
+ * THE URLS ARE LINKS NOW. They were `<dd>github.com/…</dd>`: the address of a
+ * place, printed, with no way to go there. That is not a stylistic gap, it is
+ * a contact section that cannot be used.
+ *
+ * NO EMAIL. #6 searched the repository and the site and found no address the
+ * owner publishes as a contact — only `@example.com` fixtures. Publishing one
+ * anyway, or reusing a git commit address, would be this site deciding on
+ * someone's behalf which of their addresses is public. GitHub is the one
+ * channel that is actually theirs and actually reachable, so it is the one
+ * offered, and whether an address joins it is #8's to ask (U-01).
+ *
+ * The band inverts, as it did before — it gives the scroll a floor. The FOOTER
+ * is a separate element with a separate job: this asks for something, that
+ * identifies the site.
+ */
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+
+const c = site.contact;
+const index = sectionNumber('contact');
+
+/** A row whose value is a bare host/path we can safely resolve to https. */
+const hrefOf = (value: string): string | null =>
+  /^[a-z0-9.-]+\.[a-z]{2,}(\/[\w./-]*)?$/i.test(value) ? `https://${value}` : null;
+
+const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
+---
+
+<section class="contact inv" id="contact" data-mx-n={index}>
+  <div class="page">
+    <div class="in">
+      <div class="tr">
+        <Rail index={index} labels={c.railLabels} />
+        <div class="msr">
+          <h2 class="ct-h">{c.h2}</h2>
+          <p class="lede m0 ct-l">{c.lede}</p>
+          <dl class="ct-d">
+            {
+              rows.map((row) => (
+                <>
+                  <dt>{row.key}</dt>
+                  <dd>
+                    {row.href ? <a href={row.href}>{row.value}</a> : row.value}
+                  </dd>
+                </>
+              ))
+            }
+          </dl>
+          <p class="note" style="margin-top:22px">{ui.contact.note}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

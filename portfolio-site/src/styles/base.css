@@ -49,7 +49,10 @@
    at 768 — so the block keeps its proportion of the stage rather than its
    pixel size. The 90px cap is the value at the widest field, which keeps this a
    size and not a scaling rule, exactly as the 58px cap did. */
-.ad .dsp{font-size:min(90px, 8.65cqi);line-height:1.05;font-weight:600;letter-spacing:-.035em;
+/* #7 — 90 → 64px (#4 §14.4 B-1). The display was sized for a 100svh stage;
+   at two lines and 88px it alone was 279px of a 600px hero budget. The cut is
+   size only: family, weight, tracking and the measure are unchanged. */
+.ad .dsp{font-size:min(64px, 6.2cqi);line-height:1.1;font-weight:600;letter-spacing:-.035em;
          margin:0 0 26px;text-wrap:balance}
 /* One authored line, one block. A line too long for the measure then wraps
    inside its own box and is visible as a wrap, rather than reflowing into the

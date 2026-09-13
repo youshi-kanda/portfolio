@@ -18,7 +18,7 @@
   },
   {
     "id": "home.hero.role.02",
-    "text": "業務システム / 自動化 / AI活用",
+    "text": "業務システム / AI 活用 / 業務自動化",
     "route": "/",
     "section": "00 HERO",
     "slot": "instrument rail — 領域",
@@ -27,17 +27,15 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "work/crm",
-        "work/dfe",
-        "site.howIBuild.workflow（Planning・Review / Coding Agent としての AI 利用）"
+        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-07T22:24:15Z"
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   },
   {
     "id": "home.hero.display.01",
-    "text": "業務の課題を整理し、",
+    "text": "業務課題を、",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 1 行目",
@@ -46,17 +44,15 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "case-study/crm",
-        "case-study/ppm",
-        "case-study/dfe"
+        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-07T22:24:15Z"
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   },
   {
     "id": "home.hero.display.02",
-    "text": "画面・API・データ・自動処理へ落とし込み、",
+    "text": "業務で使える Web・AI システムへ。",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 2 行目",
@@ -65,36 +61,15 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "work/crm",
-        "work/ppm",
-        "work/dfe"
+        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-07T22:24:15Z"
-    }
-  },
-  {
-    "id": "home.hero.display.03",
-    "text": "動く仕組みとして設計・実装する。",
-    "route": "/",
-    "section": "00 HERO",
-    "slot": "display 3 行目",
-    "purpose": "同上（3/3）。UI を持たない pipeline も含むよう「システム」ではなく「仕組み」で閉じる。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "authored",
-      "sourceRefs": [
-        "evidence/CRM-V06",
-        "evidence/PPM-V02",
-        "evidence/DFE-V01"
-      ],
-      "approvedBy": "user",
-      "approvedAt": "2026-09-07T22:24:15Z"
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   },
   {
     "id": "home.hero.lede",
-    "text": "AIや自動処理に任せる範囲と、人が判断する範囲を分けて設計します。実装したことは、テスト・実行記録・人手確認など、作品に合った方法で確認できる形にします。",
+    "text": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
     "route": "/",
     "section": "00 HERO",
     "slot": "answer 行の下のリード",
@@ -103,12 +78,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "work/crm",
-        "work/dfe",
-        "evidence/CRM-V06"
+        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-07T22:24:15Z"
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   },
   {
@@ -414,6 +387,40 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-08-29T06:10:37Z"
+    }
+  },
+  {
+    "id": "home.hero.cta.primary",
+    "text": "実績を見る",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "first viewport の primary CTA",
+    "purpose": "作品へ送る。「作品」ではなく「実績」— Featured が実務 Work 中心になったため。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "home.hero.cta.secondary",
+    "text": "相談する",
+    "route": "/",
+    "section": "00 HERO",
+    "slot": "first viewport の secondary CTA",
+    "purpose": "CONTACT へ送る。HERO / nav / page end の 3 導線のうちの 1 本。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   }
 ]

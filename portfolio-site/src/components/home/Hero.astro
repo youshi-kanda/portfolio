@@ -1,27 +1,34 @@
 ---
 /**
- * 00 HERO — the first viewport answers what kind of engineer this is and what
- * they can build, before any claim, any screenshot and any prose.
+ * 00 HERO — in five seconds: who this is, what they build, and two ways on.
  *
- * Every sentence here is registry copy, looked up by id. The lede and the
- * third capability row used to be computed from the work list, because both
- * stated a count; V4 states neither, so there is nothing left to compute and
- * the approval covers the sentence exactly as it ships.
+ * Every sentence is registry copy looked up by id, so what ships is what was
+ * approved rather than what a component happens to contain.
  *
- * The display keeps its authored line cut, and each line is now an element
- * rather than the text either side of a `<br>`. Two things follow from that.
- * The cut becomes checkable — `check:structure` counts `data-hero-line` and
- * holds it at three, where counting `<br>` could not tell an authored cut from
- * a wrapped one. And each line is a block, so a line that does not fit its
- * measure is visible as a wrap inside its own box instead of silently
- * reflowing into the next line's.
+ * #7 CUT THE HERO DOWN. Three things left, and none of them was deleted from
+ * the site:
  *
- * Nothing here forces the fit. `white-space: nowrap` would make the count come
- * out right while the text ran past the measure, which is the defect and not
- * the check. The display is sized to its measure instead (base.css).
+ *   the third display line   the display is two lines now. The sentence was
+ *                            rewritten in #6 (spec §4.1) and re-approved as a
+ *                            pair — 「実際に使われる」 claimed live operation,
+ *                            which this site does not claim anywhere else.
+ *   the stack line           a list of technologies, at the top of a page whose
+ *                            whole argument is that the technologies are not
+ *                            the point. It belongs to 03 CAPABILITIES, where
+ *                            each one sits next to what it was used to build.
+ *   the capability rail      moved to 03 CAPABILITIES for the same reason, and
+ *                            re-cut there into four things a reader can ask
+ *                            for rather than three axes.
  *
- * Mobile makes the lines inline again and re-flows the same sentence, as it
- * always has: below 768px the authored cut is not the composition.
+ * What arrived: two CTAs, which is the first of CONTACT's three routes (nav,
+ * here, page end) and the first time the first viewport has offered either.
+ *
+ * MOTION IS NOT LOAD-BEARING HERE. The build-in lives in motion.css under
+ * `.mx`, a class an inline script adds only when it runs AND the visitor has
+ * not asked for reduced motion. Nothing in this component starts hidden, so a
+ * visitor whose JavaScript never arrives reads the same sentence at first
+ * paint. The CTAs are deliberately outside the sequence entirely: a control is
+ * not a reveal.
  */
 import { copyText } from '../../lib/content/copy.ts';
 import { sectionNumber } from '../../lib/content/derive.ts';
@@ -34,21 +41,15 @@ const role = [await copyText('home.hero.role.01'), await copyText('home.hero.rol
 const display = [
   await copyText('home.hero.display.01'),
   await copyText('home.hero.display.02'),
-  await copyText('home.hero.display.03'),
 ];
 const lede = await copyText('home.hero.lede');
-/**
- * Three axes, each a name and the line under it. The three is written out here
- * the same way the display's three lines are: it is the composition that was
- * approved, not a list whose length happens to be three, and `check:structure`
- * holds the rendered rail at three rows so the pair cannot silently become two.
- */
-const capability = await Promise.all(
-  ['01', '02', '03'].map(async (n) => ({
-    key: await copyText(`home.hero.capability.${n}.key`),
-    value: await copyText(`home.hero.capability.${n}.value`),
-  })),
-);
+const cta = {
+  primary: await copyText('home.hero.cta.primary'),
+  secondary: await copyText('home.hero.cta.secondary'),
+};
+/** Both CTAs point at sections this page renders; the anchors are site facts. */
+const workAnchor = site.sections.find((x) => x.id === 'work')?.anchor ?? '#work';
+const contactAnchor = site.sections.find((x) => x.id === 'contact')?.anchor ?? '#contact';
 ---
 
 {/*
@@ -92,9 +93,6 @@ const capability = await Promise.all(
             is part of the frozen composition. On desktop both are blocks and it
             collapses away. */}
         {' '}<span class="role">{role[0]}<br />{role[1]}</span>
-        <div class="cap3">
-          {capability.map((c) => <span class="cb"><b>{c.key}</b>{c.value}</span>)}
-        </div>
       </div>
       <div class="fld">
         <h1 class="dsp">{display.map((line) => <span data-hero-line>{line}</span>)}</h1>
@@ -103,8 +101,15 @@ const capability = await Promise.all(
     <div class="tr">
       <div class="ins"></div>
       <div class="msr">
-        <p class="ans">{hero.stackLine}</p>
         <p class="lede m0">{lede}</p>
+        {/* The first viewport's two ways on. Not animated: see the header. */}
+        <div class="hcta">
+          {/* `.cta` is the design system's existing standalone filled control
+              (components.css) — the primary action is what it was drawn for.
+              The secondary is the same box as a rule. */}
+          <a class="cta" href={workAnchor}>{cta.primary}<span class="ar">→</span></a>
+          <a class="cta-ghost" href={contactAnchor}>{cta.secondary}</a>
+        </div>
       </div>
     </div>
   </div>

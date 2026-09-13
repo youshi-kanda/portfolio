@@ -34,12 +34,25 @@ const h2 = await copyText('home.about.h2');
       <Rail index={index} labels={a.railLabels} />
       <div class="fld">
         <h2 style="max-width:720px">{h2}</h2>
+        {/* #7 — how this engineer works, before the premises. ABOUT used to
+            open with its own fine print, which told a reader who had just
+            finished the work what the site was NOT claiming before telling
+            them anything about the person. */}
+        <div class="ab-now">
+          {a.now.map((line) => <p>{line}</p>)}
+        </div>
         <div class="spx wide" style="margin-top:30px">
           {
             a.known.map((k) => (
               <div class="r">
                 <span class="k">{k.key}</span>
-                <span class="v">{k.value}<i>{k.sourceRef}</i></span>
+                {/* #7 — the locator is NOT rendered. `spec CS-8` is an
+                    internal citation: it tells a maintainer where the sentence
+                    came from and tells a visitor nothing they can act on.
+                    `sourceRef` stays required on the record and stays under the
+                    Truth Gate — the fact still has to have a source, the page
+                    just stops printing its filing reference (spec §20). */}
+                <span class="v">{k.value}</span>
               </div>
             ))
           }

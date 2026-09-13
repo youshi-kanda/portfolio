@@ -133,10 +133,24 @@
 
      min-height, never height: at 390px the same content is taller than the
      stage and must be allowed to grow. Nothing is ever clipped to the fold. */
+  /* #7 — THE STAGE IS BOUNDED NOW, and this is the limited unfreeze #4 §14.4
+     B-1 authorised: "HERO を fold 内に収めるための限定的な解除". Type, colour
+     and grid are untouched.
+
+     The 100svh stage was drawn when the hero's job was to be the first screen.
+     #6 gave it a different job: the first viewport has to show what this
+     engineer builds AND the top of the first work, because a portfolio whose
+     first screen contains no work is a portfolio arguing instead of showing.
+     A stage sized to the viewport cannot do that — by construction it leaves
+     nothing of the next section above the fold.
+
+     `min-height` still, never `height`: at 390px the content is taller than
+     this and must grow. Nothing is clipped to the fold. */
   .ad .hero {
-    min-height: calc(100svh - var(--mx-chrome));
+    min-height: min(56svh, 420px);
     display: flex;
   }
+
   .ad .hero > .page {
     flex: 1;
     display: flex;
@@ -146,6 +160,7 @@
   .ad .hero > .page > .tr:first-child {
     flex: 1 1 auto;
   }
+
   /* The display takes the slack optically, not from the top: centred in the
      grown row it has air above and below and reads as placed, where anchoring
      it to the top leaves one 240px hole above the answer line that looks like
@@ -158,6 +173,36 @@
     flex: 0 0 auto;
     padding-bottom: clamp(40px, 7svh, 72px);
   }
+
+  /* ≤767 the stage is not a composition, it is a heading — and this block has
+     to sit AFTER the three rules above, not before them. motion.css is loaded
+     after responsive.css (BaseLayout), so an override there loses outright;
+     placed above these rules it lost to them on source order instead. Both
+     mistakes look identical from the page: a hero that goes on reserving the
+     fold after the rule releasing it has shipped. */
+  @media (max-width: 767px) {
+    .ad .hero {
+      min-height: 0;
+      display: block;
+    }
+    .ad .hero > .page,
+    .ad .hero > .page > .tr:first-child {
+      display: block;
+      flex: none;
+    }
+    /* The stage's floor padding — it exists to sit row 2 on the bottom of a
+       full-viewport hero, and there is no such floor here. */
+    .ad .hero > .page > .tr:last-child {
+      padding-bottom: 0;
+    }
+    /* Row 2's rail is empty: on the two-track grid it is the spacer that keeps
+       the lede aligned under the display. At one track it is 56px of nothing
+       between the display and the sentence under it. */
+    .ad .hero > .page > .tr > .ins:empty {
+      display: none;
+    }
+  }
+
 
   /* ==========================================================================
      2. INSTRUMENT RAIL — sticky

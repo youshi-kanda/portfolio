@@ -3,13 +3,27 @@
  * Mobile only: a bottom bar reporting where you are and what is next, then
  * getting out of the way. Not a floating pill, not a nav drawer.
  *
- * It points at 01 and 02, which exist on every homepage regardless of the work
- * count, so it can never offer an anchor that is not on the page.
+ * #7 swapped the second entry from HOW I BUILD to CONTACT. The method is a
+ * page of its own now, and more to the point, CONTACT is supposed to be
+ * reachable from three places — the nav, the hero, and the end of the page —
+ * and on a phone the nav is this.
+ *
+ * The numbers are derived, not written. They used to be baked into the label
+ * strings (`'01 Work'`), which is the same defect `sectionNumber` exists to
+ * prevent: inserting MORE PROJECTS at 02 would have left this bar naming the
+ * old positions with no build error.
  */
+import { sectionNumber } from '../../lib/content/derive.ts';
 import { ui } from '../../lib/content/ui.ts';
+import { site } from '../../lib/content/site.ts';
+
+const anchorOf = (id: string): string =>
+  site.sections.find((s) => s.id === id)?.anchor ?? `#${id}`;
 ---
 
 <div class="mbar">
-  <a href="#work"><span class="sq"></span>{ui.mobileBar.work}</a>
-  <a href="#build">{ui.mobileBar.build}</a>
+  <a href={anchorOf('work')}>
+    <span class="sq"></span>{sectionNumber('work')} {ui.mobileBar.work}
+  </a>
+  <a href={anchorOf('contact')}>{sectionNumber('contact')} {ui.mobileBar.contact}</a>
 </div>

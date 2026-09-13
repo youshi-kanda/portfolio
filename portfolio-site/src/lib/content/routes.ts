@@ -31,7 +31,7 @@ export function publicRoutes(
   const evidenceIds = new Set(evidence.map((e) => e.id));
   const caseSlugs = new Set(caseStudies.map((c) => c.slug));
 
-  const paths = ['/', '/work/'];
+  const paths = ['/', '/work/', '/how-i-build/'];
 
   for (const work of shipping) {
     // `/work/<slug>/` mirrors its getStaticPaths: the page is only emitted when

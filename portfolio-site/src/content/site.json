@@ -17,12 +17,18 @@
       "id": "work",
       "anchor": "#work",
       "label": "WORK",
-      "needsWorks": false
+      "needsWorks": true
     },
     {
-      "id": "build",
-      "anchor": "#build",
-      "label": "HOW I BUILD",
+      "id": "more",
+      "anchor": "#more",
+      "label": "MORE",
+      "needsWorks": true
+    },
+    {
+      "id": "capabilities",
+      "anchor": "#capabilities",
+      "label": "CAPABILITIES",
       "needsWorks": false
     },
     {
@@ -34,6 +40,12 @@
     {
       "id": "contact",
       "anchor": "#contact",
+      "label": "CONTACT",
+      "needsWorks": false
+    },
+    {
+      "id": "footer",
+      "anchor": "#footer",
       "label": null,
       "needsWorks": false
     }
@@ -46,8 +58,8 @@
   "registerMinSlots": 5,
   "selectedWork": {
     "railLabels": [
-      "SELECTED WORK",
-      "Product / Purpose / Implementation"
+      "FEATURED WORK",
+      "Problem / What was built / Role"
     ]
   },
   "howIBuild": {
@@ -308,6 +320,11 @@
       "ABOUT",
       "Profile"
     ],
+    "now": [
+      "業務フローを整理し、必要な画面・API・データ構造・自動処理へ落とし込む開発をしています。",
+      "AI は目的ではなく、検索・判断支援・自動化など、業務に効果がある部分へ組み込みます。",
+      "自動処理や AI に任せる範囲と、人が判断する範囲を分けて設計します。"
+    ],
     "known": [
       {
         "key": "実装形態",
@@ -331,6 +348,8 @@
       "CONTACT",
       "連絡"
     ],
+    "h2": "業務 Web アプリ、AI 活用、業務自動化の開発相談",
+    "lede": "業務課題の整理から、設計・実装・運用までご相談ください。",
     "rows": [
       {
         "key": "GitHub",
@@ -341,5 +360,95 @@
         "value": "github.com/youshi-kanda/portfolio"
       }
     ]
+  },
+  "moreProjects": {
+    "railLabels": [
+      "MORE PROJECTS",
+      "Selected work, in brief"
+    ],
+    "h2": "ほかに手がけたもの。"
+  },
+  "capabilities": {
+    "railLabels": [
+      "CAPABILITIES",
+      "What you can hand over"
+    ],
+    "h2": "何を任せられるか。",
+    "categories": [
+      {
+        "key": "01",
+        "title": "業務用の Web アプリケーションを作る",
+        "titleEn": "Business Web Applications",
+        "what": "管理画面・業務フロー・認証・権限・データベース設計・外部サービス連携までを 1 つの業務アプリとして",
+        "tech": [
+          "React / Next.js",
+          "TypeScript",
+          "PostgreSQL",
+          "Supabase",
+          "Cloudflare"
+        ],
+        "examples": [
+          "hire",
+          "ops",
+          "agri"
+        ]
+      },
+      {
+        "key": "02",
+        "title": "AI を業務の中に組み込む",
+        "titleEn": "AI Integration",
+        "what": "社内ナレッジの検索・根拠提示・文書からの構造化抽出・人の承認を挟む設計",
+        "tech": [
+          "RAG / Vector Search",
+          "Hybrid Search",
+          "LLM",
+          "Embedding"
+        ],
+        "examples": [
+          "ins-ai",
+          "assist",
+          "crm",
+          "docai"
+        ]
+      },
+      {
+        "key": "03",
+        "title": "外部サービスとつないで自動化する",
+        "titleEn": "Automation & Integrations",
+        "what": "業務で既に使っているサービスとの接続、通知、定期実行、バックグラウンド処理",
+        "tech": [
+          "Google Workspace / Calendar",
+          "LINE",
+          "Twilio",
+          "Celery / Redis",
+          "Google Apps Script"
+        ],
+        "examples": [
+          "hire",
+          "crm",
+          "ppm"
+        ]
+      },
+      {
+        "key": "04",
+        "title": "設計して、運用できる状態まで届ける",
+        "titleEn": "System Design & Delivery",
+        "what": "API とデータ構造の設計、権限とマルチテナント、テスト、CI/CD、デプロイ",
+        "tech": [
+          "RBAC / RLS",
+          "Multi-tenant",
+          "GitHub Actions",
+          "Docker",
+          "Cloudflare Workers"
+        ],
+        "examples": [
+          "ops",
+          "assist",
+          "minio"
+        ]
+      }
+    ],
+    "methodLede": "AI へ実装を委譲しても、理解まで委譲しない。",
+    "methodLink": "HOW I BUILD"
   }
 }

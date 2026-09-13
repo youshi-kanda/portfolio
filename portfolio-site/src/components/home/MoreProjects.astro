@@ -1,0 +1,56 @@
+---
+/**
+ * 02 MORE PROJECTS — four works, one ruled row each.
+ *
+ * A separate tier, and separated by AREA rather than by kind: a FEATURED block
+ * gets a figure and up to 800px, a row here gets neither and stays under 120px.
+ * The page has to say "these are also mine" without saying "these are equally
+ * the point", and size is how a spread says that — not a smaller heading on
+ * the same shape, and not a card grid, which would make nine works read as one
+ * undifferentiated set.
+ *
+ * Rows are numbered from 01 again. The numbering is the tier's own: these are
+ * not works 06–09 of one list, they are the four of a second one.
+ */
+import { moreHomepageWorks, sectionNumber } from '../../lib/content/derive.ts';
+import type { Evidence, Work } from '../../lib/content/schema.ts';
+import { site } from '../../lib/content/site.ts';
+import { ui } from '../../lib/content/ui.ts';
+import Rail from '../layout/Rail.astro';
+import Register from '../work/Register.astro';
+
+interface Props {
+  works: readonly Work[];
+  evidence: readonly Evidence[];
+}
+
+const { works, evidence } = Astro.props;
+const rows = moreHomepageWorks(works);
+const index = sectionNumber('more');
+const m = site.moreProjects;
+---
+
+{
+  rows.length > 0 && (
+    <section class="s-open" id="more" data-mx-n={index}>
+      <div class="page">
+        <div class="tr">
+          <Rail index={index} labels={m.railLabels} note={`${rows.length} works`} />
+          <div class="msr"><h2>{m.h2}</h2></div>
+        </div>
+        <div class="tr">
+          <div class="bleed">
+            <div class="page">
+              <Register works={rows} evidence={evidence} minSlots={0} />
+              {/* The archive holds every work, including the ones that are on
+                  neither homepage tier. */}
+              <a class="lk more-all" href="/work/">
+                {ui.register.allWorksCta}<span class="ar">→</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}

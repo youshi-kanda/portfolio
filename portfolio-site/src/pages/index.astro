@@ -1,61 +1,67 @@
 ---
 /**
- * The homepage — V4 Top IA, first prototype.
+ * The homepage — the Editorial Gallery (#7, spec docs/design/home-ia-content-spec.md).
  *
- *   00 INTRO / Editorial Band / 01 WORK (heading, Lead entry, index) /
- *   02 HOW I BUILD / 03 ABOUT / 04 CONTACT
+ *   00 HERO / 01 FEATURED WORK / 02 MORE PROJECTS / 03 CAPABILITIES /
+ *   04 ABOUT / 05 CONTACT / 06 FOOTER
  *
- * THREE SECTIONS LEFT THIS PAGE, and none of them was deleted. 03 ENGINEERING
- * STACK, 04 ENGINEERING PRINCIPLES and 05 FEATURED EVIDENCE are still
- * components, still hold their content in `site.json`, and are still under
- * every gate. What changed is that the homepage no longer renders them: the
- * Top's job is to say what this engineer builds and show the work, and a
- * reader who wants the stack table or the decision ledger is a reader who has
- * already decided to go deeper. Where they land is Phase 5's question, and
- * keeping the components intact is what leaves that question open.
+ * WHAT LEFT, AND WHY IT IS NOT A DELETION. The Editorial Band and the Lead
+ * entry are gone from this page. Both showed the same works the index below
+ * them already showed, so the page introduced three works three times; the
+ * spec's rule is that a work is introduced once. The depth the Lead carried
+ * moves to the Case Study, which is where a reader who wants it has already
+ * asked for it.
+ *
+ * 03 ENGINEERING STACK, 04 ENGINEERING PRINCIPLES and 05 FEATURED EVIDENCE are
+ * still components holding their content in `site.json`, still under every
+ * gate, and still not rendered here. HOW I BUILD joins them: its long form is
+ * now a page of its own at /how-i-build/, and CAPABILITIES carries the one line
+ * plus the link.
+ *
+ * THE SYNTHETIC-DATA BAND LEFT THE FIRST VIEWPORT, and did not leave the site.
+ * It was the second thing a visitor read — a disclaimer, above any statement of
+ * what this engineer builds. The statement now sits where it is actually about
+ * something: on every figure's own caption in 01 FEATURED WORK, and in 04
+ * ABOUT's premises. /work/ and the Case Studies keep the strip, because those
+ * pages ARE the screens it qualifies.
  *
  * The numbers above are not written anywhere. `site.sections` is the running
- * order and every index is its position in it, so this list going from eight
- * entries to five renumbered the sections and the nav in one edit.
- *
- * DOM ORDER. The Editorial Band sits before the WORK heading, where V3's
- * triptych sat, and the Lead entry sits directly after it — the art-direction
- * layer still selects the Lead as `#work + section`. Phase 7 repoints that at
- * `[data-homepage-role="lead"]`; until it does, this order is load-bearing.
+ * order and every index is its position in it, so changing that array
+ * renumbers the sections and the nav in one edit.
  */
 import { getCollection } from 'astro:content';
 import About from '../components/home/About.astro';
-import EditorialBand from '../components/home/EditorialBand.astro';
+import Capabilities from '../components/home/Capabilities.astro';
+import Contact from '../components/home/Contact.astro';
+import FeaturedWork from '../components/home/FeaturedWork.astro';
 import Hero from '../components/home/Hero.astro';
-import HowIBuild from '../components/home/HowIBuild.astro';
-import SelectedWork from '../components/home/SelectedWork.astro';
+import MoreProjects from '../components/home/MoreProjects.astro';
 import EvidenceDialog from '../components/evidence/EvidenceDialog.astro';
 import Footer from '../components/layout/Footer.astro';
-import SyntheticBar from '../components/layout/SyntheticBar.astro';
 import MobileBar from '../components/navigation/MobileBar.astro';
 import MotionStage from '../components/motion/MotionStage.astro';
 import Nav from '../components/navigation/Nav.astro';
 
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { copyText } from '../lib/content/copy.ts';
-import { featuredWorks, shippingWorks } from '../lib/content/derive.ts';
-import { composition } from '../lib/review/lead-candidate.ts';
+import {
+  featuredHomepageWorks,
+  shippingWorks,
+} from '../lib/content/derive.ts';
 import { site } from '../lib/content/site.ts';
 
 /*
-  THE LEAD A/B (Phase 5, ART-DIRECTION-REVIEW.md §9). `composition()` is null in
-  every build that is not a review build, and then these two lines are the two
-  lines that were here before — `shippingWorks()` and `featuredWorks()`, reached
-  by the same expression, returning the same works. The review path cannot write
-  dist/ (astro.config.mjs) and changes nothing under src/content/; it exists so
-  that "which work should lead" can be answered from two photographs instead of
-  from an argument about two records.
+  THE LEAD A/B IS GONE. `lib/review/lead-candidate.ts` existed to photograph two
+  answers to "which work should the homepage lead with". #7 retired the Lead, so
+  the question it settled no longer exists — and a review path that still
+  reordered a list nothing reads would be a switch with nothing on the other end.
+  The decision it recorded (V4 Phase 5, Lead = AI CRM) survives as
+  `homepageRole` on the record.
 */
 const all = (await getCollection('work')).map((e) => e.data);
-const review = composition(all);
-const works = review?.works ?? shippingWorks(all);
+const works = shippingWorks(all);
+const featured = featuredHomepageWorks(all);
 const evidence = (await getCollection('evidence')).map((e) => e.data);
-const band = review?.band ?? featuredWorks(works);
 /** The same sentence the hero prints, so the tab and the page do not disagree. */
 const description = await copyText('home.hero.lede');
 ---
@@ -70,7 +76,6 @@ const description = await copyText('home.hero.lede');
 */}
 <BaseLayout title={`${site.handle} — ${site.kicker}`} description={description}>
   <Nav progress={6} hasWorks={works.length > 0} />
-  <SyntheticBar />
   {/*
     Motion prototype (feature/motion-experience-v2), scoped to 00 and 01.
     Placed before <main> on purpose: its inline gate script has to set the
@@ -80,10 +85,11 @@ const description = await copyText('home.hero.lede');
   <MotionStage />
   <main>
     <Hero />
-    <EditorialBand works={band} />
-    <SelectedWork works={works} evidence={evidence} />
-    <HowIBuild />
+    <FeaturedWork works={featured} evidence={evidence} />
+    <MoreProjects works={all} evidence={evidence} />
+    <Capabilities works={all} />
     <About />
+    <Contact />
     <Footer />
   </main>
   <MobileBar />
