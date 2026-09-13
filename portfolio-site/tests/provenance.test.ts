@@ -164,8 +164,16 @@ describe('provenance matrix', () => {
     const fact = all.filter((c) => c.publication.claimType === 'fact');
     // #7 added three ui-system labels (Role / Selected technology / the
     // archive CTA) and two authored hero CTAs.
+    //
+    // #8 leaves presentation where it was and adds one fact. It removed the
+    // provenance 状態 label and added the GitHub CTA — both ui-system, both
+    // presentation, and they cancel. The two sentences it added are editorial
+    // and therefore FACTS: 「GitHubの公開情報もご確認いただけます」 and
+    // 「GitHubへのサインインが必要な場合があります」 each assert something a
+    // reader can find out is wrong, so each carries a basis and an approver
+    // rather than the label exemption.
     assert.equal(presentation.length, 123);
-    assert.equal(fact.length, 31);
+    assert.equal(fact.length, 32);
     // ui-system is the registry's own word for label / heading / button, which
     // is what presentation means on this axis. Nothing else was reclassified.
     assert.equal(

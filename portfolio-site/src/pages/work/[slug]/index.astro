@@ -28,7 +28,7 @@ import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
 import Nav from '../../../components/navigation/Nav.astro';
 import WorkEntry from '../../../components/work/WorkEntry.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { caseSections, shippingWorks, workVisual } from '../../../lib/content/derive.ts';
+import { caseSections, shippingWorks } from '../../../lib/content/derive.ts';
 import { fill, ui } from '../../../lib/content/ui.ts';
 
 export const getStaticPaths = (async () => {
@@ -69,12 +69,22 @@ const sections = caseStudy ? caseSections(work, caseStudy) : [];
         <>
           <CaseHead work={work} caseStudy={caseStudy} />
 
-          {/* The spine, in this work's declared case variant. */}
+          {/*
+            The spine, in this work's declared case variant.
+
+            Its rail is empty on purpose (#8 §7). It used to carry the variant
+            name — `walkthrough`, `ledger`, `pipeline` — which selects HOW this
+            block is drawn and says nothing about the work; printing it labelled
+            the reader's view of the system with the name of a template. The
+            spine belongs to the opening section above it and takes no number of
+            its own, so what is left is the gutter, the same way 03 CAPABILITIES
+            leaves it on the homepage.
+          */}
           {caseStudy.flow.length > 0 && (
             <section class="s-open">
               <div class="page">
                 <div class="tr">
-                  <Rail index="CS-1" labels={[workVisual(work).caseVariant]} />
+                  <div class="ins" />
                   <div class="fld">
                     <CaseSpine work={work} caseStudy={caseStudy} />
                   </div>

@@ -48,7 +48,6 @@ export const ui = {
       dims: '掲載サイズ',
       scale: '倍率',
       sha: 'SHA256',
-      status: '状態',
     },
     dialog: {
       close: '閉じる ESC',
@@ -122,12 +121,24 @@ export const ui = {
    * The removal is a deletion only. No replacement sentence was written, which
    * is what keeps PROFILE_INVENTED = NO true through the change.
    */
+  /*
+   * #8 — CONTACT stopped ending on a disclaimer and started ending on a way in.
+   *
+   * `note` held the synthetic-data sentence. That sentence is true and it stays
+   * on the site, but CONTACT is the one section whose job is to be used, and
+   * the last thing a reader met there was a statement about what the screens
+   * are NOT. The claim now sits where the screens are: every figure carries its
+   * own caption, 04 ABOUT keeps the full sentence among its premises, and
+   * /work/ and the Case Studies keep the strip (#8 §16).
+   *
+   * NO EMAIL, STILL. `channels` says GitHub holds public information worth
+   * reading; it does not say a message sent there will arrive. A GitHub profile
+   * has no inbox, and a CTA implying one would be an address this site invented
+   * on the owner's behalf (#8 §6 / U-01).
+   */
   contact: {
-    // ADAPTED — the trailing sentence was removed, not rewritten. The synthetic
-    // data statement it opened with is verbatim and is the part §10 requires to
-    // stay. The space that used to sit between the two sentences went with the
-    // second one; nothing inside the surviving sentence changed.
-    note: '掲載している画面はすべて合成データで、実顧客・実案件・本番運用の記録ではありません。',
+    channels: '開発のご相談・実装内容については、GitHubの公開情報もご確認いただけます。',
+    githubCta: 'GitHubを見る',
   },
 
   mobileBar: {
@@ -215,6 +226,14 @@ export const ui = {
     scaleHeaders: ['項目', '実測値', '取得方法'],
     technicalCta: '技術詳細のページへ',
     evidenceLabel: 'Evidence',
+    /*
+     * #8 §15. A GitHub Actions run page is not always readable to a signed-out
+     * visitor, so a link to one can dead-end with no explanation. The note is
+     * rendered only when a link actually points at a run — a standing caveat
+     * under every repository list would be a caveat about links that do not
+     * need one.
+     */
+    repositoryAuthNote: 'GitHubへのサインインが必要な場合があります',
   },
 
   /**

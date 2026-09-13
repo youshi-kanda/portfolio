@@ -142,7 +142,7 @@
     {
       "implemented": "backend テスト",
       "notIncluded": "frontend テスト",
-      "why": "未着手。作品全体の性質として書かない"
+      "why": "未着手。このデモの品質担保は backend の自動テストに寄せている"
     },
     {
       "implemented": "Anthropic API 経路（既定 off）",
@@ -174,14 +174,13 @@
     {
       "item": "backend テスト",
       "value": "静的 480 件 / CI 実測 484 passed",
-      "method": "grep -rho 'def test_' backend/apps --include=*.py | wc -l = 480（2026-08-20 再計測）／ CI run 32078586978 の 484 passed"
+      "method": "backend/apps のテスト定義を数えた静的件数 480 件（2026-08-20 再計測）。CI 実行ログ run 32078586978 の実測は 484 passed"
     },
     {
       "item": "frontend テスト",
       "value": "0 件",
       "method": "frontend/ 配下に *.test.* / *.spec.* が 0 件（node_modules 除く）"
-    },
-    { "item": "工数", "value": "未計測", "method": "推定値を書かない" }
+    }
   ],
   "capabilities": [
     "顧客・予約・売上を扱う社内向け Web 業務システムの新規開発",
@@ -262,10 +261,10 @@
     ]
   },
   "repository": [
-    { "label": "リポジトリ — ai-crm-demo/", "href": "https://github.com/youshi-kanda/portfolio/tree/main/ai-crm-demo" },
-    { "label": "公開 claim の正本 — README.md", "href": "https://github.com/youshi-kanda/portfolio/blob/main/ai-crm-demo/README.md" },
-    { "label": "CI 定義 — .github/workflows/ai-crm-ci.yml", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/ai-crm-ci.yml" },
-    { "label": "CI 実行ログ — run 32078586978（484 passed）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32078586978" }
+    { "label": "リポジトリ（ai-crm-demo）", "href": "https://github.com/youshi-kanda/portfolio/tree/main/ai-crm-demo" },
+    { "label": "README — このページが説明している範囲", "href": "https://github.com/youshi-kanda/portfolio/blob/main/ai-crm-demo/README.md" },
+    { "label": "CI の設定ファイル", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/ai-crm-ci.yml" },
+    { "label": "CI の実行ログ（484 passed）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32078586978" }
   ],
   "publication": {
     "reviewStatus": "approved",

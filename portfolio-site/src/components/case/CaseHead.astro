@@ -1,16 +1,35 @@
 ---
 /**
- * The Case Study hero — CS-1, and the disclosure that must precede everything.
+ * The Case Study hero, and the disclosure that must precede everything.
  *
  * `leadDisclosure` is rendered here, above the fold, outside any collapsible.
  * That placement is a spec requirement, not a layout preference: spec §7 puts
- * DFE's Rule DFE-0 ("この作品は OCR を実行していない") immediately after CS-1 and
- * forbids folding it away, because the whole page reads differently once you
- * know the pipeline never touches a scanner. A correction that arrives after
- * the reader has formed the wrong belief has already failed.
+ * DFE's Rule DFE-0 ("この作品は OCR を実行していない") immediately after the
+ * opening section and forbids folding it away, because the whole page reads
+ * differently once you know the pipeline never touches a scanner. A correction
+ * that arrives after the reader has formed the wrong belief has already failed.
+ *
+ * THE READOUT ROW IS GONE (#8 §7). It sat directly under the overview and
+ * carried three chips: a test summary, the work's `caseVariant`, and the
+ * repository path. Together they were the first thing a reader met on a Case
+ * Study, and what they said was "this record has been verified" rather than
+ * anything about the system.
+ *
+ *   caseVariant   `walkthrough` / `ledger` / `pipeline` name the renderer that
+ *                 draws the spine below. That is a selector this repository
+ *                 uses to lay out a page, in the same class as the entry
+ *                 variants spec §11.1 removed from the public surface — and it
+ *                 was printed to the reader as though it described the work.
+ *   tests         still on the page, in 品質の担保方法, which is the section
+ *                 that says how quality is held. A test count is an answer to
+ *                 that question, not a badge to open with.
+ *   repoPath      still on the page, as the linked repository in 証拠へのリンク.
+ *                 A bare `ai-crm-demo/` is a path; the link is the thing a
+ *                 reader can actually use.
+ *
+ * None of the three was deleted from the data, and the two that say something
+ * to a reader both still render — lower down, next to the question they answer.
  */
-import { workRepoPath, workVerification } from '../../lib/content/compat.ts';
-import { workVisual } from '../../lib/content/derive.ts';
 import type { CaseStudy, Work } from '../../lib/content/schema.ts';
 import Rail from '../layout/Rail.astro';
 import { ui } from '../../lib/content/ui.ts';
@@ -21,14 +40,12 @@ interface Props {
 }
 
 const { work, caseStudy } = Astro.props;
-const tests = workVerification(work);
-const repoPath = workRepoPath(work);
 ---
 
 <section class="hero">
   <div class="page">
     <div class="tr">
-      <Rail index="CS-1" labels={[...ui.caseStudy.railLabels, work.title]} />
+      <Rail index="00" labels={[...ui.caseStudy.railLabels, work.title]} />
       <div class="msr">
         <p class="mo ty">{work.productType}</p>
         <h1 class="dsp-s">{ui.caseStudy.sections.overview}</h1>
@@ -36,11 +53,6 @@ const repoPath = workRepoPath(work);
         {caseStudy.leadDisclosure && (
           <p class="notclaim" style="margin-top:26px">{caseStudy.leadDisclosure}</p>
         )}
-        <div class="meta" style="margin-top:26px">
-          {tests && <span class="st pass">{tests.summary}</span>}
-          <span class="st hold">{workVisual(work).caseVariant}</span>
-          {repoPath && <span class="st">{repoPath}</span>}
-        </div>
       </div>
     </div>
   </div>

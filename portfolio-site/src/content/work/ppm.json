@@ -6,13 +6,13 @@
   "featured": false,
   "featuredOrder": 6,
   "repoPath": "gas-project-management-demo/",
-  "productType": "Google スプレッドシートを正本とする プロジェクト進捗管理アドオン",
+  "productType": "Automation / 情報設計",
   "targetUser": "プロジェクト関係者（スプレッドシートを既に使っている人）",
   "problem": [
     "複数人が同じ表を同時に触ると、途中で失敗した登録が中途半端な行として残る。",
     "案件・作業・依存関係・判断待ちが別々の表に散り、突き合わせが手作業になる。"
   ],
-  "purpose": "スプレッドシートそのものを正本（source of truth）とし、Project / Work Item / Decision / Dependency の登録・集計・履歴をサーバーレスで完結させる。",
+  "purpose": "Google スプレッドシートを正本にしたまま、複数プロジェクトの進捗・依存・判断待ちを登録から集計まで完結させる進捗管理アドオン。",
   "implementationScope": [
     "Project 管理（目的・期限・優先順位・健全度）",
     "Work Item / Task 管理（6 種別・親子構造）",
@@ -110,7 +110,7 @@
     "reviewStatus": "approved",
     "sourceType": "source-derived",
     "sourceRefs": [
-      "productType — TASK-PORTFOLIO-POSITIONING-V2 ／ gas-project-management-demo/README.md 冒頭",
+      "productType / purpose — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 01（#6 / PR #15 merged）",
       "targetUser — content.py WORKS[ppm].users（spec 由来）",
       "problem — gas-project-management-demo/README.md「設計面の見どころ」／ spec",
       "purpose — gas-project-management-demo/README.md 冒頭 + 「主な機能」",

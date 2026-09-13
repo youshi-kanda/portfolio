@@ -30,12 +30,14 @@ describe('approved copy gate', () => {
   it('covers all twenty-four approved strings, each in exactly one batch', () => {
     assert.equal(Object.keys(APPROVED_TEXT).length, 24);
 
-    const [homepage, notFound, v4, workLede, issue6] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6);
-    assert.equal(APPROVAL_BATCHES.length, 5);
+    const [homepage, notFound, v4, workLede, issue6, issue8] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8);
+    assert.equal(APPROVAL_BATCHES.length, 6);
     assert.deepEqual(
+      // 6 before #8. `home.about.h2` left for the #8 batch that approved its
+      // current text — one batch per id, the same move the display lines made.
       [homepage.by, homepage.at, homepage.ids.length],
-      ['user', '2026-08-28T21:20:25Z', 6],
+      ['user', '2026-08-28T21:20:25Z', 5],
     );
     assert.deepEqual(
       [notFound.by, notFound.at, notFound.ids.length],
@@ -55,6 +57,13 @@ describe('approved copy gate', () => {
       [workLede.by, workLede.at, [...workLede.ids]],
       ['user', '2026-09-09T10:05:34Z', ['home.works.lede']],
     );
+    // #8 — one id, and a REWORD rather than a new slot. The heading is the
+    // owner's own sentence, taken verbatim from the #8 work brief, which is why
+    // it can carry an approval at all: nothing #8 composed itself is in here.
+    assert.deepEqual(
+      [issue8.by, issue8.at, [...issue8.ids]],
+      ['user', '2026-09-12T07:28:05Z', ['home.about.h2']],
+    );
 
     // A reworded string moves to the batch that approved its current text.
     // Being listed in both would leave no way to say which event approved the
@@ -62,6 +71,8 @@ describe('approved copy gate', () => {
     assert.equal(homepage.ids.includes('home.hero.lede'), false);
     assert.equal(v4.ids.includes('home.hero.lede'), false);
     assert.equal(issue6.ids.includes('home.hero.lede'), true);
+    assert.equal(homepage.ids.includes('home.about.h2'), false);
+    assert.equal(issue8.ids.includes('home.about.h2'), true);
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);

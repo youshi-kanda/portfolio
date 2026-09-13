@@ -11,12 +11,18 @@
  * place, printed, with no way to go there. That is not a stylistic gap, it is
  * a contact section that cannot be used.
  *
- * NO EMAIL. #6 searched the repository and the site and found no address the
- * owner publishes as a contact — only `@example.com` fixtures. Publishing one
- * anyway, or reusing a git commit address, would be this site deciding on
- * someone's behalf which of their addresses is public. GitHub is the one
- * channel that is actually theirs and actually reachable, so it is the one
- * offered, and whether an address joins it is #8's to ask (U-01).
+ * NO EMAIL, AND #8 DID NOT ADD ONE. #6 searched the repository and the site and
+ * found no address the owner publishes as a contact — only `@example.com`
+ * fixtures. Publishing one anyway, or reusing a git commit address, would be
+ * this site deciding on someone's behalf which of their addresses is public.
+ * U-01 is still open, and an open question is not a reason to ship a guess: the
+ * section carries the channels that exist and no placeholder for the one that
+ * does not.
+ *
+ * WHAT THE GITHUB CTA DOES NOT SAY. It says "GitHubを見る", not "連絡する". A
+ * GitHub profile is a place to read what someone has published; it has no
+ * inbox. A button promising a message would be the same invention as an
+ * invented address, wearing a verb instead of an @ sign (#8 §6).
  *
  * The band inverts, as it did before — it gives the scroll a floor. The FOOTER
  * is a separate element with a separate job: this asks for something, that
@@ -35,6 +41,15 @@ const hrefOf = (value: string): string | null =>
   /^[a-z0-9.-]+\.[a-z]{2,}(\/[\w./-]*)?$/i.test(value) ? `https://${value}` : null;
 
 const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
+
+/**
+ * The CTA points at the profile row, not at a hardcoded URL — one row is the
+ * owner's account and the other is this repository, and a button labelled
+ * "GitHubを見る" that landed on the source of the page you are already reading
+ * would be the wrong one of the two. Null when no row resolves, which is what
+ * keeps the CTA from rendering with nowhere to go.
+ */
+const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
 ---
 
 <section class="contact inv" id="contact" data-mx-n={index}>
@@ -45,6 +60,7 @@ const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
         <div class="msr">
           <h2 class="ct-h">{c.h2}</h2>
           <p class="lede m0 ct-l">{c.lede}</p>
+          <p class="note ct-ch">{ui.contact.channels}</p>
           <dl class="ct-d">
             {
               rows.map((row) => (
@@ -57,7 +73,15 @@ const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
               ))
             }
           </dl>
-          <p class="note" style="margin-top:22px">{ui.contact.note}</p>
+          {
+            github && (
+              <p class="ct-cta">
+                <a class="lk" href={github}>
+                  {ui.contact.githubCta}<span class="ar">→</span>
+                </a>
+              </p>
+            )
+          }
         </div>
       </div>
     </div>

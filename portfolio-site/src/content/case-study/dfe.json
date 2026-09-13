@@ -134,12 +134,12 @@
     {
       "implemented": "外部通信なし（毒化 + ソース走査で固定）",
       "notIncluded": "実プロバイダ接続時の通信遮断",
-      "why": "差し替えれば通信は発生する。「この構成では送らない」の範囲で書く"
+      "why": "差し替えれば通信は発生する。この構成では送らない、という範囲での話"
     },
     {
       "implemented": "別帳票への差し替え口（2 ファイル + provider 1 メソッド）",
       "notIncluded": "実際に別帳票へ差し替えた実例",
-      "why": "設計としての説明にとどめ、実績としては書かない"
+      "why": "差し替え口を設計として備えているところまで。別帳票での稼働実績はない"
     }
   ],
   "scale": [
@@ -152,7 +152,7 @@
     {
       "item": "実装",
       "value": "src/ の JavaScript 12 ファイル",
-      "method": "find src -name '*.js' = 12（src/providers/mock-provider.js を含む）"
+      "method": "src 配下の JavaScript 12 ファイル（src/providers/mock-provider.js を含む）"
     },
     {
       "item": "テスト",
@@ -163,8 +163,7 @@
       "item": "依存パッケージ",
       "value": "0",
       "method": "package.json に dependencies / devDependencies のキー自体が無い。tests/no-network.test.js が検証"
-    },
-    { "item": "工数", "value": "未計測", "method": "推定値を書かない" }
+    }
   ],
   "capabilities": [
     "読み取り・自動処理の後処理（項目の取り出し・正規化・確認要否の判定）",
@@ -243,10 +242,10 @@
     "designDocs": ["docs/architecture.md"]
   },
   "repository": [
-    { "label": "リポジトリ — document-field-extraction-demo/", "href": "https://github.com/youshi-kanda/portfolio/tree/main/document-field-extraction-demo" },
-    { "label": "公開 claim の正本 — README.md", "href": "https://github.com/youshi-kanda/portfolio/blob/main/document-field-extraction-demo/README.md" },
-    { "label": "CI 定義 — .github/workflows/document-field-extraction-ci.yml", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/document-field-extraction-ci.yml" },
-    { "label": "CI 実行ログ — run 32023326504（tests 157 / pass 157 / fail 0）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32023326504" }
+    { "label": "リポジトリ（document-field-extraction-demo）", "href": "https://github.com/youshi-kanda/portfolio/tree/main/document-field-extraction-demo" },
+    { "label": "README — このページが説明している範囲", "href": "https://github.com/youshi-kanda/portfolio/blob/main/document-field-extraction-demo/README.md" },
+    { "label": "CI の設定ファイル", "href": "https://github.com/youshi-kanda/portfolio/blob/main/.github/workflows/document-field-extraction-ci.yml" },
+    { "label": "CI の実行ログ（157 passed / 0 failed）", "href": "https://github.com/youshi-kanda/portfolio/actions/runs/32023326504" }
   ],
   "publication": {
     "reviewStatus": "approved",

@@ -288,20 +288,20 @@
   },
   {
     "id": "home.about.h2",
-    "text": "リポジトリから確認できることだけ。",
+    "text": "業務を理解して、動く仕組みまで作る。",
     "route": "/",
-    "section": "06 ABOUT",
+    "section": "04 ABOUT",
     "slot": "見出し",
-    "purpose": "ABOUT がリポジトリから確認できる事実だけであることを見出しで言う。",
+    "purpose": "ABOUT が答える問い —「どういう考え方で作る人か」— を見出しにする。出典方針の宣言は前提条件の行が引き受ける。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "ABOUT.known（spec CS-8 / 各 README / PUBLISH-MAP.md）",
-        "PROFILE_DATA_STATUS = PENDING_USER_FACTS"
+        "Issue #8 作業指示 §5 ABOUT（依頼者の記述をそのまま使用）",
+        "portfolio-site/docs/design/home-ia-content-spec.md §9.1（#6 / PR #15 merged）— ABOUT の役割"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-08-28T21:20:25Z"
+      "approvedAt": "2026-09-12T07:28:05Z"
     }
   },
   {

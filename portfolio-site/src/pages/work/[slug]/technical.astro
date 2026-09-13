@@ -26,7 +26,7 @@ import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
 import Nav from '../../../components/navigation/Nav.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { workRepoPath, workVerification } from '../../../lib/content/compat.ts';
-import { shippingWorks, workHref } from '../../../lib/content/derive.ts';
+import { pad2, shippingWorks, workHref } from '../../../lib/content/derive.ts';
 import { ui } from '../../../lib/content/ui.ts';
 
 export const getStaticPaths = (async () => {
@@ -50,24 +50,40 @@ const A = ui.technical.aboutFields;
  * the body renders these, from one array — an index entry whose section was
  * dropped for being empty is a dead anchor.
  */
+/*
+ * NUMBERED BY POSITION, NOT BY SPEC ID (#8 §7).
+ *
+ * These were `T-0` … `T-8` with a `CS-13` wedged in at the eighth slot. Both
+ * are internal coordinates — design-freeze §1 item 9 names the T sections, the
+ * case-study spec names CS-13 — and the seam showed: a reader counting down a
+ * T run met one entry from a different document, numbered out of a series they
+ * had not been shown. The Scale table is on this page because it belongs here,
+ * and carrying its filing reference across was how that borrowing became
+ * visible to someone who cannot look either document up.
+ *
+ * `id` — the anchor — is untouched, so `#t5` and `#scale` still resolve.
+ */
 const sections = (
   [
-    ['t0', 'T-0', S.about, true],
-    ['t1', 'T-1', S.architecture, t.architectureSummary.length > 0],
-    ['t2', 'T-2', S.why, t.whyThisArchitecture.length > 0],
-    ['t3', 'T-3', S.failureModes, t.failureModes.length > 0],
-    ['t4', 'T-4', S.tradeOffs, t.tradeOffs.length > 0],
-    ['t5', 'T-5', S.tests, t.testsSummary.length > 0],
-    ['t6', 'T-6', S.security, t.security.length > 0],
-    ['t7', 'T-7', S.limitations, t.limitationsNote.length > 0],
-    ['scale', 'CS-13', S.scale, caseStudy.scale.length > 0],
-    ['t8', 'T-8', S.links, t.links.length > 0],
-  ] as [string, string, string, boolean][]
+    ['t0', S.about, true],
+    ['t1', S.architecture, t.architectureSummary.length > 0],
+    ['t2', S.why, t.whyThisArchitecture.length > 0],
+    ['t3', S.failureModes, t.failureModes.length > 0],
+    ['t4', S.tradeOffs, t.tradeOffs.length > 0],
+    ['t5', S.tests, t.testsSummary.length > 0],
+    ['t6', S.security, t.security.length > 0],
+    ['t7', S.limitations, t.limitationsNote.length > 0],
+    ['scale', S.scale, caseStudy.scale.length > 0],
+    ['t8', S.links, t.links.length > 0],
+  ] as [string, string, boolean][]
 )
-  .filter(([, , , on]) => on)
-  .map(([id, index, title]) => ({ id, index, title }));
+  .filter(([, , on]) => on)
+  .map(([id, title], i) => ({ id, index: pad2(i + 1), title }));
 
 const has = (id: string): boolean => sections.some((s) => s.id === id);
+const no = new Map(sections.map((s) => [s.id, s.index]));
+/** Empty only for a section `has()` already refused, which never renders. */
+const ix = (id: string): string => no.get(id) ?? '';
 
 const tests = workVerification(work);
 const repoPath = workRepoPath(work);
@@ -124,7 +140,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
     <section class="s-open" id="t0">
       <div class="page">
         <div class="tr">
-          <div class="ins"><span class="ix">T-0</span><span class="lb">{S.about}</span></div>
+          <div class="ins"><span class="ix">{ix('t0')}</span><span class="lb">{S.about}</span></div>
           <div class="fld">
             <h2>{S.about}</h2>
             <div class="spx">
@@ -148,7 +164,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t1">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-1</span><span class="lb">{S.architecture}</span></div>
+              <div class="ins"><span class="ix">{ix('t1')}</span><span class="lb">{S.architecture}</span></div>
               <div class="fld">
                 <h2>{S.architecture}</h2>
                 <p class="lede m0">{t.architectureSummary}</p>
@@ -165,7 +181,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t2">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-2</span><span class="lb">{S.why}</span></div>
+              <div class="ins"><span class="ix">{ix('t2')}</span><span class="lb">{S.why}</span></div>
               <div class="fld">
                 <h2>{S.why}</h2>
                 <p class="lede">{t.whyThisArchitecture}</p>
@@ -193,7 +209,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t3">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-3</span><span class="lb">{S.failureModes}</span></div>
+              <div class="ins"><span class="ix">{ix('t3')}</span><span class="lb">{S.failureModes}</span></div>
               <div class="fld">
                 <h2>{S.failureModes}</h2>
                 <ol class="num">{t.failureModes.map((f) => <li>{f}</li>)}</ol>
@@ -209,7 +225,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t4">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-4</span><span class="lb">{S.tradeOffs}</span></div>
+              <div class="ins"><span class="ix">{ix('t4')}</span><span class="lb">{S.tradeOffs}</span></div>
               <div class="fld">
                 <h2>{S.tradeOffs}</h2>
                 <ul class="dash">{t.tradeOffs.map((x) => <li>{x}</li>)}</ul>
@@ -226,7 +242,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
           <div class="page">
             <div class="tr">
               <div class="ins">
-                <span class="ix">T-5</span><span class="lb">{S.tests}</span>
+                <span class="ix">{ix('t5')}</span><span class="lb">{S.tests}</span>
               </div>
               <div class="fld">
                 <h2>{S.tests}</h2>
@@ -263,7 +279,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t6">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-6</span><span class="lb">{S.security}</span></div>
+              <div class="ins"><span class="ix">{ix('t6')}</span><span class="lb">{S.security}</span></div>
               <div class="fld">
                 <h2>{S.security}</h2>
                 <ul class="dash">{t.security.map((x) => <li>{x}</li>)}</ul>
@@ -279,7 +295,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t7">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-7</span><span class="lb">{S.limitations}</span></div>
+              <div class="ins"><span class="ix">{ix('t7')}</span><span class="lb">{S.limitations}</span></div>
               <div class="fld">
                 <h2>{S.limitations}</h2>
                 <p class="note">{t.limitationsNote}</p>
@@ -299,7 +315,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="scale">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">CS-13</span><span class="lb">{S.scale}</span></div>
+              <div class="ins"><span class="ix">{ix('scale')}</span><span class="lb">{S.scale}</span></div>
               <div class="fld">
                 <h2>{S.scale}</h2>
                 <div class="tw">
@@ -326,7 +342,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
         <section class="s-open" id="t8">
           <div class="page">
             <div class="tr">
-              <div class="ins"><span class="ix">T-8</span><span class="lb">{S.links}</span></div>
+              <div class="ins"><span class="ix">{ix('t8')}</span><span class="lb">{S.links}</span></div>
               <div class="fld">
                 <h2>{S.links}</h2>
                 <ul class="dash">{t.links.map((x) => <li><code>{x}</code></li>)}</ul>

@@ -4,7 +4,8 @@
  *
  * SHA256, published size, scale, filename and crop coordinates live in here and
  * nowhere else (design-freeze §3). They are checkable facts, not decoration, so
- * they are one click away rather than in the reader's face.
+ * they are one click away rather than in the reader's face. What is NOT here is
+ * the record's own review state — see below.
  *
  * A record whose provenance is not established may not render this block at
  * all — see truth.ts `T-PROVENANCE`. Showing "未取得" under a SHA256 heading
@@ -28,7 +29,17 @@ const rows: { key: string; value: string }[] = [
   { key: L.scale, value: evidence.scale },
 ];
 if (cropped) rows.push({ key: ui.evidence.cropRowLabel, value: ui.evidence.cropRowValue });
-rows.push({ key: L.sha, value: evidence.sha }, { key: L.status, value: evidence.status });
+/*
+ * SHA only. The row under it used to print `evidence.status` — `PUBLISH READY`
+ * — which is this repository's publication review state, not a property of the
+ * screenshot. Spec §11.1 puts review labels on the list of internal vocabulary
+ * that stays off the public surface, and #8 §7 repeats it: what a reader can
+ * use here is where the image came from and what it hashes to, and a badge
+ * saying the record cleared its own review adds nothing they can check.
+ *
+ * The field is untouched on the Evidence record and still under every gate.
+ */
+rows.push({ key: L.sha, value: evidence.sha });
 ---
 
 <details>

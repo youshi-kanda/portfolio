@@ -681,6 +681,11 @@
 .ad .ct-d dd a{color:var(--tx);text-decoration:none;border-bottom:1px solid var(--hair2);
                padding-bottom:2px;transition:border-color .18s ease}
 .ad .ct-d dd a:hover,.ad .ct-d dd a:focus-visible{border-color:var(--sig)}
+/* #8 — the channels line sits ABOVE the rows it describes, and the CTA below
+   them. The disclaimer that used to close this section is gone (§16), so the
+   last thing in the band is now the way out of it rather than a caveat. */
+.ad .ct-ch{margin:0 0 26px;max-width:56ch}
+.ad .ct-cta{margin:26px 0 0}
 
 /* --------------------------------------------------------------- FOOTER
    Identification, not a call to action — CONTACT above it does the asking. */
