@@ -128,55 +128,61 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'home.hero.cta.secondary',
     ]),
   }),
+  /**
+   * Issue #8 — the public-copy pass, approved on PR #17.
+   *
+   * WHERE THE TIMESTAMP COMES FROM, AND WHY IT MATTERS. `at` is the creation
+   * time of PR #17 comment 5651891248, in which the owner listed these four
+   * strings and adopted them as the PR's final wording. It is not the issue's
+   * created_at, not a commit time, and not the moment this batch was typed.
+   *
+   * An earlier draft of #8 used Issue #8's created_at here. Nobody had approved
+   * anything at that moment — the issue did not contain these sentences — so
+   * the row asserted an event that never happened, in the table `A-BATCH` reads
+   * to check exactly that. It was withdrawn, the four strings sat at
+   * `in_review` and stopped production builds until a real approval existed,
+   * and this is that approval. The comment is a durable public record: anyone
+   * can open it and read what was approved, by whom, and when.
+   *
+   * `home.about.h2` is here as a REWORD and so appears in no other batch. The
+   * 2026-08-28 batch approved 「リポジトリから確認できることだけ。」, which stated
+   * the site's sourcing policy where a reader was asking what kind of engineer
+   * built this; that sentence is no longer on the site, so its id moved rather
+   * than being listed twice.
+   */
+  Object.freeze({
+    task: 'ISSUE-8-PUBLIC-COPY (PR #17 comment 5651891248)',
+    by: 'user',
+    at: '2026-09-13T07:17:12Z',
+    ids: Object.freeze([
+      'home.about.h2',
+      'ui.contact.channels',
+      'ui.contact.githubCta',
+      'ui.caseStudy.repositoryAuthNote',
+    ]),
+  }),
 ]);
 
 /**
- * Strings #8 changed that are WAITING for an approval event, and therefore are
- * not in the table above.
+ * Strings changed on a branch that are WAITING for an approval event.
  *
- * WHY THIS LIST EXISTS AND WHY IT IS NOT AN APPROVAL. The first draft of #8
- * recorded these under a batch stamped `user` / `2026-09-12T07:28:05Z`. That
- * timestamp is when Issue #8 was OPENED. Nobody approved a sentence at that
- * moment — the issue did not contain these sentences, and an approval event is
- * a person reading a specific string and saying yes to it, not the creation
- * time of the ticket that later led to it. Recording it that way asserted an
- * event that did not happen, which is the exact failure mode `A-BATCH` exists
- * to catch, committed in the table `A-BATCH` reads from.
+ * EMPTY, AND KEPT. #8 filled this with four strings and then emptied it: the
+ * owner approved all four on PR #17 (comment 5651891248), so each moved into
+ * APPROVAL_BATCHES and APPROVED_TEXT with that comment's timestamp.
  *
- * So the batch was withdrawn. These ids now carry `reviewStatus: in_review`,
- * `approvedBy: null`, `approvedAt: null` in their registries, and the Truth
- * Gate refuses a production build while they do (`T-UNAPPROVED`). THAT IS THE
- * CORRECT BEHAVIOUR AND IT WAS NOT WEAKENED: the gate's rule is that shipping
- * copy is approved copy, and these are not approved yet.
+ * The list stays because the state it names is a real and recurring one, and
+ * because the alternative is what #8 did first. Copy changed on a branch has no
+ * approval yet; the Truth Gate refuses to ship it (`T-UNAPPROVED`), and the
+ * tempting fix is to stamp a plausible date and go green. Naming the state
+ * gives that moment somewhere to go that is not a forged record: put the ids
+ * here, let the build stay red, and get a real approval.
  *
- * TO CLEAR IT, after the owner confirms the wording on PR #17: add a batch
- * above whose `at` is when they actually said yes, add each string to
- * APPROVED_TEXT, and set each registry row to `approved` with the same
- * by / at. Until then the build stops here on purpose.
+ * `keeps unapproved copy out of the snapshot AND out of the registries` holds
+ * both halves, so an id cannot be here and approved at the same time, and
+ * cannot be approved in one registry while the batch says otherwise.
  */
 export const PENDING_APPROVAL: readonly { id: string; text: string; registry: string }[] =
-  Object.freeze([
-    Object.freeze({
-      id: 'home.about.h2',
-      text: '業務を理解して、動く仕組みまで作る。',
-      registry: 'copy/shipping.json',
-    }),
-    Object.freeze({
-      id: 'ui.contact.channels',
-      text: '実装内容や公開コードは、GitHub でご確認いただけます。',
-      registry: 'copy/ui.json',
-    }),
-    Object.freeze({
-      id: 'ui.contact.githubCta',
-      text: 'GitHub を見る',
-      registry: 'copy/ui.json',
-    }),
-    Object.freeze({
-      id: 'ui.caseStudy.repositoryAuthNote',
-      text: 'GitHub へのサインインが必要な場合があります。',
-      registry: 'copy/ui.json',
-    }),
-  ]);
+  Object.freeze([]);
 
 export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.role.01": "ソフトウェアエンジニア",
@@ -186,6 +192,13 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.lede": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
   "home.hero.cta.primary": "実績を見る",
   "home.hero.cta.secondary": "相談する",
+
+  // Issue #8 — PR #17 comment 5651891248. 04 ABOUT's heading, CONTACT's two
+  // strings and the Case Study's CI note. The CTA names what the reader will
+  // do there ("実装を見る"), which is the whole distinction this section rests
+  // on: GitHub is where the work can be READ, and this site still publishes no
+  // way to send anyone a message (U-01).
+  "home.about.h2": "業務要件を整理し、設計から実装・運用まで形にする。",
 
   // The capability rail — TASK-PORTFOLIO-V4-COPY-APPROVE-01. Three axes, each
   // a name and the line under it, registered as six strings for the same

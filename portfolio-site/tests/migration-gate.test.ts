@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import type { Work } from '../src/lib/content/schema.ts';
 import { runGates } from '../src/lib/validation/index.ts';
 import { isDual, migrationGate } from '../src/lib/validation/migration.ts';
-import { bundleWith, clone, codes, exceptPendingApproval, legacyWork, realContent, sampleWork } from './helpers.ts';
+import { bundleWith, clone, codes, legacyWork, realContent, sampleWork } from './helpers.ts';
 
 /**
  * The works that still carry the legacy half, in collection order.
@@ -191,11 +191,7 @@ describe('dual migration state', () => {
     void others;
     const agreed = { ...clone(first!), showcase: agreeing(first!) };
     const result = runGates(bundleWith([agreed, ...rest]), { mode: 'production' });
-    // The claim is about W-DUAL-SOURCE's LEVEL — that it warns and does not
-    // fail. #8's pending copy approvals are a separate, deliberate block, so
-    // they are set aside; what must hold is that nothing else errors and the
-    // dual-source finding is a warning.
-    assert.deepEqual(exceptPendingApproval(result.errors), []);
+    assert.equal(result.ok, true);
     assert.equal(codes(result.warnings).includes('W-DUAL-SOURCE'), true);
   });
 
@@ -239,10 +235,7 @@ describe('dual migration state', () => {
     for (const f of findings) assert.equal(f.level, 'WARN');
 
     const result = runGates(bundleWith(works), { mode: 'production' });
-    // No CONTRADICTION, which is what this test is named after. The build does
-    // not pass right now — #8 is holding four copy approvals — so the assertion
-    // is that nothing besides those is wrong, rather than `ok === true`.
-    assert.deepEqual(exceptPendingApproval(result.errors), []);
+    assert.equal(result.ok, true);
     assert.equal(result.findings.filter((f) => f.code === 'T-DUAL-CONFLICT').length, 0);
   });
 });

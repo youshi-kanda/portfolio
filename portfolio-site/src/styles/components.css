@@ -657,6 +657,21 @@
            font-size:15.5px;color:var(--tx2)}
 
 /* ---------------------------------------------------------------- ABOUT */
+/* #8 — the approved ABOUT heading is 24 characters and needs ~24em to set on
+   one line, so at the old 720px cap it wrapped mid-word and split 「から」.
+   Japanese has no space to break at, so the fix is the one `.ct-h` already
+   uses below: keep-all holds compounds together, leaving 「、」 and 「・」 as the
+   only break points.
+
+   THE MEASURE IS IN `em`, NOT `ch`. A `ch` is the width of "0" — about half a
+   CJK character in this face — so a heading sized in `ch` is half as wide as
+   it reads, which is how the first attempt at this produced three lines. In
+   `em` the number is the character count: 15.5 is wide enough for the second
+   clause (15 chars) and too narrow for the first plus 「設計から実装・」 (16),
+   so the line lands on the comma at every size the clamp produces.
+   `anywhere` is the escape hatch for a viewport where one clause still does
+   not fit. */
+.ad .ab-h{max-width:15.5em;word-break:keep-all;overflow-wrap:anywhere}
 .ad .ab-now{max-width:62ch;margin-top:26px}
 .ad .ab-now p{font-size:17px;line-height:1.95;color:var(--tx);margin:0 0 14px}
 .ad .ab-now p:last-child{margin-bottom:0}

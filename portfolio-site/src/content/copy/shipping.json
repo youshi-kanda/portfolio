@@ -288,21 +288,21 @@
   },
   {
     "id": "home.about.h2",
-    "text": "業務を理解して、動く仕組みまで作る。",
+    "text": "業務要件を整理し、設計から実装・運用まで形にする。",
     "route": "/",
     "section": "04 ABOUT",
     "slot": "見出し",
     "purpose": "ABOUT が答える問い —「どういう考え方で作る人か」— を見出しにする。出典方針の宣言は前提条件の行が引き受ける。",
     "publication": {
-      "reviewStatus": "in_review",
+      "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "Issue #8 作業指示 §5 ABOUT — 見出しの方向と文案",
+        "PR #17 comment 5651891248（2026-09-13T07:17:12Z）— 本人が確定文面として承認",
         "portfolio-site/docs/design/home-ia-content-spec.md §9.1（#6 / PR #15 merged）— ABOUT の役割",
         "portfolio-site/src/content/site.json: about.now（本文 3 行。この見出しが要約している事実）"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:17:12Z"
     }
   },
   {

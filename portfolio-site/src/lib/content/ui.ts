@@ -142,8 +142,8 @@ export const ui = {
    * stays visible rather than being papered over with a CTA that goes nowhere.
    */
   contact: {
-    channels: '実装内容や公開コードは、GitHub でご確認いただけます。',
-    githubCta: 'GitHub を見る',
+    channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
+    githubCta: 'GitHub で実装を見る',
   },
 
   mobileBar: {
@@ -238,7 +238,8 @@ export const ui = {
      * under every repository list would be a caveat about links that do not
      * need one.
      */
-    repositoryAuthNote: 'GitHub へのサインインが必要な場合があります。',
+    repositoryAuthNote:
+      'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
   },
 
   /**

@@ -31,18 +31,17 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-three approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 23);
+  it('covers all twenty-four approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 24);
 
-    const [homepage, notFound, v4, workLede, issue6] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6);
-    assert.equal(APPROVAL_BATCHES.length, 5);
+    const [homepage, notFound, v4, workLede, issue6, issue8] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8);
+    assert.equal(APPROVAL_BATCHES.length, 6);
     assert.deepEqual(
-      // 6 before #8. `home.about.h2` was REWORDED there and left this batch,
-      // because the batch approved 「リポジトリから確認できることだけ。」 and
-      // that sentence is no longer on the site. It did not move to a new batch:
-      // no approval event has happened for the sentence that replaced it, so
-      // the id is in PENDING_APPROVAL and in no batch at all.
+      // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
+      // batch with its new sentence, because this batch approved
+      // 「リポジトリから確認できることだけ。」 and that sentence is no longer on
+      // the site — one batch per id, the same move the display lines made.
       [homepage.by, homepage.at, homepage.ids.length],
       ['user', '2026-08-28T21:20:25Z', 5],
     );
@@ -71,10 +70,54 @@ describe('approved copy gate', () => {
     assert.equal(v4.ids.includes('home.hero.lede'), false);
     assert.equal(issue6.ids.includes('home.hero.lede'), true);
     assert.equal(homepage.ids.includes('home.about.h2'), false);
+    assert.equal(issue8.ids.includes('home.about.h2'), true);
+
+    // #8 — approved on PR #17, and the timestamp is that comment's, not the
+    // issue's created_at and not a commit time. An earlier draft used the
+    // issue's and asserted an approval nobody had given.
+    assert.deepEqual(
+      [issue8.by, issue8.at, [...issue8.ids]],
+      [
+        'user',
+        '2026-09-13T07:17:12Z',
+        [
+          'home.about.h2',
+          'ui.contact.channels',
+          'ui.contact.githubCta',
+          'ui.caseStudy.repositoryAuthNote',
+        ],
+      ],
+    );
+    assert.match(issue8.task, /PR #17 comment 5651891248/);
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
-    assert.deepEqual(ids.sort(), Object.keys(APPROVED_TEXT).sort());
+
+    /*
+     * Batches cover MORE than the snapshot now, and the difference is a fact
+     * about where a string lives rather than a gap.
+     *
+     * APPROVED_TEXT is the frozen text of `shipping.json`, which is the only
+     * registry `approvedCopyGate` reads. #8's approval also covered three UI
+     * chrome strings, and those live in `ui.json` — putting them in
+     * APPROVED_TEXT would make `A-MISSING` fire, because the gate would look
+     * for them in a collection they are not in.
+     *
+     * So: every snapshot id is batched (nothing approved is unattributed), and
+     * every batched id NOT in the snapshot is a ui row — held to its batch's
+     * by / at by `keeps every batched id approved in its own registry` below,
+     * which is the check that spans both registries.
+     */
+    for (const id of Object.keys(APPROVED_TEXT)) {
+      assert.ok(ids.includes(id), `${id} がどのバッチにも属していない`);
+    }
+    const uiOnly = ids.filter((id) => !(id in APPROVED_TEXT));
+    assert.deepEqual(uiOnly.sort(), [
+      'ui.caseStudy.repositoryAuthNote',
+      'ui.contact.channels',
+      'ui.contact.githubCta',
+    ]);
+    assert.equal(uiOnly.every((id) => id.startsWith('ui.')), true);
   });
 
   it('cannot approve new copy without naming who approved it', () => {
@@ -115,15 +158,14 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 23);
+    assert.equal(approved.length, 24);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      23,
+      24,
     );
-    // And the unapproved one is unapproved in the full sense, not half-set.
-    const pending = rows.filter((r) => r.publication.reviewStatus !== 'approved');
-    assert.deepEqual(pending.map((r) => r.id), ['home.about.h2']);
-    assert.equal(pending.every((r) => !r.publication.approvedBy && !r.publication.approvedAt), true);
+    // Nothing is half-set: no row is waiting, and none claims approval without
+    // naming who and when.
+    assert.deepEqual(rows.filter((r) => r.publication.reviewStatus !== 'approved'), []);
   });
 
   it('holds the capability rail as three approved pairs in the registry', () => {
@@ -256,33 +298,55 @@ describe('approved copy gate', () => {
   /*
    * The waiting room, held shut from both sides.
    *
-   * #8 changed four public strings and has no approval event for any of them.
-   * The failure this guards against is the tidy one: someone flips a row to
-   * `approved` to get a green build, and the site then ships a sentence under
-   * an approval nobody gave. Both halves are asserted, because either half
-   * alone can be satisfied while the defect is present — a batch entry with no
-   * registry change, or a registry change with no batch, each look fine from
-   * the other side.
+   * PENDING_APPROVAL is empty now — #8's four strings were approved on PR #17 —
+   * and the assertions below are what make it safe for it to be empty. The
+   * failure they guard against is the tidy one: a row flipped to `approved` to
+   * get a green build, shipping a sentence under an approval nobody gave.
+   *
+   * Both halves are checked, because either alone can hold while the defect is
+   * present — a batch entry with no registry change, or a registry change with
+   * no batch, each look fine from the other side.
+   *
+   * AND IT SPANS BOTH REGISTRIES, which `approvedCopyGate` does not: that gate
+   * only sees `shipping.json`, so three of #8's four ids live in `ui.json`
+   * where A-BATCH cannot compare them. Without this, a batch could name a ui
+   * string whose row said something else entirely.
    */
-  it('keeps unapproved #8 copy out of the snapshot AND out of the registries', () => {
-    assert.equal(PENDING_APPROVAL.length, 4);
+  it('keeps every batched id approved in its own registry, with the batch by / at', () => {
+    assert.deepEqual([...PENDING_APPROVAL], []);
 
     const { copy, uiCopy } = loadAll();
     const rows = new Map([...copy, ...uiCopy].map((c) => [c.id, c]));
-    const batched = new Set(APPROVAL_BATCHES.flatMap((b) => [...b.ids]));
 
-    for (const p of PENDING_APPROVAL) {
-      // Not approved anywhere in the approval machinery.
-      assert.equal(APPROVED_TEXT[p.id], undefined, `${p.id} は未承認のはず`);
-      assert.equal(batched.has(p.id), false, `${p.id} がバッチに入っている`);
+    for (const batch of APPROVAL_BATCHES) {
+      for (const id of batch.ids) {
+        const row = rows.get(id);
+        assert.ok(row, `batch ${batch.task} が registry に無い id ${id} を挙げている`);
+        assert.equal(row.publication.reviewStatus, 'approved', id);
+        assert.equal(row.publication.approvedBy, batch.by, id);
+        assert.equal(row.publication.approvedAt, batch.at, id);
+      }
+    }
+  });
 
-      // And the row that actually ships still says so itself.
-      const row = rows.get(p.id);
-      assert.ok(row, `${p.id} が registry に無い`);
-      assert.equal(row.text, p.text, `${p.id} の文面が PENDING_APPROVAL と違う`);
-      assert.notEqual(row.publication.reviewStatus, 'approved');
-      assert.equal(row.publication.approvedBy, null);
-      assert.equal(row.publication.approvedAt, null);
+  it('holds the #8 strings at the wording the owner approved', () => {
+    const { copy, uiCopy } = loadAll();
+    const text = new Map([...copy, ...uiCopy].map((c) => [c.id, c.text]));
+    assert.equal(text.get('home.about.h2'), '業務要件を整理し、設計から実装・運用まで形にする。');
+    assert.equal(
+      text.get('ui.contact.channels'),
+      '実装例・公開コード・リポジトリは GitHub で確認できます。',
+    );
+    assert.equal(text.get('ui.contact.githubCta'), 'GitHub で実装を見る');
+    assert.equal(
+      text.get('ui.caseStudy.repositoryAuthNote'),
+      'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
+    );
+
+    // The CONTACT strings say READ, never SEND. U-01 is open: this site
+    // publishes no address, so no string here may imply one.
+    for (const id of ['ui.contact.channels', 'ui.contact.githubCta']) {
+      assert.doesNotMatch(text.get(id)!, /問い合わせ|お問合せ|連絡する|相談する|メール/);
     }
   });
 });
