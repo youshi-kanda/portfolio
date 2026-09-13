@@ -49,7 +49,7 @@ describe('approved copy gate', () => {
     );
     assert.deepEqual(
       [issue6.by, issue6.at, issue6.ids.length],
-      ['user', '2026-09-13T00:00:00Z', 6],
+      ['user', '2026-09-13T00:13:13Z', 6],
     );
     assert.deepEqual(
       [workLede.by, workLede.at, [...workLede.ids]],

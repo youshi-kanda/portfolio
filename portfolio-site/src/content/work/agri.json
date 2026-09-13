@@ -9,7 +9,7 @@
   "productType": "業務管理 / Multi-tenant",
   "targetUser": "農園の現場作業員と管理者",
   "problem": [
-    "現場はスマートフォン、管理は PC という利用者の違いが、1 つの画面設計では吸収できない。"
+    "現場作業員と管理者で、使う端末と画面が分かれる（現場はスマートフォン、管理は PC）。"
   ],
   "purpose": "現場作業員はスマートフォンでワンタップ打刻と GPS 付き作業ログ、管理者は PC で工程・スタッフ・レポートを見るマルチテナント業務管理。",
   "implementationScope": [
@@ -44,7 +44,7 @@
   "keyDecision": [
     {
       "decision": "現場向けと管理者向けで画面を分けた。",
-      "rationale": "利用者の分離が画面構成に出ている。同じ画面を権限で出し分けるより、入口から分ける方が現場の操作数が減る。"
+      "rationale": "「現場はスマホ、管理は PC」という利用者の分離が、そのまま画面構成に出ている。"
     }
   ],
   "evidence": [],
@@ -75,7 +75,7 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 04（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §4 `ANON-BIZ-01`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §4 `ANON-BIZ-01`（#5 / PR #14 merged）"
     ],
     "approvedBy": null,
     "approvedAt": null

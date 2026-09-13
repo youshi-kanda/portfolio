@@ -9,8 +9,8 @@
   "productType": "業務 Web Application",
   "targetUser": "採用担当者と応募者",
   "problem": [
-    "応募受付から選考、面接日程、合否までが別々の手段に分かれていた。",
-    "応募者の個人情報を保持期限後にどう扱うかが業務フローに組み込まれていない。"
+    "応募受付から選考、応募者管理、面接日程、合否判定までを 1 つのシステムとして扱う。",
+    "応募者の個人情報を保持期限後に匿名化するところまでを業務フローに含める。"
   ],
   "purpose": "応募受付から選考、応募者管理、面接日程、合否判定までを 1 つの管理画面に集約した採用管理 Web アプリ。Google Calendar 連携での面接予約と通知、応募者情報の保持期限後の匿名化まで業務フローに含めている。",
   "implementationScope": [
@@ -53,7 +53,7 @@
   "keyDecision": [
     {
       "decision": "正本を表計算からデータベースへ移した。",
-      "rationale": "表計算を正本にした初期版から、データベースを正本にした Web アプリへ段階的に作り替えている。一覧・検索・状態遷移・判定を業務として回すには、正本の側を変える必要があった。"
+      "rationale": "表計算を正本にした初期版から、データベースを正本にした Web アプリへ段階的に作り替えた履歴が残っている。"
     }
   ],
   "evidence": [],
@@ -90,7 +90,7 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.2（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）"
     ],
     "approvedBy": null,
     "approvedAt": null

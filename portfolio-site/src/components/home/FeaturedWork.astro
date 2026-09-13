@@ -27,21 +27,24 @@
  * instead of five identical stops. Mobile drops it (responsive.css): at one
  * column there is no second width to alternate with.
  *
- * CASE STUDY LINKS. Only where the page exists — `workHasDetailPage`, which
- * restates the route's own getStaticPaths. Four of these five have no Case
- * Study yet (that is #8), and their blocks end after the technologies with no
- * link, no "準備中" and no greyed-out affordance. A portfolio that labels its
- * own gaps is describing its backlog.
+ * CASE STUDY LINKS. Gated on `caseStudyPublished` and nothing else — the same
+ * condition `EntryCta` uses. Not on whether /work/<slug>/ exists: that page is
+ * emitted as soon as a work's Evidence resolves, Case Study or no, so linking
+ * on it would put the label "Case Study を読む" in front of the entry screen.
+ *
+ * Four of these five have no Case Study yet (that is #8), and their blocks end
+ * after the technologies with no link, no "準備中" and no greyed-out
+ * affordance. A portfolio that labels its own gaps is describing its backlog.
  */
 import {
   pad2,
   workFigure,
-  workHasDetailPage,
   workHref,
   workSelectedTech,
+  workShowsCaseStudyCta,
   sectionNumber,
 } from '../../lib/content/derive.ts';
-import type { Evidence, Work } from '../../lib/content/schema.ts';
+import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
@@ -49,10 +52,9 @@ import { copyText } from '../../lib/content/copy.ts';
 
 interface Props {
   works: readonly Work[];
-  evidence: readonly Evidence[];
 }
 
-const { works, evidence } = Astro.props;
+const { works } = Astro.props;
 const index = sectionNumber('work');
 const h2 = await copyText('home.works.h2');
 
@@ -61,7 +63,7 @@ const blocks = works.map((work, i) => ({
   n: pad2(i + 1),
   /** broad / narrow / broad / narrow / broad — position, not rank. */
   broad: i % 2 === 0,
-  linked: workHasDetailPage(work, evidence),
+  showsCaseStudy: workShowsCaseStudyCta(work),
   figure: workFigure(work),
   eager: i === 0,
 }));
@@ -76,7 +78,7 @@ const blocks = works.map((work, i) => ({
   </div>
 
   {
-    blocks.map(({ work: w, n, broad, linked, figure, eager }) => (
+    blocks.map(({ work: w, n, broad, showsCaseStudy, figure, eager }) => (
       <article
         class="fw"
         data-w={w.slug}
@@ -125,7 +127,7 @@ const blocks = works.map((work, i) => ({
                   <p>{workSelectedTech(w).join(' · ')}</p>
                 </span>
               </div>
-              {linked && (
+              {showsCaseStudy && (
                 <a class="lk fw-l" href={workHref(w.slug, false)}>
                   {ui.work.caseStudyCta}<span class="ar">→</span>
                 </a>

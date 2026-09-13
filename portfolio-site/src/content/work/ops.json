@@ -9,8 +9,8 @@
   "productType": "Business Operations / Permissions / Multi-tenant",
   "targetUser": "現場スタッフと管理者",
   "problem": [
-    "現場スタッフと管理者が同じ仕組みを別の権限で使うため、誰が何をどこまで操作できるかを後から足すと破綻する。",
-    "業務の状態遷移が画面ごとにばらばらに実装される。"
+    "現場スタッフと管理者が、同じ仕組みを別の権限で使う。",
+    "日報・動画マニュアル・通知を、同じ権限モデルとスコープの上に載せる。"
   ],
   "purpose": "現場スタッフと管理者が同じ仕組みを別の権限で使う業務運用プラットフォーム。誰が何をどこまで操作できるかと、業務がどの状態からどの状態へ進むかを先に設計として確定させ、日報・マニュアル・通知をその同じ権限モデルの上に載せている。",
   "implementationScope": [
@@ -53,8 +53,8 @@
   ],
   "keyDecision": [
     {
-      "decision": "権限とスコープ、状態遷移を実装より先に確定させた。",
-      "rationale": "確定させた権限の一覧とスコープが、そのままデータベース側のアクセス制御に対応している。後から足す方式では、画面ごとに判定が散る。"
+      "decision": "権限とスコープ、状態遷移が、実装より先に設計として確定している。",
+      "rationale": "確定した権限の一覧とその及ぶスコープが、そのままデータベース側のアクセス制御に対応している。"
     }
   ],
   "evidence": [],
@@ -91,7 +91,7 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.4（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）"
     ],
     "approvedBy": null,
     "approvedAt": null

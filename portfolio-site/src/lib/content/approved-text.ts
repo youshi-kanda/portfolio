@@ -111,11 +111,15 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * use, and this site claims no operating status anywhere else, so the
    * strongest claim on the page would have been the one nobody can source.
    * 「業務で使える」 is fitness, not track record.
+   *
+   * The timestamp is PR #15's actual merge time as GitHub records it, not a
+   * rounded stand-in. An approval record with a tidy 00:00:00 in it is a
+   * record nobody checked against anything.
    */
   Object.freeze({
     task: 'ISSUE-6-HOME-IA-CONTENT-SPEC',
     by: 'user',
-    at: '2026-09-13T00:00:00Z',
+    at: '2026-09-13T00:13:13Z',
     ids: Object.freeze([
       'home.hero.display.01',
       'home.hero.display.02',
