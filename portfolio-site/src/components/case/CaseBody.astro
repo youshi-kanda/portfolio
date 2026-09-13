@@ -1,6 +1,6 @@
 ---
 /**
- * CS-2 … CS-16, identical in every case variant.
+ * Every Case Study section after the hero, identical in every case variant.
  *
  * This is the half of §8's rule that keeps the three variants from becoming
  * three templates: the variant decides how the *spine* is drawn, and everything
@@ -31,11 +31,31 @@ const S = ui.caseStudy.sections;
 const L = ui.caseStudy;
 const byId = new Map(evidence.map((e) => [e.id, e]));
 
-// The single source for which sections exist. `has('cs9')` and the table of
-// contents on the page both read this list, so neither can offer a section the
-// other dropped.
-const shown = new Set(caseSections(work, c).map((s) => s.id));
+/*
+ * One call, two answers: whether a section renders, and what number it wears.
+ *
+ * The numbers used to be written here as `CS-2` … `CS-16` — the case-study
+ * spec's own section ids, printed to a reader who has no copy of the spec (#8
+ * §7). They are positions now, and a position is only correct against the list
+ * of sections that actually rendered, which is the list `caseSections` already
+ * computes. Reading both off it is what keeps the rail and the table of
+ * contents from numbering the same section differently.
+ */
+const sections = caseSections(work, c);
+const shown = new Set(sections.map((s) => s.id));
 const has = (id: string): boolean => shown.has(id);
+const no = new Map(sections.map((s) => [s.id, s.index]));
+/** Undefined only for a section `has()` already refused, which never renders. */
+const ix = (id: string): string => no.get(id) ?? '';
+
+/*
+ * A GitHub Actions run page can require a signed-in account, and a reader who
+ * follows one signed out lands on a page that explains nothing (#8 §15). The
+ * note renders only when one of these links is actually such a page — matched
+ * on the run URL rather than on a flag someone has to remember to set, so a
+ * link added later carries the caveat without anyone thinking about it.
+ */
+const needsGitHubAuth = c.repository.some((r) => /github\.com\/.+\/actions\/runs\//.test(r.href));
 
 /** Evidence cited by a highlight, in citation order, skipping anything absent. */
 const cited = (ids: readonly string[]): Evidence[] =>
@@ -45,22 +65,22 @@ const cited = (ids: readonly string[]): Evidence[] =>
   });
 ---
 
-<CaseSection index="CS-2" title={S.problem} id="cs2" when={has('cs2')}>
+<CaseSection index={ix('cs2')} title={S.problem} id="cs2" when={has('cs2')}>
   <ol class="num">{work.problem.map((t) => <li>{t}</li>)}</ol>
 </CaseSection>
 
-<CaseSection index="CS-3" title={S.currentPractice} id="cs3" when={has('cs3')}>
+<CaseSection index={ix('cs3')} title={S.currentPractice} id="cs3" when={has('cs3')}>
   <p class="lede m0">{c.currentPractice}</p>
 </CaseSection>
 
-<CaseSection index="CS-4" title={S.requirements} id="cs4" when={has('cs4')}>
+<CaseSection index={ix('cs4')} title={S.requirements} id="cs4" when={has('cs4')}>
   <h4 aria-level="3">{L.requirementsFunctional}</h4>
   <ul class="dash">{c.requirements.functional.map((t) => <li>{t}</li>)}</ul>
   <h4 aria-level="3" style="margin-top:30px">{L.requirementsConstraints}</h4>
   <ul class="dash">{c.requirements.constraints.map((t) => <li>{t}</li>)}</ul>
 </CaseSection>
 
-<CaseSection index="CS-5" title={S.built} id="cs5" when={has('cs5')}>
+<CaseSection index={ix('cs5')} title={S.built} id="cs5" when={has('cs5')}>
   <div class="lgr">
     {
       c.built.map((b, i) => (
@@ -74,8 +94,8 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-{/* CS-6 — every decision carries the option that was rejected. */}
-<CaseSection index="CS-6" title={S.decisions} id="cs6" when={has('cs6')}>
+{/* Decisions — every decision carries the option that was rejected. */}
+<CaseSection index={ix('cs6')} title={S.decisions} id="cs6" when={has('cs6')}>
   <div class="dec">
     <ul>
       {
@@ -93,8 +113,8 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-{/* CS-7 — each claim next to the screen it can be checked against. */}
-<CaseSection index="CS-7" title={S.highlights} id="cs7" when={has('cs7')}>
+{/* Highlights — each claim next to the screen it can be checked against. */}
+<CaseSection index={ix('cs7')} title={S.highlights} id="cs7" when={has('cs7')}>
   {
     c.highlights.map((h) => (
       <div style="margin-bottom:44px">
@@ -110,11 +130,11 @@ const cited = (ids: readonly string[]): Evidence[] =>
   }
 </CaseSection>
 
-<CaseSection index="CS-8" title={S.role} id="cs8" when={has('cs8')}>
+<CaseSection index={ix('cs8')} title={S.role} id="cs8" when={has('cs8')}>
   <p class="lede m0">{c.role}</p>
 </CaseSection>
 
-<CaseSection index="CS-9" title={S.quality} id="cs9" when={has('cs9')}>
+<CaseSection index={ix('cs9')} title={S.quality} id="cs9" when={has('cs9')}>
   <ul class="dash">{c.quality.map((t) => <li>{t}</li>)}</ul>
   {tests && (
     <p class="meta" style="margin-top:22px">
@@ -124,7 +144,7 @@ const cited = (ids: readonly string[]): Evidence[] =>
   )}
 </CaseSection>
 
-<CaseSection index="CS-10" title={S.safety} id="cs10" when={has('cs10')}>
+<CaseSection index={ix('cs10')} title={S.safety} id="cs10" when={has('cs10')}>
   <div class="lgr">
     {
       c.safety.map((s, i) => (
@@ -138,7 +158,7 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-<CaseSection index="CS-11" title={S.delivery} id="cs11" when={has('cs11')}>
+<CaseSection index={ix('cs11')} title={S.delivery} id="cs11" when={has('cs11')}>
   <div class="tw">
     <table>
       <thead><tr>{L.deliveryHeaders.map((h) => <th>{h}</th>)}</tr></thead>
@@ -149,8 +169,8 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-{/* CS-12 — the boundary, with its reason in the same row. */}
-<CaseSection index="CS-12" title={S.scope} id="cs12" when={has('cs12')}>
+{/* Scope — the boundary, with its reason in the same row. */}
+<CaseSection index={ix('cs12')} title={S.scope} id="cs12" when={has('cs12')}>
   <div class="tw">
     <table>
       <thead><tr>{L.scopeHeaders.map((h) => <th>{h}</th>)}</tr></thead>
@@ -169,8 +189,8 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-{/* CS-13 — every number with the command that produced it. */}
-<CaseSection index="CS-13" title={S.scale} id="cs13" when={has('cs13')}>
+{/* Scale — every number with how it was obtained, in a reader's words. */}
+<CaseSection index={ix('cs13')} title={S.scale} id="cs13" when={has('cs13')}>
   <div class="tw">
     <table>
       <thead><tr>{L.scaleHeaders.map((h) => <th>{h}</th>)}</tr></thead>
@@ -185,13 +205,13 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </div>
 </CaseSection>
 
-<CaseSection index="CS-14" title={S.capabilities} id="cs14" when={has('cs14')}>
+<CaseSection index={ix('cs14')} title={S.capabilities} id="cs14" when={has('cs14')}>
   <p class="note">{c.capabilitiesNote}</p>
   <ul class="dash">{c.capabilities.map((t) => <li>{t}</li>)}</ul>
 </CaseSection>
 
-{/* CS-15 — the Technical page is a route, not a collapsible on this one. */}
-<CaseSection index="CS-15" title={S.technical} id="cs15" when={has('cs15')}>
+{/* Technical — the Technical page is a route, not a collapsible on this one. */}
+<CaseSection index={ix('cs15')} title={S.technical} id="cs15" when={has('cs15')}>
   <p>
     <a class="lk" href={technicalHref(work.slug)}>
       {L.technicalCta}<span class="ar">→</span>
@@ -199,7 +219,7 @@ const cited = (ids: readonly string[]): Evidence[] =>
   </p>
 </CaseSection>
 
-<CaseSection index="CS-16" title={S.repository} id="cs16" when={has('cs16')}>
+<CaseSection index={ix('cs16')} title={S.repository} id="cs16" when={has('cs16')}>
   <ul class="dash">
     {
       c.repository.map((r) => (
@@ -207,4 +227,5 @@ const cited = (ids: readonly string[]): Evidence[] =>
       ))
     }
   </ul>
+  {needsGitHubAuth && <p class="note" style="margin-top:18px">{L.repositoryAuthNote}</p>}
 </CaseSection>

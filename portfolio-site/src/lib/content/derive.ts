@@ -299,27 +299,47 @@ export interface CaseSectionEntry {
  * an anchor to a section that was dropped for being empty — computing the two
  * separately is exactly how that goes wrong, because the drop condition then
  * lives in two places and only one of them gets updated.
+ *
+ * `index` IS NO LONGER `CS-2`. The CS numbers are the case-study
+ * specification's own section ids — an internal coordinate, useful to whoever
+ * maintains this and meaningless to a reader, who sees a page whose sections
+ * are labelled from the middle of a numbering they were never shown the start
+ * of. Spec §11.1 and #8 §7 both put `spec CS-*` on the list of internal
+ * vocabulary that must not reach a public page, and this was the last place it
+ * did.
+ *
+ * What replaces it is the section's POSITION, counted over the sections that
+ * actually rendered — the same `01, 02, 03…` the homepage and the register use,
+ * so a Case Study is numbered the way every other index on this site is. A work
+ * that drops an empty section is numbered 01…n with no gap, rather than
+ * advertising the absence of CS-11.
+ *
+ * THE ANCHORS DO NOT CHANGE. `id` stays `cs2` … `cs16`: it is the fragment in
+ * `/work/crm/#cs9`, it is not rendered as text, and renumbering it would break
+ * every link anyone has saved while removing nothing a reader can see.
  */
 export function caseSections(work: Work, caseStudy: CaseStudy): CaseSectionEntry[] {
   const s = ui.caseStudy.sections;
-  const present: [string, string, string, boolean][] = [
-    ['cs2', 'CS-2', s.problem, work.problem.length > 0],
-    ['cs3', 'CS-3', s.currentPractice, true],
-    ['cs4', 'CS-4', s.requirements, true],
-    ['cs5', 'CS-5', s.built, caseStudy.built.length > 0],
-    ['cs6', 'CS-6', s.decisions, caseStudy.decisions.length > 0],
-    ['cs7', 'CS-7', s.highlights, caseStudy.highlights.length > 0],
-    ['cs8', 'CS-8', s.role, true],
-    ['cs9', 'CS-9', s.quality, caseStudy.quality.length > 0],
-    ['cs10', 'CS-10', s.safety, caseStudy.safety.length > 0],
-    ['cs11', 'CS-11', s.delivery, caseStudy.delivery.length > 0],
-    ['cs12', 'CS-12', s.scope, caseStudy.scope.length > 0],
-    ['cs13', 'CS-13', s.scale, caseStudy.scale.length > 0],
-    ['cs14', 'CS-14', s.capabilities, caseStudy.capabilities.length > 0],
-    ['cs15', 'CS-15', s.technical, true],
-    ['cs16', 'CS-16', s.repository, caseStudy.repository.length > 0],
+  const present: [string, string, boolean][] = [
+    ['cs2', s.problem, work.problem.length > 0],
+    ['cs3', s.currentPractice, true],
+    ['cs4', s.requirements, true],
+    ['cs5', s.built, caseStudy.built.length > 0],
+    ['cs6', s.decisions, caseStudy.decisions.length > 0],
+    ['cs7', s.highlights, caseStudy.highlights.length > 0],
+    ['cs8', s.role, true],
+    ['cs9', s.quality, caseStudy.quality.length > 0],
+    ['cs10', s.safety, caseStudy.safety.length > 0],
+    ['cs11', s.delivery, caseStudy.delivery.length > 0],
+    ['cs12', s.scope, caseStudy.scope.length > 0],
+    ['cs13', s.scale, caseStudy.scale.length > 0],
+    ['cs14', s.capabilities, caseStudy.capabilities.length > 0],
+    ['cs15', s.technical, true],
+    ['cs16', s.repository, caseStudy.repository.length > 0],
   ];
-  return present.filter(([, , , on]) => on).map(([id, index, title]) => ({ id, index, title }));
+  return present
+    .filter(([, , on]) => on)
+    .map(([id, title], i) => ({ id, index: pad2(i + 1), title }));
 }
 
 /** Two digits, matching the register's numbering. */

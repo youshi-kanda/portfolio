@@ -22,8 +22,13 @@
  * It was the second thing a visitor read — a disclaimer, above any statement of
  * what this engineer builds. The statement now sits where it is actually about
  * something: on every figure's own caption in 01 FEATURED WORK, and in 04
- * ABOUT's premises. /work/ and the Case Studies keep the strip, because those
- * pages ARE the screens it qualifies.
+ * ABOUT's premises. The strip stays on the pages that ARE the screens it
+ * qualifies — /work/<slug>/, their technical pages, /how-i-build/ and /404.
+ *
+ * NOT ON /work/, despite what this comment said until #8. The archive lists
+ * works; it renders no screen, so there was nothing there for the strip to
+ * qualify and #7 did not give it one. The claim was wrong in the audit and in
+ * a PR description before anyone checked which routes mount `SyntheticBar`.
  *
  * The numbers above are not written anywhere. `site.sections` is the running
  * order and every index is its position in it, so changing that array

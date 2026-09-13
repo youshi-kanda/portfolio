@@ -288,20 +288,21 @@
   },
   {
     "id": "home.about.h2",
-    "text": "リポジトリから確認できることだけ。",
+    "text": "業務要件を整理し、設計から実装・運用まで形にする。",
     "route": "/",
-    "section": "06 ABOUT",
+    "section": "04 ABOUT",
     "slot": "見出し",
-    "purpose": "ABOUT がリポジトリから確認できる事実だけであることを見出しで言う。",
+    "purpose": "ABOUT が答える問い —「どういう考え方で作る人か」— を見出しにする。出典方針の宣言は前提条件の行が引き受ける。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "ABOUT.known（spec CS-8 / 各 README / PUBLISH-MAP.md）",
-        "PROFILE_DATA_STATUS = PENDING_USER_FACTS"
+        "PR #17 comment 5651891248（2026-09-13T07:17:12Z）— 本人が確定文面として承認",
+        "portfolio-site/docs/design/home-ia-content-spec.md §9.1（#6 / PR #15 merged）— ABOUT の役割",
+        "portfolio-site/src/content/site.json: about.now（本文 3 行。この見出しが要約している事実）"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-08-28T21:20:25Z"
+      "approvedAt": "2026-09-13T07:17:12Z"
     }
   },
   {
@@ -404,6 +405,41 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-13T00:13:13Z"
+    }
+  },
+  {
+    "id": "home.contact.emailKey",
+    "text": "開発のご相談",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "連絡手段 — Email 行のラベル",
+    "purpose": "Email が何のための窓口かを言う。GitHub 行が実装確認であるのに対し、こちらが相談窓口であることを行ラベルで分ける。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "PR #17 comment 5651971896（2026-09-13T07:35:52Z）— 本人が公開問い合わせ先として指定・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:35:52Z"
+    }
+  },
+  {
+    "id": "home.contact.email",
+    "text": "kanda02.1203@gmail.com",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "連絡手段 — 公開 Email",
+    "purpose": "Portfolio の公開問い合わせ先。本人しか Authority を持たない値であり、本人が公開用として指定するまで掲載しなかった（U-01）。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "user-fact",
+      "sourceRefs": [
+        "PR #17 comment 5651971896（2026-09-13T07:35:52Z）— 本人が公開問い合わせ先として指定・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:35:52Z"
     }
   },
   {

@@ -260,26 +260,6 @@
     }
   },
   {
-    "id": "ui.evidence.provenanceLabels.status",
-    "path": "evidence.provenanceLabels.status",
-    "text": "状態",
-    "kind": "ui-system",
-    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
-    "section": "Evidence component",
-    "slot": "provenance 行ラベル",
-    "purpose": "公開可否の状態。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:76"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
     "id": "ui.evidence.dialog.close",
     "path": "evidence.dialog.close",
     "text": "閉じる ESC",
@@ -1020,23 +1000,63 @@
     }
   },
   {
-    "id": "ui.contact.note",
-    "path": "contact.note",
-    "text": "掲載している画面はすべて合成データで、実顧客・実案件・本番運用の記録ではありません。",
+    "id": "ui.contact.channels",
+    "path": "contact.channels",
+    "text": "実装例・公開コード・リポジトリは GitHub で確認できます。",
     "kind": "editorial",
     "route": "/",
-    "section": "07 CONTACT",
-    "slot": "注記",
-    "purpose": "掲載画面が合成データであることを述べる。",
+    "section": "05 CONTACT",
+    "slot": "連絡手段の上の 1 行",
+    "purpose": "GitHub で何が読めるかを述べる。問い合わせ窓口だとは言わない（U-01 OPEN）。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "sourceRefs": [
-        "ADAPTED — 2 文目「経歴・稼働条件・料金は事実が確定するまで記載しません。」を TASK-PORTFOLIO-IMPLEMENT-03 §5（未提供 user fact を Production UI に出さない）により削除。1 文目は下記から verbatim。",
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender.py:414"
+        "PR #17 comment 5651891248（2026-09-13T07:17:12Z）— 本人が確定文面として承認",
+        "portfolio-site/docs/design/home-ia-content-spec.md §10.5（#6 / PR #15 merged）— Email 未確定のため GitHub のみを出す根拠"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:17:12Z"
+    }
+  },
+  {
+    "id": "ui.contact.emailCta",
+    "path": "contact.emailCta",
+    "text": "メールで相談する",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "Email への CTA ラベル",
+    "purpose": "相談を始める 1 本の CTA。read ではなく send を約束する、この節で唯一の導線。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "PR #17 comment 5651971896（2026-09-13T07:35:52Z）— 本人が公開問い合わせ先として指定・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:35:52Z"
+    }
+  },
+  {
+    "id": "ui.contact.githubCta",
+    "path": "contact.githubCta",
+    "text": "GitHub で実装を見る",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "GitHub への CTA ラベル",
+    "purpose": "GitHub の公開情報へ送る 1 本の CTA。何をしに行くのか（実装を見る）を動詞で言い、メッセージ送信を約束する語を使わない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "PR #17 comment 5651891248（2026-09-13T07:17:12Z）— 本人が確定文面として承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:17:12Z"
     }
   },
   {
@@ -2593,6 +2613,26 @@
       ],
       "approvedBy": null,
       "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.repositoryAuthNote",
+    "path": "caseStudy.repositoryAuthNote",
+    "text": "CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。",
+    "kind": "editorial",
+    "route": "/work/{slug}/",
+    "section": "Case Study — 証拠へのリンク",
+    "slot": "CI 実行ログへのリンクの下の注記",
+    "purpose": "リンク先が GitHub Actions であることと、署名なしでは開けない場合があることを、必要な節にだけ添える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "PR #17 comment 5651891248（2026-09-13T07:17:12Z）— 本人が確定文面として承認",
+        "Issue #8 §完了条件「CIログの認証要件を必要箇所で明記」"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T07:17:12Z"
     }
   }
 ]

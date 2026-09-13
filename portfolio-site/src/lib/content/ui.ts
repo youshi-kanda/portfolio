@@ -48,7 +48,6 @@ export const ui = {
       dims: '掲載サイズ',
       scale: '倍率',
       sha: 'SHA256',
-      status: '状態',
     },
     dialog: {
       close: '閉じる ESC',
@@ -122,12 +121,40 @@ export const ui = {
    * The removal is a deletion only. No replacement sentence was written, which
    * is what keeps PROFILE_INVENTED = NO true through the change.
    */
+  /*
+   * #8 — CONTACT stopped ending on a disclaimer and started ending on a way in.
+   *
+   * `note` held the synthetic-data sentence. That sentence is true and it stays
+   * on the site, but CONTACT is the one section whose job is to be used, and
+   * the last thing a reader met there was a statement about what the screens
+   * are NOT. The claim now sits where the screens are: every figure carries its
+   * own caption, 04 ABOUT keeps the full sentence among its premises, and the
+   * strip stays on the pages that ARE the screens — /work/<slug>/, their
+   * technical pages, /how-i-build/ and /404 (#8 §16). The /work/ archive has
+   * carried no strip since #7; it lists works and shows none of them.
+   *
+   * TWO CHANNELS, TWO JOBS, AND THEY DO NOT BLUR (U-01 resolved).
+   *
+   *   emailCta   「メールで相談する」 — the one link here that SENDS. It is the
+   *              section's conversion point and #8's success condition
+   *              (「CONTACTから最低1つ明確な相談導線がある」), met at last.
+   *   channels   says where the code can be READ, and
+   *   githubCta  goes there. Neither claims to carry a message: a GitHub
+   *              profile has no inbox, and before the address existed this
+   *              section said so rather than dressing the GitHub link up as a
+   *              way to make contact.
+   *
+   * THE ADDRESS WAITED FOR ITS OWNER. #6 searched the repository and found only
+   * `@example.com` fixtures; publishing anything on that basis would have meant
+   * choosing, for someone else, which of their addresses is public. It is a
+   * `user-fact` in the registry — the first one this site has — which is the
+   * classification that requires a real approver and refuses a
+   * plausible-looking placeholder.
+   */
   contact: {
-    // ADAPTED — the trailing sentence was removed, not rewritten. The synthetic
-    // data statement it opened with is verbatim and is the part §10 requires to
-    // stay. The space that used to sit between the two sentences went with the
-    // second one; nothing inside the surviving sentence changed.
-    note: '掲載している画面はすべて合成データで、実顧客・実案件・本番運用の記録ではありません。',
+    channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
+    emailCta: 'メールで相談する',
+    githubCta: 'GitHub で実装を見る',
   },
 
   mobileBar: {
@@ -215,6 +242,15 @@ export const ui = {
     scaleHeaders: ['項目', '実測値', '取得方法'],
     technicalCta: '技術詳細のページへ',
     evidenceLabel: 'Evidence',
+    /*
+     * #8 §15. A GitHub Actions run page is not always readable to a signed-out
+     * visitor, so a link to one can dead-end with no explanation. The note is
+     * rendered only when a link actually points at a run — a standing caveat
+     * under every repository list would be a caveat about links that do not
+     * need one.
+     */
+    repositoryAuthNote:
+      'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
   },
 
   /**

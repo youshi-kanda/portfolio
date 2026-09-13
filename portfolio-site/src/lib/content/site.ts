@@ -238,6 +238,25 @@ export const SITE_NON_SHIPPING: readonly SiteStringExemption[] = [
     why: '節・手順の序数。構造であって文ではない — 数字である間だけ免除する。',
     valuePattern: /^\d+$/,
   },
+  /*
+   * #8 — two leaves that were being counted as unregistered COPY and are not
+   * copy at all. Both already have a rule above that says why; they were simply
+   * not named by it.
+   */
+  {
+    leaf: 'example',
+    why:
+      'capability が実例として挙げる作品の slug。`work` と同じ理由で免除する — ' +
+      '読者が見るのは work レコードの title で、ここにあるのは参照。' +
+      'capabilitiesGate が未知の slug を先に落とすので、綴りは別途守られている。',
+  },
+  {
+    leaf: 'key',
+    why:
+      'capability category の序数。`index` と同じ理由で免除し、同じ条件を付ける — ' +
+      '数字でなくなった瞬間に、それは構造ではなく読ませる語なので免除が外れる。',
+    valuePattern: /^\d+$/,
+  },
 ];
 
 export interface SiteString {

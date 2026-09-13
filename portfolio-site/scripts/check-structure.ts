@@ -133,20 +133,87 @@ const INTERNAL_TOKENS = [
   'sourceRef', 'reviewStatus', 'publicDemoScope', 'spec CS-',
   'public-repo', 'private-repo', 'linkPolicy',
   'data-homepage-role="lead"',
+  // #8 — the editorial voice. Each of these was a note from whoever wrote the
+  // record to whoever reviews it, printed to the reader inside a table of
+  // measurements or a scope boundary. They are checked as literals because
+  // that is what they were: fixed phrases, not a style to be detected.
+  '推定値を書かない', '作品全体の性質として書かない',
+  // A shell command is how a number was obtained, not what it means. The
+  // Case Study says the count and where it came from in a sentence instead.
+  'grep -rho', 'wc -l', 'find src -name',
+  // The publication review's own verdict. A record clearing its own review is
+  // not a fact about the work (spec §11.1).
+  'PUBLISH READY',
   // The /work/ header's own implementation talk, removed at the #7 visual
   // review. The strings stay registered in ui.json; what must not come back is
   // this page RENDERING them. Each literal below is a fragment of one of the
   // three: the h1's growth promise, the lede's degeneracy rule, the rail note.
   '20 件まで', '一様な格子', '0 → 20 works',
 ];
+//
+// SCANNED OVER EVERY PUBLIC ROUTE, NOT TWO. The check used to read the homepage
+// and the archive, which is where #7's leaks were; #8 found the rest of them on
+// the Case Study and Technical pages, which nothing was looking at. A gate that
+// covers the pages a previous pass happened to fix is a record of that pass,
+// not a contract.
+const CASE_ROUTES = shipping
+  .filter((w) => w.caseStudyPublished)
+  .flatMap((w) => [`work/${w.slug}/index.html`, `work/${w.slug}/technical/index.html`]);
+const PUBLIC_ROUTES = ['index.html', 'work/index.html', 'how-i-build/index.html', ...CASE_ROUTES];
+
 let PUBLIC_INTERNAL = 0;
-for (const route of ['index.html', 'work/index.html']) {
+for (const route of PUBLIC_ROUTES) {
   const html = read(route);
   for (const token of INTERNAL_TOKENS) {
     if (html.includes(token)) {
       PUBLIC_INTERNAL += 1;
-      failures.push(`PUBLIC_INTERNAL: /${route === 'index.html' ? '' : route.replace('index.html', '')} に内部語 ${token} が出ている`);
+      failures.push(`PUBLIC_INTERNAL: /${route.replace(/index\.html$/, '')} に内部語 ${token} が出ている`);
     }
+  }
+}
+
+// ---- CONTACT_EMAIL ----
+// U-01. The address ships on one approval covering one email, so the rendered
+// section must carry exactly that: one visible address, reachable, once. Two
+// would mean a second channel nobody approved; zero would mean the conversion
+// point regressed to "read the code" while the copy still promises a reply.
+const contactAt = home.indexOf('id="contact"');
+const contactHtml = contactAt < 0 ? '' : home.slice(contactAt, home.indexOf('</section>', contactAt));
+const visibleEmails = [...contactHtml.matchAll(/>([^<>@\s]+@[a-z0-9.-]+\.[a-z]{2,})</gi)].map(
+  (m) => m[1] as string,
+);
+const CONTACT_EMAIL = new Set(visibleEmails).size;
+expect('CONTACT_EMAIL', CONTACT_EMAIL, 1);
+expect('CONTACT_EMAIL_SHOWN', visibleEmails.length, 1);
+
+const MAILTO_LINKS = [...contactHtml.matchAll(/href="mailto:([^"]+)"/g)].map((m) => m[1] as string);
+if (MAILTO_LINKS.length === 0) {
+  failures.push('CONTACT_EMAIL: 住所は出ているが mailto: リンクが無い — 読めるだけで送れない');
+}
+for (const to of MAILTO_LINKS) {
+  if (!visibleEmails.includes(to)) {
+    failures.push(`CONTACT_EMAIL: mailto:${to} が画面に出ている住所と違う`);
+  }
+}
+// The GitHub route must survive alongside it. The two channels have different
+// jobs (#8 §1) and collapsing either into the other is the regression.
+if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
+  failures.push('CONTACT_EMAIL: GitHub 導線が CONTACT から消えている');
+}
+
+// ---- CASE_SPEC_IDS ----
+// The case-study and technical specs number their sections CS-1…CS-16 and
+// T-0…T-8. Those are filing references for documents a reader does not have,
+// and #8 replaced them with the section's position. The pattern is anchored to
+// the rail and the table of contents — the two places an index is PRINTED — so
+// a work whose own content legitimately names a test id (`T-09` in PPM's test
+// breakdown) does not trip it.
+let CASE_SPEC_IDS = 0;
+for (const route of [...CASE_ROUTES, 'index.html']) {
+  const html = read(route);
+  for (const m of html.matchAll(/<span class="(?:ix|mo)">((?:CS|T)-\d+)<\/span>/g)) {
+    CASE_SPEC_IDS += 1;
+    failures.push(`CASE_SPEC_IDS: /${route.replace(/index\.html$/, '')} の節番号が spec id ${m[1]} のまま`);
   }
 }
 
@@ -157,7 +224,9 @@ console.log(
     `CAPABILITY_CATEGORIES = ${CAPABILITY_CATEGORIES} / ` +
     `ARCHIVE_ROWS = ${ARCHIVE_ROWS} (shipping ${shipping.length}) / ` +
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
-    `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL}`,
+    `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
+    `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
+    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length})`,
 );
 
 if (failures.length > 0) {

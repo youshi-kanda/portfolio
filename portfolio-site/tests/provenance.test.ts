@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 123 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 125 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -164,8 +164,26 @@ describe('provenance matrix', () => {
     const fact = all.filter((c) => c.publication.claimType === 'fact');
     // #7 added three ui-system labels (Role / Selected technology / the
     // archive CTA) and two authored hero CTAs.
-    assert.equal(presentation.length, 123);
-    assert.equal(fact.length, 31);
+    //
+    // #8 leaves presentation where it was and adds one fact. It removed the
+    // provenance 状態 label and added the GitHub CTA — both ui-system, both
+    // presentation, and they cancel. The two sentences it added are editorial
+    // and therefore FACTS: 「GitHubの公開情報もご確認いただけます」 and
+    // 「GitHubへのサインインが必要な場合があります」 each assert something a
+    // reader can find out is wrong, so each carries a basis and an approver
+    // rather than the label exemption.
+    assert.equal(presentation.length, 125);
+    assert.equal(fact.length, 33);
+
+    // U-01 added three: the email row label and its CTA present, and the
+    // address itself asserts. The address is also the registry's first
+    // `user-fact` — the cell that demands a non-empty value AND an approver,
+    // which is why the slot stayed empty until its owner filled it.
+    const userFacts = all.filter((c) => c.publication.sourceType === 'user-fact');
+    assert.deepEqual(userFacts.map((c) => c.id), ['home.contact.email']);
+    assert.equal(userFacts[0]!.publication.claimType ?? 'fact', 'fact');
+    assert.equal(userFacts[0]!.publication.approvedBy, 'user');
+    assert.ok(userFacts[0]!.text.length > 0);
     // ui-system is the registry's own word for label / heading / button, which
     // is what presentation means on this axis. Nothing else was reclassified.
     assert.equal(
