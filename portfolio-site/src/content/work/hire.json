@@ -1,0 +1,98 @@
+{
+  "slug": "hire",
+  "title": "採用管理 Web Application",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 2,
+  "homepage": "featured",
+  "productType": "業務 Web Application",
+  "targetUser": "採用担当者と応募者",
+  "problem": [
+    "応募受付から選考、面接日程、合否までが別々の手段に分かれていた。",
+    "応募者の個人情報を保持期限後にどう扱うかが業務フローに組み込まれていない。"
+  ],
+  "purpose": "応募受付から選考、応募者管理、面接日程、合否判定までを 1 つの管理画面に集約した採用管理 Web アプリ。Google Calendar 連携での面接予約と通知、応募者情報の保持期限後の匿名化まで業務フローに含めている。",
+  "implementationScope": [
+    "応募者一覧・検索・詳細",
+    "選考ステータス管理",
+    "合否判定",
+    "面接の予約・変更・キャンセル",
+    "カレンダー連携と通知",
+    "担当者管理と統計ダッシュボード",
+    "保持期限後の応募者情報の匿名化"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "React"
+  ],
+  "platform": [
+    "Cloudflare Pages",
+    "Pages Functions",
+    "Cloudflare D1"
+  ],
+  "role": [
+    "Frontend",
+    "Backend",
+    "Database",
+    "Auth",
+    "Infrastructure"
+  ],
+  "selectedTech": [
+    "React",
+    "TypeScript",
+    "Cloudflare Pages / Functions",
+    "Cloudflare D1",
+    "Google Calendar API",
+    "Twilio"
+  ],
+  "keyDecision": [
+    {
+      "decision": "正本を表計算からデータベースへ移した。",
+      "rationale": "表計算を正本にした初期版から、データベースを正本にした Web アプリへ段階的に作り替えている。一覧・検索・状態遷移・判定を業務として回すには、正本の側を変える必要があった。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "image": {
+    "src": "/img/hirePipeline.svg",
+    "width": 1280,
+    "height": 800,
+    "caption": "Reconstructed interface / dummy data"
+  },
+  "visual": {
+    "entryVariant": "v-split",
+    "caseVariant": "ledger",
+    "signal": "藍 #1F3F7A",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "rule",
+    "displayCut": "2 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.2（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

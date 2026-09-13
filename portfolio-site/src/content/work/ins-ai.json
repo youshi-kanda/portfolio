@@ -1,0 +1,95 @@
+{
+  "slug": "ins-ai",
+  "title": "保険代理店向け AI 相談支援システム",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 1,
+  "homepage": "featured",
+  "productType": "実務 AI / 判断支援 / RAG",
+  "targetUser": "保険代理店の相談業務オペレーター",
+  "problem": [
+    "顧客から聞き取った条件に対して、どの商品が適用できるかを人が社内基準に照らして調べていた。",
+    "判断の根拠が社内ナレッジに散在し、確認に時間がかかる。"
+  ],
+  "purpose": "顧客から聞き取った条件をもとに、どの商品が適用できるかを社内基準に照らして判定し、その根拠を社内ナレッジから検索して提示する相談支援システム。オペレーターが調べて判断していた工程そのものを対象にしている。",
+  "implementationScope": [
+    "聞き取り条件の入力",
+    "商品ごとの適用可否の判定",
+    "社内ナレッジの検索と根拠提示",
+    "相談記録の PDF 化",
+    "テナント分離と組織階層",
+    "権限テンプレートと監査ログ"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "React"
+  ],
+  "platform": [
+    "Supabase",
+    "PostgreSQL"
+  ],
+  "role": [
+    "Frontend",
+    "Backend",
+    "AI Integration",
+    "Database",
+    "Auth"
+  ],
+  "selectedTech": [
+    "React",
+    "TypeScript",
+    "Supabase / PostgreSQL",
+    "RAG（Embedding / Vector Search）",
+    "LLM"
+  ],
+  "keyDecision": [
+    {
+      "decision": "回答に根拠を添えるところまでを実装範囲にした。",
+      "rationale": "ナレッジ分割・埋め込み生成・ベクトル検索・引用付き回答を個別の処理として実装している。判定だけを返すと、利用者はその判定を確かめられない。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "image": {
+    "src": "/img/insAiConsult.svg",
+    "width": 1280,
+    "height": 800,
+    "caption": "Reconstructed interface / dummy data"
+  },
+  "visual": {
+    "entryVariant": "v-stage",
+    "caseVariant": "walkthrough",
+    "signal": "紫紺 #4A3A6B",
+    "frame": "fr-stage",
+    "ground": "inv",
+    "texture": "none",
+    "displayCut": "2 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "private-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.1（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 1 位 `ANON-AI-01`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

@@ -3,8 +3,8 @@
   "title": "Document Field Extraction Demo",
   "status": "published",
   "shipping": true,
-  "featured": true,
-  "featuredOrder": 3,
+  "featured": false,
+  "featuredOrder": 10,
   "repoPath": "document-field-extraction-demo/",
   "productType": "帳票の OCR 後処理パイプライン（CLI）",
   "targetUser": "事務処理担当 + 確認担当",
@@ -197,5 +197,15 @@
     ],
     "approvedBy": null,
     "approvedAt": null
-  }
+  },
+  "role": [
+    "Backend",
+    "Architecture",
+    "Testing"
+  ],
+  "selectedTech": [
+    "JavaScript (Node.js 20)",
+    "node:test",
+    "JSON Schema"
+  ]
 }

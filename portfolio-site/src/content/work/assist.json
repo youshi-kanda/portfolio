@@ -1,0 +1,96 @@
+{
+  "slug": "assist",
+  "title": "組織向け AI アシスタント基盤",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 3,
+  "homepage": "featured",
+  "productType": "AI Platform / RAG / External Integration",
+  "targetUser": "企業の従業員",
+  "problem": [
+    "用途の違う AI アプリを個別に作ると、認証・テナント・監査が三重に実装される。",
+    "業務で使っているカレンダーや連絡手段と切り離された AI は、業務の中に入らない。"
+  ],
+  "purpose": "AI 秘書・社内 AI チャット・管理ポータルの 3 つのアプリを、1 つの共通基盤の上に載せた AI Platform。組織単位のテナント分離・権限・監査を基盤側に置き、カレンダーや Slack など業務で使っているサービスと接続している。",
+  "implementationScope": [
+    "共通基盤（認証 / テナント / 監査 / RAG）",
+    "AI 秘書",
+    "社内 AI チャット",
+    "管理ポータル",
+    "組織ごとの設定解決と暗号化保管",
+    "外部サービス連携"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "React"
+  ],
+  "platform": [
+    "Supabase",
+    "PostgreSQL"
+  ],
+  "role": [
+    "Architecture",
+    "Frontend",
+    "Backend",
+    "AI Integration",
+    "Infrastructure"
+  ],
+  "selectedTech": [
+    "TypeScript",
+    "React",
+    "Supabase / PostgreSQL",
+    "RAG（Hybrid Search）",
+    "LLM",
+    "Google / Slack 連携"
+  ],
+  "keyDecision": [
+    {
+      "decision": "共通サービスを基盤側へ切り出した。",
+      "rationale": "3 つのアプリが同じ認証・テナント・監査を必要とする。基盤に置くか各アプリに置くかの選択で、基盤側に寄せている。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "image": {
+    "src": "/img/assistPlatform.svg",
+    "width": 1280,
+    "height": 800,
+    "caption": "Reconstructed architecture"
+  },
+  "visual": {
+    "entryVariant": "v-stage",
+    "caseVariant": "pipeline",
+    "signal": "葡萄 #6E2C4A",
+    "frame": "fr-stage",
+    "ground": "tone",
+    "texture": "none",
+    "displayCut": "2 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "private-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.3（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 3 位 `ANON-AI-02`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

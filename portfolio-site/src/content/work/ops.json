@@ -1,0 +1,99 @@
+{
+  "slug": "ops",
+  "title": "業務運用 Platform",
+  "status": "published",
+  "shipping": true,
+  "featured": true,
+  "featuredOrder": 4,
+  "homepage": "featured",
+  "productType": "Business Operations / Permissions / Multi-tenant",
+  "targetUser": "現場スタッフと管理者",
+  "problem": [
+    "現場スタッフと管理者が同じ仕組みを別の権限で使うため、誰が何をどこまで操作できるかを後から足すと破綻する。",
+    "業務の状態遷移が画面ごとにばらばらに実装される。"
+  ],
+  "purpose": "現場スタッフと管理者が同じ仕組みを別の権限で使う業務運用プラットフォーム。誰が何をどこまで操作できるかと、業務がどの状態からどの状態へ進むかを先に設計として確定させ、日報・マニュアル・通知をその同じ権限モデルの上に載せている。",
+  "implementationScope": [
+    "権限とスコープの定義",
+    "業務の状態遷移",
+    "日報",
+    "動画マニュアル",
+    "通知（Web Push）",
+    "tenant / project / user の 3 階層管理",
+    "管理画面"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [
+    "Next.js",
+    "React"
+  ],
+  "platform": [
+    "Cloudflare Workers",
+    "Supabase",
+    "PostgreSQL"
+  ],
+  "role": [
+    "Architecture",
+    "Frontend",
+    "Backend",
+    "Database",
+    "Infrastructure"
+  ],
+  "selectedTech": [
+    "Next.js",
+    "React",
+    "Cloudflare Workers",
+    "Supabase / PostgreSQL",
+    "RBAC / RLS",
+    "Web Push"
+  ],
+  "keyDecision": [
+    {
+      "decision": "権限とスコープ、状態遷移を実装より先に確定させた。",
+      "rationale": "確定させた権限の一覧とスコープが、そのままデータベース側のアクセス制御に対応している。後から足す方式では、画面ごとに判定が散る。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "image": {
+    "src": "/img/opsPermissions.svg",
+    "width": 1280,
+    "height": 800,
+    "caption": "Reconstructed interface / dummy data"
+  },
+  "visual": {
+    "entryVariant": "v-split",
+    "caseVariant": "ledger",
+    "signal": "弁柄 #A2401C",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "rule",
+    "displayCut": "2 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "private-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.4（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

@@ -119,6 +119,50 @@ export function featuredEvidence(
 }
 
 /**
+ * Whether `/work/<slug>/` is actually emitted for this work.
+ *
+ * Restates the page's own `getStaticPaths`: the route exists exactly when the
+ * work's first Evidence id resolves to a record. A row that links without
+ * asking this is a dead link the moment a work ships before its Evidence does
+ * — which is the state every work added by #7 is in, deliberately, because
+ * their Case Studies belong to #8.
+ *
+ * The alternative — linking anyway and letting `check:links` catch it — moves
+ * the decision from the component that knows the answer to a script that finds
+ * out afterwards.
+ */
+export function workHasDetailPage(
+  work: Work,
+  evidence: readonly Evidence[],
+): boolean {
+  const first = work.evidence[0];
+  if (!first) return false;
+  return evidence.some((e) => e.id === first);
+}
+
+/**
+ * The technologies the page shows for a work, in the order the record states.
+ *
+ * `selectedTech` is the editorial pick (4–6, spec §5.0); `languages` is what
+ * the code is written in. A V3 record has only the second, so it answers with
+ * that rather than showing nothing — the fallback is what lets the field be
+ * added to ten records one at a time instead of all at once.
+ */
+export const workSelectedTech = (work: Work): readonly string[] =>
+  work.selectedTech.length > 0 ? work.selectedTech : work.languages;
+
+/**
+ * The homepage tiers. `featured` and `more` are disjoint by schema refinement,
+ * and a shipping work in neither is archive-only — reachable from /work/ and
+ * from nowhere else, which is where `dfe` now lives.
+ */
+export const featuredHomepageWorks = (works: readonly Work[]): Work[] =>
+  shippingWorks(works).filter((w) => w.homepage === 'featured');
+
+export const moreHomepageWorks = (works: readonly Work[]): Work[] =>
+  shippingWorks(works).filter((w) => w.homepage === 'more');
+
+/**
  * A section's displayed number: its position in the running order.
  *
  * The number is derived and never stored, which is the whole point. V3 wrote

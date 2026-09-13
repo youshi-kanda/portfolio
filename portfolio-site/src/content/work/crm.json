@@ -4,7 +4,7 @@
   "status": "published",
   "shipping": true,
   "featured": true,
-  "featuredOrder": 1,
+  "featuredOrder": 5,
   "repoPath": "ai-crm-demo/",
   "productType": "小規模店舗向け 顧客・販促管理システム（CRM）",
   "targetUser": "店舗オーナー + スタッフ（権限差あり）",
@@ -136,5 +136,21 @@
     ],
     "approvedBy": null,
     "approvedAt": null
-  }
+  },
+  "homepage": "featured",
+  "role": [
+    "Frontend",
+    "Backend",
+    "AI Integration",
+    "Database",
+    "Testing / CI-CD"
+  ],
+  "selectedTech": [
+    "Django REST Framework",
+    "PostgreSQL",
+    "React / TypeScript",
+    "Redis / Celery",
+    "LINE Messaging API",
+    "PWA"
+  ]
 }

@@ -1,0 +1,83 @@
+{
+  "slug": "minio",
+  "title": "MinIO Access Management",
+  "status": "published",
+  "shipping": true,
+  "featured": false,
+  "featuredOrder": 7,
+  "homepage": "more",
+  "productType": "Infrastructure / Auth",
+  "targetUser": "社内ストレージ管理者",
+  "problem": [
+    "オブジェクトストレージのバケット・ユーザー・ポリシーをコマンドで運用すると、担当者を増やせない。"
+  ],
+  "purpose": "オブジェクトストレージのバケット・ユーザー・ポリシー・招待・監査ログ・期限付き共有リンクを扱う GUI 管理コンソール。",
+  "implementationScope": [
+    "バケット管理",
+    "ユーザー・ポリシー管理",
+    "招待",
+    "監査ログ",
+    "期限付き共有リンク"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript"
+  ],
+  "frameworks": [],
+  "platform": [
+    "MinIO",
+    "Docker"
+  ],
+  "role": [
+    "Frontend",
+    "Backend",
+    "Infrastructure",
+    "Auth"
+  ],
+  "selectedTech": [
+    "MinIO",
+    "TypeScript",
+    "Docker",
+    "Google OAuth 2.0"
+  ],
+  "keyDecision": [
+    {
+      "decision": "操作を GUI に開いたうえで監査ログを残す。",
+      "rationale": "招待・共有リンク・ポリシー変更は運用者が日常的に行う操作で、記録が無いと後から辿れない。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "visual": {
+    "entryVariant": "v-terminal",
+    "caseVariant": "ledger",
+    "signal": "鈍色 #5C6066",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "none",
+    "displayCut": "1 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 02（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §5 More Projects `minio-access-management`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

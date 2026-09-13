@@ -1,0 +1,87 @@
+{
+  "slug": "docai",
+  "title": "OCR / LLM 文書処理システム",
+  "status": "published",
+  "shipping": true,
+  "featured": false,
+  "featuredOrder": 8,
+  "homepage": "more",
+  "productType": "Document AI / Full-stack",
+  "targetUser": "記帳・経理担当",
+  "problem": [
+    "通帳の画像や PDF から取引データを人が転記していた。"
+  ],
+  "purpose": "通帳の画像・PDF から取引データを抽出して CSV 出力する Web アプリ。2 系統の LLM を併用し、処理の進捗を WebSocket で返す。",
+  "implementationScope": [
+    "画像・PDF の取り込み",
+    "2 系統の LLM による抽出",
+    "文字種の正規化",
+    "WebSocket による進捗表示",
+    "CSV 出力"
+  ],
+  "limitations": [],
+  "originalProductScope": [],
+  "languages": [
+    "TypeScript",
+    "Python"
+  ],
+  "frameworks": [
+    "React"
+  ],
+  "platform": [
+    "PostgreSQL",
+    "Docker"
+  ],
+  "role": [
+    "Frontend",
+    "Backend",
+    "AI Integration",
+    "Infrastructure"
+  ],
+  "selectedTech": [
+    "React",
+    "TypeScript",
+    "Python",
+    "PostgreSQL",
+    "WebSocket"
+  ],
+  "keyDecision": [
+    {
+      "decision": "LLM を 2 系統併用した。",
+      "rationale": "1 系統の出力だけでは、読み取りの誤りをその場で検出できない。"
+    }
+  ],
+  "evidence": [],
+  "caseStudyPublished": false,
+  "visual": {
+    "entryVariant": "v-split",
+    "caseVariant": "pipeline",
+    "signal": "鈍色 #5C6066",
+    "frame": "fr-plate",
+    "ground": "paper",
+    "texture": "none",
+    "displayCut": "1 行"
+  },
+  "showcase": {
+    "source": {
+      "access": "public-repo",
+      "linkPolicy": "withheld",
+      "path": null
+    },
+    "demoScope": [],
+    "verification": {
+      "tests": null,
+      "verificationId": null
+    }
+  },
+  "publication": {
+    "reviewStatus": "approved",
+    "sourceType": "source-derived",
+    "sourceRefs": [
+      "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 03（#6 / PR #15 merged）",
+      "targetUser / problem / implementationScope / keyDecision / languages — portfolio-site/docs/research/project-inventory.md §5 More Projects `-OCR-LLM_System`（#5 / PR #14 merged）"
+    ],
+    "approvedBy": null,
+    "approvedAt": null
+  }
+}

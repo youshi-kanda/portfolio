@@ -3,8 +3,8 @@
   "title": "Project Progress Manager",
   "status": "published",
   "shipping": true,
-  "featured": true,
-  "featuredOrder": 2,
+  "featured": false,
+  "featuredOrder": 6,
   "repoPath": "gas-project-management-demo/",
   "productType": "Google スプレッドシートを正本とする プロジェクト進捗管理アドオン",
   "targetUser": "プロジェクト関係者（スプレッドシートを既に使っている人）",
@@ -123,5 +123,17 @@
     ],
     "approvedBy": null,
     "approvedAt": null
-  }
+  },
+  "homepage": "more",
+  "role": [
+    "Automation",
+    "Architecture",
+    "Testing"
+  ],
+  "selectedTech": [
+    "Google Apps Script",
+    "Google Sheets",
+    "HTML Service",
+    "LockService"
+  ]
 }

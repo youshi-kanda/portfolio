@@ -28,7 +28,7 @@
  * downgraded and there is no `--force` escape hatch.
  */
 import type { Finding, Level } from './finding.ts';
-import { workSource } from '../content/compat.ts';
+import { workSourceIsLinkable } from '../content/compat.ts';
 import { BASIS_ID_FORMS, provenanceFindings, type BasisResolver } from './provenance.ts';
 import type {
   Work,
@@ -187,7 +187,9 @@ export function truthGate({
   for (const c of caseStudies) {
     const work = bySlug.get(c.slug);
     if (!work || c.repository.length > 0) continue;
-    if (workSource(work)?.access === 'public-repo') {
+    // Linkable, not merely public: a source this site withholds (#7 C-8) is
+    // not a place the reader can be sent, so there is nothing to demand.
+    if (workSourceIsLinkable(work)) {
       out.push({
         level,
         code: 'T-NO-REPO',

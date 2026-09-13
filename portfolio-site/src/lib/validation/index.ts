@@ -5,11 +5,11 @@
  * already been written to disk and then found to be wrong is a page that can
  * be deployed by accident.
  */
-import { featuredWorks, shippingWorks, workVisual } from '../content/derive.ts';
+import { shippingWorks, workVisual } from '../content/derive.ts';
 import type { ContentBundle } from '../content/load.ts';
 import { siteStrings } from '../content/site.ts';
 import { approvedCopyGate } from './approved-copy.ts';
-import { bandGate } from './band.ts';
+import { capabilitiesGate } from './capabilities.ts';
 import { claimsGate } from './claims.ts';
 import { siteCopyGate } from './site-copy.ts';
 import { errors, format, warnings, type Finding } from './finding.ts';
@@ -51,7 +51,7 @@ export function runGates(
     ...siteCopyGate(copy, uiCopy, site),
     ...claimsGate({ copy, uiCopy, site, workCount: shipping.length, derivedIds }),
     ...migrationGate(works, options.mode),
-    ...bandGate(featuredWorks(works)),
+    ...capabilitiesGate(works),
     ...variantGate(
       shipping.map((w) => ({ slug: w.slug, entryVariant: workVisual(w).entryVariant })),
       { strict: options.strict ?? false },
