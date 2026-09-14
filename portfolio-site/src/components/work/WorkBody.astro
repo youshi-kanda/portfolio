@@ -1,13 +1,42 @@
 ---
 /**
- * The blocks inside a work entry. Identical in every layout variant — only
- * their arrangement changes, which is what keeps the variants a presentation
+ * The blocks inside a work page. Identical wherever it is used — only the
+ * arrangement around it changes, which is what keeps the layout a presentation
  * choice rather than a content choice.
  *
  *   1. what it is        product type / user / purpose, then the problem
  *   2. what was built    implementation scope, languages, frameworks
  *   3. why               the key engineering decision, and what was rejected
  *   4. what it is not    three scopes kept deliberately apart
+ *
+ * EVERY BLOCK IS DROPPED WHEN IT IS EMPTY (Overview checkpoint).
+ *
+ * This component only ever rendered for `crm`, `ppm` and `dfe`, whose records
+ * are complete, so every list it drew had something in it and the guards were
+ * never needed. The Overview gives a page to seven more works, and those
+ * records are at a different stage: none of them states `limitations` or
+ * `originalProductScope` yet, and `minio` lists no frameworks.
+ *
+ * Rendered as-is, that is a heading with an empty list under it — the page
+ * asking a question about the work and then answering nothing, which reads as
+ * "this work has no limitations" rather than "nobody has written them down".
+ * The alternative is to invent the content, which is the one thing this
+ * repository refuses. So the block goes, and comes back the day the record
+ * says something.
+ *
+ * `.scp` itself is dropped when all three of its columns are: an empty
+ * three-column grid still occupies a band and still draws its rules.
+ *
+ * HEADING DEPTH IS DECLARED, NOT IMPLIED BY THE TAG. The frozen stylesheet
+ * selects these blocks by element name (`.prob h4`, `.dec h5`), so the tags are
+ * fixed by the design and the real depth is stated with `aria-level` — the same
+ * arrangement `EvidenceLedger` and `CaseBody` use.
+ *
+ * It has to be a prop because this component sits at two depths. On an Overview
+ * it follows the page's h1 directly and its blocks are level 2; inside a work
+ * entry it follows that entry's own heading and they are level 3. Shipping it
+ * with the tag's implied depth put `h1 → h4` on seven Overviews, which is two
+ * levels a screen reader is told exist and never meets.
  */
 import { workDemoScope } from '../../lib/content/compat.ts';
 import type { Work } from '../../lib/content/schema.ts';
@@ -15,10 +44,17 @@ import { ui } from '../../lib/content/ui.ts';
 
 interface Props {
   work: Work;
+  /** The depth of this component's block headings in the page outline. */
+  headingLevel?: number;
 }
 
-const { work } = Astro.props;
+const { work, headingLevel = 2 } = Astro.props;
+/** The decision list's own titles sit one level under its block heading. */
+const subLevel = headingLevel + 1;
 const demoScope = workDemoScope(work);
+/** The three scopes are one band; with nothing in any of them there is no band. */
+const hasScope =
+  demoScope.length > 0 || work.limitations.length > 0 || work.originalProductScope.length > 0;
 const fields = ui.work.fieldLabels.map((f) => ({
   label: f.label,
   value: work[f.key as 'productType' | 'targetUser' | 'purpose'],
@@ -33,53 +69,77 @@ const fields = ui.work.fieldLabels.map((f) => ({
     ))
   }
 </div>
-<div class="prob">
-  <h4>{ui.work.problem}</h4>
-  <ol class="num">{work.problem.map((t) => <li>{t}</li>)}</ol>
-</div>
+{
+  work.problem.length > 0 && (
+    <div class="prob">
+      <h4 aria-level={headingLevel}>{ui.work.problem}</h4>
+      <ol class="num">{work.problem.map((t) => <li>{t}</li>)}</ol>
+    </div>
+  )
+}
 
 {/* 2 — what was built, and in what */}
 <div class="impl">
-  <h4>{ui.work.implementationScope}</h4>
-  <div class="feat">{work.implementationScope.map((t) => <span>{t}</span>)}</div>
+  {work.implementationScope.length > 0 && (
+    <>
+      <h4 aria-level={headingLevel}>{ui.work.implementationScope}</h4>
+      <div class="feat">{work.implementationScope.map((t) => <span>{t}</span>)}</div>
+    </>
+  )}
   <div class="lgs">
-    <div>
-      <span class="mo"><b>{ui.work.languages}</b></span>
-      <div class="feat sig">{work.languages.map((t) => <span>{t}</span>)}</div>
-    </div>
-    <div>
-      <span class="mo"><b>{ui.work.frameworks}</b></span>
-      <div class="feat">{work.frameworks.map((t) => <span>{t}</span>)}</div>
-    </div>
+    {work.languages.length > 0 && (
+      <div>
+        <span class="mo"><b>{ui.work.languages}</b></span>
+        <div class="feat sig">{work.languages.map((t) => <span>{t}</span>)}</div>
+      </div>
+    )}
+    {/* `minio` states none. An empty "Frameworks / Platform" would read as a
+        claim that it uses none, which is a different statement. */}
+    {work.frameworks.length > 0 && (
+      <div>
+        <span class="mo"><b>{ui.work.frameworks}</b></span>
+        <div class="feat">{work.frameworks.map((t) => <span>{t}</span>)}</div>
+      </div>
+    )}
   </div>
 </div>
 
 {/* 3 — the one decision worth reading. Never the product description. */}
-<div class="dec">
-  <h4>{ui.work.keyDecision}</h4>
-  <ul>
-    {
-      work.keyDecision.map((d) => (
-        <li><h5>{d.decision}</h5><p class="note">{d.rationale}</p></li>
-      ))
-    }
-  </ul>
-</div>
+{
+  work.keyDecision.length > 0 && (
+    <div class="dec">
+      <h4 aria-level={headingLevel}>{ui.work.keyDecision}</h4>
+      <ul>
+        {work.keyDecision.map((d) => (
+          <li><h5 aria-level={subLevel}>{d.decision}</h5><p class="note">{d.rationale}</p></li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 {/* 4 — the three scopes, kept apart rather than merged into one ledger */}
-<div class="scp">
-  {demoScope.length > 0 && (
-    <div class="yes">
-      <h4>{ui.work.scope.included}</h4>
-      <ul>{demoScope.map((t) => <li>{t}</li>)}</ul>
+{
+  hasScope && (
+    <div class="scp">
+      {demoScope.length > 0 && (
+        <div class="yes">
+          <h4 aria-level={headingLevel}>{ui.work.scope.included}</h4>
+          <ul>{demoScope.map((t) => <li>{t}</li>)}</ul>
+        </div>
+      )}
+      {work.limitations.length > 0 && (
+        <div class="no">
+          <h4 aria-level={headingLevel}>{ui.work.scope.excluded}</h4>
+          <ul>{work.limitations.map((t) => <li>{t}</li>)}</ul>
+        </div>
+      )}
+      {work.originalProductScope.length > 0 && (
+        <div class="orig">
+          <h4 aria-level={headingLevel}>{ui.work.scope.original}</h4>
+          <ul>{work.originalProductScope.map((t) => <li>{t}</li>)}</ul>
+        </div>
+      )}
     </div>
-  )}
-  <div class="no">
-    <h4>{ui.work.scope.excluded}</h4>
-    <ul>{work.limitations.map((t) => <li>{t}</li>)}</ul>
-  </div>
-  <div class="orig">
-    <h4>{ui.work.scope.original}</h4>
-    <ul>{work.originalProductScope.map((t) => <li>{t}</li>)}</ul>
-  </div>
-</div>
+  )
+}

@@ -1,19 +1,24 @@
 ---
 /**
- * /work/<slug>/ — the Case Study.
+ * /work/<slug>/ — every shipping work's page. The Case Study where one has been
+ * written, the Overview where one has not.
  *
- * IMPLEMENT-01 shipped this route as the work's entry screen, with a note that
- * the full Case Study would land at the same URL. This is that: CS-1 … CS-16
- * from the spec's §17, at the URL the register has always pointed at, so no
- * link anywhere had to change and none went dead in between.
+ * THE EVIDENCE GATE IS GONE (Overview checkpoint). This route used to return
+ * `[]` for any work whose first Evidence id did not resolve, so seven of the
+ * ten shipping works had no page: the archive listed them and could not link
+ * them, and nothing anywhere introduced them. The condition read as caution —
+ * do not draw a screen we cannot source — but what it actually decided was
+ * whether a WORK is published, on the evidence of whether a SCREENSHOT is.
  *
- * Nothing here names a work. The variant comes from the content, the sections
- * come from what the content has, and the Evidence comes from the ids the work
- * and its Case Study cite — add a fourth work and this file is untouched.
+ * Those are four separate questions and `derive.ts` now keeps them apart:
+ * the work exists, its Evidence exists, its Case Study exists, its Technical
+ * page exists. This route asks only the first. `WorkOverview` draws what the
+ * work record says and no more; where there is no image it shows no image,
+ * which is a page about a work rather than a hole where a screen should be.
  *
- * A work with no Case Study record still gets its page: the entry screen, as
- * before. That keeps `/work/<slug>/` meaningful from the moment a work's facts
- * are sourced, rather than 404ing until its whole body is written.
+ * Nothing here names a work. The sections come from what the content has and
+ * the Evidence comes from the ids the work and its Case Study cite — add an
+ * eleventh work and this file is untouched.
  */
 import type { GetStaticPaths } from 'astro';
 import { getCollection } from 'astro:content';
@@ -29,7 +34,7 @@ import Breadcrumb from '../../../components/navigation/Breadcrumb.astro';
 import Nav from '../../../components/navigation/Nav.astro';
 import PageBar from '../../../components/navigation/PageBar.astro';
 import ReturnBand from '../../../components/navigation/ReturnBand.astro';
-import WorkEntry from '../../../components/work/WorkEntry.astro';
+import WorkOverview from '../../../components/work/WorkOverview.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import {
   ARCHIVE_HREF,
@@ -37,54 +42,62 @@ import {
   shippingWorks,
   technicalHref,
   workCrumbs,
+  workHasFigure,
+  workHasTechnical,
 } from '../../../lib/content/derive.ts';
-import { fill, ui } from '../../../lib/content/ui.ts';
+import { ui } from '../../../lib/content/ui.ts';
 
 export const getStaticPaths = (async () => {
+  // `shippingWorks` IS the whole condition — it is `workHasOverview` applied to
+  // the collection, and `routes.ts` and `Register` restate the same predicate
+  // so the sitemap, the archive's links and this list cannot disagree.
   const works = shippingWorks((await getCollection('work')).map((e) => e.data));
   const evidence = (await getCollection('evidence')).map((e) => e.data);
   const caseStudies = (await getCollection('caseStudy')).map((e) => e.data);
-  const byId = new Map(evidence.map((e) => [e.id, e]));
   const bySlug = new Map(caseStudies.map((c) => [c.slug, c]));
 
-  return works.flatMap((work, position) => {
-    const id = work.evidence[0];
-    const record = id ? byId.get(id) : undefined;
-    // A work with no resolvable Evidence gets no page rather than a page with a
-    // hole where the screen should be. The Truth gate has already failed the
-    // build for the dead reference (T-DEAD-REF) before this runs.
-    if (!record) return [];
-    return [
-      {
-        params: { slug: work.slug },
-        props: { work, evidence: record, allEvidence: evidence, position, caseStudy: bySlug.get(work.slug) ?? null },
-      },
-    ];
-  });
+  return works.map((work) => ({
+    params: { slug: work.slug },
+    props: {
+      work,
+      allEvidence: evidence,
+      caseStudy: bySlug.get(work.slug) ?? null,
+      hasTechnical: workHasTechnical(work, caseStudies),
+    },
+  }));
 }) satisfies GetStaticPaths;
 
-const { work, evidence, allEvidence, position, caseStudy } = Astro.props;
+const { work, allEvidence, caseStudy, hasTechnical } = Astro.props;
 
 const description = caseStudy ? caseStudy.overview : work.purpose;
 const sections = caseStudy ? caseSections(work, caseStudy) : [];
 
 /**
- * WAYFINDING IS NOT CONDITIONAL ON CONTENT (#11 §8).
+ * The synthetic-data strip states that the SCREENS on this page are synthetic.
+ * A Case Study always shows screens; an Overview shows one only when the work
+ * has an image, and `minio`, `docai` and `agri` have none. A disclaimer whose
+ * subject is absent is the defect /work/ removed from its own header in #7, so
+ * it is rendered on the same terms here: where there is something to disclaim.
+ */
+const showsScreens = caseStudy !== null || workHasFigure(work);
+
+/**
+ * WAYFINDING IS NOT CONDITIONAL ON CONTENT (#11 §8), and this checkpoint is
+ * where that contract gets paid.
  *
- * Everything below is computed from the work and its route, and none of it asks
- * whether a Case Study exists. That is the contract the Overview work will land
- * against: when the seven works that currently have no page get one, this file
- * gains an Overview branch and the trail, the return band and the bar are
- * already correct for it.
+ * The trail, the return band and the bar are computed from the work and its
+ * route. Seven works arrived with no Case Study, no Evidence and no image, and
+ * not one line below changed to accommodate them: the same crumb, the same
+ * 「作品一覧に戻る」, the same WORK INDEX bar.
  *
- * The one thing that does vary is whether there is anywhere DEEPER to go, and
- * that is a fact about the Technical route — which exists exactly when a Case
- * Study does (see technical.astro's getStaticPaths). So it is asked once, here,
- * rather than three times in the markup.
+ * What does vary is whether there is anywhere DEEPER to go, and that is a fact
+ * about the Technical route rather than about this page's contents. It is
+ * asked once, by the same predicate `technical.astro` gates itself on, so the
+ * Overview cannot offer a link to a page that was not emitted.
  */
 const archiveLabel = ui.register.railLabels[0];
 const crumbs = workCrumbs(archiveLabel, work.title, work.slug);
-const deeper = caseStudy ? technicalHref(work.slug) : null;
+const deeper = hasTechnical ? technicalHref(work.slug) : null;
 
 const returnLinks = [
   { label: ui.work.backToIndex, href: ARCHIVE_HREF, back: true },
@@ -95,7 +108,7 @@ const returnLinks = [
 <BaseLayout title={`${work.title} — ${work.productType}`} description={description}>
   <Nav progress={32} onHomepage={false} />
   <Breadcrumb crumbs={crumbs} />
-  <SyntheticBar />
+  {showsScreens && <SyntheticBar />}
   <main data-w={work.slug}>
     {
       caseStudy ? (
@@ -134,21 +147,20 @@ const returnLinks = [
           <section class="hero">
             <div class="page">
               <div class="tr">
-                <Rail
-                  index={ui.workPage.railIndex}
-                  labels={[
-                    ...ui.workPage.railLabels,
-                    fill(ui.workPage.railEntry, { title: work.title }),
-                  ]}
-                />
+                {/*
+                  The same rail the Case Study and Technical pages draw:
+                  index, the page's own name, the work. It used to read
+                  `01 SELECTED WORK / Entry — {title}`, which named a homepage
+                  band renamed in #7 and then printed the title a second time
+                  directly above the h1.
+                */}
+                <Rail index={ui.workPage.railIndex} labels={[...ui.workPage.railLabels, work.title]} />
                 <div class="msr">
                   {/*
-                    Same correction as the Case Study hero (#11 §4): the h1 is
-                    the work, and the product type is the kicker above it. This
-                    branch renders no page today — every work whose Evidence
-                    resolves also has a Case Study — but it is the Overview
-                    screen the next checkpoint ships, and it should not have to
-                    be told what its own heading is a second time.
+                    Same shape as the Case Study hero (#11 §4): the h1 is the
+                    work, the product type is the kicker above it. Seven works
+                    reach this branch and each one now names itself in the
+                    largest text on its own page.
                   */}
                   <p class="mo ty">{work.productType}</p>
                   <h1 class="dsp-s">{work.title}</h1>
@@ -157,7 +169,7 @@ const returnLinks = [
               </div>
             </div>
           </section>
-          <WorkEntry work={work} evidence={evidence} position={position} />
+          <WorkOverview work={work} />
         </>
       )
     }

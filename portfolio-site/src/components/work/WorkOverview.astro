@@ -1,0 +1,101 @@
+---
+/**
+ * The Overview — what `/work/<slug>/` shows when no Case Study has been
+ * written for the work.
+ *
+ * WHY IT IS NOT `WorkEntry`. That component picks one of three layout variants
+ * and every one of them draws `WorkFigure`, which renders the Evidence
+ * component and therefore requires an Evidence record. Seven of the ten
+ * shipping works have none, which is precisely why they had no page: the only
+ * renderer for a work page could not run without a screenshot.
+ *
+ * THE FIGURE IS THE WORK'S OWN IMAGE, NOT EVIDENCE. `work.image` carries its
+ * own `src`, `width`, `height` and caption; the homepage has drawn the four
+ * featured works from it since #7, none of which has an Evidence record. So a
+ * picture here is a picture, captioned — it makes no provenance claim, carries
+ * no `proves` / `notProves` ledger and no SHA, because those belong to an
+ * Evidence record and this work has not got one. Dressing an image up as
+ * Evidence would be the one thing worse than showing no image.
+ *
+ * WHAT IS DELIBERATELY ABSENT. No repository link, no test count, no CI
+ * status, no provenance. Those are claims, each with a record behind it, and a
+ * work that has not published one does not get a plausible-looking substitute.
+ * Every string on this page is a field of the work record that a person has
+ * already written and the Truth Gate already covers.
+ */
+import { workFigure, workHasFigure, workSelectedTech } from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+import WorkBody from './WorkBody.astro';
+
+interface Props {
+  work: Work;
+}
+
+const { work } = Astro.props;
+const figure = workHasFigure(work) ? workFigure(work) : null;
+const tech = workSelectedTech(work);
+---
+
+{
+  figure && (
+    <section class="s-tight">
+      <div class="page">
+        <div class="tr">
+          <div class="ins" />
+          <div class="fld">
+            {/*
+              The same figure the homepage draws, in the same shape: a cropped
+              plate and a caption beside it. `eager` — this is the first and
+              only image on the page, and it is above the body.
+            */}
+            <figure class="fw-f">
+              <span class="crop">
+                <img
+                  src={figure.src}
+                  width={figure.width}
+                  height={figure.height}
+                  alt={work.title}
+                  loading="eager"
+                />
+              </span>
+              <figcaption>{figure.caption}</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<section class="s-open">
+  <div class="page">
+    <div class="tr">
+      <div class="ins" />
+      <div class="fld">
+        <WorkBody work={work} />
+
+        {/*
+          Role and Selected technology close the block, in the order 01
+          FEATURED WORK uses — who built it, and only then what it was built
+          with. `role` is optional on the record and is dropped when absent
+          rather than printed as an empty label.
+        */}
+        <div class="fw-m" style="margin-top:34px">
+          {work.role.length > 0 && (
+            <span class="fx">
+              <span class="mo">{ui.work.role}</span>
+              <p>{work.role.join(' / ')}</p>
+            </span>
+          )}
+          {tech.length > 0 && (
+            <span class="fx">
+              <span class="mo">{ui.work.selectedTech}</span>
+              <p>{tech.join(' · ')}</p>
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

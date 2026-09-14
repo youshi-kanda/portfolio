@@ -15,11 +15,17 @@ import {
   ARCHIVE_HREF,
   METHOD_HREF,
   SITE_NAV_KEYS,
+  shippingWorks,
   siteNavItems,
   technicalHref,
   workCrumbs,
+  workHasFigure,
+  workHasOverview,
+  workHasTechnical,
   workHref,
+  workShowsCaseStudyCta,
 } from '../src/lib/content/derive.ts';
+import type { Work } from '../src/lib/content/schema.ts';
 import { publicRoutes } from '../src/lib/content/routes.ts';
 import { site } from '../src/lib/content/site.ts';
 import { ui } from '../src/lib/content/ui.ts';
@@ -177,5 +183,80 @@ describe('return navigation does not depend on page content', () => {
     assert.ok(ui.work.backToIndex.includes('戻る'));
     assert.ok(ui.work.backToWork.includes('{title}'));
     assert.ok(ui.work.backToWork.includes('戻る'));
+  });
+});
+
+/**
+ * The Overview checkpoint's route contract.
+ *
+ * What broke before was not a link but an absence: seven of ten shipping works
+ * had no page, because the route asked whether a SCREENSHOT was published in
+ * order to decide whether a WORK was. Every gate passed — there was nothing
+ * dead to find, only something missing.
+ *
+ * So these assert over the route SET and over the four questions being separate,
+ * rather than over the three records that happen to be complete.
+ */
+describe('Overview route contract', () => {
+  const content = () => realContent();
+
+  it('gives every shipping work a page', () => {
+    const { works, evidence, caseStudies } = content();
+    const emitted = new Set(publicRoutes(works, evidence, caseStudies).paths);
+    for (const w of shippingWorks(works)) {
+      assert.equal(workHasOverview(w), true, w.slug);
+      assert.ok(emitted.has(workHref(w.slug, false)), `${w.slug} の route が無い`);
+    }
+    assert.equal(shippingWorks(works).length, 10);
+  });
+
+  it('does not ask about Evidence — the regression, stated directly', () => {
+    const { works } = content();
+    const noEvidence = shippingWorks(works).filter((w) => w.evidence.length === 0);
+    // seven works, none of which had a page before this checkpoint
+    assert.equal(noEvidence.length, 7);
+    for (const w of noEvidence) assert.equal(workHasOverview(w), true, w.slug);
+  });
+
+  it('does not ask about an image either', () => {
+    const { works } = content();
+    const noImage = shippingWorks(works).filter((w) => !workHasFigure(w));
+    assert.deepEqual(noImage.map((w) => w.slug), ['minio', 'docai', 'agri']);
+    for (const w of noImage) assert.equal(workHasOverview(w), true, w.slug);
+  });
+
+  it('keeps the four questions apart on the shipped content', () => {
+    const { works, caseStudies } = content();
+    const shipping = shippingWorks(works);
+    const count = (f: (w: (typeof shipping)[number]) => boolean) => shipping.filter(f).length;
+
+    assert.equal(count(workHasOverview), 10);
+    assert.equal(count((w) => w.evidence.length > 0), 3);
+    assert.equal(count(workShowsCaseStudyCta), 3);
+    assert.equal(count((w) => workHasTechnical(w, caseStudies)), 3);
+    // A figure is its own question again: four works have an image and no Evidence.
+    assert.equal(count(workHasFigure), 7);
+  });
+
+  it('offers Technical only where Technical is emitted', () => {
+    const { works, evidence, caseStudies } = content();
+    const emitted = new Set(publicRoutes(works, evidence, caseStudies).paths);
+    for (const w of shippingWorks(works)) {
+      const claimed = workHasTechnical(w, caseStudies);
+      assert.equal(claimed, emitted.has(technicalHref(w.slug)), w.slug);
+    }
+  });
+
+  it('every archive row can link, because every row has somewhere to go', () => {
+    // `Register` decides `linked` with this predicate; the structure contract
+    // then counts the anchors in the built artifact.
+    const { works } = content();
+    assert.equal(shippingWorks(works).every(workHasOverview), true);
+  });
+
+  it('still refuses a work that is not published', () => {
+    const { works } = content();
+    const w = { ...(works[0] as Work), status: 'draft' as const };
+    assert.equal(workHasOverview(w), false);
   });
 });

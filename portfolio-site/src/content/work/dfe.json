@@ -172,7 +172,6 @@
     ]
   },
   "visual": {
-    "entryVariant": "v-terminal",
     "caseVariant": "pipeline",
     "signal": "弁柄 #A2401C",
     "frame": "fr-term",

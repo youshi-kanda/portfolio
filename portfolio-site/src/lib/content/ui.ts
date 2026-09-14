@@ -211,7 +211,8 @@ export const ui = {
     h1: '{count} 件。同じ規則で 20 件まで伸びる。',
     // The spaces between sentences are the frozen screen's own: the source set
     // each clause on its own line and HTML collapsed the breaks to spaces,
-    // which is where the lines wrap. Same for `variantNote` below.
+    // which is where the lines wrap. (`variantNote` carried the same shape and
+    // was deleted with the entry variant.)
     lede:
       '1 件が 1 行。行の順序・番号・信号色・レイアウト変種はコンテンツ側で宣言します。 ' +
       'ビルドが拒否するのは、変種の種類が足りずに一様な格子へ退化することであって、 ' +
@@ -225,21 +226,55 @@ export const ui = {
     variantRailLabels: ['レイアウト変種', 'Variant assignment'],
     variantHead: 'PROJECT VARIATION SYSTEM',
     variantSub: 'L1 共通システム / L2 レイアウト変種 / L3 作品固有トークン',
-    variantHeaders: ['作品', '製品種別', '言語', 'entry (L2)', 'case (L2)', 'signal (L3)'],
-    // ADAPTED — reference target only (was: positioning.WORKS の 1 要素だけ)
-    variantNote:
-      '変種は閉じた集合です。entry は {names} の {size} 種で、 ' +
-      'renderer を持つものだけが集合に入ります。 ' +
-      'いまの {count} 件では {floor} 種以上を使うことがビルドの条件です。 ' +
-      '作品を足す人が触るのは src/content/work/ の 1 ファイルだけで、 ' +
-      'Homepage の component は変更しません。',
+    /*
+     * `entry (L2)` IS GONE, AND SO IS `variantNote`.
+     *
+     * Both described the entry variant — the column that printed it, and the
+     * paragraph that explained the closed set, its renderer requirement and the
+     * diversity floor the build enforced. The Overview checkpoint retired all
+     * three: the renderers, the field and the gate. A registry row is a record
+     * that a string may ship, and neither of these describes anything this site
+     * has any more.
+     *
+     * The earlier decision to keep the variant table's copy registered after #7
+     * stopped rendering it was taken while the entry variant was still a live
+     * specification — "not displayed" and "not verified" being different states.
+     * That premise is what this checkpoint removed, so the rows go with it. The
+     * wording is in git history, which is where a retired specification belongs.
+     *
+     * The remaining headers stay: `case (L2)` and `signal (L3)` name contracts
+     * that are still live — `CaseSpine` reads the first, the renderers read the
+     * second.
+     */
+    variantHeaders: ['作品', '製品種別', '言語', 'case (L2)', 'signal (L3)'],
   },
 
-  /** The entry page for a single work — prototype screen 04-crm-entry. */
+  /**
+   * The Overview — `/work/<slug>/` for a work whose Case Study has not been
+   * written. Its rail, in the shape the other two work pages already use:
+   * an index, the page's own name, then the work's title.
+   *
+   *   00  CASE STUDY  {title}
+   *   T   TECHNICAL   {title}
+   *   01  OVERVIEW    {title}
+   *
+   * BOTH OF THE OLD STRINGS ARE GONE.
+   *
+   *   `SELECTED WORK` named a homepage band that has been called FEATURED WORK
+   *   since #7, so the rail was labelling this page after a section that no
+   *   longer exists under that name anywhere on the site.
+   *
+   *   `Entry — {title}` carried the route's old name — it was the "entry
+   *   screen" before it was an Overview — and it printed the work's title a
+   *   second time, immediately above an h1 that is the title. A template was
+   *   never needed for that: the Case Study and Technical rails pass
+   *   `work.title` straight through, and this one now does the same.
+   *
+   * `OVERVIEW` is authored copy, approved by the requester on 2026-09-15.
+   */
   workPage: {
     railIndex: '01',
-    railLabels: ['SELECTED WORK'],
-    railEntry: 'Entry — {title}',
+    railLabels: ['OVERVIEW'],
   },
 
   /**

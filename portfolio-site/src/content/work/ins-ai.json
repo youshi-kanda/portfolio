@@ -62,7 +62,6 @@
     "caption": "Reconstructed interface / dummy data"
   },
   "visual": {
-    "entryVariant": "v-stage",
     "caseVariant": "walkthrough",
     "signal": "紫紺 #4A3A6B",
     "frame": "fr-stage",

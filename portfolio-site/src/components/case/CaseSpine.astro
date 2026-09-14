@@ -2,11 +2,14 @@
 /**
  * The case variant, dispatched.
  *
- * CASE_RENDERERS is the closed set, exactly as ENTRY_RENDERERS is for entries
- * (art-direction §12). `comparison` is in the schema's enum because the art
- * direction names four variants, but no work declares it and it has no renderer
- * — so it is absent here, and declaring it fails loudly rather than falling
- * through to whichever layout happens to be first.
+ * CASE_RENDERERS is the closed set (art-direction §12), and it is now the only
+ * variant set on the site: the entry variants, their renderers and their gate
+ * were retired in the Overview checkpoint once nothing could reach them. This
+ * one survives because it is read on every Case Study and three renderers
+ * exist. `comparison` is in the schema's enum because the art direction names
+ * four variants, but no work declares it and it has no renderer — so it is
+ * absent here, and declaring it fails loudly rather than falling through to
+ * whichever layout happens to be first.
  *
  * Falling back to a default would be the quiet version of the same bug the
  * variant gate exists to catch: a work drawn in a shape it did not declare.

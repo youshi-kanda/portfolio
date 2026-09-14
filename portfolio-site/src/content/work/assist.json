@@ -63,7 +63,6 @@
     "caption": "Reconstructed architecture"
   },
   "visual": {
-    "entryVariant": "v-stage",
     "caseVariant": "pipeline",
     "signal": "葡萄 #6E2C4A",
     "frame": "fr-stage",

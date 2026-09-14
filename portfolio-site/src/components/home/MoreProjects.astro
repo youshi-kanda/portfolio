@@ -13,7 +13,7 @@
  * not works 06–09 of one list, they are the four of a second one.
  */
 import { ARCHIVE_HREF, moreHomepageWorks, sectionNumber } from '../../lib/content/derive.ts';
-import type { Evidence, Work } from '../../lib/content/schema.ts';
+import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
@@ -21,10 +21,16 @@ import Register from '../work/Register.astro';
 
 interface Props {
   works: readonly Work[];
-  evidence: readonly Evidence[];
 }
 
-const { works, evidence } = Astro.props;
+/*
+ * `evidence` is gone from the props. It was here for one purpose — telling
+ * `Register` which rows had a page — and the Overview checkpoint moved that
+ * decision onto the work record itself. A prop that is threaded through three
+ * components and read by none of them is a dependency the next reader has to
+ * disprove.
+ */
+const { works } = Astro.props;
 const rows = moreHomepageWorks(works);
 const index = sectionNumber('more');
 const m = site.moreProjects;
@@ -41,7 +47,7 @@ const m = site.moreProjects;
         <div class="tr">
           <div class="bleed">
             <div class="page">
-              <Register works={rows} evidence={evidence} minSlots={0} />
+              <Register works={rows} minSlots={0} />
               {/* The archive holds every work, including the ones that are on
                   neither homepage tier. */}
               <a class="lk more-all" href={ARCHIVE_HREF}>

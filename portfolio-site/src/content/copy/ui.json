@@ -1398,26 +1398,6 @@
   {
     "id": "ui.register.variantHeaders.4",
     "path": "register.variantHeaders.4",
-    "text": "entry (L2)",
-    "kind": "ui-system",
-    "route": "/work/",
-    "section": "WORK INDEX",
-    "slot": "表ヘッダ",
-    "purpose": "entry variant の列見出し。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:719"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
-    "id": "ui.register.variantHeaders.5",
-    "path": "register.variantHeaders.5",
     "text": "case (L2)",
     "kind": "ui-system",
     "route": "/work/",
@@ -1436,8 +1416,8 @@
     }
   },
   {
-    "id": "ui.register.variantHeaders.6",
-    "path": "register.variantHeaders.6",
+    "id": "ui.register.variantHeaders.5",
+    "path": "register.variantHeaders.5",
     "text": "signal (L3)",
     "kind": "ui-system",
     "route": "/work/",
@@ -1450,26 +1430,6 @@
       "claimType": "presentation",
       "sourceRefs": [
         "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:719"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
-    "id": "ui.register.variantNote",
-    "path": "register.variantNote",
-    "text": "変種は閉じた集合です。entry は {names} の {size} 種で、 renderer を持つものだけが集合に入ります。 いまの {count} 件では {floor} 種以上を使うことがビルドの条件です。 作品を足す人が触るのは src/content/work/ の 1 ファイルだけで、 Homepage の component は変更しません。",
-    "kind": "editorial",
-    "route": "/work/",
-    "section": "WORK INDEX",
-    "slot": "表の下の注記",
-    "purpose": "変種が閉じた集合であることと、作品追加時に触るファイルを述べる。件数・下限は導出。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:725",
-        "ADAPTED（TASK-PORTFOLIO-IMPLEMENT-01）— 参照先のみ差し替え。原文は `positioning.WORKS の 1 要素だけ` で、このリポジトリに存在しない Python ファイルを指していた。置換後の `src/content/work/` は当リポジトリの実在パス（uiCopyGate U-REFTARGET が実在を検証する）"
       ],
       "approvedBy": null,
       "approvedAt": null
@@ -1518,41 +1478,21 @@
   {
     "id": "ui.workPage.railLabels.1",
     "path": "workPage.railLabels.1",
-    "text": "SELECTED WORK",
+    "text": "OVERVIEW",
     "kind": "ui-system",
     "route": "/work/{slug}/",
-    "section": "entry header",
+    "section": "OVERVIEW",
     "slot": "rail ラベル",
-    "purpose": "節名。",
+    "purpose": "/work/{slug}/ が Overview を出しているとき、その rail が名乗るページ名。00 CASE STUDY / T TECHNICAL と同じ位置。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:64"
+        "Overview checkpoint — 依頼者による Human Decision（rail = 01 OVERVIEW / {title}）"
       ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
-    "id": "ui.workPage.railEntry",
-    "path": "workPage.railEntry",
-    "text": "Entry — {title}",
-    "kind": "ui-system",
-    "route": "/work/{slug}/",
-    "section": "entry header",
-    "slot": "rail 作品名",
-    "purpose": "どの作品の entry かをレールに出す。作品名は導出。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adrender2.py:739"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-15T00:00:00Z"
     }
   },
   {

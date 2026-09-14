@@ -247,9 +247,11 @@ fix it properly, and would itself change the stylesheet, so it is a decision to
 take on its own rather than a side effect of a phase that has to hold the
 output still.
 
-`validate:content` takes `--dev` (report pending instead of failing) and
-`--strict` (promote `W-ADJACENT` to an error — an authoring review pass, never
-the production build).
+`validate:content` takes `--dev` (report pending instead of failing). It used
+to take `--strict` as well, which promoted the entry-variant gate's
+`W-ADJACENT` to an error; that gate was retired with the entry variant itself,
+so the flag went with it rather than staying on as an argument that is accepted
+and changes nothing.
 
 There is no separate linter. `astro check` runs the TypeScript compiler over
 `.astro`, `.ts` and the content schemas with `strict` plus

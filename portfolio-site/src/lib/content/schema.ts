@@ -6,15 +6,24 @@
  *                enum member one that exists?
  *   validation/ — TRUTH. Is the claim allowed to ship, given its review record?
  *
- * `entryVariant` is deliberately a plain string rather than an enum. The art
- * direction (§12) makes ENTRY_RENDERERS the source of truth for the closed set,
- * and an unknown variant has to surface as the variant gate's `E-UNKNOWN` with
- * the list of implemented variants — not as a zod type error that says nothing
- * about renderers.
+ * THE ENTRY VARIANT IS GONE (Overview checkpoint). `entryVariant` named one of
+ * three layout renderers — `v-stage`, `v-split`, `v-terminal` — and the art
+ * direction (§12) made `ENTRY_RENDERERS`, the map inside `WorkEntry.astro`, the
+ * source of truth for the closed set. All four files were deleted once nothing
+ * could reach them: the only route that ever mounted `WorkEntry` took the Case
+ * Study branch for every work it emitted, and now draws `WorkOverview`.
+ *
+ * The field, its enum, its gate and its `--strict` flag went with them. A
+ * validation with no consumer does not protect a display contract — there is no
+ * display left to protect — it just waits to block a content edit for a reason
+ * nobody can point at on a page.
+ *
+ * `caseVariant` below is NOT the same situation and stays: `CaseSpine` reads it
+ * on every Case Study, three renderers exist, and the closed set is enforced
+ * there at the point of use (`E-UNKNOWN-CASE`).
  */
 import { z } from 'astro/zod';
 
-export const ENTRY_VARIANTS = ['v-stage', 'v-split', 'v-terminal'] as const;
 export const CASE_VARIANTS = ['walkthrough', 'ledger', 'pipeline', 'comparison'] as const;
 export const FRAMES = ['fr-stage', 'fr-plate', 'fr-term'] as const;
 export const GROUNDS = ['paper', 'tone', 'inv'] as const;
@@ -111,7 +120,6 @@ export const copyPublicationSchema = basePublicationSchema.extend({
 export const PALETTE_KEYS = ['a', 'b', 'c', 'd', 'e'] as const;
 
 export const visualSchema = z.object({
-  entryVariant: z.string().min(1),
   caseVariant: z.enum(CASE_VARIANTS),
   signal: z.string().min(1),
   frame: z.enum(FRAMES),
@@ -760,4 +768,3 @@ export type Publication = z.infer<typeof basePublicationSchema>;
 export type CopyPublication = z.infer<typeof copyPublicationSchema>;
 export type ClaimType = (typeof CLAIM_TYPES)[number];
 export type SourceType = (typeof SOURCE_TYPES)[number];
-export type EntryVariant = (typeof ENTRY_VARIANTS)[number];

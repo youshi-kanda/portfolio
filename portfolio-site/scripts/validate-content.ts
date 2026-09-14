@@ -7,10 +7,14 @@
  *
  * Exit 0 = publishable. Exit 1 = would fail `npm run build`.
  *
- *     node scripts/validate-content.ts [--dev] [--strict]
+ *     node scripts/validate-content.ts [--dev]
  *
  *   --dev     report as development: pending content warns instead of failing
- *   --strict  promote W-ADJACENT to an error (authoring review, never the build)
+ *
+ * `--strict` is gone with the entry-variant gate. Its only effect was to
+ * promote that gate's `W-ADJACENT` to an error, so with the gate retired the
+ * flag would have accepted the argument and changed nothing — a control that
+ * looks like it does something and does not.
  */
 import { loadAll } from '../src/lib/content/load.ts';
 import { siteStrings } from '../src/lib/content/site.ts';
@@ -20,10 +24,9 @@ import { siteCopyCoverage } from '../src/lib/validation/site-copy.ts';
 
 const argv = process.argv.slice(2);
 const mode: Mode = argv.includes('--dev') ? 'development' : 'production';
-const strict = argv.includes('--strict');
 
 const content = loadAll();
-const { findings, errors, warnings, ok } = runGates(content, { mode, strict });
+const { findings, errors, warnings, ok } = runGates(content, { mode });
 const siteCopy = siteCopyCoverage(content.copy, content.uiCopy, siteStrings());
 const count = (code: string): number => findings.filter((f) => f.code === code).length;
 
@@ -33,7 +36,7 @@ const pending = [...content.copy, ...content.uiCopy].filter(
 
 console.log(
   `content: works ${content.works.length} / evidence ${content.evidence.length} / ` +
-    `approved copy ${content.copy.length}  [${mode}${strict ? ' --strict' : ''}]`,
+    `approved copy ${content.copy.length}  [${mode}]`,
 );
 console.log(
   `UI chrome: ${content.uiCopy.length} registered ` +

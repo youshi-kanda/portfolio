@@ -65,7 +65,6 @@
     "caption": "Reconstructed interface / dummy data"
   },
   "visual": {
-    "entryVariant": "v-split",
     "caseVariant": "ledger",
     "signal": "藍 #1F3F7A",
     "frame": "fr-plate",

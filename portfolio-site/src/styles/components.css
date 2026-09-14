@@ -550,9 +550,10 @@
              left:calc((100% - min(100%,1440px)) / 2 + 227px);background:var(--sig)}
 
 /* ================================== the Lead entry — one artefact, three crops
-   Phase 6. See VStage.astro for what is and is not done to the picture: these
-   are crops and occlusion of the SAME public artefact, never a filter and never
-   a second screenshot.
+   Phase 6. What is and is not done to the picture: these are crops and
+   occlusion of the SAME public artefact, never a filter and never a second
+   screenshot. (The rule used to cite VStage.astro, which the Overview
+   checkpoint deleted along with the other entry renderers.)
 
    The stack is offset like sheets on a desk — the one behind shows at the top
    and the right, the one in front breaks the page's left margin. Both are

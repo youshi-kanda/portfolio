@@ -5,7 +5,7 @@
  * already been written to disk and then found to be wrong is a page that can
  * be deployed by accident.
  */
-import { shippingWorks, workVisual } from '../content/derive.ts';
+import { shippingWorks } from '../content/derive.ts';
 import type { ContentBundle } from '../content/load.ts';
 import { siteStrings } from '../content/site.ts';
 import { approvedCopyGate } from './approved-copy.ts';
@@ -16,7 +16,6 @@ import { errors, format, warnings, type Finding } from './finding.ts';
 import { migrationGate } from './migration.ts';
 import { truthGate, type Mode } from './truth.ts';
 import { uiCopyGate } from './ui-copy.ts';
-import { variantGate } from './variant.ts';
 
 export { errors, warnings, format };
 export type { Finding, Mode };
@@ -30,7 +29,7 @@ export interface GateResult {
 
 export function runGates(
   content: ContentBundle,
-  options: { mode: Mode; strict?: boolean } = { mode: 'production' },
+  options: { mode: Mode } = { mode: 'production' },
 ): GateResult {
   const { works, caseStudies, evidence, copy, uiCopy } = content;
   const shipping = shippingWorks(works);
@@ -52,10 +51,6 @@ export function runGates(
     ...claimsGate({ copy, uiCopy, site, workCount: shipping.length, derivedIds }),
     ...migrationGate(works, options.mode),
     ...capabilitiesGate(works),
-    ...variantGate(
-      shipping.map((w) => ({ slug: w.slug, entryVariant: workVisual(w).entryVariant })),
-      { strict: options.strict ?? false },
-    ),
   ];
 
   const errs = errors(findings);

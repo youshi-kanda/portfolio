@@ -3,7 +3,7 @@ export type Level = 'ERROR' | 'WARN';
 
 export interface Finding {
   level: Level;
-  /** Stable machine code, e.g. `E-UNKNOWN`, `T-UNAPPROVED`. */
+  /** Stable machine code, e.g. `U-DRIFT`, `T-UNAPPROVED`. */
   code: string;
   message: string;
 }

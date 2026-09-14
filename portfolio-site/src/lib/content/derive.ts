@@ -52,14 +52,17 @@ export function leadWork(works: readonly Work[]): Work | null {
 /**
  * The entry figure of a work that is being rendered.
  *
- * `image` is optional on the record and required by the schema of exactly the
- * works that are DRAWN with one — featured blocks, and works whose Evidence
- * resolves and so get an entry screen at /work/<slug>/. That is the same set
- * every caller here draws from, which is what makes this total.
+ * `image` is optional on the record, and every caller asks `workHasFigure`
+ * first — the homepage's featured blocks draw only featured works, and the
+ * Overview draws a figure only where there is one.
  *
  * #7 narrowed that rule from `shipping`: a MORE PROJECTS row and an
- * archive-only work both ship and neither has anywhere to put a figure. So
- * reaching this throw now means a figure-less work was handed to a renderer
+ * archive-only work both ship and neither has anywhere to put a figure. The
+ * Overview checkpoint widened WHO GETS A PAGE without widening who gets a
+ * picture — `minio`, `docai` and `agri` have a page and no image, which is a
+ * supported state, not a gap to fill by pointing at somebody else's screen.
+ *
+ * So reaching this throw means a figure-less work was handed to a renderer
  * that draws one — a routing defect, not a missing image.
  */
 export function workFigure(work: Work): NonNullable<Work['image']> {
@@ -126,47 +129,78 @@ export function featuredEvidence(
 }
 
 /**
- * Whether `/work/<slug>/` is actually emitted for this work.
+ * FOUR QUESTIONS, FOUR ANSWERS — the Overview checkpoint's whole point.
  *
- * Restates the page's own `getStaticPaths`: the route exists exactly when the
- * work's first Evidence id resolves to a record. A row that links without
- * asking this is a dead link the moment a work ships before its Evidence does
- * — which is the state every work added by #7 is in, deliberately, because
- * their Case Studies belong to #8.
+ * These were one question wearing four hats, and the hat that won was the
+ * wrong one. `/work/<slug>/` was emitted only when a work's first Evidence id
+ * resolved to a record, so the archive listed ten works and linked three: the
+ * seven whose screens are not yet published were unreachable from anywhere,
+ * and the page that would have introduced them did not exist. Publication of a
+ * SCREENSHOT was deciding publication of a WORK.
  *
- * The alternative — linking anyway and letting `check:links` catch it — moves
- * the decision from the component that knows the answer to a script that finds
- * out afterwards.
+ *   existence of the work        `shipping` + `status`. This one, and only
+ *                                this one, decides whether /work/<slug>/ is a
+ *                                page at all.
+ *   existence of Evidence        whether there is a sourced screen to show,
+ *                                with its provenance contract attached.
+ *   existence of a Case Study    whether CS-1…CS-16 have been written.
+ *   existence of Technical       whether the Case Study carries the T sections.
+ *
+ * A work answers yes to the first and no to the other three and still has
+ * something to say: what it is, who uses it, what it solves, what was built,
+ * the one decision worth reading. All of that is on the work record and none
+ * of it needs a screenshot.
  */
-export function workHasDetailPage(
-  work: Work,
-  evidence: readonly Evidence[],
-): boolean {
-  const first = work.evidence[0];
-  if (!first) return false;
-  return evidence.some((e) => e.id === first);
-}
+
+/**
+ * Whether `/work/<slug>/` is emitted. THE route contract, restated by
+ * `getStaticPaths`, by `routes.ts` for the sitemap, and by `Register` for
+ * whether a row is a link — three consumers, one predicate, so a row cannot
+ * link to a page the build did not emit.
+ *
+ * Takes the work alone. The Evidence argument is gone rather than ignored: a
+ * parameter that no longer affects the answer is an invitation to believe it
+ * still does.
+ */
+export const workHasOverview = (work: Work): boolean =>
+  work.shipping && work.status === 'published';
+
+/**
+ * Whether this work's page can show a screen.
+ *
+ * `image` is the work's own figure — its own `src`, `width`, `height` and
+ * caption — and is NOT the Evidence record. The homepage has drawn the four
+ * featured works from it since #7 without any of them having Evidence. So the
+ * Overview shows a figure exactly when there is an image to show, and the
+ * three works that have neither (`minio`, `docai`, `agri`) get a page with no
+ * picture rather than no page.
+ */
+export const workHasFigure = (work: Work): boolean => work.image !== undefined;
 
 /**
  * Whether anything may render the words "Case Study" for this work.
  *
  * ONE FIELD, AND DELIBERATELY NOT THE OTHER. `caseStudyPublished` is the whole
- * condition — the same one `EntryCta` has always used. `workHasDetailPage` asks
- * a different question, and #7 first wrote the gallery and the register against
- * that one because for the three works shipping at the time the two answers
- * happened to coincide.
+ * condition. #7 first wrote the gallery and the register against the route
+ * question instead, because for the three works shipping at the time the two
+ * answers happened to coincide.
  *
- * They are not the same question. A work whose Evidence resolves gets a page at
- * /work/<slug>/ whether or not its Case Study body exists — the route renders
- * the entry screen either way, on purpose, so a work is reachable from the
- * moment its facts are sourced. Labelling that link "Case Study を読む" would
- * promise CS-1…CS-16 and deliver the entry screen.
- *
- * So: this decides the LABEL. `workHasDetailPage` decides whether a row is a
- * link at all. Keeping them in two functions is what stops the coincidence
- * from being rediscovered as a rule.
+ * They are not the same question, and after this checkpoint they cannot even
+ * look alike: every shipping work has a page, and three of them have a Case
+ * Study. Labelling the other seven's link "Case Study を読む" would promise
+ * CS-1…CS-16 and deliver an Overview.
  */
 export const workShowsCaseStudyCta = (work: Work): boolean => work.caseStudyPublished;
+
+/**
+ * Whether `/work/<slug>/technical/` is emitted — restating that page's own
+ * `getStaticPaths`. The T sections live on the Case Study record, so a work
+ * without one has nothing to put there and gets no route.
+ */
+export const workHasTechnical = (
+  work: Work,
+  caseStudies: readonly CaseStudy[],
+): boolean => caseStudies.some((c) => c.slug === work.slug);
 
 /**
  * The technologies the page shows for a work, in the order the record states.

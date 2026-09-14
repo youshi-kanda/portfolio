@@ -15,8 +15,22 @@
  * here so there is something to check; the check is what makes it true.
  */
 import type { CaseStudy, Evidence, Work } from './schema.ts';
-import { ARCHIVE_HREF, METHOD_HREF, shippingWorks, technicalHref, workHref } from './derive.ts';
+import {
+  ARCHIVE_HREF,
+  METHOD_HREF,
+  shippingWorks,
+  technicalHref,
+  workHasTechnical,
+  workHref,
+} from './derive.ts';
 
+/**
+ * `_evidence` is kept in the signature and no longer read. The route list stops
+ * depending on Evidence with this checkpoint; the parameter stays so that every
+ * caller (the sitemap, `check-links`, the tests) is not rewritten in the same
+ * change that rewrites the rule, and so the next person sees that the argument
+ * was removed from the DECISION rather than never having been there.
+ */
 export interface PublicRoutes {
   /** Root-relative, trailing-slashed, in the order a reader meets them. */
   paths: string[];
@@ -24,25 +38,22 @@ export interface PublicRoutes {
 
 export function publicRoutes(
   works: readonly Work[],
-  evidence: readonly Evidence[],
+  _evidence: readonly Evidence[],
   caseStudies: readonly CaseStudy[],
 ): PublicRoutes {
   const shipping = shippingWorks(works);
-  const evidenceIds = new Set(evidence.map((e) => e.id));
-  const caseSlugs = new Set(caseStudies.map((c) => c.slug));
 
   const paths = ['/', ARCHIVE_HREF, METHOD_HREF];
 
-  for (const work of shipping) {
-    // `/work/<slug>/` mirrors its getStaticPaths: the page is only emitted when
-    // the work's first Evidence id resolves to a record.
-    const first = work.evidence[0];
-    if (first && evidenceIds.has(first)) paths.push(workHref(work.slug, false));
-  }
+  // `/work/<slug>/` mirrors its getStaticPaths: EVERY shipping work, since the
+  // Overview checkpoint. It used to also require the work's first Evidence id
+  // to resolve, which meant the sitemap listed three of ten works — accurately,
+  // because only three pages existed.
+  for (const work of shipping) paths.push(workHref(work.slug, false));
 
+  // `/work/<slug>/technical/` mirrors its own: Case Study or no page.
   for (const work of shipping) {
-    // `/work/<slug>/technical/` mirrors its own: Case Study or no page.
-    if (caseSlugs.has(work.slug)) paths.push(technicalHref(work.slug));
+    if (workHasTechnical(work, caseStudies)) paths.push(technicalHref(work.slug));
   }
 
   return { paths };

@@ -111,7 +111,6 @@
     "caption": "人が承認して初めて「承認済み」に変化。配信はデモでは無効で、外部送信は行われない。"
   },
   "visual": {
-    "entryVariant": "v-stage",
     "caseVariant": "walkthrough",
     "signal": "常磐 #14654A",
     "frame": "fr-stage",

@@ -27,10 +27,11 @@
  * instead of five identical stops. Mobile drops it (responsive.css): at one
  * column there is no second width to alternate with.
  *
- * CASE STUDY LINKS. Gated on `caseStudyPublished` and nothing else — the same
- * condition `EntryCta` uses. Not on whether /work/<slug>/ exists: that page is
- * emitted as soon as a work's Evidence resolves, Case Study or no, so linking
- * on it would put the label "Case Study を読む" in front of the entry screen.
+ * CASE STUDY LINKS. Gated on `caseStudyPublished` and nothing else —
+ * `workShowsCaseStudyCta`, the same condition the register uses. NOT on
+ * whether /work/<slug>/ exists: since the Overview checkpoint that page is
+ * emitted for every shipping work, so linking on it would put the label
+ * "Case Study を読む" in front of seven Overviews.
  *
  * Four of these five have no Case Study yet (that is #8), and their blocks end
  * after the technologies with no link, no "準備中" and no greyed-out

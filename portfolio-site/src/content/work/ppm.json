@@ -98,7 +98,6 @@
     "caption": "案件ごとの状況・期限・注意点を 1 画面で確認。集計はメニュー操作でのみ作り直される。"
   },
   "visual": {
-    "entryVariant": "v-split",
     "caseVariant": "ledger",
     "signal": "藍 #1F3F7A",
     "frame": "fr-plate",

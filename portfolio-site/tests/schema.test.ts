@@ -135,7 +135,7 @@ describe('content schema', () => {
     assert.throws(() => workSchema.parse({ ...w, shipping: true }), /visual/);
     assert.doesNotThrow(() => workSchema.parse({ ...w, shipping: false }));
 
-    assert.equal(workVisual(sampleWork()).entryVariant, sampleWork().visual?.entryVariant);
+    assert.equal(workVisual(sampleWork()).caseVariant, sampleWork().visual?.caseVariant);
     assert.throws(
       () => workVisual(workSchema.parse({ ...w, shipping: false })),
       /描画された/,
@@ -164,16 +164,6 @@ describe('content schema', () => {
     assert.throws(() => workSchema.parse({ ...w, visual: { ...w.visual, frame: 'fr-glow' } }));
     assert.throws(() => workSchema.parse({ ...w, visual: { ...w.visual, ground: 'neon' } }));
     assert.throws(() => workSchema.parse({ ...w, visual: { ...w.visual, texture: 'noise' } }));
-  });
-
-  it('lets an unknown ENTRY variant through to the variant gate', () => {
-    // Deliberate: the closed set is defined by which renderers exist, so an
-    // unknown variant must surface as E-UNKNOWN naming the implemented ones,
-    // not as a type error that says nothing about renderers.
-    const w = sampleWork();
-    assert.doesNotThrow(() =>
-      workSchema.parse({ ...w, visual: { ...w.visual, entryVariant: 'v-carousel' } }),
-    );
   });
 
   it('rejects an invalid review record', () => {

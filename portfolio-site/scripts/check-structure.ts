@@ -108,6 +108,19 @@ const archive = read('work/index.html');
 const ARCHIVE_ROWS = [...archive.matchAll(/class="r[^"]*"[^>]*\sdata-w="/g)].length;
 expect('ARCHIVE_ROWS', ARCHIVE_ROWS, shipping.length);
 
+// ---- ARCHIVE_LINKED ----
+// Every row in the archive is a link, because every shipping work has a page.
+// The state this refuses is the one the Overview checkpoint removed: a list of
+// ten where three are anchors and seven are not, with nothing to tell them
+// apart, which does not read as "seven have no page" — it reads as a list where
+// clicking sometimes works.
+const ARCHIVE_ROW_TAGS = [...archive.matchAll(/<(a|div) class="r[^"]*"[^>]*\sdata-w="([^"]+)"/g)];
+const ARCHIVE_LINKED = ARCHIVE_ROW_TAGS.filter(([, tag]) => tag === 'a').length;
+expect('ARCHIVE_LINKED', ARCHIVE_LINKED, shipping.length);
+for (const [, tag, slug] of ARCHIVE_ROW_TAGS) {
+  if (tag !== 'a') failures.push(`ARCHIVE_LINKED: /work/ の ${slug} 行が link になっていない`);
+}
+
 // ---- WORK_ENTRIES ----
 const marked = (html: string): Set<string> =>
   new Set([...html.matchAll(/\sdata-w="([^"]+)"/g)].map((m) => m[1] as string));
@@ -156,9 +169,16 @@ const INTERNAL_TOKENS = [
 // the Case Study and Technical pages, which nothing was looking at. A gate that
 // covers the pages a previous pass happened to fix is a record of that pass,
 // not a contract.
-const CASE_ROUTES = shipping
+//
+// EVERY WORK PAGE, NOT JUST THE THREE WITH CASE STUDIES. The Overview
+// checkpoint gave the other seven a page, and a scan that covers the routes a
+// previous pass happened to fix is a record of that pass rather than a
+// contract — which is the note this block already carried.
+const WORK_ROUTES = shipping.map((w) => `work/${w.slug}/index.html`);
+const TECHNICAL_ROUTES = shipping
   .filter((w) => w.caseStudyPublished)
-  .flatMap((w) => [`work/${w.slug}/index.html`, `work/${w.slug}/technical/index.html`]);
+  .map((w) => `work/${w.slug}/technical/index.html`);
+const CASE_ROUTES = [...WORK_ROUTES, ...TECHNICAL_ROUTES];
 const PUBLIC_ROUTES = ['index.html', 'work/index.html', 'how-i-build/index.html', ...CASE_ROUTES];
 
 let PUBLIC_INTERNAL = 0;
@@ -223,6 +243,7 @@ console.log(
     `MORE_ROWS = ${MORE_ROWS} / ` +
     `CAPABILITY_CATEGORIES = ${CAPABILITY_CATEGORIES} / ` +
     `ARCHIVE_ROWS = ${ARCHIVE_ROWS} (shipping ${shipping.length}) / ` +
+    `ARCHIVE_LINKED = ${ARCHIVE_LINKED} / ` +
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +

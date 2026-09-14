@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 127 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 125 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -180,8 +180,21 @@ describe('provenance matrix', () => {
     // written for it rather than transcribed; they are still presentation,
     // because a label that says which way a link goes asserts nothing about
     // the world that a reader could find out is wrong.
-    assert.equal(presentation.length, 127);
-    assert.equal(fact.length, 33);
+    //
+    // The Overview checkpoint nets −1. `workPage.railEntry` — `Entry — {title}`
+    // — is deleted with the rail that printed it: the Overview now passes
+    // `work.title` straight through the way the Case Study and Technical rails
+    // always have, so the template has no caller. `workPage.railLabels.1` is
+    // not a new row, it is the same row reworded from `SELECTED WORK` to
+    // `OVERVIEW` and re-approved, which moves it from `source-derived` to
+    // `authored` without changing either count.
+    // The variant table's last two rows go with the entry variant itself:
+    // `variantHeaders.4` (`entry (L2)`) was ui-system and therefore
+    // presentation, `variantNote` was editorial and therefore a fact — it
+    // asserted a build rule ("renderer を持つものだけが集合に入る") that the
+    // build no longer has. One off each count.
+    assert.equal(presentation.length, 125);
+    assert.equal(fact.length, 32);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first

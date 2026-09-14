@@ -20,39 +20,41 @@
  * "not verified" are different states, and this component only changes the
  * first.
  *
- * LINKS. A row links only when `/work/<slug>/` is actually emitted — see
- * `workHasDetailPage`. Works added by #7 ship without Evidence, so their pages
- * do not exist yet and their rows are not links. A non-linking row is a
- * complete row, not a broken one: it carries no "準備中", no disabled-looking
- * affordance and no arrow, because a portfolio that advertises its own gaps is
- * describing its backlog instead of its work.
+ * LINKS. A row links when `/work/<slug>/` is emitted — `workHasOverview`, the
+ * same predicate the route and the sitemap use.
+ *
+ * SINCE THE OVERVIEW CHECKPOINT THAT IS EVERY SHIPPING WORK. It used to be
+ * three of ten, because the route required resolvable Evidence: seven rows were
+ * plain text with no affordance. The reasoning at the time was sound as far as
+ * it went — a row must not link to a page that does not exist, and no row
+ * should advertise a gap — but it left the archive in the one state it cannot
+ * be in. A list of ten where three are links and seven are not, with nothing to
+ * distinguish them, does not read as "seven have no page yet"; it reads as a
+ * list where clicking sometimes works.
+ *
+ * The predicate stays rather than being replaced by `true`. What made those
+ * rows correct was that they asked, and a component that stops asking is one
+ * that will be wrong the first time a work is drafted rather than published.
  */
 import {
   pad2,
-  workHasDetailPage,
+  workHasOverview,
   workHref,
   workSelectedTech,
   workShowsCaseStudyCta,
 } from '../../lib/content/derive.ts';
-import type { Evidence, Work } from '../../lib/content/schema.ts';
+import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { fill, ui } from '../../lib/content/ui.ts';
 
 interface Props {
   works: readonly Work[];
-  /** Only to decide whether a work's detail page exists. */
-  evidence?: readonly Evidence[];
   minSlots?: number;
   /** Where row numbering starts, so MORE PROJECTS can number from 01. */
   startIndex?: number;
 }
 
-const {
-  works,
-  evidence = [],
-  minSlots = site.registerMinSlots,
-  startIndex = 1,
-} = Astro.props;
+const { works, minSlots = site.registerMinSlots, startIndex = 1 } = Astro.props;
 
 const slots: number[] = [];
 for (let n = works.length + 1; n <= minSlots; n += 1) slots.push(n);
@@ -60,20 +62,20 @@ for (let n = works.length + 1; n <= minSlots; n += 1) slots.push(n);
 /**
  * Two decisions, not one.
  *
- *   linked          is /work/<slug>/ actually emitted? Then the row is an
- *                   anchor. Restates the route's own getStaticPaths.
+ *   linked          is /work/<slug>/ emitted? Then the row is an anchor.
+ *                   Restates the route's own getStaticPaths.
  *   showsCaseStudy  may we print the words "Case Study"? Only when one is
- *                   published — `EntryCta`'s condition, and the only one.
+ *                   published.
  *
- * A work can be the first without being the second: the entry screen renders
- * from the moment its Evidence resolves, and calling that link "Case Study を
- * 読む" would promise a body that is not there. So such a row is a link with
- * no label rather than a link with a false one.
+ * A work is the first without being the second seven times over: its Overview
+ * renders from the moment its facts are sourced, and calling that link
+ * 「Case Study を読む」 would promise CS-1…CS-16 and deliver an Overview. So
+ * such a row is a link with no label rather than a link with a false one.
  */
 const rows = works.map((w, i) => ({
   work: w,
   index: pad2(i + startIndex),
-  linked: workHasDetailPage(w, evidence),
+  linked: workHasOverview(w),
   showsCaseStudy: workShowsCaseStudyCta(w),
 }));
 ---

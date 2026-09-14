@@ -66,7 +66,6 @@ import { site } from '../lib/content/site.ts';
 const all = (await getCollection('work')).map((e) => e.data);
 const works = shippingWorks(all);
 const featured = featuredHomepageWorks(all);
-const evidence = (await getCollection('evidence')).map((e) => e.data);
 /** The same sentence the hero prints, so the tab and the page do not disagree. */
 const description = await copyText('home.hero.lede');
 ---
@@ -91,7 +90,7 @@ const description = await copyText('home.hero.lede');
   <main>
     <Hero />
     <FeaturedWork works={featured} />
-    <MoreProjects works={all} evidence={evidence} />
+    <MoreProjects works={all} />
     <Capabilities works={all} />
     <About />
     <Contact />

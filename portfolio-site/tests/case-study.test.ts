@@ -174,7 +174,9 @@ describe('case study', () => {
   });
 
   it('declares a case variant that has a renderer', () => {
-    // mirrors the entry variant rule: the closed set is what can be drawn
+    // the closed set is what can be drawn. This is now the site's only such
+    // rule — the entry variants and their renderers were retired in the
+    // Overview checkpoint, and `CaseSpine` enforces this one at the point of use.
     const IMPLEMENTED = ['walkthrough', 'ledger', 'pipeline'];
     const { works } = realContent();
     for (const w of shippingWorks(works)) {

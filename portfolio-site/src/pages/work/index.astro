@@ -4,11 +4,15 @@
  * neither homepage tier.
  *
  * #7 TOOK THE MACHINE OFF THIS PAGE. It used to end with a variant assignment
- * table: one row per work, printing `entryVariant`, `caseVariant` and the
- * pigment name, under a note stating the diversity floor the build enforces.
- * That is the rendering contract talking to itself in public. `v-terminal` is
- * the name of a renderer; a visitor reading it learns nothing about the work
+ * table: one row per work, printing the entry variant, the case variant and the
+ * pigment name, under a note stating the diversity floor the build enforced.
+ * That is the rendering contract talking to itself in public. `v-terminal` was
+ * the name of a renderer; a visitor reading it learned nothing about the work
  * and something about our source tree.
+ *
+ * The entry variant no longer exists at all — the Overview checkpoint retired
+ * the renderers, the field and the gate together — so the table's `entry (L2)`
+ * header and its explanatory note were deleted from the registry with them.
  *
  * #7 VISUAL REVIEW TOOK THE REST OF IT OFF THE HEADER. The table was gone but
  * the hero still opened with the same voice: a heading that promised the index
@@ -22,8 +26,14 @@
  * `ui.ts` and in `src/content/copy/ui.json`, registered and approved, so the
  * copy gate still holds them (U-UNMANAGED / U-DRIFT are unchanged and no gate
  * was relaxed to land this). Not rendered and not registered are different
- * states — the same distinction the variant table note above records. What
- * changed is only which registered strings this page draws.
+ * states, and what changed in #7 was only which registered strings this page
+ * draws.
+ *
+ * That is a different case from the two variant rows the Overview checkpoint
+ * deleted, and the line worth keeping straight: these three describe THIS page,
+ * which still exists and could show them again tomorrow. `entry (L2)` and
+ * `variantNote` described a specification that has been retired, so there is
+ * nothing left for them to be the copy of.
  *
  * No copy was authored for the replacement. The h1 reuses `railLabels[0]`, the
  * label already approved for this page under exactly this name; the count is
@@ -38,7 +48,9 @@
  * entry pages, the Case Studies, /how-i-build/ and /404.html all keep it, and
  * `site.synthetic` is unchanged.
  *
- * Rows link only where `/work/<slug>/` exists (see Register.astro).
+ * Every row links: since the Overview checkpoint `/work/<slug>/` is emitted for
+ * every shipping work, and `Register` still asks rather than assuming (see
+ * Register.astro).
  */
 
 import { getCollection } from 'astro:content';
@@ -54,7 +66,6 @@ import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 
 const works = shippingWorks((await getCollection('work')).map((e) => e.data));
-const evidence = (await getCollection('evidence')).map((e) => e.data);
 
 /** The page's own name, from the rail label registered for it. */
 const h1 = ui.register.railLabels[0];
@@ -87,7 +98,7 @@ const description = await copyText('home.works.h2');
       <div class="page">
         <div class="tr">
           <div class="bleed">
-            <div class="page"><Register works={works} evidence={evidence} /></div>
+            <div class="page"><Register works={works} /></div>
           </div>
         </div>
       </div>
