@@ -220,7 +220,24 @@
 /* ============================================================= register
    The work index. One ruled row per work — this is the shape that survives
    0 → 20 entries without becoming a card grid. */
-.ad .reg{border-top:2px solid var(--rule)}
+/* ---- INNER BLOCK HEADS ARE NOT SECTION HEADS (visual hierarchy pass).
+   `--rule` at 2px is the page's heaviest line and it was drawn four times over
+   by containers that sit INSIDE a section: the register, the capability list,
+   the workflow, the premise and ledger tables, the stack and principles decks,
+   and the block head (layout.css `.shead`). A major section
+   meanwhile had no line at all, so the strongest mark on the page belonged to
+   the smallest unit of it, and the boundary a reader actually needs was
+   spacing only — which is why `#more` / `#capabilities` / `#about` read as one
+   continuous run.
+   The ladder is now: 2px `--rule` = the section's own rail; 1px `--rule` = the
+   boundary BETWEEN sections (layout.css); 1px `--hair2` = an inner block opens
+   here; 1px `--hair` = one row inside it. Weight and ink both fall as the unit
+   gets smaller, which is the order a reader takes them in.
+
+   THREE KEEP THEIR 2px, because all three ARE boundaries rather than block
+   heads: `.foot` closes the document, `.contact` opens the dark plate, and
+   `.ins` under 1024 is the section rail itself — the top of the ladder. */
+.ad .reg{border-top:1px solid var(--hair2)}
 /* V5 — the evidence column goes 300 → 420px, and the crop 150 → 260px.
    The index is where a reader decides which project to open, and it was
    deciding from prose: at 300x150 the screenshot was a token beside the text,
@@ -353,7 +370,7 @@
             display:flex;gap:16px;align-items:baseline;font-size:15px}
 .ad .toc li > *{padding-block:11px}
 .ad .toc .mo{flex:0 0 52px}
-.ad .lgr{border-top:2px solid var(--rule)}
+.ad .lgr{border-top:1px solid var(--hair2)}
 .ad .lgr .lrow{display:grid;grid-template-columns:52px 200px minmax(0,1fr);
                border-bottom:1px solid var(--hair);align-items:baseline}
 .ad .lgr .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--sig);
@@ -404,7 +421,7 @@
                 text-transform:uppercase;color:var(--tx3);border-bottom:1px solid var(--hair);
                 padding:34px 72px}
 /* ---- work entry: the product fact table */
-.ad .spx{border-top:2px solid var(--rule);margin-bottom:34px}
+.ad .spx{border-top:1px solid var(--hair2);margin-bottom:34px}
 .ad .spx .r{display:grid;grid-template-columns:176px minmax(0,1fr);
             border-bottom:1px solid var(--hair);column-gap:24px;align-items:baseline}
 .ad .spx .k{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
@@ -453,7 +470,7 @@
 .ad .meta{display:flex;gap:10px;flex-wrap:wrap;margin:22px 0 0}
 .ad .msr .ty,.ad .fld .ty{margin-bottom:14px;color:var(--sig)}
 /* ---- 02 how i build: the workflow, drawn as a ruled instrument list */
-.ad .flow{border-top:2px solid var(--rule)}
+.ad .flow{border-top:1px solid var(--hair2)}
 /* …unless the lane key is drawn above it, which then carries the rule */
 .ad .lanes + .flow{border-top:0}
 .ad .flow .fst{display:grid;grid-template-columns:52px minmax(0,232px) 148px minmax(0,1fr) 132px;
@@ -476,7 +493,7 @@
                         background:var(--stop)}
 .ad .notclaim h4{color:var(--stop)}
 /* ---- 03 stack: language → responsibility → work → framework */
-.ad .stk{border-top:2px solid var(--rule)}
+.ad .stk{border-top:1px solid var(--hair2)}
 .ad .stk .srow{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:32px;
                border-bottom:1px solid var(--hair);padding:20px 0}
 .ad .stk .l{font-family:var(--f-mono);font-size:12.5px;letter-spacing:.1em;color:var(--tx);
@@ -496,7 +513,7 @@
 .ad .spine3 .sq{display:block;width:9px;height:9px;background:var(--sig);margin-bottom:12px}
 .ad .spine3 .mo{display:block;margin-bottom:8px}
 .ad .spine3 span:last-child{font-size:16px;line-height:1.8;color:var(--tx2)}
-.ad .pdec{border-top:2px solid var(--rule)}
+.ad .pdec{border-top:1px solid var(--hair2)}
 .ad .pdec .prow{display:grid;grid-template-columns:minmax(0,1fr) 96px;
                 column-gap:28px;border-bottom:1px solid var(--hair);padding:20px 0}
 .ad .pdec .t{font-size:19px;line-height:1.6;font-weight:600;letter-spacing:-.012em;color:var(--tx)}
@@ -704,7 +721,7 @@
    Four rows. What you can hand over, what it is done with, and the works that
    are the evidence — in that order, because the last one is what makes the
    first checkable. Not a logo wall and not a grid of proficiency meters. */
-.ad .cap-l{border-top:2px solid var(--rule)}
+.ad .cap-l{border-top:1px solid var(--hair2)}
 .ad .cap-i{display:grid;grid-template-columns:64px minmax(0,1fr);column-gap:40px;
            padding:30px 0;border-bottom:1px solid var(--hair)}
 .ad .cap-i .no{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;

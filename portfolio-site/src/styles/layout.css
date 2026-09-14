@@ -29,11 +29,35 @@
    between sections is not one number. */
 .ad .s-open{padding:168px 0 0}
 .ad .s-tight{padding:88px 0 0}
+/* ---- THE BOUNDARY BETWEEN MAJOR SECTIONS.
+   Until now there was none: `#more` → `#capabilities` → `#about` sit on the
+   same ground, carry no border and are told apart by padding alone, while the
+   heaviest line on the page belonged to a list INSIDE one of them
+   (components.css). A reader scanning for "where does this section end" found
+   the inner rule first and read the page as one long run.
+
+   1px of `--rule`. Thinner than the rail above the section head, so the head
+   stays the heaviest mark a section owns, but full ink and full width, so it
+   reads as a boundary rather than as another hairline in the list.
+
+   SCOPED TO TOP-LEVEL SECTIONS, not `[data-mx-n] + [data-mx-n]` anywhere in
+   the DOM: `main >` keeps it to the page's own running order, so no nested
+   composition can pick it up by accident.
+
+   TWO EXCLUSIONS, both because the boundary is already drawn:
+     `:not(.hero) +`  the hero flows INTO the section under it — desktop closes
+                      that gap to zero on purpose and motion.css records that a
+                      rule there was tried and read as two competing lines.
+     `:not(.contact)` CONTACT inverts to the dark plate and carries its own 2px
+                      edge. A third line above it would be the same boundary
+                      stated twice. */
+.ad main > section[data-mx-n]:not(.hero) + section[data-mx-n]:not(.contact){
+  border-top:1px solid var(--rule)}
 .ad .s-close{padding:200px 0 0}
 .ad .s-band{padding:0;margin:120px 0 0}
 .ad .s-band > .in{padding:104px 0}
 .ad .s-band.tone{background:var(--paper2)}
 .ad .hero{padding:56px 0 0}
 /* a section head sits on the rule, so the eye lands on a drawn line */
-.ad .shead{border-top:2px solid var(--rule);padding-top:18px;margin-bottom:34px}
+.ad .shead{border-top:1px solid var(--hair2);padding-top:18px;margin-bottom:34px}
 .ad .shead .mo{margin-bottom:6px;display:block}
