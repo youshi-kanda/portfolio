@@ -89,8 +89,23 @@
 .ad .nav .page{height:58px;gap:0;justify-content:space-between}
 /* the nav is 59px here (58 + its rule); same 5px of rounding clearance */
 .ad section[id]{scroll-margin-top:64px}
+/* The section/route list is dropped below 768px and `.pbar` takes over. The
+   `.nav .mob` rule that used to reveal an `Index` box here is gone with the
+   element: it was a span, so revealing it produced something that looked
+   pressable and was not. */
 .ad .nav ol{display:none}
-.ad .nav .mob{display:block}
+/* breadcrumb: the trail WRAPS rather than scrolling sideways — a horizontal
+   scroller hides the crumb a reader most needs, which is the one furthest
+   left — and every crumb is a 44px tap target.
+   The band carries no padding of its own: all of the vertical space belongs to
+   the links, so a one-row trail is 44px of chrome and a two-row trail is 88px,
+   with none of it spent on gaps a thumb cannot hit. `.hcta .cta` sets the same
+   floor for the hero's buttons at this breakpoint. */
+.ad .crumb ol{padding:0;gap:0 8px}
+.ad .crumb li{display:flex;align-items:center}
+.ad .crumb a,.ad .crumb [aria-current]{display:flex;align-items:center;min-height:44px}
+.ad .ret{margin-top:64px}
+.ad .ret .page{flex-direction:column;gap:16px}
 .ad .syn .page{display:block}
 .ad .syn b{display:block;margin-bottom:2px}
 .ad .fr-stage{padding:18px}
@@ -137,6 +152,11 @@
               align-items:center;gap:8px}
 .ad .mbar a + a{border-left:1px solid var(--hair);justify-content:flex-end;color:var(--tx)}
 .ad .mbar .sq{width:7px;height:7px;background:var(--sig)}
+/* `.pbar` is `.mbar`'s shape with a page's meaning (#11 §6). It carries no
+   work title, so nothing here can be truncated — the min-width:0 is the guard
+   that keeps a long label shrinking its own cell instead of pushing the other
+   one off the screen. */
+.ad .pbar a{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ad .mfs{grid-template-columns:1fr}
 .ad .mfs .mf{border-left:0;border-top:1px solid var(--hair);padding:0 20px}
 .ad .mfs .mf:first-child{padding-left:20px;border-top:0}
@@ -162,6 +182,14 @@
 .ad .hero .tr:first-child > .fld{order:-1}
 .ad .hero .ins{display:block;border-top:2px solid var(--rule);padding-top:12px;margin-top:26px}
 .ad .hero .ins .ix{display:inline-block;font-size:20px;margin:0 14px 0 0}
+/* #11 m-1. `display:block` above overrides the flex row at :79, which silently
+   takes its `gap` with it while `.lb{display:inline}` stays in force — so the
+   hero's two rail labels butted together and rendered
+   `CASE STUDYPROJECT PROGRESS MANAGER`. On a work page that run-together
+   string was the only place the work's name appeared. The gap is restored as
+   a margin, which does not depend on the parent being a flex container. */
+.ad .hero .ins .lb + .lb{margin-left:14px}
+.ad .hero .msr .ovh{font-size:18px;margin:0 0 12px}
 .ad .ins .role{display:inline;margin-top:0}
 .ad .spx .r,.ad .spx.wide .r{grid-template-columns:minmax(0,1fr);row-gap:2px;padding:12px 0}
 .ad .spx .k,.ad .spx .v{padding:0}

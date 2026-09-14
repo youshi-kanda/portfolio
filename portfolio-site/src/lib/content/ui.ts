@@ -29,8 +29,28 @@
  */
 
 export const ui = {
+  /*
+   * #11 — `mobileIndex` IS GONE, not renamed.
+   *
+   * It rendered as `<span class="mob">Index</span>`: a bordered box in the
+   * masthead that, below 768px, was the only thing in the chrome that looked
+   * like navigation. It was a span with no handler and no tab stop, so it
+   * looked like the way out and was not one. A dead label is worse than an
+   * empty corner, because the empty corner does not promise anything.
+   *
+   * What replaces it is `PageBar` — a real sticky bar of real links, scoped to
+   * where the page sits in the hierarchy. The row is removed from ui.json in
+   * the same change; a registry row for a string nothing renders is what
+   * U-ORPHAN exists to refuse.
+   */
   nav: {
-    mobileIndex: 'Index',
+    /**
+     * The breadcrumb landmark's accessible name. Never drawn — it is what a
+     * screen reader announces before reading the trail, so that a bare
+     * `WORK INDEX / …` is introduced as a position rather than as another list
+     * of links.
+     */
+    breadcrumbLabel: 'パンくずリスト',
   },
 
   /** The Evidence component's own labels. art-direction §4–6: these do not vary. */
@@ -77,6 +97,23 @@ export const ui = {
     selectedTech: 'Selected technology',
     caseStudyCta: 'Case Study を読む',
     fieldsTableLabel: 'extracted fields ({count})',
+    /*
+     * #11 — the two return labels, and the reason they are not `allWorksCta`.
+     *
+     * `register.allWorksCta`（作品一覧へ）is a forward move: it sits in 02 MORE
+     * PROJECTS and offers a reader who is browsing the homepage the longer
+     * list. These two are the opposite gesture — you are inside something and
+     * going back out of it — and a return band that said 「作品一覧へ」 would
+     * describe the destination while saying nothing about the direction.
+     *
+     * Both were written by the requester, not here. They are `authored`
+     * `presentation`: a label makes no claim about the world, so the matrix
+     * asks no basis of them, but it does ask that a person approved the
+     * wording — and the person who approved it is the one who wrote it.
+     */
+    backToIndex: '作品一覧に戻る',
+    /** `fill(backToWork, { title })`. The work names itself in the link. */
+    backToWork: '{title} に戻る',
   },
 
   howIBuild: {

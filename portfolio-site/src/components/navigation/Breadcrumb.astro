@@ -1,0 +1,50 @@
+---
+/**
+ * Where this page sits — #11 §2.
+ *
+ *     WORK INDEX / Project Progress Manager
+ *     WORK INDEX / Project Progress Manager / TECHNICAL
+ *
+ * A thin mono band directly under the masthead, in the same grammar as the
+ * synthetic-data strip: 11px, `.page` measure, one hairline under it. It is an
+ * instrument reading, not a heading, so it carries no heading tag and cannot
+ * appear in the document outline.
+ *
+ * THE LAST CRUMB IS NOT A LINK. A link to the page you are already on is a
+ * control that does nothing, and on a long Case Study it is worse than nothing:
+ * it looks like the way out. It is a `<span>` carrying `aria-current="page"`,
+ * which is the one element on the page entitled to that attribute — the nav's
+ * matching entry takes `data-section` instead (see Nav.astro).
+ *
+ * The landmark is named, because a bare list of links announced with no name is
+ * indistinguishable from the nav above it.
+ */
+import type { Crumb } from '../../lib/content/derive.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  crumbs: readonly Crumb[];
+}
+
+const { crumbs } = Astro.props;
+---
+
+{
+  crumbs.length > 0 && (
+    <nav class="crumb" aria-label={ui.nav.breadcrumbLabel}>
+      <div class="page">
+        <ol>
+          {crumbs.map((c) => (
+            <li>
+              {c.href ? (
+                <a href={c.href}>{c.label}</a>
+              ) : (
+                <span aria-current="page">{c.label}</span>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </nav>
+  )
+}

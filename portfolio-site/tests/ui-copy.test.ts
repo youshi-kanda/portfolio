@@ -63,7 +63,11 @@ describe('UI copy gate', () => {
   });
 
   it('fails a registry row whose string no longer exists', () => {
-    const strings = uiStrings().filter((s) => s.path !== 'nav.mobileIndex');
+    // Was `nav.mobileIndex` until #11 actually deleted that string — at which
+    // point the filter removed nothing and the test passed by finding no
+    // orphan, which is the opposite of what it asserts. It has to name a path
+    // the live object still has.
+    const strings = uiStrings().filter((s) => s.path !== 'nav.breadcrumbLabel');
     const found = uiCopyGate(rows(), { strings, exists: always });
     assert.deepEqual(codes(errors(found)), ['U-ORPHAN']);
   });
