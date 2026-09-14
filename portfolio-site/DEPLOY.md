@@ -18,7 +18,7 @@ two never cross:
 
 ## 0. The host, as measured
 
-Read-only preflight, 2026-09-13. These are the facts the rest of this runbook is
+Read-only preflight, 2026-09-14 JST. These are the facts the rest of this runbook is
 built on; re-check them if a deploy behaves unexpectedly.
 
 | | |
@@ -321,7 +321,7 @@ normal release.
 
 | | |
 |---|---|
-| trigger | `push` to `main` touching `portfolio-site/**` or the workflow file |
+| trigger | `push` to `main` touching `portfolio-site/**`, this workflow, or `production-smoke.sh` |
 | not triggered by | `pull_request`, the release branch, `workflow_dispatch` — there is none |
 | `permissions` | `contents: read` |
 | `concurrency` | `portfolio-production`, `cancel-in-progress: false` |
@@ -329,23 +329,32 @@ normal release.
 | Node | 24 |
 | SSH user | `deployer` |
 | **sudo** | **never** — the workflow contains no `sudo` |
+| contract test | `portfolio-site/tests/deploy-contract.test.ts`, run by `npm run qa` |
 
 Steps, in order:
 
 1. `npm ci`
-2. **`npm run qa`** — the gate from §2
-3. `npm run build`
-4. Configure SSH — `~/.ssh/config` from the five `VPS_*` secrets
-5. **Assert host preconditions** — see §5.1
-6. **Upload release** — `rsync` into `releases/$GITHUB_SHA/`
-7. **Verify release contents** — see §5.2
-8. **Activate** — record `previous`, then one atomic rename
-9. **Production smoke** — `.github/scripts/production-smoke.sh`
-10. **Roll back** — only on the condition in §5.3
+2. **`npm run qa`** — the gate from §2, **and the build**
+3. Configure SSH — `~/.ssh/config` from the five `VPS_*` secrets
+4. **Assert host preconditions** — see §5.1
+5. **Upload release** — `rsync` into `releases/$GITHUB_SHA/`
+6. **Verify release contents** — see §5.2
+7. **Activate** — record `previous`, then one atomic rename; report `switched`
+8. **Production smoke** — `.github/scripts/production-smoke.sh`
+9. **Roll back** — only on the condition in §5.3
 
-A re-run of the same SHA is safe: the upload is `rsync --delete` into a
-directory named after that SHA, so it converges on the same tree rather than
-accumulating, and activation notices `current` already points there.
+**There is no separate build step, deliberately.** `qa` ends in
+`build → check:links → check:structure → check:attestation → scan:public`, so
+`dist/` already exists when the gate passes *and it is the exact tree those
+stages inspected*. A second `npm run build` would overwrite the inspected
+artifact with one nothing had looked at, and upload that. Nothing after the
+gate may write `dist/`.
+
+A re-run of the same SHA is safe, and is a true no-op: the upload is
+`rsync --delete` into a directory named after that SHA, so it converges on the
+same tree rather than accumulating, and activation finds `current` already
+pointing there, renames nothing, and leaves `previous` alone. See §5.3 for why
+that last part matters.
 
 ### 5.1 Preconditions, asserted before anything is uploaded
 
@@ -367,18 +376,42 @@ release but not write it, regardless of what the runner's checkout produced.
 
 ### 5.3 When rollback runs, and when it must not
 
-Rollback runs **only** when activation succeeded and a later step failed — in
-practice, when the smoke in §6 fails:
+Rollback needs **two** things to be true, not one:
 
 ```yaml
-if: failure() && steps.activate.outcome == 'success'
+if: >-
+  failure()
+  && steps.activate.outcome == 'success'
+  && steps.activate.outputs.switched == 'true'
 ```
 
-A failure in checkout, `npm ci`, the QA gate, the build, SSH configuration, the
-precondition assert, upload or release verification means `current` was never
-moved. There is nothing to roll back, and moving the pointer would be the only
-change the run made. That is why the condition tests the activation step and not
-just `failure()`.
+**`outcome == 'success'`** — a failure in checkout, `npm ci`, the QA gate, SSH
+configuration, the precondition assert, upload or release verification means
+`current` was never moved. There is nothing to roll back, and moving the pointer
+would be the only change the run made.
+
+**`outputs.switched == 'true'`** — the activation step reports whether it
+actually renamed anything. It emits `SWITCHED=true` when it moved the pointer
+and `SWITCHED=false` when `current` already pointed at this release, and the
+workflow publishes that as a step output. If the marker is missing or
+unrecognised the step fails rather than defaulting: not knowing whether the
+pointer moved is not a state to guess from.
+
+The case this second condition exists for is **re-running the same commit**.
+That activation succeeds while changing nothing, and — importantly — does *not*
+rewrite `previous`, because `previous` must keep describing the switch that
+actually happened. Without the `switched` guard, a smoke failure on such a run
+would "roll back" onto whatever target an earlier deploy had left in
+`previous` — moving production to an older release that nothing asked for, in
+response to a run that had changed nothing. With the guard, a same-SHA re-run
+can fail smoke and production is left exactly as it was.
+
+`Re-smoke after rollback` carries the same condition, for the same reason.
+
+Both branches of that decision are covered by
+`portfolio-site/tests/deploy-contract.test.ts`, which runs inside `npm run qa`:
+it asserts the guard text, that the no-op branch writes neither `previous` nor a
+rename, and that the switching branch records `previous` *before* renaming.
 
 After a rollback the run **stays failed**. The release was not accepted, and a
 green check would say it was. The failed release directory is left on disk on

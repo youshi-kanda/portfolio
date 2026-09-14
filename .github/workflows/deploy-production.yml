@@ -1,9 +1,10 @@
 name: Deploy Portfolio Production
 
 # Production. The only trigger is a push to `main` that touches the production
-# artifact or this file — no `workflow_dispatch`, no `pull_request`, no release
-# branch. Staging is a separate workflow with a separate root
-# (`deploy-staging.yml` -> /var/www/portfolio-stg); the two never cross.
+# artifact, this file, or the script that decides whether a deploy is
+# acceptable — no `workflow_dispatch`, no `pull_request`, no release branch.
+# Staging is a separate workflow with a separate root (`deploy-staging.yml` ->
+# /var/www/portfolio-stg); the two never cross.
 on:
   push:
     branches:
@@ -11,6 +12,7 @@ on:
     paths:
       - "portfolio-site/**"
       - ".github/workflows/deploy-production.yml"
+      - ".github/scripts/production-smoke.sh"
 
 permissions:
   contents: read
@@ -62,20 +64,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # The gate. `qa` is the project's own definition of green — Truth Gate,
-      # tests, build, links, structure, attestation, public-safe scan. A bare
-      # `npm run build` is never what gets deployed: `check:links`,
-      # `check:structure` and `scan:public` all run *after* the build and are
-      # what prove the canonical URLs, the sitemap and robots.txt in `dist/`
-      # agree with the pages actually emitted.
-      - name: QA gate
+      # The gate, and the build. `qa` is the project's own definition of green
+      # and it *contains* the build:
+      #
+      #   validate:content -> check -> test -> build -> check:links
+      #                    -> check:structure -> check:attestation -> scan:public
+      #
+      # So `dist/` exists when this step finishes, and it is the exact tree that
+      # `check:links`, `check:structure` and `scan:public` inspected — those run
+      # after the build and are what prove the canonical URLs, the sitemap and
+      # robots.txt in the artifact agree with the pages actually emitted.
+      #
+      # Nothing after this step may rebuild or otherwise write `dist/`. What
+      # gets uploaded has to be the artifact QA actually looked at; a second
+      # `npm run build` would replace the inspected tree with an uninspected
+      # one and deploy that.
+      - name: QA gate (builds the artifact that will be deployed)
         run: npm run qa
-
-      # `qa` already built `dist/`. This rebuild is deliberate and cheap: it
-      # guarantees the tree we upload is the one the gate just inspected, even
-      # if a future `qa` stage were to mutate `dist/`.
-      - name: Build
-        run: npm run build
 
       # Host, user and port go into ~/.ssh/config rather than into every step,
       # so the connection is described once and no step has to reassemble it.
@@ -160,6 +165,8 @@ jobs:
       # a partially-rsynced document root is a live site serving half a build.
       # `--delete` makes a re-run of the same SHA converge on the same tree
       # rather than accumulating leftovers.
+      #
+      # `dist/` here is exactly what the QA gate inspected. It is not rebuilt.
       - name: Upload release
         run: |
           set -euo pipefail
@@ -203,12 +210,19 @@ jobs:
       # it can resolve *through* the link and create the new link inside the
       # old release. A fresh temp link renamed over the old one is a single
       # rename(2) — no instant in which `current` is absent.
+      #
+      # Re-running the same SHA is a no-op: `current` already points at that
+      # release, so nothing is renamed AND `previous` is left alone. That case
+      # reports `switched=false`, and the rollback step below refuses to run on
+      # it — rolling back a deploy that changed nothing would move the site to
+      # whatever `previous` happened to name from some earlier deploy.
       - name: Activate release (atomic)
         id: activate
         run: |
           set -euo pipefail
           ssh portfolio-prod bash -s -- \
-            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$GITHUB_SHA" <<'REMOTE'
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$GITHUB_SHA" \
+            <<'REMOTE' | tee "$RUNNER_TEMP/activate.out"
           set -eu
           LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"; PREVIOUS_FILE="$4"; SHA="$5"
           RELEASE="$RELEASES_DIR/$SHA"
@@ -228,7 +242,10 @@ jobs:
           echo "new target:      $RELEASE"
 
           if [ "$PREVIOUS_TARGET" = "$RELEASE" ]; then
+            # No rename, and deliberately no write to $PREVIOUS_FILE: the
+            # pointer still describes the switch that actually happened.
             echo "current already points at this release — nothing to switch"
+            echo "SWITCHED=false"
           else
             # Recorded before the switch, so rollback has a target even if the
             # run dies immediately after.
@@ -236,9 +253,24 @@ jobs:
             TMP="$LIVE_BASE/.current.new.$$"
             ln -s "$RELEASE" "$TMP"
             mv -T "$TMP" "$CURRENT_LINK"
+            echo "SWITCHED=true"
           fi
           echo "current now: $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
           REMOTE
+
+          # `SWITCHED=` is this step's contract with the rollback step. If the
+          # remote script did not report it, the run must not guess: a missing
+          # marker means we do not know whether the pointer moved.
+          switched=$(sed -n 's/^SWITCHED=//p' "$RUNNER_TEMP/activate.out" | tail -n 1)
+          case "$switched" in
+            true|false) ;;
+            *)
+              echo "::error::Activation did not report SWITCHED=true|false — refusing to guess whether the pointer moved." >&2
+              exit 1
+              ;;
+          esac
+          echo "switched=$switched" >> "$GITHUB_OUTPUT"
+          echo "activation switched the pointer: $switched"
 
       # Everything below runs against the public origin, so it tests nginx,
       # TLS and the artifact together — not just the files on disk.
@@ -246,13 +278,21 @@ jobs:
         id: smoke
         run: bash ../.github/scripts/production-smoke.sh
 
-      # Only ever after a successful activation. A failure in checkout, npm,
-      # the QA gate, SSH configuration, the precondition assert, upload or
-      # release verification means `current` was never moved. There is nothing
-      # to roll back, and moving the pointer would be the only change the run
-      # made.
+      # Only ever after an activation that actually moved the pointer.
+      #
+      # Two things have to be true, not one:
+      #   - the activate step succeeded, so a failure in checkout, npm, the QA
+      #     gate, SSH configuration, the precondition assert, upload or release
+      #     verification cannot reach here; and
+      #   - it reported `switched=true`, so a same-SHA re-run that changed
+      #     nothing cannot reach here either. On that path `previous` was not
+      #     rewritten, so "rolling back" would point the site at a stale target
+      #     from an earlier deploy — a change no failure asked for.
       - name: Roll back to previous release
-        if: failure() && steps.activate.outcome == 'success'
+        if: >-
+          failure()
+          && steps.activate.outcome == 'success'
+          && steps.activate.outputs.switched == 'true'
         run: |
           set -euo pipefail
           echo "::warning::Production smoke failed after activation — rolling back."
@@ -275,7 +315,10 @@ jobs:
       # The failed release directory is left in place on purpose — it is the
       # evidence. Nothing here prunes releases automatically.
       - name: Re-smoke after rollback
-        if: failure() && steps.activate.outcome == 'success'
+        if: >-
+          failure()
+          && steps.activate.outcome == 'success'
+          && steps.activate.outputs.switched == 'true'
         run: |
           set -uo pipefail
           echo "--- / ---"
