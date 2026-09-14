@@ -46,6 +46,18 @@ jobs:
       name: production
       url: https://portfolio.neppepe.net
 
+    # One release directory per *attempt*, never per commit.
+    #
+    # Keying on the SHA alone meant a re-run uploaded into the directory
+    # `current` was already pointing at, so `rsync --delete` rewrote the live
+    # tree — before activation had any say, and regardless of what it later
+    # reported. `run_attempt` increments on every re-run of a run, and
+    # `run_id` differs between runs, so this name can never collide with a
+    # release that is already serving. The SHA stays in the name so a
+    # directory on the host still says which commit it is.
+    env:
+      RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+
     defaults:
       run:
         working-directory: portfolio-site
@@ -163,14 +175,16 @@ jobs:
 
       # Upload into a per-SHA release directory. Never into the served tree:
       # a partially-rsynced document root is a live site serving half a build.
-      # `--delete` makes a re-run of the same SHA converge on the same tree
-      # rather than accumulating leftovers.
+      # The target is keyed on the attempt, so it is always a directory no
+      # release is being served from. That is what keeps `--delete` safe: it
+      # can only remove leftovers from a previous attempt at this same upload,
+      # never files out from under the running site.
       #
       # `dist/` here is exactly what the QA gate inspected. It is not rebuilt.
       - name: Upload release
         run: |
           set -euo pipefail
-          RELEASE="$RELEASES_DIR/$GITHUB_SHA"
+          RELEASE="$RELEASES_DIR/$RELEASE_ID"
           ssh portfolio-prod "mkdir -p '$RELEASE'"
           # D755/F644: readable by the nginx worker (www-data), not writable by
           # it. The mode comes from here rather than from whatever the runner's
@@ -182,7 +196,7 @@ jobs:
       - name: Verify release contents
         run: |
           set -euo pipefail
-          ssh portfolio-prod bash -s -- "$RELEASES_DIR/$GITHUB_SHA" <<'REMOTE'
+          ssh portfolio-prod bash -s -- "$RELEASES_DIR/$RELEASE_ID" <<'REMOTE'
           set -eu
           RELEASE="$1"
           fail=0
@@ -211,21 +225,27 @@ jobs:
       # old release. A fresh temp link renamed over the old one is a single
       # rename(2) — no instant in which `current` is absent.
       #
-      # Re-running the same SHA is a no-op: `current` already points at that
-      # release, so nothing is renamed AND `previous` is left alone. That case
-      # reports `switched=false`, and the rollback step below refuses to run on
-      # it — rolling back a deploy that changed nothing would move the site to
-      # whatever `previous` happened to name from some earlier deploy.
+      # If `current` already points at this exact release, nothing is renamed
+      # AND `previous` is left alone: that case reports `switched=false`, and
+      # the rollback step below refuses to run on it. Rolling back a deploy
+      # that changed nothing would move the site to whatever `previous`
+      # happened to name from some earlier deploy.
+      #
+      # With `RELEASE_ID` keyed on the attempt this is now a guard rather than
+      # an everyday path — a re-run builds a new release directory and really
+      # does switch. It stays because the guard is what makes "we did not move
+      # the pointer" and "do not roll back" the same statement, however the
+      # host got into that state.
       - name: Activate release (atomic)
         id: activate
         run: |
           set -euo pipefail
           ssh portfolio-prod bash -s -- \
-            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$GITHUB_SHA" \
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$RELEASE_ID" \
             <<'REMOTE' | tee "$RUNNER_TEMP/activate.out"
           set -eu
-          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"; PREVIOUS_FILE="$4"; SHA="$5"
-          RELEASE="$RELEASES_DIR/$SHA"
+          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"; PREVIOUS_FILE="$4"; RELEASE_ID="$5"
+          RELEASE="$RELEASES_DIR/$RELEASE_ID"
 
           [ -L "$CURRENT_LINK" ] || { echo "FATAL: $CURRENT_LINK is not a symlink"; exit 1; }
           [ -d "$RELEASE" ]      || { echo "FATAL: $RELEASE is not a directory"; exit 1; }

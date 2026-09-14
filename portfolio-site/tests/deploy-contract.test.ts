@@ -16,7 +16,19 @@
  * text, so the text is the contract.
  */
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readlinkSync,
+  rmSync,
+  symlinkSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
 const WORKFLOW_URL = new URL('../../.github/workflows/deploy-production.yml', import.meta.url);
@@ -203,5 +215,130 @@ describe('production smoke script', () => {
     assert.ok(SMOKE.includes('/no-such-page/'));
     assert.ok(SMOKE.includes('NOTFOUND_TITLE'));
     assert.ok(SMOKE.includes('PLACEHOLDER_MARKER'));
+  });
+});
+
+/**
+ * Release naming.
+ *
+ * The upload target used to be `releases/$GITHUB_SHA`. Once a commit was live,
+ * that directory *was* `current`'s target — so re-running the workflow pointed
+ * `rsync --delete` at the tree nginx was serving and rewrote it in place,
+ * before activation had any say and regardless of what it later reported. The
+ * name now carries the run attempt, which cannot collide with a serving
+ * release.
+ */
+const activateStep = step('Activate release');
+
+/** The workflow's own formula, read out of the file rather than restated here. */
+const RELEASE_ID_EXPR = (() => {
+  const m = WORKFLOW.match(/^\s*RELEASE_ID:\s*(.+)$/m);
+  assert.ok(m, 'the workflow must define RELEASE_ID');
+  return m![1]!.trim();
+})();
+
+const releaseIdFor = (sha: string, runId: string, attempt: string) =>
+  RELEASE_ID_EXPR.replace(/\$\{\{\s*github\.sha\s*\}\}/g, sha)
+    .replace(/\$\{\{\s*github\.run_id\s*\}\}/g, runId)
+    .replace(/\$\{\{\s*github\.run_attempt\s*\}\}/g, attempt);
+
+describe('production deploy: release naming', () => {
+  it('keys the release on the commit, the run and the attempt', () => {
+    for (const ctx of ['github.sha', 'github.run_id', 'github.run_attempt']) {
+      assert.ok(
+        RELEASE_ID_EXPR.includes(ctx),
+        `RELEASE_ID must include ${ctx} — without the attempt, a re-run uploads into the live release`,
+      );
+    }
+  });
+
+  it('never derives an upload target from the commit alone', () => {
+    assert.equal(
+      /RELEASES_DIR\/\$GITHUB_SHA/.test(CODE),
+      false,
+      'a per-commit release directory is the live tree once that commit is deployed',
+    );
+  });
+
+  it('uses the same release id to upload, verify and activate', () => {
+    for (const name of ['Upload release', 'Verify release contents', 'Activate release']) {
+      assert.ok(
+        step(name).block.includes('$RELEASE_ID'),
+        `${name} must address the release by RELEASE_ID`,
+      );
+    }
+  });
+
+  it('gives a different directory to every attempt of the same run', () => {
+    const one = releaseIdFor('abc123', '42', '1');
+    const two = releaseIdFor('abc123', '42', '2');
+    assert.notEqual(one, two, 'attempt 2 must not reuse attempt 1’s directory');
+    assert.ok(one.includes('abc123'), 'the commit must stay in the name, for traceability');
+  });
+});
+
+/**
+ * The same property, executed rather than asserted about: run the real
+ * activation script from the workflow against throwaway directories and check
+ * that a second attempt leaves the first attempt's tree byte-for-byte intact.
+ */
+describe('production deploy: a re-run does not touch the live release', () => {
+  /** Pull the remote script out of the step's YAML block scalar and de-indent it. */
+  const remoteScript = (() => {
+    const run = activateStep.block.slice(activateStep.block.indexOf('run: |'));
+    const body = run
+      .split('\n')
+      .slice(1)
+      .map((l) => (l.startsWith(' '.repeat(10)) ? l.slice(10) : l))
+      .join('\n');
+    const m = body.match(/<<'REMOTE'[^\n]*\n([\s\S]*?)\nREMOTE\n/);
+    assert.ok(m, 'the activate step must contain a REMOTE heredoc');
+    return m![1]!;
+  })();
+
+  it('leaves attempt 1 unchanged when attempt 2 deploys', () => {
+    const root = mkdtempSync(join(tmpdir(), 'deploy-contract-'));
+    try {
+      const live = join(root, 'portfolio-live');
+      const releases = join(live, 'releases');
+      const current = join(live, 'current');
+      const previous = join(live, 'previous');
+
+      const id1 = releaseIdFor('abc123', '42', '1');
+      const id2 = releaseIdFor('abc123', '42', '2');
+      assert.notEqual(id1, id2);
+
+      mkdirSync(join(releases, id1), { recursive: true });
+      writeFileSync(join(releases, id1, 'index.html'), 'attempt one');
+      symlinkSync(join(releases, id1), current);
+      writeFileSync(previous, `${join(releases, id1)}\n`);
+
+      const activate = (id: string) =>
+        execFileSync('bash', ['-s', '--', live, releases, current, previous, id], {
+          input: remoteScript,
+          encoding: 'utf8',
+        });
+
+      // Attempt 1 is live.
+      assert.match(activate(id1), /SWITCHED=false/);
+      const frozen = createHash('sha256')
+        .update(readFileSync(join(releases, id1, 'index.html')))
+        .digest('hex');
+
+      // Attempt 2 uploads into its own directory — the name the workflow
+      // computes — and activates.
+      mkdirSync(join(releases, id2), { recursive: true });
+      writeFileSync(join(releases, id2, 'index.html'), 'attempt two');
+      assert.match(activate(id2), /SWITCHED=true/);
+
+      const after = createHash('sha256')
+        .update(readFileSync(join(releases, id1, 'index.html')))
+        .digest('hex');
+      assert.equal(after, frozen, 'attempt 1’s release must be byte-for-byte unchanged');
+      assert.equal(readlinkSync(current), join(releases, id2));
+      assert.equal(readFileSync(previous, 'utf8').trim(), join(releases, id1));
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
   });
 });

@@ -2,7 +2,7 @@
 
 Target: **https://portfolio.neppepe.net**
 Served tree: **`/var/www/portfolio-live/current`** — a **symlink** to the live release
-Releases: **`/var/www/portfolio-live/releases/<git-sha>/`**
+Releases: **`/var/www/portfolio-live/releases/<git-sha>-<run-id>-<attempt>/`**
 Artifact: **`dist/`** — static files only. No Node process, no database, no
 environment configuration in production.
 
@@ -56,8 +56,8 @@ owns outright, and nginx is pointed at it once:
 └── portfolio-live/                   ← deployer:deployer 755
     ├── releases/
     │   ├── initial-placeholder/      ← a copy of the placeholder, made at migration
-    │   └── <git-sha>/                ← one directory per deployed commit
-    ├── current -> releases/<git-sha> ← the symlink nginx serves
+    │   └── <sha>-<run-id>-<attempt>/  ← one directory per deploy attempt
+    ├── current -> releases/<…>/       ← the symlink nginx serves
     └── previous                      ← a text file: what `current` pointed at before
 ```
 
@@ -337,11 +337,41 @@ Steps, in order:
 2. **`npm run qa`** — the gate from §2, **and the build**
 3. Configure SSH — `~/.ssh/config` from the five `VPS_*` secrets
 4. **Assert host preconditions** — see §5.1
-5. **Upload release** — `rsync` into `releases/$GITHUB_SHA/`
+5. **Upload release** — `rsync` into `releases/$RELEASE_ID/` — see §5.0
 6. **Verify release contents** — see §5.2
 7. **Activate** — record `previous`, then one atomic rename; report `switched`
 8. **Production smoke** — `.github/scripts/production-smoke.sh`
 9. **Roll back** — only on the condition in §5.3
+
+### 5.0 One release directory per attempt
+
+```
+RELEASE_ID = <github.sha>-<github.run_id>-<github.run_attempt>
+```
+
+Not the commit SHA alone. Once a commit is deployed, `releases/<sha>/` *is*
+what `current` points at — so keying the upload on the SHA meant that
+re-running the workflow aimed `rsync --delete` at the tree nginx was serving
+and rewrote it in place. That happened during upload, before activation had any
+say, and regardless of what activation later reported: the site could be
+modified by a run that went on to conclude it had changed nothing.
+
+`run_attempt` increments on every re-run of a run, and `run_id` differs between
+runs, so this name can never collide with a release that is already serving.
+The SHA stays at the front, so a directory on the host still says which commit
+it holds:
+
+```
+releases/
+├── 8d44e0c…-34763173686-1/
+├── 8d44e0c…-34763173686-2/     ← a re-run of that same run
+└── ca87226…-34836555973-1/
+```
+
+The consequence to know about: **a re-run is no longer a no-op.** It builds a
+new release directory and really does switch `current` onto it. That is the
+safe direction — the alternative was mutating the live tree — but it does mean
+attempts accumulate on disk (§8).
 
 **There is no separate build step, deliberately.** `qa` ends in
 `build → check:links → check:structure → check:attestation → scan:public`, so
@@ -350,11 +380,10 @@ stages inspected*. A second `npm run build` would overwrite the inspected
 artifact with one nothing had looked at, and upload that. Nothing after the
 gate may write `dist/`.
 
-A re-run of the same SHA is safe, and is a true no-op: the upload is
-`rsync --delete` into a directory named after that SHA, so it converges on the
-same tree rather than accumulating, and activation finds `current` already
-pointing there, renames nothing, and leaves `previous` alone. See §5.3 for why
-that last part matters.
+A re-run is safe because it never touches the release that is serving: the
+upload goes to a directory named after *this attempt* (§5.0), and `--delete`
+can therefore only remove leftovers from a previous attempt at the same upload,
+never files out from under the running site.
 
 ### 5.1 Preconditions, asserted before anything is uploaded
 
@@ -397,14 +426,18 @@ workflow publishes that as a step output. If the marker is missing or
 unrecognised the step fails rather than defaulting: not knowing whether the
 pointer moved is not a state to guess from.
 
-The case this second condition exists for is **re-running the same commit**.
-That activation succeeds while changing nothing, and — importantly — does *not*
-rewrite `previous`, because `previous` must keep describing the switch that
-actually happened. Without the `switched` guard, a smoke failure on such a run
-would "roll back" onto whatever target an earlier deploy had left in
-`previous` — moving production to an older release that nothing asked for, in
-response to a run that had changed nothing. With the guard, a same-SHA re-run
-can fail smoke and production is left exactly as it was.
+The case this second condition exists for is an **activation that succeeds
+without moving anything**. Such a run does *not* rewrite `previous`, because
+`previous` must keep describing the switch that actually happened. Without the
+`switched` guard, a smoke failure on such a run would "roll back" onto whatever
+target an earlier deploy had left in `previous` — moving production to an older
+release that nothing asked for, in response to a run that had changed nothing.
+
+Since §5.0 gave every attempt its own release directory this is a guard rather
+than an everyday path: a re-run now genuinely switches. It stays because it is
+what makes "we did not move the pointer" and "do not roll back" the same
+statement, however the host got into that state — including a `current` that
+was repointed by hand, or a manual deploy (§9) run twice.
 
 `Re-smoke after rollback` carries the same condition, for the same reason.
 
@@ -528,6 +561,11 @@ a rollback target removed by a cron job is the one thing rollback cannot recover
 from. Keep the live release, the previous one, and `initial-placeholder`; remove
 older ones by hand after confirming they are not what `previous` names.
 
+Since §5.0 every *attempt* leaves a directory, so a commit that took three tries
+leaves three. Each is a full copy of the site (small — the artifact is tens of
+files), but they do accumulate, which is why this section is a periodic chore
+rather than an optional one.
+
 ```sh
 du -sh /var/www/portfolio-live/releases/*
 readlink -f /var/www/portfolio-live/current    # never delete this
@@ -545,18 +583,20 @@ Same sequence, by hand, same invariant: **never `rsync` into `current`.** No
 
 ```sh
 set -eu
-SHA=$(git rev-parse HEAD)
+# Same rule as §5.0: the target must be a directory nothing is serving, so it
+# carries a timestamp where the workflow would carry run id and attempt.
+RELEASE_ID="$(git rev-parse HEAD)-manual-$(date +%Y%m%d-%H%M%S)"
 LIVE=/var/www/portfolio-live
 
 npm run qa                                    # §2 — the gate
 
 ssh deployer@<host> "test -L $LIVE/current || { echo 'not migrated — see §3'; exit 1; }
-                     mkdir -p $LIVE/releases/$SHA"
-rsync -rlptz --delete --chmod=D755,F644 dist/ "deployer@<host>:$LIVE/releases/$SHA/"
+                     mkdir -p $LIVE/releases/$RELEASE_ID"
+rsync -rlptz --delete --chmod=D755,F644 dist/ "deployer@<host>:$LIVE/releases/$RELEASE_ID/"
 
 ssh deployer@<host> "
   readlink -f $LIVE/current > $LIVE/previous
-  ln -s $LIVE/releases/$SHA $LIVE/.current.new.\$\$
+  ln -s $LIVE/releases/$RELEASE_ID $LIVE/.current.new.\$\$
   mv -T $LIVE/.current.new.\$\$ $LIVE/current
   readlink $LIVE/current"
 ```
