@@ -1,0 +1,348 @@
+name: Deploy Portfolio Production
+
+# Production. The only trigger is a push to `main` that touches the production
+# artifact, this file, or the script that decides whether a deploy is
+# acceptable — no `workflow_dispatch`, no `pull_request`, no release branch.
+# Staging is a separate workflow with a separate root (`deploy-staging.yml` ->
+# /var/www/portfolio-stg); the two never cross.
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "portfolio-site/**"
+      - ".github/workflows/deploy-production.yml"
+      - ".github/scripts/production-smoke.sh"
+
+permissions:
+  contents: read
+
+# Never cancel a production deploy in flight. A run cancelled between the
+# rsync and the atomic switch would leave the release directory half-written
+# with no pointer moved; a run cancelled during rollback is worse. Queue
+# instead.
+concurrency:
+  group: portfolio-production
+  cancel-in-progress: false
+
+# The whole deploy lives under one directory that `deployer` owns outright.
+# Nothing here runs `sudo`: the account has no passwordless rule, and handing a
+# sudo password to Actions is not a design this repository will carry. Every
+# root-owned change is done once, by a human, in the migration runbook
+# (portfolio-site/DEPLOY.md §3).
+env:
+  PROD_ORIGIN: https://portfolio.neppepe.net
+  LIVE_BASE: /var/www/portfolio-live
+  RELEASES_DIR: /var/www/portfolio-live/releases
+  CURRENT_LINK: /var/www/portfolio-live/current
+  PREVIOUS_FILE: /var/www/portfolio-live/previous
+
+jobs:
+  deploy:
+    name: Build, release, activate, smoke
+    runs-on: ubuntu-latest
+
+    environment:
+      name: production
+      url: https://portfolio.neppepe.net
+
+    # One release directory per *attempt*, never per commit.
+    #
+    # Keying on the SHA alone meant a re-run uploaded into the directory
+    # `current` was already pointing at, so `rsync --delete` rewrote the live
+    # tree — before activation had any say, and regardless of what it later
+    # reported. `run_attempt` increments on every re-run of a run, and
+    # `run_id` differs between runs, so this name can never collide with a
+    # release that is already serving. The SHA stays in the name so a
+    # directory on the host still says which commit it is.
+    env:
+      RELEASE_ID: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+    defaults:
+      run:
+        working-directory: portfolio-site
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: portfolio-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      # The gate, and the build. `qa` is the project's own definition of green
+      # and it *contains* the build:
+      #
+      #   validate:content -> check -> test -> build -> check:links
+      #                    -> check:structure -> check:attestation -> scan:public
+      #
+      # So `dist/` exists when this step finishes, and it is the exact tree that
+      # `check:links`, `check:structure` and `scan:public` inspected — those run
+      # after the build and are what prove the canonical URLs, the sitemap and
+      # robots.txt in the artifact agree with the pages actually emitted.
+      #
+      # Nothing after this step may rebuild or otherwise write `dist/`. What
+      # gets uploaded has to be the artifact QA actually looked at; a second
+      # `npm run build` would replace the inspected tree with an uninspected
+      # one and deploy that.
+      - name: QA gate (builds the artifact that will be deployed)
+        run: npm run qa
+
+      # Host, user and port go into ~/.ssh/config rather than into every step,
+      # so the connection is described once and no step has to reassemble it.
+      - name: Configure SSH
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+          VPS_PORT: ${{ secrets.VPS_PORT }}
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          # Written, never echoed. `known_hosts` comes from the secret and
+          # StrictHostKeyChecking stays on: `ssh-keyscan` is never run here,
+          # because a host key learned at deploy time authenticates nothing.
+          umask 077
+          {
+            echo 'Host portfolio-prod'
+            echo "  HostName $VPS_HOST"
+            echo "  User $VPS_USER"
+            echo "  Port $VPS_PORT"
+            echo '  IdentityFile ~/.ssh/id_ed25519'
+            echo '  IdentitiesOnly yes'
+            echo '  UserKnownHostsFile ~/.ssh/known_hosts'
+            echo '  StrictHostKeyChecking yes'
+            echo '  BatchMode yes'
+            echo '  ConnectTimeout 15'
+            echo '  ServerAliveInterval 20'
+          } > ~/.ssh/config
+          chmod 600 ~/.ssh/config
+
+      # Fail before uploading anything if the host is not in the shape the
+      # migration leaves it in. Each of these is a precondition of the atomic
+      # switch, and none of them is something a deploy should quietly fix:
+      # they are all root-owned changes, and this job has no root.
+      - name: Assert host preconditions
+        run: |
+          set -euo pipefail
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" <<'REMOTE'
+          set -eu
+          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"
+          fail=0
+          note() { echo "  $*"; }
+
+          echo "whoami: $(id -un)"
+
+          for d in "$LIVE_BASE" "$RELEASES_DIR"; do
+            if [ -d "$d" ] && [ -w "$d" ] && [ -x "$d" ]; then
+              note "ok    writable: $d ($(stat -c '%U:%G %a' "$d"))"
+            else
+              note "FAIL  not a writable directory: $d"
+              fail=1
+            fi
+          done
+
+          # The switch renames an entry inside $LIVE_BASE, so the link itself
+          # must already exist and must be a symlink. Converting a real
+          # directory into a symlink mid-deploy is exactly the operation this
+          # design exists to avoid.
+          if [ -L "$CURRENT_LINK" ]; then
+            note "ok    $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
+          else
+            note "FAIL  $CURRENT_LINK is not a symlink"
+            fail=1
+          fi
+
+          if [ "$fail" -ne 0 ]; then
+            echo
+            echo "The one-time migration in portfolio-site/DEPLOY.md §3 has not been run,"
+            echo "or its ownership step did not take. Refusing to deploy."
+            exit 1
+          fi
+          REMOTE
+
+      # Upload into a per-SHA release directory. Never into the served tree:
+      # a partially-rsynced document root is a live site serving half a build.
+      # The target is keyed on the attempt, so it is always a directory no
+      # release is being served from. That is what keeps `--delete` safe: it
+      # can only remove leftovers from a previous attempt at this same upload,
+      # never files out from under the running site.
+      #
+      # `dist/` here is exactly what the QA gate inspected. It is not rebuilt.
+      - name: Upload release
+        run: |
+          set -euo pipefail
+          RELEASE="$RELEASES_DIR/$RELEASE_ID"
+          ssh portfolio-prod "mkdir -p '$RELEASE'"
+          # D755/F644: readable by the nginx worker (www-data), not writable by
+          # it. The mode comes from here rather than from whatever the runner's
+          # checkout happened to produce.
+          rsync -rlptz --delete --chmod=D755,F644 dist/ "portfolio-prod:$RELEASE/"
+
+      # A release is activated only if it is complete. Every one of these is
+      # something the site cannot serve correctly without.
+      - name: Verify release contents
+        run: |
+          set -euo pipefail
+          ssh portfolio-prod bash -s -- "$RELEASES_DIR/$RELEASE_ID" <<'REMOTE'
+          set -eu
+          RELEASE="$1"
+          fail=0
+          for f in index.html 404.html robots.txt; do
+            if [ -s "$RELEASE/$f" ]; then echo "  ok    $f"
+            else echo "  FAIL  missing or empty: $f"; fail=1; fi
+          done
+          if ls "$RELEASE"/sitemap*.xml >/dev/null 2>&1; then
+            echo "  ok    $(cd "$RELEASE" && ls sitemap*.xml | tr '\n' ' ')"
+          else
+            echo "  FAIL  missing: sitemap*.xml"; fail=1
+          fi
+          if [ -d "$RELEASE/_astro" ] && [ -n "$(ls -A "$RELEASE/_astro")" ]; then
+            echo "  ok    _astro/ ($(ls -1 "$RELEASE/_astro" | wc -l) file(s))"
+          else
+            echo "  FAIL  missing or empty: _astro/"; fail=1
+          fi
+          echo "  release file count: $(find "$RELEASE" -type f | wc -l)"
+          [ "$fail" -eq 0 ] || { echo "release is incomplete — refusing to activate"; exit 1; }
+          REMOTE
+
+      # The switch. One rename(2), inside a directory this account owns.
+      #
+      # `ln -sfn` is NOT used: when the destination is a symlink to a directory
+      # it can resolve *through* the link and create the new link inside the
+      # old release. A fresh temp link renamed over the old one is a single
+      # rename(2) — no instant in which `current` is absent.
+      #
+      # If `current` already points at this exact release, nothing is renamed
+      # AND `previous` is left alone: that case reports `switched=false`, and
+      # the rollback step below refuses to run on it. Rolling back a deploy
+      # that changed nothing would move the site to whatever `previous`
+      # happened to name from some earlier deploy.
+      #
+      # With `RELEASE_ID` keyed on the attempt this is now a guard rather than
+      # an everyday path — a re-run builds a new release directory and really
+      # does switch. It stays because the guard is what makes "we did not move
+      # the pointer" and "do not roll back" the same statement, however the
+      # host got into that state.
+      - name: Activate release (atomic)
+        id: activate
+        run: |
+          set -euo pipefail
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$RELEASES_DIR" "$CURRENT_LINK" "$PREVIOUS_FILE" "$RELEASE_ID" \
+            <<'REMOTE' | tee "$RUNNER_TEMP/activate.out"
+          set -eu
+          LIVE_BASE="$1"; RELEASES_DIR="$2"; CURRENT_LINK="$3"; PREVIOUS_FILE="$4"; RELEASE_ID="$5"
+          RELEASE="$RELEASES_DIR/$RELEASE_ID"
+
+          [ -L "$CURRENT_LINK" ] || { echo "FATAL: $CURRENT_LINK is not a symlink"; exit 1; }
+          [ -d "$RELEASE" ]      || { echo "FATAL: $RELEASE is not a directory"; exit 1; }
+
+          # Same filesystem, or rename(2) is EXDEV and the swap is not atomic.
+          if [ "$(stat -c %d "$LIVE_BASE")" != "$(stat -c %d "$RELEASES_DIR")" ]; then
+            echo "FATAL: $LIVE_BASE and $RELEASES_DIR are on different filesystems."
+            echo "An atomic rename is not possible. Refusing to deploy."
+            exit 1
+          fi
+
+          PREVIOUS_TARGET=$(readlink -f "$CURRENT_LINK")
+          echo "previous target: $PREVIOUS_TARGET"
+          echo "new target:      $RELEASE"
+
+          if [ "$PREVIOUS_TARGET" = "$RELEASE" ]; then
+            # No rename, and deliberately no write to $PREVIOUS_FILE: the
+            # pointer still describes the switch that actually happened.
+            echo "current already points at this release — nothing to switch"
+            echo "SWITCHED=false"
+          else
+            # Recorded before the switch, so rollback has a target even if the
+            # run dies immediately after.
+            printf '%s\n' "$PREVIOUS_TARGET" > "$PREVIOUS_FILE"
+            TMP="$LIVE_BASE/.current.new.$$"
+            ln -s "$RELEASE" "$TMP"
+            mv -T "$TMP" "$CURRENT_LINK"
+            echo "SWITCHED=true"
+          fi
+          echo "current now: $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
+          REMOTE
+
+          # `SWITCHED=` is this step's contract with the rollback step. If the
+          # remote script did not report it, the run must not guess: a missing
+          # marker means we do not know whether the pointer moved.
+          switched=$(sed -n 's/^SWITCHED=//p' "$RUNNER_TEMP/activate.out" | tail -n 1)
+          case "$switched" in
+            true|false) ;;
+            *)
+              echo "::error::Activation did not report SWITCHED=true|false — refusing to guess whether the pointer moved." >&2
+              exit 1
+              ;;
+          esac
+          echo "switched=$switched" >> "$GITHUB_OUTPUT"
+          echo "activation switched the pointer: $switched"
+
+      # Everything below runs against the public origin, so it tests nginx,
+      # TLS and the artifact together — not just the files on disk.
+      - name: Production smoke
+        id: smoke
+        run: bash ../.github/scripts/production-smoke.sh
+
+      # Only ever after an activation that actually moved the pointer.
+      #
+      # Two things have to be true, not one:
+      #   - the activate step succeeded, so a failure in checkout, npm, the QA
+      #     gate, SSH configuration, the precondition assert, upload or release
+      #     verification cannot reach here; and
+      #   - it reported `switched=true`, so a same-SHA re-run that changed
+      #     nothing cannot reach here either. On that path `previous` was not
+      #     rewritten, so "rolling back" would point the site at a stale target
+      #     from an earlier deploy — a change no failure asked for.
+      - name: Roll back to previous release
+        if: >-
+          failure()
+          && steps.activate.outcome == 'success'
+          && steps.activate.outputs.switched == 'true'
+        run: |
+          set -euo pipefail
+          echo "::warning::Production smoke failed after activation — rolling back."
+          ssh portfolio-prod bash -s -- \
+            "$LIVE_BASE" "$CURRENT_LINK" "$PREVIOUS_FILE" <<'REMOTE'
+          set -eu
+          LIVE_BASE="$1"; CURRENT_LINK="$2"; PREVIOUS_FILE="$3"
+
+          [ -f "$PREVIOUS_FILE" ] || { echo "FATAL: no previous pointer at $PREVIOUS_FILE"; exit 1; }
+          PREV=$(cat "$PREVIOUS_FILE")
+          [ -n "$PREV" ] && [ -d "$PREV" ] || { echo "FATAL: previous target '$PREV' is not a directory"; exit 1; }
+
+          echo "rolling back to: $PREV"
+          TMP="$LIVE_BASE/.current.rollback.$$"
+          ln -s "$PREV" "$TMP"
+          mv -T "$TMP" "$CURRENT_LINK"
+          echo "current now: $CURRENT_LINK -> $(readlink "$CURRENT_LINK")"
+          REMOTE
+
+      # The failed release directory is left in place on purpose — it is the
+      # evidence. Nothing here prunes releases automatically.
+      - name: Re-smoke after rollback
+        if: >-
+          failure()
+          && steps.activate.outcome == 'success'
+          && steps.activate.outputs.switched == 'true'
+        run: |
+          set -uo pipefail
+          echo "--- / ---"
+          curl -sS -o /dev/null -w 'status=%{http_code}\n' --max-time 20 "$PROD_ORIGIN/" || true
+          echo "--- /no-such-page/ ---"
+          curl -sS -o /dev/null -w 'status=%{http_code}\n' --max-time 20 "$PROD_ORIGIN/no-such-page/" || true
+          echo "Rollback complete. This run stays FAILED — the release was not accepted."
