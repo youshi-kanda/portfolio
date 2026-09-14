@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 125 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 127 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -172,7 +172,15 @@ describe('provenance matrix', () => {
     // 「GitHubへのサインインが必要な場合があります」 each assert something a
     // reader can find out is wrong, so each carries a basis and an approver
     // rather than the label exemption.
-    assert.equal(presentation.length, 125);
+    //
+    // #11 nets +2: it deletes `nav.mobileIndex` — the `Index` box that was a
+    // span nothing listened to — and adds three, the breadcrumb's landmark
+    // name and the two return labels. All three are `authored` rather than
+    // `source-derived`, which is the first time a label on this site has been
+    // written for it rather than transcribed; they are still presentation,
+    // because a label that says which way a link goes asserts nothing about
+    // the world that a reader could find out is wrong.
+    assert.equal(presentation.length, 127);
     assert.equal(fact.length, 33);
 
     // U-01 added three: the email row label and its CTA present, and the

@@ -1,25 +1,5 @@
 [
   {
-    "id": "ui.nav.mobileIndex",
-    "path": "nav.mobileIndex",
-    "text": "Index",
-    "kind": "ui-system",
-    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
-    "section": "NAV",
-    "slot": "mobile 見出し",
-    "purpose": "narrow viewport で節一覧を開くラベル。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:26"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
     "id": "ui.evidence.zoom",
     "path": "evidence.zoom",
     "text": "原寸で開く",
@@ -2633,6 +2613,66 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-13T07:17:12Z"
+    }
+  },
+  {
+    "id": "ui.nav.breadcrumbLabel",
+    "path": "nav.breadcrumbLabel",
+    "text": "パンくずリスト",
+    "kind": "ui-system",
+    "route": "/work/{slug}/ · /work/{slug}/technical/",
+    "section": "NAV",
+    "slot": "breadcrumb landmark 名",
+    "purpose": "breadcrumb を読み上げ前に「現在地の階層」だと知らせる。画面には出ない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "#11 Navigation / Wayfinding — 依頼者による方針決定と文言指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "ui.work.backToIndex",
+    "path": "work.backToIndex",
+    "text": "作品一覧に戻る",
+    "kind": "ui-system",
+    "route": "/work/{slug}/ · /work/{slug}/technical/",
+    "section": "RETURN",
+    "slot": "return band リンク",
+    "purpose": "Case Study / Technical の下部から作品一覧へ戻す。前進導線の「作品一覧へ」とは向きが違う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "#11 Navigation / Wayfinding — 依頼者による方針決定と文言指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "ui.work.backToWork",
+    "path": "work.backToWork",
+    "text": "{title} に戻る",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "RETURN",
+    "slot": "return band リンク",
+    "purpose": "Technical から親の Work へ戻す。作品名を含めて、どこへ戻るのかを label 自身が言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "#11 Navigation / Wayfinding — 依頼者による方針決定と文言指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
     }
   }
 ]

@@ -23,11 +23,20 @@ import Footer from '../../../components/layout/Footer.astro';
 import Rail from '../../../components/layout/Rail.astro';
 import SectionHead from '../../../components/layout/SectionHead.astro';
 import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
+import Breadcrumb from '../../../components/navigation/Breadcrumb.astro';
 import Nav from '../../../components/navigation/Nav.astro';
+import PageBar from '../../../components/navigation/PageBar.astro';
+import ReturnBand from '../../../components/navigation/ReturnBand.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { workRepoPath, workVerification } from '../../../lib/content/compat.ts';
-import { pad2, shippingWorks, workHref } from '../../../lib/content/derive.ts';
-import { ui } from '../../../lib/content/ui.ts';
+import {
+  ARCHIVE_HREF,
+  pad2,
+  shippingWorks,
+  workCrumbs,
+  workHref,
+} from '../../../lib/content/derive.ts';
+import { fill, ui } from '../../../lib/content/ui.ts';
 
 export const getStaticPaths = (async () => {
   const works = shippingWorks((await getCollection('work')).map((e) => e.data));
@@ -93,13 +102,28 @@ const repoPath = workRepoPath(work);
  * a citation the reader cannot follow.
  */
 const claimSource = repoPath ? `${repoPath}README.md` : null;
+
+/**
+ * Wayfinding (#11 §2 / §3 / §6). None of it reads `t`: the way back out of a
+ * page may not depend on what the page happens to contain — see the note on
+ * the deleted Links-section CTA below.
+ */
+const archiveLabel = ui.register.railLabels[0];
+const parentHref = workHref(work.slug, false);
+const crumbs = workCrumbs(archiveLabel, work.title, work.slug, ui.technical.railLabels[0]);
+
+const returnLinks = [
+  { label: fill(ui.work.backToWork, { title: work.title }), href: parentHref, back: true },
+  { label: ui.register.allWorksCta, href: ARCHIVE_HREF, back: false },
+];
 ---
 
 <BaseLayout
   title={`${work.title} — ${S.architecture}`}
   description={t.architectureSummary}
 >
-  <Nav current="WORK" progress={48} onHomepage={false} />
+  <Nav progress={48} onHomepage={false} />
+  <Breadcrumb crumbs={crumbs} />
   <SyntheticBar />
   <main data-w={work.slug}>
     <section class="hero">
@@ -352,18 +376,37 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
                     <ol class="num">{t.designDocs.map((d) => <li><code>{d}</code></li>)}</ol>
                   </>
                 )}
-                <p style="margin-top:34px">
-                  <a class="lk" href={workHref(work.slug, false)}>
-                    {ui.work.caseStudyCta}<span class="ar">→</span>
-                  </a>
-                </p>
+                {/*
+                  THE RETURN LINK IS NOT HERE ANY MORE (#11 §7).
+
+                  It sat at the end of this section, reading 「Case Study を読む
+                  →」, and it was the page's only way back to the work it is
+                  about. Two defects in one placement:
+
+                    it was rendered under `has('t8')`. A work whose Case Study
+                    cites no source links would have shipped a Technical page
+                    with no route to its parent at all — latent today only
+                    because all three published works happen to cite some.
+
+                    it looked like a list item. Between a run of file paths and
+                    the footer, a page-level return reads as one more entry in
+                    the Links list rather than as the way out of the page.
+
+                  `ReturnBand` below carries it, outside every section, saying
+                  which work it goes back to.
+                */}
               </div>
             </div>
           </div>
         </section>
       )
     }
+    <ReturnBand links={returnLinks} />
     <Footer />
   </main>
+  <PageBar
+    up={{ label: ui.caseStudy.railLabels[0], href: parentHref }}
+    down={{ label: archiveLabel, href: ARCHIVE_HREF }}
+  />
   <EvidenceDialog />
 </BaseLayout>

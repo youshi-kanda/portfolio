@@ -250,6 +250,149 @@ export function navItems(hasWorks: boolean, onHomepage = true): NavItem[] {
 export const brandHref = (onHomepage: boolean): string => (onHomepage ? '#top' : '/');
 
 /**
+ * The two routes that are pages rather than sections of one.
+ *
+ * They were written as literals in three places — `routes.ts`'s path list,
+ * `MoreProjects`'s archive link, and nothing at all on the subpages, which is
+ * the defect #11 opened on. A route named in several files is a route that can
+ * be renamed in some of them.
+ */
+export const ARCHIVE_HREF = '/work/';
+export const METHOD_HREF = '/how-i-build/';
+
+/**
+ * The site-level navigation — #11 §1.
+ *
+ * WHY THIS EXISTS AT ALL. `navItems` above is the homepage's TABLE OF CONTENTS:
+ * `site.sections` is one list doing three jobs (the running order, the
+ * numbering, the nav), and every entry in it is a band of the homepage. Off the
+ * homepage that list was still what the masthead drew, with the anchors
+ * rewritten to `/#work` — so every subpage carried the contents of a document
+ * the reader was not reading, and carried no way to the page above it.
+ *
+ * Two consequences, both of which #11 measured on the built artifact:
+ *
+ *   - `/work/` had exactly one inbound link on the whole site (the homepage's
+ *     02 MORE PROJECTS). From a work page, the archive was unreachable.
+ *   - `01 WORK` was marked `aria-current="page"` on three different pages, on
+ *     a link pointing at `/#work` — a page that is none of them.
+ *
+ * So a subpage now names ROUTES. Three of them, which is all this site has:
+ * the archive, the method page, and the way to make contact — and that last one
+ * is still an anchor, because CONTACT is a band of the homepage and pretending
+ * otherwise would be inventing a page to make the list tidy.
+ *
+ * NO STRING HERE IS NEW. Each label is already registered and approved
+ * somewhere else on the site, and is read from there rather than retyped:
+ * rewording the archive's own name in one place should not leave the nav
+ * calling it something else.
+ */
+export const SITE_NAV_KEYS = ['work', 'method', 'contact'] as const;
+export type SiteNavKey = (typeof SITE_NAV_KEYS)[number];
+
+export interface SiteNavItem extends NavItem {
+  key: SiteNavKey;
+  /**
+   * Whether this entry names the page being rendered — `aria-current="page"`
+   * territory, and nothing else gets it.
+   */
+  isCurrentPage: boolean;
+  /**
+   * Whether the page being rendered lives UNDER this entry. `/work/crm/` is
+   * inside the archive's branch without being the archive.
+   *
+   * Kept apart from `isCurrentPage` on purpose. Both draw the same underline,
+   * and V3 expressed both with `aria-current="page"` — which is how three
+   * pages came to claim to be `/#work`. `aria-current` is a statement about
+   * the URL, so a section marker has to be a different attribute, or the
+   * accessibility tree is simply told something untrue.
+   */
+  isSection: boolean;
+}
+
+/** Compare routes without caring whether the caller kept the trailing slash. */
+const slashed = (p: string): string => (p.endsWith('/') ? p : `${p}/`);
+
+/**
+ * The site nav, marked against the URL BEING RENDERED.
+ *
+ * It takes the pathname rather than a key the page states about itself, and
+ * that is the correction rather than a matter of taste. The first cut of this
+ * took a `section` prop, and both `/work/` and `/work/<slug>/` passed
+ * `"work"` — perfectly reasonably, since both do live under the archive — so
+ * the work pages went back to emitting `aria-current="page"` on a link to
+ * `/work/`. That is the identical defect #11 opened on, reintroduced by an API
+ * that let a page assert its own identity.
+ *
+ * Derived from the URL, a page cannot get this wrong: `isCurrentPage` is href
+ * equality and nothing else.
+ */
+export function siteNavItems(pathname: string | null = null): SiteNavItem[] {
+  const contact = site.sections.find((s) => s.id === 'contact');
+  if (!contact?.label) {
+    throw new Error(
+      'site.sections に label 付きの contact が無い。' +
+        'site nav はラベルを新規に書かず、承認済みの文字列を読む。',
+    );
+  }
+
+  const here = pathname === null ? null : slashed(pathname);
+
+  const rows: { key: SiteNavKey; label: string; href: string; route: boolean }[] = [
+    // The archive's own name, as its h1 and its rail already print it.
+    { key: 'work', label: ui.register.railLabels[0], href: ARCHIVE_HREF, route: true },
+    // The method page's own rail label.
+    { key: 'method', label: site.howIBuild.railLabels[0] as string, href: METHOD_HREF, route: true },
+    // Still a band of the homepage, and still says so — an anchor is never a
+    // page, so it is never current and never an ancestor of anything.
+    { key: 'contact', label: contact.label, href: `/${contact.anchor}`, route: false },
+  ];
+
+  return rows.map(({ route, ...row }, i) => {
+    const isCurrentPage = route && here !== null && here === row.href;
+    return {
+      ...row,
+      index: pad2(i + 1),
+      isCurrentPage,
+      isSection: route && here !== null && !isCurrentPage && here.startsWith(row.href),
+    };
+  });
+}
+
+export interface Crumb {
+  label: string;
+  /** Null on the last crumb: the page you are on is not a link to itself. */
+  href: string | null;
+}
+
+/**
+ * The trail from the archive down to the page being rendered — #11 §2.
+ *
+ * Deliberately NOT rooted at the homepage. The masthead is the way home and is
+ * on every page already; repeating it as a first crumb would spend the trail's
+ * shortest, most-scanned slot on the one destination that never moves.
+ *
+ * `technicalLabel` is passed in rather than imported so this stays a pure
+ * function of its arguments — the tests exercise the shape at every depth
+ * without a work record or a rendered page.
+ */
+export function workCrumbs(
+  archiveLabel: string,
+  title: string,
+  slug: string,
+  technicalLabel: string | null = null,
+): Crumb[] {
+  const trail: Crumb[] = [{ label: archiveLabel, href: ARCHIVE_HREF }];
+  if (technicalLabel === null) {
+    trail.push({ label: title, href: null });
+    return trail;
+  }
+  trail.push({ label: title, href: workHref(slug, false) });
+  trail.push({ label: technicalLabel, href: null });
+  return trail;
+}
+
+/**
  * Where a work lives. The homepage links to its own in-page entry; every other
  * page must use the permalink, because a fragment that is not on the current
  * document is a dead link, not a shortcut.

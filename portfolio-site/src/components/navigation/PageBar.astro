@@ -1,0 +1,46 @@
+---
+/**
+ * Mobile only: the sticky bar for a page INSIDE the hierarchy — #11 §5 / §6.
+ *
+ * NOT `MobileBar`. That one is the homepage's, and its two entries are two
+ * bands of the homepage (`#work`, `#contact`) — on a Case Study those anchors
+ * resolve to nothing, and "Work / Contact" answers neither question a reader
+ * inside a work is asking. The two components share the `.mbar` shape and
+ * nothing else, because they are answering different questions:
+ *
+ *   MobileBar   which part of this page am I heading for
+ *   PageBar     what is above this page, and what is below it
+ *
+ * So the entries change meaning with depth:
+ *
+ *   /work/<slug>/            WORK INDEX  |  TECHNICAL
+ *   /work/<slug>/technical/  CASE STUDY  |  WORK INDEX
+ *
+ * NO WORK TITLE HERE, on purpose. Two cells at 390px cannot hold
+ * 「組織向け AI アシスタント基盤」 without truncating it, and a work name cut
+ * off mid-word is a worse answer to "where am I" than no answer. The name is
+ * carried by the three places that have room for it — the h1, the breadcrumb
+ * and the rail — and this bar carries direction only.
+ *
+ * The right cell is optional: a page with nothing below it shows one link
+ * rather than a disabled-looking half.
+ */
+export interface BarLink {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  /** Up the hierarchy. Always present — every page here has a parent. */
+  up: BarLink;
+  /** Further in, when there is anywhere further to go. */
+  down?: BarLink | null;
+}
+
+const { up, down = null } = Astro.props;
+---
+
+<div class="mbar pbar">
+  <a href={up.href}><span class="sq"></span>{up.label}</a>
+  {down && <a href={down.href}>{down.label}</a>}
+</div>
