@@ -378,7 +378,20 @@
 .ad .reg-c .r .no{padding-top:2px}
 .ad .reg-c .r .no .sq{margin-bottom:0}
 .ad .reg-c .r h3{font-size:17px;line-height:1.25;margin-bottom:1px}
-.ad .reg-c .r .cl{font-size:14px;line-height:1.55;margin-bottom:3px}
+/* ONE LINE IS NOT A SUMMARY AT THIS WIDTH. `.cl` is `-webkit-line-clamp:1`
+   (components.css), which on the desktop row hides the tail of a sentence whose
+   first line already carries the subject and the verb. At 320–414 the same
+   clamp cuts the same sentence at 2–5 characters past 「〜を」: the row states
+   what the work is called and then stops mid-clause, so the tier that exists to
+   say "also mine, in one line" says nothing at all. Measured at 390px before
+   this rule: every one of the ten archive rows truncated, hiding 67–83% of the
+   text (ops 6 lines → 1).
+
+   Three, not none: the register is a compact tier and its whole point is the
+   area difference from a FEATURED block (components.css). Unclamped, `ops` runs
+   six lines and the rows stop being a scannable list. Three shows the clause
+   through to its end for half the rows and gives the rest a readable stem. */
+.ad .reg-c .r .cl{font-size:14px;line-height:1.55;margin-bottom:3px;-webkit-line-clamp:3}
 .ad .reg-c .r .meta{grid-column:2;font-size:11px;line-height:1.5;gap:0 10px}
 .ad .reg-c .r .meta .st{font-size:11px}
 /* The arrow goes, not the link: a linked row IS the anchor, and the whole row
@@ -392,7 +405,23 @@
 
 .ad .cap-b h3{font-size:19px}
 .ad .cap-w{font-size:15px}
-.ad .contact{margin-top:112px}
+/* THE DESKTOP SECTION BREAK REACHED MOBILE UNSCALED. `#more` / `#capabilities`
+   / `#about` take `padding-top:104px` from an ID-level rule (components.css),
+   and an id beats `.s-open`'s own mobile value — so the 96px this file sets for
+   every other open section never applied to the three sections that need it
+   most, and 104px of desktop air landed on an 800px-tall screen above a 19px
+   heading. `#work` meanwhile is deliberately tight at 14px because the hero
+   flows into it, which left the homepage alternating 14px and 104px: the
+   density break the staging review read as 「Featured Work 側との密度差」.
+
+   64px is `.s-tight`'s mobile value — the break this sheet already uses when a
+   section follows another at this width — so the three sections now scale the
+   way the rest of the mobile composition does instead of keeping a desktop
+   number. Desktop is untouched: the 104px rule still applies above 768. */
+.ad #more.s-open,.ad #capabilities.s-open,.ad #about.s-open{padding-top:64px}
+/* The dark panel is its own break; 112px of bone above it was the gap doing the
+   panel's job twice. Still the largest break on the page, now by 8px. */
+.ad .contact{margin-top:72px}
 .ad .contact .in{padding:56px 0 64px}
 .ad .ct-d{grid-template-columns:110px minmax(0,1fr)}
 .ad .foot .in{padding:32px 0 40px}

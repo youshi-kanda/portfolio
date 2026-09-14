@@ -485,13 +485,30 @@
      V3 adds 03 / 04 / 05 / 06 to this list and to nothing else: the folio is
      the page's own numbering, so a page that numbers 00–02 and then stops is
      the composition running out halfway. The string still comes from
-     `site.<section>.index` via `data-mx-n`, so no numeral is typed anywhere. */
+     `site.<section>.index` via `data-mx-n`, so no numeral is typed anywhere.
+
+     #7 RE-CUT THE HOMEPAGE AND THIS LIST DID NOT FOLLOW. The sections became
+     `#work` / `#more` / `#capabilities` / `#about` / `#contact`, and only the
+     first and the fourth were named here — so 02, 03 and 05 matched no rule,
+     fell back to the base `[data-mx-n]::before` (which sets neither `top` nor
+     `font-size`) and drew at the inherited 17px. At 6% of `--tx` that is not a
+     faint numeral, it is an invisible one, which is exactly what the staging
+     review reported: "00/01 は見える、02 はほぼ消えている".
+
+     The composition running out halfway is the defect the paragraph above
+     names; drifting away from the ids is how it came back. `#build` stays —
+     it is live on /how-i-build/. `#stack` / `#principles` / `#evidence` now
+     match nothing on any built page and are left in place only because
+     removing them is a separate change from making 02/03/05 visible. */
   .ad #work::before,
+  .ad #more::before,
+  .ad #capabilities::before,
   .ad #build::before,
   .ad #stack::before,
   .ad #principles::before,
   .ad #evidence::before,
-  .ad #about::before {
+  .ad #about::before,
+  .ad #contact::before {
     top: 92px;
     font-size: clamp(110px, 15.5vw, 226px);
   }
@@ -529,11 +546,14 @@
       top: 8px;
     }
     .ad #work::before,
+    .ad #more::before,
+    .ad #capabilities::before,
     .ad #build::before,
     .ad #stack::before,
     .ad #principles::before,
     .ad #evidence::before,
-    .ad #about::before {
+    .ad #about::before,
+    .ad #contact::before {
       top: 46px;
       font-size: clamp(96px, 24vw, 160px);
     }
