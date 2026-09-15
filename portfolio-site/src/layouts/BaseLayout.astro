@@ -59,6 +59,7 @@ if (!Astro.site) {
   throw new Error('astro.config.mjs に site が無い（canonical / og:url / sitemap の正本）');
 }
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const socialImage = new URL('/og-card.png', Astro.site).href;
 ---
 
 <!doctype html>
@@ -68,21 +69,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="description" content={description} />
     <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content="#F4F2ED" />
     {!errorDocument && <link rel="canonical" href={canonical} />}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
 
     {/*
-      Open Graph. Every value is the one already on the page — the same title,
-      the same description, the same URL as the canonical link. Nothing here was
-      written for sharing: a social card that says something the page does not
-      is the same defect as a claim without a source.
+      Open Graph / social preview.
 
-      No `og:image`. There is no image on this site that is not an Evidence
-      screenshot, and an Evidence screenshot has a provenance contract
-      (`sourceFile` / `sha` / `proves` / `notProves`) that a social card strips
-      off. Serving one as a decorative card would show the screen with none of
-      the statements that make it evidence. A card with no image is honest; a
-      card that quietly re-purposes evidence is not.
+      The card is a dedicated portfolio identity graphic, not a repurposed
+      Evidence screenshot. It contains only the owner name and the same broad
+      capability categories already stated by the page, so sharing the URL does
+      not detach a product screenshot from its provenance or invent a result.
+      The SVG source is kept in scripts/assets; predev/prebuild render a
+      1200×630 PNG for broad crawler compatibility.
     */}
     {
       !errorDocument && (
@@ -93,6 +93,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           <meta property="og:description" content={description} />
           <meta property="og:site_name" content={site.handle} />
           <meta property="og:locale" content="ja_JP" />
+          <meta property="og:image" content={socialImage} />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:type" content="image/png" />
+          <meta property="og:image:alt" content="YOUSHI KANDA Engineering Portfolio" />
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={title} />
+          <meta name="twitter:description" content={description} />
+          <meta name="twitter:image" content={socialImage} />
+          <meta name="twitter:image:alt" content="YOUSHI KANDA Engineering Portfolio" />
         </>
       )
     }
