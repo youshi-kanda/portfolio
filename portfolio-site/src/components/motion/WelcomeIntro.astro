@@ -1,0 +1,39 @@
+---
+/**
+ * Homepage-only welcome layer.
+ *
+ * It is decorative, appears once per browser session, never locks scroll, and
+ * never hides the page when JavaScript is unavailable or reduced motion is
+ * requested. The element is `hidden` in source; only the early inline gate
+ * enables it.
+ */
+import '../../styles/welcome.css';
+---
+
+<script is:inline>
+  (() => {
+    try {
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (sessionStorage.getItem('portfolio-welcome-v1') === '1') return;
+      sessionStorage.setItem('portfolio-welcome-v1', '1');
+      document.documentElement.classList.add('wi-ready');
+    } catch {
+      // Storage or scripting restrictions fall back to the normal page.
+    }
+  })();
+</script>
+
+<div class="welcome-intro" hidden aria-hidden="true">
+  <div class="wi-rail">
+    <span class="wi-index">00</span>
+    <span class="wi-mark" aria-hidden="true">
+      <i class="wi-y-a"></i><i class="wi-y-b"></i><i class="wi-y-c"></i>
+      <i class="wi-k-a"></i><i class="wi-k-b"></i><i class="wi-k-c"></i>
+    </span>
+  </div>
+  <div class="wi-field">
+    <span class="wi-kicker">ENGINEERING PORTFOLIO</span>
+    <strong class="wi-name">YOUSHI KANDA</strong>
+    <span class="wi-rule"></span>
+  </div>
+</div>
