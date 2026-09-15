@@ -128,6 +128,100 @@
     }
   }
 
+  /* CAPABILITIES: 02 MORE PROJECTS is intentionally the quiet/static bridge.
+     The changing instrument resumes at 03, where each of the four capability
+     rows is already a natural table-of-contents stop. */
+  .ad #capabilities {
+    position: relative;
+  }
+
+  .ad #capabilities .cap-master-track {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .ad #capabilities .cap-master-track {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .ad #capabilities .cap-master-page {
+      height: 100%;
+      position: relative;
+    }
+
+    .ad #capabilities .cap-master-rail {
+      position: sticky;
+      top: calc(var(--mx-nav, 75px) + 40px);
+      width: 200px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 14px;
+      pointer-events: none;
+    }
+
+    .ad #capabilities .cap-master-rail > .ix {
+      font-size: 20px;
+    }
+
+    .ad #capabilities .cap-master-current {
+      position: relative;
+      flex: 0 0 100%;
+      min-height: 82px;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--hair);
+    }
+
+    .ad #capabilities .cap-master-item {
+      position: absolute;
+      inset: 14px 0 auto;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .ad #capabilities .cap-master-item.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ad #capabilities .cap-master-index {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-family: var(--f-mono);
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--sig);
+      font-weight: 500;
+    }
+
+    .ad #capabilities .cap-master-index .sq {
+      display: block;
+      width: 9px;
+      height: 9px;
+      flex: 0 0 9px;
+      background: var(--sig);
+    }
+
+    .ad #capabilities .cap-master-item > .lb {
+      max-width: 190px;
+      line-height: 1.55;
+    }
+
+    /* The real header rail keeps the grid geometry; only its desktop ink is
+       replaced by the persistent overlay. The empty rail in row two stays as-is. */
+    .ad #capabilities > .page > .tr:first-child > .ins {
+      opacity: 0;
+    }
+  }
+
   /* MORE PROJECTS: keep the section instrument on the left while the compact
      work register passes on the right. The sticky box is bounded by the section,
      so it releases naturally before CAPABILITIES. The gate rule is deliberately
