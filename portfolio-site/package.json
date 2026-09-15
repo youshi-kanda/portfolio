@@ -7,7 +7,10 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "generate:social-assets": "node scripts/generate-social-assets.mjs",
+    "predev": "npm run generate:social-assets",
     "dev": "astro dev",
+    "prebuild": "npm run generate:social-assets",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
