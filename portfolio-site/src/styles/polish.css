@@ -37,6 +37,97 @@
     color: var(--sig);
   }
 
+  /* FEATURED WORK: one persistent desktop instrument rail for the whole 01
+     section. The original rails remain in flow so the frozen two-track geometry
+     and the mobile/accessibility reading order do not change; on desktop their
+     ink is suppressed and this overlay becomes the visible readout. */
+  .ad #work {
+    position: relative;
+  }
+
+  .ad #work .fw-master-track {
+    display: none;
+  }
+
+  @media (min-width: 1024px) {
+    .ad #work .fw-master-track {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 6;
+      pointer-events: none;
+    }
+
+    .ad #work .fw-master-page {
+      height: 100%;
+      position: relative;
+    }
+
+    .ad #work .fw-master-rail {
+      position: sticky;
+      top: calc(var(--mx-nav, 75px) + 40px);
+      width: 200px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0 14px;
+      pointer-events: none;
+    }
+
+    .ad #work .fw-master-rail > .ix {
+      font-size: 20px;
+    }
+
+    .ad #work .fw-master-current {
+      position: relative;
+      flex: 0 0 100%;
+      min-height: 74px;
+      margin-top: 24px;
+      padding-top: 14px;
+      border-top: 1px solid var(--hair);
+    }
+
+    .ad #work .fw-master-item {
+      position: absolute;
+      inset: 14px 0 auto;
+      opacity: 0;
+      visibility: hidden;
+    }
+
+    .ad #work .fw-master-item.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .ad #work .fw-master-index {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-family: var(--f-mono);
+      font-size: 18px;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      color: var(--sig);
+      font-weight: 500;
+    }
+
+    .ad #work .fw-master-index .sq {
+      display: block;
+      width: 9px;
+      height: 9px;
+      flex: 0 0 9px;
+      background: var(--sig);
+    }
+
+    /* Keep the original boxes in the layout so every title/figure/body starts
+       on exactly the same frozen grid. Only their desktop ink is hidden. */
+    .ad #work > .page > .tr > .ins,
+    .ad #work > .fw > .page > .tr:first-child > .ins {
+      opacity: 0;
+    }
+  }
+
   /* MORE PROJECTS: keep the section instrument on the left while the compact
      work register passes on the right. The sticky box is bounded by the section,
      so it releases naturally before CAPABILITIES. The gate rule is deliberately
