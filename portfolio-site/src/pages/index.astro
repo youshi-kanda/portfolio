@@ -45,6 +45,7 @@ import EvidenceDialog from '../components/evidence/EvidenceDialog.astro';
 import Footer from '../components/layout/Footer.astro';
 import MobileBar from '../components/navigation/MobileBar.astro';
 import MotionStage from '../components/motion/MotionStage.astro';
+import WelcomeIntro from '../components/motion/WelcomeIntro.astro';
 import Nav from '../components/navigation/Nav.astro';
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -80,6 +81,7 @@ const description = await copyText('home.hero.lede');
   the title.
 */}
 <BaseLayout title={`${site.handle} — ${site.kicker}`} description={description}>
+  <WelcomeIntro />
   <Nav progress={6} hasWorks={works.length > 0} />
   {/*
     Motion prototype (feature/motion-experience-v2), scoped to 00 and 01.

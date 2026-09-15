@@ -7,18 +7,22 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "generate:social-assets": "node scripts/generate-social-assets.mjs",
+    "predev": "npm run generate:social-assets",
     "dev": "astro dev",
+    "prebuild": "npm run generate:social-assets",
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
     "validate:content": "node scripts/validate-content.ts",
     "test": "node --test \"tests/**/*.test.ts\"",
     "check:links": "node scripts/check-links.ts",
+    "check:social": "node scripts/check-social.ts",
     "check:structure": "node scripts/check-structure.ts",
     "scan:public": "node scripts/public-safe-scan.ts --tracked --dist",
     "scan:local": "node scripts/public-safe-scan.ts --tracked --staged --dist --private",
     "check:attestation": "node scripts/check-attestation.ts",
-    "qa": "npm run validate:content && npm run check && npm test && npm run build && npm run check:links && npm run check:structure && npm run check:attestation && npm run scan:public"
+    "qa": "npm run validate:content && npm run check && npm test && npm run build && npm run check:links && npm run check:social && npm run check:structure && npm run check:attestation && npm run scan:public"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",

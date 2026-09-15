@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F4F2ED"/>
+
+  <!-- oversized section index: the same instrument language used on the site -->
+  <text x="72" y="170" fill="#E3DFD5" font-family="Arial, Helvetica, sans-serif" font-size="148" font-weight="700" letter-spacing="-8">00</text>
+
+  <!-- instrument rail -->
+  <line x1="250" y1="64" x2="250" y2="566" stroke="#15171A" stroke-width="1" opacity="0.22"/>
+  <rect x="246" y="124" width="8" height="92" fill="#14654A"/>
+
+  <!-- brand monogram; same geometry as favicon -->
+  <g transform="translate(74 392) scale(3.6)">
+    <path d="M6 7.5 12.5 14v10.5M19 7.5 12.5 14" fill="none" stroke="#14654A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path d="M20 7.5v17M20 16l6-8.5M20 16l6 8.5" fill="none" stroke="#15171A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+  </g>
+
+  <!-- main statement -->
+  <text x="320" y="184" fill="#5C6066" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="4">ENGINEERING PORTFOLIO</text>
+  <text x="320" y="284" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" letter-spacing="-2">YOUSHI-KANDA</text>
+
+  <line x1="320" y1="332" x2="1080" y2="332" stroke="#CFCABE" stroke-width="1"/>
+
+  <text x="320" y="398" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">BUSINESS SYSTEMS</text>
+  <text x="320" y="454" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">AI INTEGRATION</text>
+  <text x="320" y="510" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="28" font-weight="700">WORKFLOW AUTOMATION</text>
+
+  <text x="1080" y="558" text-anchor="end" fill="#6A6D71" font-family="Arial, Helvetica, sans-serif" font-size="18" letter-spacing="1">youshi-kanda</text>
+</svg>

@@ -18,6 +18,10 @@ dist/
 build/
 coverage/
 
+# Generated portfolio social assets
+portfolio-site/public/og-card.png
+portfolio-site/public/apple-touch-icon.png
+
 # Python
 __pycache__/
 *.py[cod]

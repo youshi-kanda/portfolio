@@ -1,0 +1,64 @@
+@layer utilities {
+  /* HERO: keep Japanese capability terms intact on the desktop instrument rail.
+     Spaces around the slashes remain valid break points; anywhere is only the
+     emergency floor for a genuinely too-small measure. */
+  .ad .hero .ins .role {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+
+  /* ABOUT: strengthen hierarchy without inventing profile facts. The three
+     existing statements become a numbered editorial sequence; the copy itself
+     remains untouched. */
+  .ad .ab-now {
+    max-width: 72ch;
+    counter-reset: about-step;
+    border-top: 1px solid var(--hair);
+  }
+
+  .ad .ab-now p {
+    counter-increment: about-step;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    column-gap: 18px;
+    align-items: start;
+    margin: 0;
+    padding: 17px 0 18px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  .ad .ab-now p::before {
+    content: '0' counter(about-step);
+    padding-top: 0.34em;
+    font-family: var(--f-mono);
+    font-size: 10px;
+    line-height: 1.2;
+    letter-spacing: 0.16em;
+    color: var(--sig);
+  }
+
+  /* MORE PROJECTS: the whole row is already the link. A small arrow movement
+     is enough to acknowledge hover/focus without adding another visual system. */
+  .ad .reg a.r .rl .ar {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ad .reg a.r .rl .ar {
+      transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .ad .reg a.r:hover .rl .ar,
+    .ad .reg a.r:focus-visible .rl .ar {
+      transform: translateX(4px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .ad .ab-now p {
+      grid-template-columns: 34px minmax(0, 1fr);
+      column-gap: 10px;
+      padding: 14px 0 15px;
+    }
+  }
+}

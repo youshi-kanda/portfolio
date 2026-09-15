@@ -23,14 +23,18 @@ const { current = null, progress = 0, hasWorks = true, onHomepage = true } = Ast
 const items = navItems(hasWorks, onHomepage);
 ---
 
-<nav class="nav">
+<nav class="nav" data-home-nav={onHomepage ? '' : undefined}>
   <div class="page">
     <a class="nm" href={brandHref(onHomepage)}>{site.handle}<i>{site.kicker}</i></a>
     <ol>
       {
         items.map((item) => (
           <li>
-            <a href={item.href} aria-current={item.label === current ? 'page' : undefined}>
+            <a
+              href={item.href}
+              data-nav-target={onHomepage && item.href.startsWith('#') ? item.href.slice(1) : undefined}
+              aria-current={item.label === current ? 'page' : undefined}
+            >
               <i>{item.index}</i>{item.label}
             </a>
           </li>
@@ -40,3 +44,45 @@ const items = navItems(hasWorks, onHomepage);
   </div>
   <div class="prg" style={`--p:${progress}%`}></div>
 </nav>
+
+{
+  onHomepage && (
+    <script>
+      const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-home-nav] [data-nav-target]')];
+      const pairs = links
+        .map((link) => {
+          const id = link.dataset.navTarget;
+          const section = id ? document.getElementById(id) : null;
+          return section ? { link, section } : null;
+        })
+        .filter((pair): pair is { link: HTMLAnchorElement; section: HTMLElement } => pair !== null);
+
+      if (pairs.length > 0) {
+        const setCurrent = (active: HTMLAnchorElement | null) => {
+          for (const { link } of pairs) {
+            if (link === active) link.setAttribute('aria-current', 'location');
+            else if (link.getAttribute('aria-current') === 'location') link.removeAttribute('aria-current');
+          }
+        };
+
+        const visible = new Map<HTMLElement, number>();
+        const observer = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) visible.set(entry.target as HTMLElement, entry.intersectionRatio);
+              else visible.delete(entry.target as HTMLElement);
+            }
+
+            const current = [...pairs]
+              .filter(({ section }) => visible.has(section))
+              .sort((a, b) => (visible.get(b.section) ?? 0) - (visible.get(a.section) ?? 0))[0];
+            setCurrent(current?.link ?? null);
+          },
+          { rootMargin: '-18% 0px -62% 0px', threshold: [0, 0.01, 0.25, 0.5, 0.75, 1] },
+        );
+
+        for (const { section } of pairs) observer.observe(section);
+      }
+    </script>
+  )
+}
