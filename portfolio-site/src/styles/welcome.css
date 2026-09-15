@@ -1,0 +1,176 @@
+@layer motion {
+  .welcome-intro[hidden] {
+    display: none;
+  }
+
+  html.wi-ready .welcome-intro[hidden] {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: grid;
+    grid-template-columns: minmax(150px, 22vw) 1fr;
+    background: #F4F2ED;
+    color: #15171A;
+    overflow: hidden;
+    pointer-events: none;
+    animation: wi-exit 0.48s 0.92s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .welcome-intro::before {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 minmax(150px, 22vw);
+  }
+
+  .wi-rail {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(34px, 5vw, 72px);
+    border-right: 1px solid #CFCABE;
+  }
+
+  .wi-index {
+    font: 700 clamp(54px, 7vw, 92px)/0.9 Arial, Helvetica, sans-serif;
+    letter-spacing: -0.07em;
+    color: #E3DFD5;
+    animation: wi-index-in 0.52s 0.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .wi-field {
+    position: relative;
+    align-self: center;
+    padding: clamp(34px, 7vw, 96px);
+  }
+
+  .wi-kicker {
+    display: block;
+    margin-bottom: 18px;
+    font: 700 12px/1.2 Arial, Helvetica, sans-serif;
+    letter-spacing: 0.18em;
+    color: #5C6066;
+    animation: wi-rise 0.48s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .wi-name {
+    display: block;
+    font: 700 clamp(42px, 7.5vw, 92px)/0.96 Arial, Helvetica, sans-serif;
+    letter-spacing: -0.045em;
+    animation: wi-rise 0.52s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .wi-rule {
+    display: block;
+    width: min(620px, 68vw);
+    height: 3px;
+    margin-top: 30px;
+    background: #14654A;
+    transform-origin: left center;
+    animation: wi-rule-in 0.62s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .wi-mark {
+    position: relative;
+    display: block;
+    width: 72px;
+    height: 72px;
+    animation: wi-mark-in 0.48s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .wi-mark i {
+    position: absolute;
+    display: block;
+    height: 4px;
+    transform-origin: left center;
+  }
+
+  .wi-y-a,
+  .wi-y-b,
+  .wi-y-c {
+    background: #14654A;
+  }
+
+  .wi-k-a,
+  .wi-k-b,
+  .wi-k-c {
+    background: #15171A;
+  }
+
+  .wi-y-a { width: 22px; left: 8px; top: 15px; transform: rotate(45deg); }
+  .wi-y-b { width: 22px; left: 31px; top: 15px; transform: rotate(135deg); }
+  .wi-y-c { width: 28px; left: 31px; top: 30px; transform: rotate(90deg); }
+  .wi-k-a { width: 40px; left: 48px; top: 12px; transform: rotate(90deg); }
+  .wi-k-b { width: 23px; left: 48px; top: 33px; transform: rotate(-55deg); }
+  .wi-k-c { width: 23px; left: 48px; top: 33px; transform: rotate(55deg); }
+
+  @keyframes wi-index-in {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes wi-rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes wi-rule-in {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes wi-mark-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes wi-exit {
+    from { transform: translateY(0); visibility: visible; }
+    to { transform: translateY(-100%); visibility: hidden; }
+  }
+
+  @media (max-width: 767px) {
+    html.wi-ready .welcome-intro[hidden] {
+      grid-template-columns: 78px 1fr;
+    }
+
+    .wi-rail {
+      padding: 24px 16px;
+    }
+
+    .wi-index {
+      font-size: 38px;
+    }
+
+    .wi-mark {
+      width: 46px;
+      height: 46px;
+      transform: scale(0.72);
+      transform-origin: left bottom;
+    }
+
+    .wi-field {
+      padding: 30px 24px;
+    }
+
+    .wi-kicker {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+    }
+
+    .wi-name {
+      font-size: clamp(34px, 11vw, 52px);
+    }
+
+    .wi-rule {
+      width: 100%;
+      margin-top: 22px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.wi-ready .welcome-intro[hidden] {
+      display: none;
+    }
+  }
+}
