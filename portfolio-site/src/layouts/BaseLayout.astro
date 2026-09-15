@@ -20,6 +20,9 @@ import '../styles/index.css';
    between `components` and `utilities`, and a layer order is fixed by the
    first declaration the document sees. */
 import '../styles/motion.css';
+/* Small, late-stage visual corrections live outside the frozen sheets so the
+   original art-direction remains auditable. */
+import '../styles/polish.css';
 import { site } from '../lib/content/site.ts';
 
 interface Props {
