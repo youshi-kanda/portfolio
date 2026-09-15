@@ -37,8 +37,58 @@
     color: var(--sig);
   }
 
-  /* MORE PROJECTS: the whole row is already the link. A small arrow movement
-     is enough to acknowledge hover/focus without adding another visual system. */
+  /* MORE PROJECTS: keep the section instrument on the left while the compact
+     work register passes on the right. The sticky box is bounded by the section,
+     so it releases naturally before CAPABILITIES. The gate rule is deliberately
+     short here: it belongs to the heading, not to the rows below it. */
+  .ad #more .more-shell {
+    --more-head-h: 132px;
+    align-items: start;
+    padding-bottom: 54px;
+  }
+
+  .ad #more .more-shell::before {
+    bottom: auto;
+    height: var(--more-head-h);
+  }
+
+  .ad #more .more-rail-sticky {
+    grid-column: 1;
+    align-self: start;
+    min-width: 0;
+  }
+
+  .ad #more .more-main {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .ad #more .more-head {
+    min-height: var(--more-head-h);
+    max-width: 720px;
+  }
+
+  .ad #more .more-head h2 {
+    margin-bottom: 0;
+  }
+
+  .ad #more .more-shell > .more-all {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    margin-top: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .ad #more .more-rail-sticky {
+      position: sticky;
+      top: calc(var(--mx-nav, 75px) + 28px);
+    }
+  }
+
+  /* MORE PROJECTS rows: the whole row is already the link. A small arrow
+     movement is enough to acknowledge hover/focus without adding another
+     visual system. */
   .ad .reg a.r .rl .ar {
     display: inline-block;
   }
@@ -51,6 +101,36 @@
     .ad .reg a.r:hover .rl .ar,
     .ad .reg a.r:focus-visible .rl .ar {
       transform: translateX(4px);
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .ad #more .more-shell {
+      padding-bottom: 0;
+    }
+
+    .ad #more .more-shell::before {
+      display: none;
+    }
+
+    .ad #more .more-rail-sticky,
+    .ad #more .more-main,
+    .ad #more .more-shell > .more-all {
+      grid-column: 1;
+    }
+
+    .ad #more .more-rail-sticky {
+      position: static;
+    }
+
+    .ad #more .more-head {
+      min-height: 0;
+      margin-bottom: 24px;
+    }
+
+    .ad #more .more-shell > .more-all {
+      position: static;
+      margin-top: 28px;
     }
   }
 
