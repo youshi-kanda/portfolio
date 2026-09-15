@@ -37,6 +37,23 @@
     color: var(--sig);
   }
 
+  /* MORE PROJECTS: the whole row is already the link. A small arrow movement
+     is enough to acknowledge hover/focus without adding another visual system. */
+  .ad .reg a.r .rl .ar {
+    display: inline-block;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .ad .reg a.r .rl .ar {
+      transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    .ad .reg a.r:hover .rl .ar,
+    .ad .reg a.r:focus-visible .rl .ar {
+      transform: translateX(4px);
+    }
+  }
+
   @media (max-width: 767px) {
     .ad .ab-now p {
       grid-template-columns: 34px minmax(0, 1fr);
