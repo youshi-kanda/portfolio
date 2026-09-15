@@ -190,10 +190,21 @@ export const ui = {
    * classification that requires a real approver and refuses a
    * plausible-looking placeholder.
    */
+  /**
+   * The GITHUB pair says what is actually published, and no more.
+   *
+   * It used to promise 「実装例・公開コード・リポジトリ」 and 「GitHub で実装を
+   * 見る」 — three nouns and a verb, for a link that leads to one account and
+   * one repository. The wording made the published surface sound larger than
+   * it is, and it would have had to be rewritten again the moment it became
+   * true. These two hold at the current scope and stay correct as demos are
+   * added; the stronger 「実装例・デモを見る」 is the wording to take up when
+   * there are several public ones to see.
+   */
   contact: {
-    channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
+    channels: '公開しているコードは GitHub から確認できます。',
     emailCta: 'メールで相談する',
-    githubCta: 'GitHub で実装を見る',
+    githubCta: 'GitHubを見る',
   },
 
   mobileBar: {

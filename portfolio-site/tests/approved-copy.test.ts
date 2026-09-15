@@ -34,9 +34,12 @@ describe('approved copy gate', () => {
   it('covers all twenty-six approved strings, each in exactly one batch', () => {
     assert.equal(Object.keys(APPROVED_TEXT).length, 26);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email, audit] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email && audit);
-    assert.equal(APPROVAL_BATCHES.length, 8);
+    const [homepage, notFound, v4, workLede, issue6, issue8, email, audit, ghScope] =
+      APPROVAL_BATCHES;
+    assert.ok(
+      homepage && notFound && v4 && workLede && issue6 && issue8 && email && audit && ghScope,
+    );
+    assert.equal(APPROVAL_BATCHES.length, 9);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -79,6 +82,12 @@ describe('approved copy gate', () => {
       [audit.by, audit.at, [...audit.ids]],
       ['user', '2026-09-15T00:00:00Z', ['home.about.h2']],
     );
+    assert.deepEqual(
+      [ghScope.by, ghScope.at, [...ghScope.ids]],
+      ['user', '2026-09-15T00:00:00Z', ['ui.contact.channels', 'ui.contact.githubCta']],
+    );
+    assert.equal(issue8.ids.includes('ui.contact.channels'), false);
+    assert.equal(issue8.ids.includes('ui.contact.githubCta'), false);
 
     // #8 — approved on PR #17, and the timestamp is that comment's, not the
     // issue's created_at and not a commit time. An earlier draft used the
@@ -88,11 +97,11 @@ describe('approved copy gate', () => {
       [
         'user',
         '2026-09-13T07:17:12Z',
-        [
-          'ui.contact.channels',
-          'ui.contact.githubCta',
-          'ui.caseStudy.repositoryAuthNote',
-        ],
+        // The GitHub pair left at TASK-PORTFOLIO-CONTACT-GITHUB-SCOPE-01, on
+        // the same rule as `home.about.h2`: reworded, so the id follows its
+        // current text. What this batch still approves is the note about
+        // needing a GitHub sign-in to read a CI log, which is unchanged.
+        ['ui.caseStudy.repositoryAuthNote'],
       ],
     );
     assert.match(issue8.task, /PR #17 comment 5651891248/);
@@ -382,11 +391,17 @@ describe('approved copy gate', () => {
     // restated the HERO and CONTACT ledes' 整理 → 設計 → 実装 → 運用 sequence a
     // third time, in the heading of the section about the person.
     assert.equal(text.get('home.about.h2'), '担当領域と公開範囲。');
-    assert.equal(
-      text.get('ui.contact.channels'),
-      '実装例・公開コード・リポジトリは GitHub で確認できます。',
-    );
-    assert.equal(text.get('ui.contact.githubCta'), 'GitHub で実装を見る');
+    // The GitHub pair left this batch too, narrowed to what is actually
+    // published: the old wording named 実装例・公開コード・リポジトリ and a verb
+    // for a link that goes to one account and one repository.
+    assert.equal(text.get('ui.contact.channels'), '公開しているコードは GitHub から確認できます。');
+    assert.equal(text.get('ui.contact.githubCta'), 'GitHubを見る');
+    // Sized to grow into: both stay true as public demos are added, so shipping
+    // one does not put the copy back into review. The stronger wording is a
+    // later occasion with its own batch.
+    for (const id of ['ui.contact.channels', 'ui.contact.githubCta']) {
+      assert.doesNotMatch(text.get(id)!, /実装例|デモ/);
+    }
     assert.equal(
       text.get('ui.caseStudy.repositoryAuthNote'),
       'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',

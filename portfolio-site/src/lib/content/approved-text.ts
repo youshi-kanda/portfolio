@@ -154,11 +154,7 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     task: 'ISSUE-8-PUBLIC-COPY (PR #17 comment 5651891248)',
     by: 'user',
     at: '2026-09-13T07:17:12Z',
-    ids: Object.freeze([
-      'ui.contact.channels',
-      'ui.contact.githubCta',
-      'ui.caseStudy.repositoryAuthNote',
-    ]),
+    ids: Object.freeze(['ui.caseStudy.repositoryAuthNote']),
   }),
   /**
    * U-01 — the public contact address, approved on PR #17 comment 5651971896.
@@ -212,6 +208,32 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     by: 'user',
     at: '2026-09-15T00:00:00Z',
     ids: Object.freeze(['home.about.h2']),
+  }),
+  /**
+   * CONTACT's GitHub pair, narrowed to what is actually published.
+   *
+   * 「実装例・公開コード・リポジトリは GitHub で確認できます。」 and 「GitHub で
+   * 実装を見る」 named three kinds of thing and a verb, for a link that goes to
+   * one account and one repository. Nothing in it was false and the whole of it
+   * read larger than the surface behind it — which an approval does not fix,
+   * and is exactly what this register is for.
+   *
+   * THE REPLACEMENTS ARE SIZED TO GROW INTO. 「公開しているコードは GitHub から
+   * 確認できます。」 and 「GitHubを見る」 are true at one public repository and
+   * still true at ten, so publishing a demo will not put the copy back into
+   * review. The owner named the wording to take up when there ARE several
+   * public demos to see — 「実装例・デモを見る」 — and that is a later occasion
+   * with a batch of its own, not a promise to make in advance.
+   *
+   * THE URLS ARE UNTOUCHED. `site.contact.rows` still carries the account and
+   * the portfolio repository, so what changed is how the destination is
+   * described and not where the link goes.
+   */
+  Object.freeze({
+    task: 'TASK-PORTFOLIO-CONTACT-GITHUB-SCOPE-01',
+    by: 'user',
+    at: '2026-09-15T00:00:00Z',
+    ids: Object.freeze(['ui.contact.channels', 'ui.contact.githubCta']),
   }),
 ]);
 
