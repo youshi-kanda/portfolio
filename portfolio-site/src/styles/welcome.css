@@ -16,12 +16,6 @@
     animation: wi-exit 0.48s 0.92s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .welcome-intro::before {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 minmax(150px, 22vw);
-  }
-
   .wi-rail {
     position: relative;
     display: flex;
@@ -143,9 +137,7 @@
     }
 
     .wi-mark {
-      width: 46px;
-      height: 46px;
-      transform: scale(0.72);
+      scale: 0.72;
       transform-origin: left bottom;
     }
 
