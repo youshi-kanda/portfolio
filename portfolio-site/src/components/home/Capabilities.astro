@@ -83,9 +83,9 @@ const categories = c.categories.map((cat) => ({
         <div class="cap-l">
           {
             categories.map((cat) => (
-              <div class="cap-i" data-capability-item={cat.key}>
+              <div class="cap-i">
                 <span class="no">{cat.key}</span>
-                <div class="cap-b">
+                <div class="cap-b" data-capability-item={cat.key}>
                   <h3>{cat.title}</h3>
                   <p class="cap-en">{cat.titleEn}</p>
                   <p class="cap-w">{cat.what}</p>
