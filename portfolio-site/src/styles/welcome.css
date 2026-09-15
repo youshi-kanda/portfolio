@@ -13,7 +13,7 @@
     color: #15171A;
     overflow: hidden;
     pointer-events: none;
-    animation: wi-exit 0.48s 0.92s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: wi-exit 0.62s 1.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .wi-rail {
@@ -29,7 +29,7 @@
     font: 700 clamp(54px, 7vw, 92px)/0.9 Arial, Helvetica, sans-serif;
     letter-spacing: -0.07em;
     color: #E3DFD5;
-    animation: wi-index-in 0.52s 0.05s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: wi-index-in 0.68s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .wi-field {
@@ -44,14 +44,14 @@
     font: 700 12px/1.2 Arial, Helvetica, sans-serif;
     letter-spacing: 0.18em;
     color: #5C6066;
-    animation: wi-rise 0.48s 0.12s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: wi-rise 0.64s 0.20s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .wi-name {
     display: block;
     font: 700 clamp(42px, 7.5vw, 92px)/0.96 Arial, Helvetica, sans-serif;
     letter-spacing: -0.045em;
-    animation: wi-rise 0.52s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: wi-rise 0.72s 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .wi-rule {
@@ -61,7 +61,7 @@
     margin-top: 30px;
     background: #14654A;
     transform-origin: left center;
-    animation: wi-rule-in 0.62s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: wi-rule-in 0.82s 0.48s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .wi-mark {
@@ -69,7 +69,7 @@
     display: block;
     width: 72px;
     height: 72px;
-    animation: wi-mark-in 0.48s 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: wi-mark-in 0.68s 0.30s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .wi-mark i {
