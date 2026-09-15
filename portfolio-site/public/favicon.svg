@@ -1,15 +1,12 @@
 <!--
-  The register's row marker at favicon scale.
+  Portfolio favicon.
 
-  Not a new mark: `.reg .r .no .sq` is a solid square in the signal pigment on
-  the bone-paper ground, and it is already the element that stands at the head
-  of every row in the work index. The two colours are `--paper` (#F4F2ED) and
-  the default `--sig` (#14654A) from tokens.css, written as literals because a
-  favicon is fetched as its own document and never sees the stylesheet.
-
-  Nothing was designed here; the art direction is untouched.
+  A font-free YK monogram built from the site's existing visual language:
+  bone-paper ground, ink strokes, and the default signal green. Geometry is
+  intentionally simple so it remains legible at browser-tab scale.
 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
-  <rect width="32" height="32" fill="#F4F2ED"/>
-  <rect x="8" y="8" width="16" height="16" fill="#14654A"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="YK">
+  <rect width="32" height="32" rx="4" fill="#F4F2ED"/>
+  <path d="M6 7.5 12.5 14v10.5M19 7.5 12.5 14" fill="none" stroke="#14654A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+  <path d="M20 7.5v17M20 16l6-8.5M20 16l6 8.5" fill="none" stroke="#15171A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
 </svg>
