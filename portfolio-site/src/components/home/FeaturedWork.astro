@@ -70,6 +70,37 @@ const blocks = works.map((work, i) => ({
 ---
 
 <section class="s-open" id="work" data-mx-n={index}>
+  {/* Desktop-only visual rail. It spans the whole section so `sticky` can stay
+      pinned while all five works pass on the right. The original Rails remain
+      in the DOM and keep the mobile/accessibility reading order unchanged. */}
+  <div class="fw-master-track" aria-hidden="true">
+    <div class="page fw-master-page">
+      <div class="ins fw-master-rail">
+        <span class="ix">{index}</span>
+        {site.selectedWork.railLabels.map((label) => <span class="lb">{label}</span>)}
+        <span class="rn">{works.length} works</span>
+
+        <span class="fw-master-current">
+          {
+            blocks.map(({ work: w, n }, i) => (
+              <span
+                class:list={['fw-master-item', { 'is-active': i === 0 }]}
+                data-featured-current={w.slug}
+                data-w={w.slug}
+              >
+                <span class="fw-master-index">
+                  <i class="sq" />
+                  {n}
+                </span>
+                <span class="lb">{w.productType}</span>
+              </span>
+            ))
+          }
+        </span>
+      </div>
+    </div>
+  </div>
+
   <div class="page">
     <div class="tr">
       <Rail index={index} labels={site.selectedWork.railLabels} note={`${works.length} works`} />
@@ -139,3 +170,38 @@ const blocks = works.map((work, i) => ({
     ))
   }
 </section>
+
+<script>
+  const featuredSection = document.querySelector<HTMLElement>('#work');
+  const featuredBlocks = featuredSection
+    ? [...featuredSection.querySelectorAll<HTMLElement>('[data-featured-block]')]
+    : [];
+  const featuredReadouts = featuredSection
+    ? [...featuredSection.querySelectorAll<HTMLElement>('[data-featured-current]')]
+    : [];
+
+  if (featuredBlocks.length > 0 && featuredReadouts.length > 0) {
+    const activate = (slug: string) => {
+      for (const readout of featuredReadouts) {
+        readout.classList.toggle('is-active', readout.dataset.featuredCurrent === slug);
+      }
+    };
+
+    const currentWork = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) =>
+              Math.abs(a.boundingClientRect.top - innerHeight * 0.48) -
+              Math.abs(b.boundingClientRect.top - innerHeight * 0.48),
+          );
+        const target = visible[0]?.target as HTMLElement | undefined;
+        if (target?.dataset.w) activate(target.dataset.w);
+      },
+      { rootMargin: '-44% 0px -48% 0px' },
+    );
+
+    for (const block of featuredBlocks) currentWork.observe(block);
+  }
+</script>
