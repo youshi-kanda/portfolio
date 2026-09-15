@@ -34,21 +34,21 @@ const m = site.moreProjects;
   rows.length > 0 && (
     <section class="s-open" id="more" data-mx-n={index}>
       <div class="page">
-        <div class="tr">
-          <Rail index={index} labels={m.railLabels} note={`${rows.length} works`} />
-          <div class="msr"><h2>{m.h2}</h2></div>
-        </div>
-        <div class="tr">
-          <div class="bleed">
-            <div class="page">
-              <Register works={rows} evidence={evidence} minSlots={0} />
-              {/* The archive holds every work, including the ones that are on
-                  neither homepage tier. */}
-              <a class="lk more-all" href="/work/">
-                {ui.register.allWorksCta}<span class="ar">→</span>
-              </a>
-            </div>
+        <div class="tr more-shell">
+          <div class="more-rail-sticky">
+            <Rail index={index} labels={m.railLabels} note={`${rows.length} works`} />
           </div>
+
+          <div class="more-main">
+            <div class="more-head"><h2>{m.h2}</h2></div>
+            <Register works={rows} evidence={evidence} minSlots={0} />
+          </div>
+
+          {/* The archive holds every work, including the ones that are on
+              neither homepage tier. */}
+          <a class="lk more-all" href="/work/">
+            {ui.register.allWorksCta}<span class="ar">→</span>
+          </a>
         </div>
       </div>
     </section>
