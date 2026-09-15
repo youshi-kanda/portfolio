@@ -63,6 +63,7 @@ if (!Astro.site) {
 }
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const socialImage = new URL('/og-card.png', Astro.site).href;
+const socialImageAlt = `${site.handle} Engineering Portfolio`;
 ---
 
 <!doctype html>
@@ -81,7 +82,7 @@ const socialImage = new URL('/og-card.png', Astro.site).href;
       Open Graph / social preview.
 
       The card is a dedicated portfolio identity graphic, not a repurposed
-      Evidence screenshot. It contains only the owner name and the same broad
+      Evidence screenshot. It contains only the owner handle and the same broad
       capability categories already stated by the page, so sharing the URL does
       not detach a product screenshot from its provenance or invent a result.
       The SVG source is kept in scripts/assets; predev/prebuild render a
@@ -100,12 +101,12 @@ const socialImage = new URL('/og-card.png', Astro.site).href;
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="630" />
           <meta property="og:image:type" content="image/png" />
-          <meta property="og:image:alt" content="YOUSHI KANDA Engineering Portfolio" />
+          <meta property="og:image:alt" content={socialImageAlt} />
           <meta name="twitter:card" content="summary_large_image" />
           <meta name="twitter:title" content={title} />
           <meta name="twitter:description" content={description} />
           <meta name="twitter:image" content={socialImage} />
-          <meta name="twitter:image:alt" content="YOUSHI KANDA Engineering Portfolio" />
+          <meta name="twitter:image:alt" content={socialImageAlt} />
         </>
       )
     }
