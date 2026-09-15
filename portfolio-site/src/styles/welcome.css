@@ -13,7 +13,7 @@
     color: #15171A;
     overflow: hidden;
     pointer-events: none;
-    animation: wi-exit 0.62s 1.46s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: wi-exit 0.62s 1.76s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
   .wi-rail {
