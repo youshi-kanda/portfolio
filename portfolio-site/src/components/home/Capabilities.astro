@@ -43,6 +43,35 @@ const categories = c.categories.map((cat) => ({
 ---
 
 <section class="s-open" id="capabilities" data-mx-n={index}>
+  {/* Desktop-only persistent contents rail. 02 MORE PROJECTS deliberately keeps
+      its static rail; the changing readout resumes here for the four capability
+      categories. The original Rail remains in flow for mobile and accessibility. */}
+  <div class="cap-master-track" aria-hidden="true">
+    <div class="page cap-master-page">
+      <div class="ins cap-master-rail">
+        <span class="ix">{index}</span>
+        {c.railLabels.map((label) => <span class="lb">{label}</span>)}
+
+        <span class="cap-master-current">
+          {
+            categories.map((cat, i) => (
+              <span
+                class:list={['cap-master-item', { 'is-active': i === 0 }]}
+                data-capability-current={cat.key}
+              >
+                <span class="cap-master-index">
+                  <i class="sq" />
+                  {cat.key}
+                </span>
+                <span class="lb">{cat.titleEn}</span>
+              </span>
+            ))
+          }
+        </span>
+      </div>
+    </div>
+  </div>
+
   <div class="page">
     <div class="tr">
       <Rail index={index} labels={c.railLabels} />
@@ -54,7 +83,7 @@ const categories = c.categories.map((cat) => ({
         <div class="cap-l">
           {
             categories.map((cat) => (
-              <div class="cap-i">
+              <div class="cap-i" data-capability-item={cat.key}>
                 <span class="no">{cat.key}</span>
                 <div class="cap-b">
                   <h3>{cat.title}</h3>
@@ -82,3 +111,38 @@ const categories = c.categories.map((cat) => ({
     </div>
   </div>
 </section>
+
+<script>
+  const capabilitySection = document.querySelector<HTMLElement>('#capabilities');
+  const capabilityItems = capabilitySection
+    ? [...capabilitySection.querySelectorAll<HTMLElement>('[data-capability-item]')]
+    : [];
+  const capabilityReadouts = capabilitySection
+    ? [...capabilitySection.querySelectorAll<HTMLElement>('[data-capability-current]')]
+    : [];
+
+  if (capabilityItems.length > 0 && capabilityReadouts.length > 0) {
+    const activate = (key: string) => {
+      for (const readout of capabilityReadouts) {
+        readout.classList.toggle('is-active', readout.dataset.capabilityCurrent === key);
+      }
+    };
+
+    const currentCapability = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort(
+            (a, b) =>
+              Math.abs(a.boundingClientRect.top - innerHeight * 0.48) -
+              Math.abs(b.boundingClientRect.top - innerHeight * 0.48),
+          );
+        const target = visible[0]?.target as HTMLElement | undefined;
+        if (target?.dataset.capabilityItem) activate(target.dataset.capabilityItem);
+      },
+      { rootMargin: '-44% 0px -48% 0px' },
+    );
+
+    for (const item of capabilityItems) currentCapability.observe(item);
+  }
+</script>
