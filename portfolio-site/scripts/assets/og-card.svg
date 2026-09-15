@@ -16,7 +16,7 @@
 
   <!-- main statement -->
   <text x="320" y="184" fill="#5C6066" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="4">ENGINEERING PORTFOLIO</text>
-  <text x="320" y="284" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" letter-spacing="-2">YOUSHI KANDA</text>
+  <text x="320" y="284" fill="#15171A" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="700" letter-spacing="-2">YOUSHI-KANDA</text>
 
   <line x1="320" y1="332" x2="1080" y2="332" stroke="#CFCABE" stroke-width="1"/>
 
