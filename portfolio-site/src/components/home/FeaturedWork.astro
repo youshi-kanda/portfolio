@@ -107,8 +107,19 @@ const blocks = works.map((work, i) => ({
                   />
                 </span>
                 {/* Small, and next to the picture rather than over the page:
-                    the statement belongs to the image, not to the portfolio. */}
-                <figcaption>{figure.caption}</figcaption>
+                    the statement belongs to the image, not to the portfolio.
+
+                    TWO LINES WHEN THE RECORD HAS TWO THINGS TO SAY. What the
+                    picture IS (`disclosure`) and what it SHOWS (`caption`) are
+                    separate statements and only one of them is a disclosure, so
+                    an explanation can no longer crowd it out of the one string
+                    they used to share. `.disc` first: on `/` there is no
+                    `SyntheticBar` above it, and a reader who stops at the
+                    figure should meet the disclosure before the explanation. */}
+                <figcaption>
+                  {figure.disclosure && <span class="disc">{figure.disclosure}</span>}
+                  <span>{figure.caption}</span>
+                </figcaption>
               </figure>
             </div>
           </div>

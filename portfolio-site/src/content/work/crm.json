@@ -108,6 +108,7 @@
     "src": "/img/crmApproved.webp",
     "width": 1100,
     "height": 1276,
+    "disclosure": "Reconstructed interface / dummy data",
     "caption": "人が承認して初めて「承認済み」に変化。配信はデモでは無効で、外部送信は行われない。"
   },
   "visual": {
@@ -131,7 +132,8 @@
       "originalProductScope — ai-crm-demo/README.md「Differences from the Original Product Scope」",
       "languages — ai-crm-demo/README.md「Technology Stack」「Prerequisites」",
       "keyDecision — content.py CASE.cs6 判断 3 / 判断 2（spec CS-6）",
-      "limitations — ai-crm-demo/README.md ／ spec CS-9・CS-10・CS-12"
+      "limitations — ai-crm-demo/README.md ／ spec CS-9・CS-10・CS-12",
+      "image.disclosure — hire / ins-ai / ops の image.caption と同一の既定文。crm の図も同じ再構成画面・合成データであることは site.synthetic.note が全体について述べている（新しい事実ではなく、図の隣で述べ直したもの）"
     ],
     "approvedBy": null,
     "approvedAt": null

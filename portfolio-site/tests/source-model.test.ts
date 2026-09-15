@@ -82,3 +82,44 @@ describe('workSourceIsLinkable / workRepoPath', () => {
     assert.equal(workRepoPath(w), 'ai-crm-demo/');
   });
 });
+
+/**
+ * EVERY FIGURE THE HOMEPAGE DRAWS SAYS IT IS RECONSTRUCTED.
+ *
+ * `/` is the one public route that renders screens and does NOT mount
+ * `SyntheticBar` — #7 took the band off the first viewport on purpose, and the
+ * copy audit then removed ABOUT's synthetic-data premise as a duplicate of the
+ * band. It is a duplicate on the twelve pages that HAVE the band; on the
+ * homepage those two were the only page-level statements, and with both gone
+ * the figure captions are the entire disclosure.
+ *
+ * Which is when it showed: `crm`'s caption explained what its screen does and
+ * never said the screen was reconstructed, so one of the five featured figures
+ * disclosed nothing. Nothing caught it — the Truth Gate checks that a claim has
+ * a source, not that a picture admits what it is — so this is the check.
+ *
+ * It asserts the PROPERTY, not the wording: a featured figure must say
+ * `Reconstructed` somewhere in what it prints, in either half of its caption.
+ * `assist` draws a diagram and says `Reconstructed architecture`; the rest draw
+ * screens and say `Reconstructed interface / dummy data`. Pinning the exact
+ * strings would fail the next figure that is honestly described in different
+ * words, which is not the thing worth preventing.
+ */
+describe('featured figures disclose that they are reconstructed', () => {
+  it('every work drawn on the homepage says so in its own caption', async () => {
+    const { loadWorks } = await import('../src/lib/content/load.ts');
+    const featured = loadWorks().filter((w) => w.homepage === 'featured');
+    assert.ok(featured.length > 0, 'featured が 0 件ではテストが何も見ていない');
+
+    for (const w of featured) {
+      assert.ok(w.image, `${w.slug} は featured なのに image が無い`);
+      const printed = [w.image!.disclosure, w.image!.caption].filter(Boolean).join(' ');
+      assert.match(
+        printed,
+        /Reconstructed/,
+        `${w.slug} の図は再構成であることを述べていない。/ には SyntheticBar が` +
+          ` 無いので、figure の caption がこのページ唯一の開示になる`,
+      );
+    }
+  });
+});

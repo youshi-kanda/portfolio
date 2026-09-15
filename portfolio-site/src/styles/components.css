@@ -657,6 +657,12 @@
 .ad .fw-f .crop img{display:block;aspect-ratio:auto;height:310px;object-fit:cover}
 .ad .fw-f figcaption{font-family:var(--f-mono);font-size:11px;letter-spacing:.08em;
                      color:var(--tx3);margin-top:8px;line-height:1.4}
+/* The disclosure is its own line. It shares the caption's mono/11px voice
+   because it is the same kind of statement — a note about the picture, not a
+   heading — and takes `--tx2` against the explanation's lighter ink so the
+   order of the two is legible without a second type size. */
+.ad .fw-f figcaption .disc{display:block;color:var(--tx2)}
+.ad .fw-f figcaption .disc + span{display:block;margin-top:4px}
 .ad .fw-m{margin:14px 0 0}
 .ad .fw-m .fx{display:block;margin:0 0 6px;max-width:70ch}
 .ad .fw-m .fx .mo{display:block;margin-bottom:2px}

@@ -310,7 +310,29 @@ const workBase = z.object({
    * before it has a publishable image is to point at somebody else's, or to
    * invent one; both put a false figure in the repository to satisfy a field.
    */
-  image: imageSchema.extend({ caption: z.string().min(1) }).optional(),
+  /**
+   * `disclosure` — what the picture IS, stated separately from what it shows.
+   *
+   * The figure caption was doing two different jobs in one string. Four works
+   * spend it on the disclosure (`Reconstructed interface / dummy data`,
+   * `Reconstructed architecture`) and three spend it on an explanation of what
+   * the screen does. So a figure could carry one or the other, never both, and
+   * `crm` — a FEATURED work, drawn on the homepage — carried only the
+   * explanation.
+   *
+   * That was invisible until the copy audit removed ABOUT's synthetic-data
+   * premise as a duplicate of `SyntheticBar`. It IS a duplicate on the twelve
+   * pages that mount the bar; the homepage does not (#7 took it off the first
+   * viewport), so on `/` the figure captions are the whole disclosure — and
+   * `crm`'s said nothing about being reconstructed.
+   *
+   * Optional, and set on `crm` alone. The other four featured figures already
+   * disclose, in their `caption`, and rewriting them to move one approved
+   * string between two fields would be a change with nothing behind it.
+   */
+  image: imageSchema
+    .extend({ caption: z.string().min(1), disclosure: z.string().min(1).optional() })
+    .optional(),
   fieldsTable: z
     .object({
       /** The command whose output this table is. Printed above it. */

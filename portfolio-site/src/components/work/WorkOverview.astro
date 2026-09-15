@@ -59,7 +59,15 @@ const tech = workSelectedTech(work);
                   loading="eager"
                 />
               </span>
-              <figcaption>{figure.caption}</figcaption>
+              {/* Same two lines as 01 FEATURED WORK — see FeaturedWork.astro.
+                  This route mounts `SyntheticBar`, so the disclosure here is a
+                  second telling rather than the only one; it is rendered on the
+                  same terms anyway, because which pages carry the bar is not
+                  something a figure should have to know. */}
+              <figcaption>
+                {figure.disclosure && <span class="disc">{figure.disclosure}</span>}
+                <span>{figure.caption}</span>
+              </figcaption>
             </figure>
           </div>
         </div>
