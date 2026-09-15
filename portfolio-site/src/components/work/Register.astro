@@ -67,8 +67,9 @@ for (let n = works.length + 1; n <= minSlots; n += 1) slots.push(n);
  *
  * A work can be the first without being the second: the entry screen renders
  * from the moment its Evidence resolves, and calling that link "Case Study を
- * 読む" would promise a body that is not there. So such a row is a link with
- * no label rather than a link with a false one.
+ * 読む" would promise a body that is not there. Such a row now keeps only the
+ * arrow affordance: the whole row is already the anchor and its title/purpose
+ * provide the accessible name, while no false Case Study label is introduced.
  */
 const rows = works.map((w, i) => ({
   work: w,
@@ -95,8 +96,11 @@ const rows = works.map((w, i) => ({
             </span>
           </span>
           <span class="rl">
-            {showsCaseStudy && (
-              <span class="lk">{ui.work.caseStudyCta}<span class="ar">→</span></span>
+            {linked && (
+              <span class="lk">
+                {showsCaseStudy && ui.work.caseStudyCta}
+                <span class="ar" aria-hidden="true">→</span>
+              </span>
             )}
           </span>
         </>
