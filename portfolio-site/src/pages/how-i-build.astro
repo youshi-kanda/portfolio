@@ -4,14 +4,22 @@
  *
  * It used to be 2,220px of the homepage, between the work and the profile. The
  * page's job is to say what this engineer builds and show it; a reader who
- * wants the eight-step workflow, the roles table and the list of things that
- * are deliberately NOT claimed is a reader who has already decided to go
- * deeper, and this is where they land.
+ * wants the steps the work actually goes through is a reader who has already
+ * decided to go deeper, and this is where they land.
  *
- * NOTHING WAS REWRITTEN FOR THIS PAGE. It renders `HowIBuild.astro` against the
- * same `site.json` data the homepage rendered — the component moved, the words
- * did not. The homepage keeps the one sentence it all supports, plus a link
- * here (03 CAPABILITIES).
+ * THE WORDS DID CHANGE, ONCE. When this page was cut out of the homepage it
+ * rendered `HowIBuild.astro` against the same `site.json` data unaltered — the
+ * component moved, the copy did not. The copy audit then found that what moved
+ * was a developer's account of their own method: an eight-step workflow
+ * labelled by which AI ran each step, a roles table, an Intent list and a
+ * block of things the page declined to claim. It now carries the five steps a
+ * client goes through, and nothing about which tool does which.
+ *
+ * THE DESCRIPTION IS THE PAGE'S OWN. `h.lede` fills `description`, so the meta
+ * and og descriptions say what this page contains. They used to carry
+ * 「AI へ実装を委譲しても、理解まで委譲しない。」 — which meant the sentence
+ * shipped four times on this one page (meta, og, the h1's lede, and the first
+ * Intent item) and a fifth on the homepage. It is gone from all five.
  */
 import { getCollection } from 'astro:content';
 import HowIBuild from '../components/home/HowIBuild.astro';

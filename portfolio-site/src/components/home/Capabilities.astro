@@ -74,8 +74,15 @@ const categories = c.categories.map((cat) => ({
             ))
           }
         </div>
+        {/* The link, without the sentence that used to introduce it. That
+            sentence was 「AI へ実装を委譲しても、理解まで委譲しない。」 — the
+            author's own rule about delegating, closing a section whose subject
+            is what a client can hand over. It also appeared four more times on
+            /how-i-build/ (lede, Intent, meta, og), so the one homepage section
+            that answers "what can I hand to you" ended by turning the subject
+            back to the author. The route to the method stays; what a reader
+            finds there now answers the same question this section asks. */}
         <p class="cap-m">
-          <span>{c.methodLede}</span>
           <a class="lk" href="/how-i-build/">{c.methodLink}<span class="ar">→</span></a>
         </p>
       </div>

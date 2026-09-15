@@ -91,10 +91,19 @@ const siteSchema = z.object({
         }),
       ),
       /** The one line HOW I BUILD keeps on the homepage, plus its link label. */
-      methodLede: z.string().min(1),
-      methodLink: z.string().min(1),
+        methodLink: z.string().min(1),
     })
     .strict(),
+  /**
+   * The method, as the person commissioning the work sees it.
+   *
+   * `owner` / `tag` / `roles` / `intent` / `notClaimed` were REMOVED, not made
+   * optional. They carried the three things the copy audit found this page was
+   * actually about: which AI tool ran which step, what the author believes
+   * about delegating to one, and what the page declines to claim. None of the
+   * three is a fact about what a client receives, and a field left in the
+   * schema is an invitation to put them back.
+   */
   howIBuild: z.object({
     ...railed,
     title: z.string().min(1),
@@ -103,14 +112,9 @@ const siteSchema = z.object({
       z.object({
         index: z.string().min(1),
         name: z.string().min(1),
-        owner: z.string().min(1),
         what: z.string().min(1),
-        tag: z.string(),
       }),
     ),
-    roles: z.array(z.object({ role: z.string().min(1), duty: z.string().min(1) })),
-    intent: z.array(z.string().min(1)),
-    notClaimed: z.array(z.string().min(1)),
     sourceRefs: z.array(z.string().min(1)).min(1),
   }),
   stack: z.object({
@@ -174,12 +178,13 @@ const siteSchema = z.object({
     .object({
       ...railed,
       /**
-       * #7 — the short statement of how this engineer works, which ABOUT did
-       * not have. `known` stays exactly as it was and moves below it: the
-       * premises were never the introduction, they were the fine print under
-       * one.
+       * `now` IS GONE. #7 added it as the short statement of how this engineer
+       * works, which ABOUT did not have; the copy audit found that all three of
+       * its lines were already said elsewhere — the first is the HERO lede
+       * almost word for word, the other two are 03 CAPABILITIES 02. A section
+       * whose only original content is a restatement of two other sections is
+       * not an introduction, so ABOUT is now what it can source: `known`.
        */
-      now: z.array(z.string().min(1)).min(1),
       known: z.array(
         z.object({
           key: z.string().min(1),

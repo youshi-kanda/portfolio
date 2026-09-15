@@ -144,18 +144,17 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * and this is that approval. The comment is a durable public record: anyone
    * can open it and read what was approved, by whom, and when.
    *
-   * `home.about.h2` is here as a REWORD and so appears in no other batch. The
-   * 2026-08-28 batch approved 「リポジトリから確認できることだけ。」, which stated
-   * the site's sourcing policy where a reader was asking what kind of engineer
-   * built this; that sentence is no longer on the site, so its id moved rather
-   * than being listed twice.
+   * `home.about.h2` WAS here, as a REWORD, and has moved on again for the same
+   * reason: the copy audit reworded it a third time and an id lives in exactly
+   * one batch (`A-BATCH`). See the batch below for the current wording; the
+   * chain of what this one heading has said is 「リポジトリから確認できることだけ。」
+   * → 「業務要件を整理し、設計から実装・運用まで形にする。」 → 「担当領域と公開範囲。」.
    */
   Object.freeze({
     task: 'ISSUE-8-PUBLIC-COPY (PR #17 comment 5651891248)',
     by: 'user',
     at: '2026-09-13T07:17:12Z',
     ids: Object.freeze([
-      'home.about.h2',
       'ui.contact.channels',
       'ui.contact.githubCta',
       'ui.caseStudy.repositoryAuthNote',
@@ -187,6 +186,32 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'home.contact.email',
       'ui.contact.emailCta',
     ]),
+  }),
+  /**
+   * The copy / IA audit, approved in full by the owner in this session.
+   *
+   * ONE STRING, BECAUSE ONLY ONE OF THE AUDIT'S DELETIONS IS AN APPROVED_TEXT
+   * ID. The audit removed a good deal of copy — the whole of /how-i-build/'s
+   * Intent and notClaimed blocks, its roles table, 03 CAPABILITIES' closing
+   * sentence and ABOUT's three opening lines — but every one of those lives in
+   * `site.json` or `ui.json` and is held by the site-copy and ui-copy gates.
+   * `home.about.h2` is the single string in the shipping registry that the
+   * audit changed, so it is the single id here. A batch names one occasion and
+   * lists what that occasion actually covered; padding it with ids that were
+   * deleted rather than approved would make it a summary of the change instead
+   * of a record of the approval.
+   *
+   * THE REWORD. ABOUT used to open 「業務要件を整理し、設計から実装・運用まで
+   * 形にする。」, which the audit classed as a duplicate: the HERO lede and the
+   * CONTACT lede both state the same 整理 → 設計 → 実装 → 運用 sequence, so the
+   * heading of the section about the PERSON described the process for the third
+   * time. 「担当領域と公開範囲。」 names what the two rows under it actually are.
+   */
+  Object.freeze({
+    task: 'TASK-PORTFOLIO-COPY-IA-AUDIT-01 §C ABOUT',
+    by: 'user',
+    at: '2026-09-15T00:00:00Z',
+    ids: Object.freeze(['home.about.h2']),
   }),
 ]);
 
@@ -225,7 +250,7 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // do there ("実装を見る"), which is the whole distinction this section rests
   // on: GitHub is where the work can be READ, and this site still publishes no
   // way to send anyone a message (U-01).
-  "home.about.h2": "業務要件を整理し、設計から実装・運用まで形にする。",
+  "home.about.h2": "担当領域と公開範囲。",
 
   // U-01 — PR #17 comment 5651971896. The address and the label that says what
   // it is for. The CTA that uses them is ui chrome and lives in ui.json.

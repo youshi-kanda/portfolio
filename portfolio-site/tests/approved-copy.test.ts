@@ -34,9 +34,9 @@ describe('approved copy gate', () => {
   it('covers all twenty-six approved strings, each in exactly one batch', () => {
     assert.equal(Object.keys(APPROVED_TEXT).length, 26);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email);
-    assert.equal(APPROVAL_BATCHES.length, 7);
+    const [homepage, notFound, v4, workLede, issue6, issue8, email, audit] = APPROVAL_BATCHES;
+    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email && audit);
+    assert.equal(APPROVAL_BATCHES.length, 8);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -69,8 +69,16 @@ describe('approved copy gate', () => {
     assert.equal(homepage.ids.includes('home.hero.lede'), false);
     assert.equal(v4.ids.includes('home.hero.lede'), false);
     assert.equal(issue6.ids.includes('home.hero.lede'), true);
+    // `home.about.h2` has now been reworded twice, so it has moved twice. The
+    // rule is the same each time: the id sits in the batch that approved the
+    // sentence CURRENTLY on the site, and nowhere else.
     assert.equal(homepage.ids.includes('home.about.h2'), false);
-    assert.equal(issue8.ids.includes('home.about.h2'), true);
+    assert.equal(issue8.ids.includes('home.about.h2'), false);
+    assert.equal(audit.ids.includes('home.about.h2'), true);
+    assert.deepEqual(
+      [audit.by, audit.at, [...audit.ids]],
+      ['user', '2026-09-15T00:00:00Z', ['home.about.h2']],
+    );
 
     // #8 — approved on PR #17, and the timestamp is that comment's, not the
     // issue's created_at and not a commit time. An earlier draft used the
@@ -81,7 +89,6 @@ describe('approved copy gate', () => {
         'user',
         '2026-09-13T07:17:12Z',
         [
-          'home.about.h2',
           'ui.contact.channels',
           'ui.contact.githubCta',
           'ui.caseStudy.repositoryAuthNote',
@@ -371,7 +378,10 @@ describe('approved copy gate', () => {
   it('holds the #8 strings at the wording the owner approved', () => {
     const { copy, uiCopy } = loadAll();
     const text = new Map([...copy, ...uiCopy].map((c) => [c.id, c.text]));
-    assert.equal(text.get('home.about.h2'), '業務要件を整理し、設計から実装・運用まで形にする。');
+    // `home.about.h2` left this batch at the copy / IA audit — the #8 wording
+    // restated the HERO and CONTACT ledes' 整理 → 設計 → 実装 → 運用 sequence a
+    // third time, in the heading of the section about the person.
+    assert.equal(text.get('home.about.h2'), '担当領域と公開範囲。');
     assert.equal(
       text.get('ui.contact.channels'),
       '実装例・公開コード・リポジトリは GitHub で確認できます。',

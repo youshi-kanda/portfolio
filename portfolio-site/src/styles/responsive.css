@@ -198,8 +198,8 @@
 .ad .scp > div + div{padding-left:0;border-left:0;border-top:1px solid var(--hair)}
 .ad .dec{padding-left:16px}
 .ad .flow .fst{grid-template-columns:44px minmax(0,1fr);row-gap:4px;padding:12px 0}
-.ad .flow .k{grid-row:1 / span 3}
-.ad .flow .o,.ad .flow .d,.ad .flow .g{grid-column:2;text-align:left}
+.ad .flow .k{grid-row:1 / span 2}
+.ad .flow .d{grid-column:2;text-align:left}
 .ad .stk .srow{grid-template-columns:1fr;row-gap:8px}
 .ad .spine3{grid-template-columns:1fr;row-gap:22px}
 .ad .pdec .prow{grid-template-columns:1fr}
@@ -291,8 +291,6 @@
    screen a pinned key is 40px of a 844px viewport spent on something the steps
    themselves already print. */
 @media (max-width:1023px){
-  .ad #build .lanes{position:static;display:flex;flex-wrap:wrap;gap:0 18px}
-  .ad .lanes span{padding:10px 0 12px}
 }
 
 /* ==================================================== #7 GALLERY — TABLET

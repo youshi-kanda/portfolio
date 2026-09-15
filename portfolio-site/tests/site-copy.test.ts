@@ -62,7 +62,12 @@ describe('site.json copy coverage', () => {
     const { copy, uiCopy } = loadAll();
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
-    assert.equal(managed.length, 2);
+    // 2 before the copy / IA audit, 1 after it: `capabilities.methodLede` was
+    // the second registered site.json string and it is deleted. It carried
+    // 「AI へ実装を委譲しても、理解まで委譲しない。」 — the same sentence that
+    // shipped four more times on /how-i-build/ — at the end of the one section
+    // whose subject is what a client can hand over.
+    assert.equal(managed.length, 1);
     // 120 before #7, 183 after it, 167 after #8. The jump was 02 MORE
     // PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and lede:
     // all of it copy the user approved in #6, entered where the section content
@@ -75,7 +80,14 @@ describe('site.json copy coverage', () => {
     // the backlog is real and stays reported: registering a string means
     // recording an approval event for it, and #8 may not sign one on the
     // owner's behalf before the PR review that is supposed to be it.
-    assert.equal(unmanaged.length, 167);
+    //
+    // The copy / IA audit takes 34 more off, and again none of them by
+    // registering a string. It DELETED them: /how-i-build/'s roles table,
+    // Intent and notClaimed blocks and the owner/tag on every workflow step,
+    // ABOUT's three `now` lines and its synthetic-data row, and the eight-step
+    // workflow becoming five. Unregistered copy that no longer ships is not a
+    // backlog item, so the number falls without anyone signing an approval.
+    assert.equal(unmanaged.length, 133);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -83,8 +95,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /167 件/);
-    // one finding, not 167 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /133 件/);
+    // one finding, not 133 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

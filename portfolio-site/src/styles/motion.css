@@ -1738,12 +1738,6 @@
      things move. Only the current mark changes, and its rest state — the
      state under reduced motion, or with no timeline support — is the
      unmarked one the section has always had. */
-  .ad #build .lanes {
-    position: sticky;
-    top: var(--mx-nav);
-    z-index: 3;
-    background: var(--paper);
-  }
   @media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
     @supports (animation-timeline: view()) {
       .ad #build .flow .fst .k {

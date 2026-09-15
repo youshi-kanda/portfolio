@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 125 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 120 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -193,7 +193,18 @@ describe('provenance matrix', () => {
     // presentation, `variantNote` was editorial and therefore a fact — it
     // asserted a build rule ("renderer を持つものだけが集合に入る") that the
     // build no longer has. One off each count.
-    assert.equal(presentation.length, 125);
+    //
+    // The copy / IA audit nets −5, all presentation and all ui-system: the
+    // five labels that named the blocks /how-i-build/ no longer has
+    // (`rolesLabel` / `rolesHead` / `rolesSub` / `intentLabel` / `notClaimed`).
+    // A label deleted with the block it labelled leaves no orphan row — the
+    // ui-copy gate's `U-ORPHAN` is what would catch one — so the registry
+    // shrinks rather than carrying five rows pointing at nothing.
+    //
+    // `fact` is unchanged. The audit deleted no fact: what came off
+    // /how-i-build/ was the author's own intent and a list of things the page
+    // declined to claim, and neither was ever a fact about the work.
+    assert.equal(presentation.length, 120);
     assert.equal(fact.length, 32);
 
     // U-01 added three: the email row label and its CTA present, and the

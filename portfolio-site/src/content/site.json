@@ -64,94 +64,39 @@
   },
   "howIBuild": {
     "railLabels": [
-      "HOW I BUILD",
-      "AI Development Methodology"
+      "HOW I BUILD"
     ],
-    "title": "Human-Orchestrated / Spec-Driven / Agentic Development",
-    "lede": "AI へ実装を委譲しても、理解まで委譲しない。",
+    "title": "どう進めるか",
+    "lede": "業務課題の整理から、設計・実装・テスト・デプロイまで、動くものを確認しながら進めます。",
     "workflow": [
       {
         "index": "01",
-        "name": "Requirement",
-        "owner": "Human",
-        "what": "何を作るかを決める",
-        "tag": ""
+        "name": "課題と業務フローを整理する",
+        "what": "困っていること、現在の業務フロー、必要な機能と優先順位を整理します。"
       },
       {
         "index": "02",
-        "name": "Specification",
-        "owner": "Human",
-        "what": "仕様として書き出す",
-        "tag": ""
+        "name": "必要な仕組みを設計する",
+        "what": "画面、API、データ構造、自動処理など、必要な構成を実装できる粒度まで整理します。"
       },
       {
         "index": "03",
-        "name": "Planning / Review",
-        "owner": "ChatGPT",
-        "what": "計画を立て、批判する",
-        "tag": "review"
+        "name": "動くものを確認しながら実装する",
+        "what": "実装した機能を確認し、仕様とのずれや使いにくい点を修正しながら進めます。"
       },
       {
         "index": "04",
-        "name": "Coding Agent",
-        "owner": "Claude Code",
-        "what": "実装する",
-        "tag": ""
+        "name": "テストして、デプロイする",
+        "what": "主要な動作、画面、リンク、公開設定を確認し、利用できる環境へ反映します。"
       },
       {
         "index": "05",
-        "name": "Tests / CI",
-        "owner": "Claude Code",
-        "what": "テストを書き、CI を回す",
-        "tag": ""
-      },
-      {
-        "index": "06",
-        "name": "Independent Review",
-        "owner": "ChatGPT",
-        "what": "実装を独立にレビューする",
-        "tag": "review"
-      },
-      {
-        "index": "07",
-        "name": "Evidence",
-        "owner": "Claude Code",
-        "what": "確認できる形にして残す",
-        "tag": ""
-      },
-      {
-        "index": "08",
-        "name": "Human Decision",
-        "owner": "Human",
-        "what": "採否を判断する",
-        "tag": "decision gate"
+        "name": "運用できる状態まで仕上げる",
+        "what": "必要な運用手順や注意点を整理し、実際に使い続けられる状態まで仕上げます。"
       }
-    ],
-    "roles": [
-      {
-        "role": "Human",
-        "duty": "Requirement / Learning / Decision Gate"
-      },
-      {
-        "role": "ChatGPT",
-        "duty": "Planner / Reviewer / Critic"
-      },
-      {
-        "role": "Claude Code",
-        "duty": "Executor / Coder / Tester"
-      }
-    ],
-    "intent": [
-      "AI へ実装を委譲しても、理解まで委譲しない。",
-      "学習中の言語・Framework・Architecture、仕様逸脱、重要判断については、Human involvement を厚くする。",
-      "定型的・低学習価値の作業は、将来的に Selective Harness Engineering へ移行できる。"
-    ],
-    "notClaimed": [
-      "完全自動の Multi-Agent 開発をしているとは主張しない。",
-      "Harness を構築済みであるとは主張しない。"
     ],
     "sourceRefs": [
-      "TASK-PORTFOLIO-POSITIONING-V2「HOW I BUILD」節（依頼者の記述をそのまま使用）"
+      "TASK-PORTFOLIO-COPY-IA-AUDIT-01 §A HOW I BUILD（依頼者が承認した customer-facing 工程）"
     ]
   },
   "stack": {
@@ -320,11 +265,6 @@
       "ABOUT",
       "Profile"
     ],
-    "now": [
-      "業務フローを整理し、必要な画面・API・データ構造・自動処理へ落とし込む開発をしています。",
-      "AI は目的ではなく、検索・判断支援・自動化など、業務に効果がある部分へ組み込みます。",
-      "自動処理や AI に任せる範囲と、人が判断する範囲を分けて設計します。"
-    ],
     "known": [
       {
         "key": "実装形態",
@@ -335,11 +275,6 @@
         "key": "公開範囲",
         "value": "私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。",
         "sourceRef": "spec CS-8 ／ ai-crm-demo/README.md"
-      },
-      {
-        "key": "データ",
-        "value": "掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。",
-        "sourceRef": "各 README ／ PUBLISH-MAP.md"
       }
     ]
   },
@@ -448,7 +383,6 @@
         ]
       }
     ],
-    "methodLede": "AI へ実装を委譲しても、理解まで委譲しない。",
     "methodLink": "HOW I BUILD"
   }
 }

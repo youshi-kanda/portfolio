@@ -116,14 +116,16 @@ export const ui = {
     backToWork: '{title} に戻る',
   },
 
+  /**
+   * `rolesLabel` / `rolesHead` / `rolesSub` / `intentLabel` / `notClaimed` were
+   * deleted with the blocks they labelled. Each named a part of the page that
+   * was about the author rather than about the work: who holds which duty
+   * (Human / ChatGPT / Claude Code), what the author intends, and what the page
+   * declines to claim. `{count} steps` now renders 5, from the array length.
+   */
   howIBuild: {
     workflowLabel: 'Workflow',
     workflowCount: '{count} steps',
-    rolesLabel: 'Roles',
-    rolesHead: 'ROLES',
-    rolesSub: '誰が何を持つか',
-    intentLabel: 'Intent',
-    notClaimed: '主張しないこと',
     sourceLabel: 'Source',
   },
 

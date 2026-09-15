@@ -1,16 +1,33 @@
 ---
 /**
- * 02 HOW I BUILD — the AI development method, in the author's own words.
+ * 02 HOW I BUILD — the five steps, as the person commissioning the work sees
+ * them.
  *
- * Every string in this section is the brief's own wording; nothing here is
- * inferred about how the work is actually done. That includes the two things
- * it explicitly does NOT claim, which are rendered as prominently as the
- * workflow itself rather than tucked into a footnote.
+ * WHAT THIS SECTION STOPPED BEING. It was the AI development method in the
+ * author's own words: an eight-step workflow whose every step named the tool
+ * that ran it, a lane key and a roles table assigning duties to Human /
+ * ChatGPT / Claude Code, an Intent list, and a block of things the page
+ * explicitly declined to claim — rendered, by the note that used to stand
+ * here, "as prominently as the workflow itself rather than tucked into a
+ * footnote".
+ *
+ * That was the right call for what the page was then and the wrong page to
+ * have. A reader deciding whether to commission work is asking what happens
+ * after they do; which model executed step 04 does not change what they
+ * receive, and a list of things not being claimed teaches them the claim
+ * before denying it. The copy audit classified all of it as developer
+ * philosophy and defensive copy, and the whole of it was approved for deletion.
+ *
+ * WHAT IS LEFT IS THE SAME WORK, DESCRIBED FROM THE OTHER SIDE. The eight
+ * steps fold into five with nothing dropped: Requirement → 01, Specification
+ * and Planning → 02, Coding and Independent Review → 03, Tests / CI → 04,
+ * Evidence and Human Decision → 05. Review and verification are still in the
+ * process; they are stated as something the client gets rather than as a lane
+ * an AI occupies.
  */
 import { site } from '../../lib/content/site.ts';
 import { fill, ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
-import SectionHead from '../layout/SectionHead.astro';
 
 interface Props {
   detail?: boolean;
@@ -62,63 +79,25 @@ const index = 'M';
       </div>
       <div class="fld">
         {/*
-          THE LANES GET HEADS (Phase 6). The workflow is drawn as three lanes —
-          one per party — and until now nothing said which lane was whose
-          except the owner printed inside each step. A reader had to infer the
-          diagram's own axis from its contents.
+          NO LANES. The workflow was drawn as three lanes, one per party, with
+          a key naming them Human / ChatGPT / Claude Code. The lanes were the
+          diagram's own axis — and its axis was which tool does what, which is
+          the thing this page stopped being about. A step is now what happens
+          and what the client gets out of it, in one column.
 
-          The heads are the roles the section already declares, in the order
-          the lanes are assigned (`human / chatgpt / claude`, motion.css §B).
-          No string is authored here and none is removed: the duty of each role
-          is still stated by the roles table below, which is where a reader who
-          wants it goes. Below 1024 the lanes become one spine and these become
-          its key, above the first stop.
+          `.flow` carries its own rule again: `.lanes + .flow` used to zero it
+          because the key above it was the head (components.css).
         */}
-        <div class="lanes" aria-hidden="true">
-          {b.roles.map((r) => <span>{r.role}</span>)}
-        </div>
         <div class="flow">
           {
             b.workflow.map((s) => (
-              <div class={s.tag ? 'fst gate' : 'fst'}>
+              <div class="fst">
                 <span class="k">{s.index}</span>
                 <span class="n">{s.name}</span>
-                <span class="o" data-r={(s.owner.split(' ')[0] ?? '').toLowerCase()}>
-                  {s.owner}
-                </span>
                 <span class="d">{s.what}</span>
-                {s.tag && <span class="g">{s.tag}</span>}
               </div>
             ))
           }
-        </div>
-      </div>
-    </div>
-
-    <div class="tr" style="margin-top:56px">
-      <div class="ins"><span class="lb">{ui.howIBuild.rolesLabel}</span></div>
-      <div class="fld">
-        <SectionHead label={ui.howIBuild.rolesHead} sub={ui.howIBuild.rolesSub} />
-        <div class="tw">
-          <table>
-            <tbody>
-              {b.roles.map((r) => <tr><th>{r.role}</th><td>{r.duty}</td></tr>)}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <div class="tr" style="margin-top:56px">
-      <div class="ins"><span class="lb">{ui.howIBuild.intentLabel}</span></div>
-      <div class="msr">
-        <ul class="dash">{b.intent.map((t) => <li>{t}</li>)}</ul>
-        <div class="notclaim">
-          {/* One level up when this section states no heading of its own:
-              with `heading={false}` there is no h2 above this, so level 3
-              would skip from the page's h1. */}
-          <h4 aria-level={heading ? 3 : 2}>{ui.howIBuild.notClaimed}</h4>
-          <ul>{b.notClaimed.map((t) => <li>{t}</li>)}</ul>
         </div>
       </div>
     </div>

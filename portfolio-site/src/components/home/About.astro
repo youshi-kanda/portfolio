@@ -15,7 +15,15 @@
  * `sourceRef` filled in, which is the only way anything gets one.
  *
  * PROFILE_INVENTED = NO. Removing the rows was the whole change; no sentence
- * was written to stand in for them.
+ * was written to stand in for them. The copy audit held to the same rule: it
+ * deleted what was said elsewhere and wrote no career history, no years and no
+ * client record to fill the space.
+ *
+ * THE SYNTHETIC-DATA ROW LEFT TOO. `known` carried 「掲載している画面はすべて
+ * 合成データ」 as its third premise, and `SyntheticBar` states the same thing
+ * at the top of all thirteen pages that show a screen. ABOUT was the
+ * fourteenth telling, on the one page where the bar is already directly above
+ * it. The disclosure is unchanged everywhere it does work.
  */
 import { copyText } from '../../lib/content/copy.ts';
 import { sectionNumber } from '../../lib/content/derive.ts';
@@ -34,13 +42,14 @@ const h2 = await copyText('home.about.h2');
       <Rail index={index} labels={a.railLabels} />
       <div class="fld">
         <h2 class="ab-h">{h2}</h2>
-        {/* #7 — how this engineer works, before the premises. ABOUT used to
-            open with its own fine print, which told a reader who had just
-            finished the work what the site was NOT claiming before telling
-            them anything about the person. */}
-        <div class="ab-now">
-          {a.now.map((line) => <p>{line}</p>)}
-        </div>
+        {/* `.ab-now` IS GONE, and with it the three sentences #7 put here as
+            "how this engineer works, before the premises". The copy audit read
+            them against the rest of the site: the first restated the HERO lede
+            almost word for word, and the other two restated 03 CAPABILITIES 02
+            — so ABOUT opened by saying, for the third time, what the reader had
+            just read twice. The premises are not the fine print under an
+            introduction any more; they are what this section can source, and
+            they are the section. */}
         <div class="spx wide" style="margin-top:30px">
           {
             a.known.map((k) => (

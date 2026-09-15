@@ -471,21 +471,18 @@
 .ad .msr .ty,.ad .fld .ty{margin-bottom:14px;color:var(--sig)}
 /* ---- 02 how i build: the workflow, drawn as a ruled instrument list */
 .ad .flow{border-top:1px solid var(--hair2)}
-/* …unless the lane key is drawn above it, which then carries the rule */
-.ad .lanes + .flow{border-top:0}
-.ad .flow .fst{display:grid;grid-template-columns:52px minmax(0,232px) 148px minmax(0,1fr) 132px;
+/* Three tracks, not five. The row used to be index / name / owner / what /
+   tag, and two of those columns existed to say which party ran the step and
+   whether it was a gate — the axis this page no longer has. The name also
+   stopped being one English word (`Requirement`) and became the step stated in
+   Japanese, so it takes the width `owner` gave up rather than a new one. */
+.ad .flow .fst{display:grid;grid-template-columns:52px minmax(0,300px) minmax(0,1fr);
                column-gap:24px;align-items:baseline;border-bottom:1px solid var(--hair);
                padding:15px 0;position:relative}
-.ad .flow .fst.gate{background:var(--sig-bg)}
 .ad .flow .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--sig);
              font-weight:700}
 .ad .flow .n{font-family:var(--f-ui);font-size:15px;font-weight:600;color:var(--tx)}
-.ad .flow .o{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-             color:var(--tx2)}
-.ad .flow .o[data-r="human"]{color:var(--tx);font-weight:700}
 .ad .flow .d{font-size:14.5px;line-height:1.7;color:var(--tx2)}
-.ad .flow .g{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
-             color:var(--sig);font-weight:700;text-align:right}
 .ad .notclaim{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
 .ad .notclaim ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
 .ad .notclaim li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
@@ -599,15 +596,6 @@
    text plate (§C) and has no third state. */
 .ad .lay-f{z-index:5;left:24px;top:300px;width:392px;height:264px}
 .ad .lay-f img{width:2040px;left:-300px;top:-330px}
-
-/* ---- 02 how i build: the lanes' own key. Three cells on the flow's grid, so
-   the head sits over the lane it names. Mono at instrument size — this is the
-   diagram's axis, not a heading, and it must not read as one. */
-.ad .lanes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-           border-top:2px solid var(--rule);margin-bottom:0}
-.ad .lanes span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
-                text-transform:uppercase;color:var(--tx3);padding:12px 0 12px 36px}
-.ad .lanes span:first-child{color:var(--tx);font-weight:700}
 
 .ad #work.s-open{padding-top:26px}
 /* the section head is a line, not a spread: the work below it is the content */
