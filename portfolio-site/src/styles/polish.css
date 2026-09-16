@@ -326,4 +326,112 @@
       padding: 14px 0 15px;
     }
   }
+
+  /* NAV: the mobile section index. `.mob` used to be a `<span>` that looked like
+     a control and was not one; it is a `<button>` now, and this is the panel it
+     opens. The frozen sheets are not touched — `.ad .nav .mob` in components.css
+     still owns the mono type, the hairline box and the padding, and everything
+     below is either the reset a `<button>` needs to keep that look or the panel
+     itself, which the frozen sheets never described. */
+  @media (max-width: 767px) {
+    /* Only what the UA button stylesheet would otherwise impose. The type, the
+       colour, the border and the padding stay where they were authored. */
+    .ad .nav .mob {
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+      margin: 0;
+      line-height: 1;
+      font-weight: inherit;
+      text-align: inherit;
+      cursor: pointer;
+    }
+
+    /* `.nav` is `position:sticky` and so is the containing block; it sets no
+       `overflow`, so the panel is not clipped. `top` clears the bar's own 1px
+       bottom rule (and `.prg`, which ends at that same edge) rather than
+       painting over it. `z-index` is local to `.nav`'s stacking context — the
+       bar is already z-index:40 against the page, and above MobileBar's 35, so
+       nothing here competes with it. */
+    .ad .nav .mob-panel {
+      position: absolute;
+      top: calc(100% + 1px);
+      left: 0;
+      right: 0;
+      z-index: 1;
+      background: var(--paper);
+      border-bottom: 1px solid var(--hair);
+      /* the same gutter `.ad .page` carries at this breakpoint (--mg:20px).
+         Written out because `--mg` is declared on `.page`, which is this
+         element's sibling, not its ancestor. */
+      padding: 0 20px;
+      /* The panel is absolute inside a sticky bar, so it is pinned to the top of
+         the viewport and scrolling the document does not reveal anything below
+         its fold. Five 48px rows need 300px of visible height; a landscape
+         iPhone SE has about 276. Capped here, the overflow becomes the panel's
+         own scroll instead of a row nobody can reach.
+
+         `--mx-nav` is the height of this bar — 59px at this breakpoint, the same
+         58px + 1px rule `top` is offset by, and re-measured onto `.ad` by
+         MotionStage when a font stack makes it something else. `dvh` is the
+         viewport as the browser chrome currently leaves it; `vh` is the fallback
+         for anything that does not know `dvh`, and overstates it on iOS.
+
+         Nothing changes where the panel already fits: at 300px or more of
+         viewport there is no overflow and no scroll container. */
+      max-height: calc(100vh - var(--mx-nav, 59px));
+      max-height: calc(100dvh - var(--mx-nav, 59px));
+      overflow-y: auto;
+    }
+
+    /* `.ad .nav ol` is `display:none` at this breakpoint — that rule is for the
+       desktop list in the bar, and this list has to opt back out of it. */
+    .ad .nav .mob-panel ol {
+      display: block;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .ad .nav .mob-panel ol li {
+      display: block;
+    }
+
+    /* 48px so the row is a touch target at 320px, where the label alone is not.
+       No transition: the panel appears and disappears, it does not animate. */
+    .ad .nav .mob-panel ol a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 48px;
+      padding: 0;
+      color: var(--tx);
+      border-top: 1px solid var(--hair);
+    }
+
+    .ad .nav .mob-panel ol li:first-child a {
+      border-top: 0;
+    }
+
+    /* the frozen hover rule insets its underline by the desktop cell padding,
+       which this row does not have */
+    .ad .nav .mob-panel ol a::after {
+      left: 0;
+      right: 0;
+    }
+
+    .ad .nav .mob-panel ol a i {
+      flex: 0 0 auto;
+      color: var(--tx2);
+    }
+  }
+
+  /* A panel opened on a phone and carried across the breakpoint by a rotation
+     has no button to close it above 767px. The script closes it; this is the
+     floor under the script, not a duplicate of it. */
+  @media (min-width: 768px) {
+    .ad .nav .mob-panel {
+      display: none;
+    }
+  }
 }

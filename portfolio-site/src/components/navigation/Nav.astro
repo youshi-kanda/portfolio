@@ -23,7 +23,7 @@ const { current = null, progress = 0, hasWorks = true, onHomepage = true } = Ast
 const items = navItems(hasWorks, onHomepage);
 ---
 
-<nav class="nav" data-home-nav={onHomepage ? '' : undefined}>
+<nav class="nav" data-nav data-home-nav={onHomepage ? '' : undefined}>
   <div class="page">
     <a class="nm" href={brandHref(onHomepage)}>{site.handle}<i>{site.kicker}</i></a>
     <ol>
@@ -40,10 +40,113 @@ const items = navItems(hasWorks, onHomepage);
           </li>
         ))
       }
-    </ol><span class="mob">{ui.nav.mobileIndex}</span>
+    </ol><button
+      type="button"
+      class="mob"
+      aria-expanded="false"
+      aria-controls="nav-index"
+      data-nav-toggle
+    >{ui.nav.mobileIndex}</button>
   </div>
   <div class="prg" style={`--p:${progress}%`}></div>
+  {/*
+    The mobile section index, and the reason it is a sibling of `.page` rather
+    than a child of it: `.nav .page` is the flex row, so a panel inside it would
+    become a third flex item and push the masthead. Outside it, `.nav` — which
+    is `position:sticky`, and therefore a containing block — positions the panel
+    under the bar with `top:calc(100% + 1px)` (polish.css).
+
+    `items` is the same array the desktop `<ol>` above renders, so the two lists
+    cannot disagree about which sections exist or where their anchors point.
+    The links deliberately carry NO `data-nav-target`: the scroll spy below maps
+    one link to one section, and a second link per section would leave one of
+    them permanently without `aria-current`.
+  */}
+  <div class="mob-panel" id="nav-index" hidden data-nav-panel>
+    <ol>
+      {
+        items.map((item) => (
+          <li>
+            <a href={item.href}><i>{item.index}</i>{item.label}</a>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
 </nav>
+
+{/*
+  The mobile index is a disclosure, not a dialog: the panel sits in the header,
+  the page behind it stays usable, and nothing below it is inert. So there is no
+  focus trap, no scroll lock and no `role="dialog"` — a `<button>` that owns an
+  `aria-expanded` and a panel it names with `aria-controls` is the whole widget.
+
+  Focus is not moved on open. Tab order already runs button → first link, and
+  stealing focus would make the keyboard path disagree with the reading order.
+  It is moved back on Escape only, where the panel closes under the user rather
+  than at their request to leave it.
+
+  `<button>` also does a second job. Chrome for iOS never extracts text inside
+  BUTTON for its address/one-tap detection (ios/web/annotations `IGNORE_NODE_NAMES`),
+  so the label stops being a candidate for the Mini Map it was being turned into.
+  The `format-detection` meta in BaseLayout covers the rest of the page; this
+  covers this label structurally, without depending on that meta being honoured.
+*/}
+<script>
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
+  const toggle = nav?.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const panel = nav?.querySelector<HTMLElement>('[data-nav-panel]');
+
+  if (nav && toggle && panel) {
+    const narrow = window.matchMedia('(max-width: 767px)');
+    const isOpen = () => !panel.hidden;
+
+    const close = (returnFocus = false) => {
+      if (!isOpen()) return;
+      panel.hidden = true;
+      toggle.setAttribute('aria-expanded', 'false');
+      if (returnFocus) toggle.focus();
+    };
+
+    const open = () => {
+      if (isOpen()) return;
+      panel.hidden = false;
+      toggle.setAttribute('aria-expanded', 'true');
+    };
+
+    toggle.addEventListener('click', () => {
+      if (isOpen()) close();
+      else open();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && isOpen()) close(true);
+    });
+
+    // `pointerdown` runs before the button's own `click`, so a press ON the
+    // button is filtered out here by the `contains` check and toggled there —
+    // one gesture, one state change.
+    document.addEventListener('pointerdown', (event) => {
+      if (!isOpen()) return;
+      const target = event.target;
+      if (target instanceof Node && nav.contains(target)) return;
+      close();
+    });
+
+    // Every entry is an anchor, and an in-page anchor scrolls to a section the
+    // open panel would be covering.
+    panel.addEventListener('click', (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest('a')) close();
+    });
+
+    // Leaving the mobile breakpoint with the panel open would carry it into a
+    // layout that has no button to close it with.
+    narrow.addEventListener('change', (event) => {
+      if (!event.matches) close();
+    });
+  }
+</script>
 
 {
   onHomepage && (
