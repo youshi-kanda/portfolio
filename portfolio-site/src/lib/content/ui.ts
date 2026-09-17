@@ -29,8 +29,32 @@
  */
 
 export const ui = {
+  /*
+   * `mobileIndex` STAYS, and it is no longer a dead label.
+   *
+   * The wayfinding work removed it, correctly, for what it then was: a
+   * `<span class="mob">Index</span>` with no handler and no tab stop — below
+   * 768px the only thing in the chrome that looked like navigation, and a dead
+   * label is worse than an empty corner, because the empty corner promises
+   * nothing. What that reasoning refuses is a label without a control, not the
+   * word. The mobile index is now a real disclosure: a `<button>` owning
+   * `aria-expanded` over the panel it names (Nav.astro), and this is the string
+   * on its face. So the row stays in ui.json too — it is rendered, which is
+   * precisely what U-ORPHAN asks of a registry row.
+   */
   nav: {
+    /**
+     * The mobile index disclosure's label, on the `<button>` in the masthead
+     * that opens the section list below 768px.
+     */
     mobileIndex: 'Index',
+    /**
+     * The breadcrumb landmark's accessible name. Never drawn — it is what a
+     * screen reader announces before reading the trail, so that a bare
+     * `WORK INDEX / …` is introduced as a position rather than as a second
+     * list of links next to the masthead's.
+     */
+    breadcrumbLabel: 'パンくずリスト',
   },
 
   /** The Evidence component's own labels. art-direction §4–6: these do not vary. */
@@ -77,6 +101,23 @@ export const ui = {
     selectedTech: 'Selected technology',
     caseStudyCta: 'Case Study を読む',
     fieldsTableLabel: 'extracted fields ({count})',
+    /*
+     * The two return labels, and the reason they are not `allWorksCta`.
+     *
+     * `register.allWorksCta`（作品一覧へ）is a FORWARD move: it sits in 02 MORE
+     * PROJECTS and offers a reader who is browsing the homepage the longer
+     * list. These two are the opposite gesture — you are inside something and
+     * going back out of it — and a return band that said 「作品一覧へ」 would
+     * name the destination while saying nothing about the direction.
+     *
+     * Both were written by the requester, not here. They are `authored`
+     * `presentation`: a label makes no claim about the world, so the matrix
+     * asks no basis of them, but it does ask that a person approved the
+     * wording — and the person who approved it is the one who wrote it.
+     */
+    backToIndex: '作品一覧に戻る',
+    /** `fill(backToWork, { title })`. The work names itself in the link. */
+    backToWork: '{title} に戻る',
   },
 
   howIBuild: {
@@ -212,6 +253,24 @@ export const ui = {
    * the page contains as the prose under it.
    */
   caseStudy: {
+    /*
+     * THE RAIL INDEX IS A LETTER, NOT `00`.
+     *
+     * It was `00`, which is the homepage HERO's index — the same glyph in the
+     * same slot on two pages that are not the same page. And it was a NUMBER
+     * on a page that is not a band of anything, while the two other subpage
+     * types already named themselves with letters: `/how-i-build/` draws `M`
+     * and `/work/<slug>/technical/` draws `T`.
+     *
+     * So the rule is stated rather than half-kept: a DIGIT is a section's
+     * position inside the homepage's running order, and a LETTER is the type of
+     * a page below it. `C` completes `C / T / M`.
+     *
+     * `/work/`'s index stays the work COUNT and `/404`'s stays `404`. Neither
+     * is a section number and neither is ambiguous — the archive's h1 already
+     * says WORK INDEX, and a count is a readout the page is for.
+     */
+    railIndex: 'C',
     railLabels: ['CASE STUDY'],
     contents: '目次',
     contentsLabel: 'Contents',

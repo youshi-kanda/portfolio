@@ -45,10 +45,26 @@ const { work, caseStudy } = Astro.props;
 <section class="hero">
   <div class="page">
     <div class="tr">
-      <Rail index="00" labels={[...ui.caseStudy.railLabels, work.title]} />
+      <Rail index={ui.caseStudy.railIndex} labels={[...ui.caseStudy.railLabels, work.title]} />
       <div class="msr">
         <p class="mo ty">{work.productType}</p>
-        <h1 class="dsp-s">{ui.caseStudy.sections.overview}</h1>
+        {/*
+          THE h1 IS THE WORK, NOT THE QUESTION.
+
+          It used to be 「このシステムは何をするか」 — CS-1's section name — which
+          made the largest text on the page a string all three published Case
+          Studies had in common, and left the work's own name to an 11px rail
+          label. A reader arriving from a search result, or one step down from
+          the Technical page whose h1 IS the work's name, met a page that
+          identified itself less specifically than its own child did.
+
+          The question is not deleted; it is demoted to the h2 it always was.
+          It names the section the lede below answers, which is the job it was
+          doing all along — it was only ever the h1 because the hero had no
+          other heading in it.
+        */}
+        <h1 class="dsp-s">{work.title}</h1>
+        <h2 class="ovh">{ui.caseStudy.sections.overview}</h2>
         <p class="lede">{caseStudy.overview}</p>
         {caseStudy.leadDisclosure && (
           <p class="notclaim" style="margin-top:26px">{caseStudy.leadDisclosure}</p>
