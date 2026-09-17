@@ -63,9 +63,28 @@ describe('UI copy gate', () => {
   });
 
   it('fails a registry row whose string no longer exists', () => {
-    const strings = uiStrings().filter((s) => s.path !== 'nav.mobileIndex');
+    const strings = uiStrings().filter((s) => s.path !== 'nav.breadcrumbLabel');
     const found = uiCopyGate(rows(), { strings, exists: always });
     assert.deepEqual(codes(errors(found)), ['U-ORPHAN']);
+  });
+
+  /*
+   * The two navigation labels answer different questions and neither is the
+   * other's replacement: `mobileIndex` is on the button that opens the section
+   * list — where the reader can GO — and `breadcrumbLabel` is the name a screen
+   * reader gives the trail — where the reader IS. They arrived from two
+   * branches that each solved the same dead `<span>Index</span>` a different
+   * way, and merging those branches is exactly where one of them silently
+   * disappears. This asserts the shape that merge has to preserve.
+   */
+  it('ships the mobile index label and the breadcrumb label, both registered', () => {
+    const strings = new Map(uiStrings().map((s) => [s.path, s.text]));
+    assert.equal(strings.get('nav.mobileIndex'), 'Index');
+    assert.equal(strings.get('nav.breadcrumbLabel'), 'パンくずリスト');
+
+    const registered = new Set(rows().map((r) => r.path));
+    assert.ok(registered.has('nav.mobileIndex'), 'nav.mobileIndex の登録行が無い');
+    assert.ok(registered.has('nav.breadcrumbLabel'), 'nav.breadcrumbLabel の登録行が無い');
   });
 
   it('fails when an ADAPTED string points at a path that is not there', () => {

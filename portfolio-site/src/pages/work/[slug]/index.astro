@@ -25,10 +25,20 @@ import EvidenceDialog from '../../../components/evidence/EvidenceDialog.astro';
 import Footer from '../../../components/layout/Footer.astro';
 import Rail from '../../../components/layout/Rail.astro';
 import SyntheticBar from '../../../components/layout/SyntheticBar.astro';
+import Breadcrumb from '../../../components/navigation/Breadcrumb.astro';
 import Nav from '../../../components/navigation/Nav.astro';
+import ReturnBand from '../../../components/navigation/ReturnBand.astro';
 import WorkEntry from '../../../components/work/WorkEntry.astro';
 import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { caseSections, shippingWorks } from '../../../lib/content/derive.ts';
+import {
+  ARCHIVE_HREF,
+  caseSections,
+  contactHref,
+  shippingWorks,
+  technicalHref,
+  workCrumbs,
+} from '../../../lib/content/derive.ts';
+import { site } from '../../../lib/content/site.ts';
 import { fill, ui } from '../../../lib/content/ui.ts';
 
 export const getStaticPaths = (async () => {
@@ -58,10 +68,43 @@ const { work, evidence, allEvidence, position, caseStudy } = Astro.props;
 
 const description = caseStudy ? caseStudy.overview : work.purpose;
 const sections = caseStudy ? caseSections(work, caseStudy) : [];
+
+/**
+ * WAYFINDING IS NOT CONDITIONAL ON CONTENT.
+ *
+ * Everything below is computed from the work and its route, and none of it asks
+ * whether a Case Study exists. That is the contract the Overview work will land
+ * against: when the seven works that currently have no page get one, this file
+ * gains an Overview branch and the trail and the return band are already
+ * correct for it.
+ *
+ * The one thing that does vary is whether there is anywhere DEEPER to go, and
+ * that is a fact about the Technical route — which exists exactly when a Case
+ * Study does (see technical.astro's getStaticPaths). So it is asked once, here,
+ * rather than again in the markup.
+ */
+const archiveLabel = ui.register.railLabels[0] as string;
+const crumbs = workCrumbs(archiveLabel, work.title, work.slug);
+const deeper = caseStudy ? technicalHref(work.slug) : null;
+
+/*
+ * CONTACT is the third link and the last one, in that order on purpose: the
+ * band reads back / onward / ask, and the ask is what a reader who has finished
+ * the page is most likely to want next. On a phone it is the ONLY route to
+ * CONTACT from inside a work — see ReturnBand.astro on why it is not in the
+ * footer. The label is the homepage band's own, read from `site.sections`.
+ */
+const contactLabel = site.sections.find((s) => s.id === 'contact')?.label as string;
+const returnLinks = [
+  { label: ui.work.backToIndex, href: ARCHIVE_HREF, back: true },
+  ...(deeper ? [{ label: ui.caseStudy.technicalCta, href: deeper, back: false }] : []),
+  { label: contactLabel, href: contactHref(), back: false },
+];
 ---
 
 <BaseLayout title={`${work.title} — ${work.productType}`} description={description}>
-  <Nav current="WORK" progress={32} onHomepage={false} />
+  <Nav progress={32} onHomepage={false} />
+  <Breadcrumb crumbs={crumbs} />
   <SyntheticBar />
   <main data-w={work.slug}>
     {
@@ -109,7 +152,16 @@ const sections = caseStudy ? caseSections(work, caseStudy) : [];
                   ]}
                 />
                 <div class="msr">
-                  <h1 class="dsp-s">{work.productType}</h1>
+                  {/*
+                    Same correction as the Case Study hero: the h1 is the work,
+                    and the product type is the kicker above it. This branch
+                    renders no page today — every work whose Evidence resolves
+                    also has a Case Study — but it is the Overview screen the
+                    next checkpoint ships, and it should not have to be told
+                    what its own heading is a second time.
+                  */}
+                  <p class="mo ty">{work.productType}</p>
+                  <h1 class="dsp-s">{work.title}</h1>
                   <p class="lede m0">{work.purpose}</p>
                 </div>
               </div>
@@ -119,6 +171,7 @@ const sections = caseStudy ? caseSections(work, caseStudy) : [];
         </>
       )
     }
+    <ReturnBand links={returnLinks} />
     <Footer />
   </main>
   <EvidenceDialog />
