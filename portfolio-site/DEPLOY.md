@@ -12,7 +12,7 @@ two never cross:
 | | branch | workflow | nginx `root` | origin |
 |---|---|---|---|---|
 | production | `main` | `.github/workflows/deploy-production.yml` | `/var/www/portfolio-live/current` (symlink) | https://portfolio.neppepe.net |
-| staging | `release/portfolio-site-v4` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net |
+| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net |
 
 ---
 

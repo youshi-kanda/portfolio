@@ -3,7 +3,7 @@ name: Deploy Portfolio Staging
 on:
   push:
     branches:
-      - release/portfolio-site-v4
+      - develop
     paths:
       - "portfolio-site/**"
       - ".github/workflows/deploy-staging.yml"
