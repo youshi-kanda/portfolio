@@ -1,25 +1,5 @@
 [
   {
-    "id": "ui.nav.mobileIndex",
-    "path": "nav.mobileIndex",
-    "text": "Index",
-    "kind": "ui-system",
-    "route": "/ · /work/ · /work/{slug}/ · /work/{slug}/technical/",
-    "section": "NAV",
-    "slot": "mobile 見出し",
-    "purpose": "narrow viewport で節一覧を開くラベル。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild.py:26"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
     "id": "ui.evidence.zoom",
     "path": "evidence.zoom",
     "text": "原寸で開く",
@@ -2633,6 +2613,86 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-13T07:17:12Z"
+    }
+  },
+  {
+    "id": "ui.nav.breadcrumbLabel",
+    "path": "nav.breadcrumbLabel",
+    "text": "パンくずリスト",
+    "kind": "ui-system",
+    "route": "/work/{slug}/ · /work/{slug}/technical/",
+    "section": "NAV",
+    "slot": "breadcrumb landmark 名",
+    "purpose": "breadcrumb を読み上げる前に位置であることを告げる。描画されない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "fix/portfolio-work-overviews @181c1df — 依頼者が文言を指定し approved として登録（2026-09-13）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "ui.work.backToIndex",
+    "path": "work.backToIndex",
+    "text": "作品一覧に戻る",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "RETURN BAND",
+    "slot": "戻り導線ラベル",
+    "purpose": "作品ページから作品一覧へ戻る。allWorksCta（作品一覧へ）は homepage からの前進で、向きが逆。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "fix/portfolio-work-overviews @181c1df — 依頼者が文言を指定し approved として登録（2026-09-13）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "ui.work.backToWork",
+    "path": "work.backToWork",
+    "text": "{title} に戻る",
+    "kind": "ui-system",
+    "route": "/work/{slug}/technical/",
+    "section": "RETURN BAND",
+    "slot": "戻り導線ラベル（作品名入り）",
+    "purpose": "Technical から親の Case Study へ戻る。どの作品へ戻るのかを label が名乗る。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "fix/portfolio-work-overviews @181c1df — 依頼者が文言を指定し approved として登録（2026-09-13）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-13T00:00:00Z"
+    }
+  },
+  {
+    "id": "ui.caseStudy.railIndex",
+    "path": "caseStudy.railIndex",
+    "text": "C",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY",
+    "slot": "rail 番号",
+    "purpose": "ページ種別。数字は homepage の節番号、英字は下層ページ種別（C / T / M）という規則。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "依頼者指示（2026-09-16）— 「`C = CASE STUDY` として使用することを承認」／規則: 数字は HOME 内セクション番号、英字は下層ページ種別（C / T / M）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-16T00:00:00Z"
     }
   }
 ]

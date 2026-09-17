@@ -43,13 +43,48 @@
                     background:var(--sig);transform:scaleX(0);transform-origin:0 50%;
                     transition:transform .18s cubic-bezier(.2,0,0,1)}
 .ad .nav ol a:hover{color:var(--tx)}
-.ad .nav ol a:hover:after,.ad .nav ol a[aria-current]:after{transform:scaleX(1)}
-.ad .nav ol a[aria-current]{color:var(--tx)}
-.ad .nav .mob{display:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
-              text-transform:uppercase;color:var(--tx);border:1px solid var(--hair2);padding:7px 12px}
+/* `[data-section]` is the page-lives-under-this state and draws exactly what
+   `[aria-current]` draws. They are two attributes because they are two claims:
+   one says this link IS the current URL, the other says it is an ancestor of
+   it, and collapsing them is how /work/<slug>/ came to tell a screen reader it
+   was /#work. Appearance is shared; the accessibility tree is not. */
+.ad .nav ol a:hover:after,.ad .nav ol a[aria-current]:after,
+.ad .nav ol a[data-section]:after{transform:scaleX(1)}
+.ad .nav ol a[aria-current],.ad .nav ol a[data-section]{color:var(--tx)}
+/* `.nav .mob` is DELETED, not hidden. It was a bordered box reading `Index`
+   that no handler listened to and no tab stop reached — below 768px, the only
+   thing in the chrome that looked like a way out. The breadcrumb below carries
+   that job now, with real links. */
 /* scroll progress — 1px, no colour ramp */
 .ad .nav .prg{position:absolute;left:0;bottom:-1px;height:2px;background:var(--sig);
               width:var(--p,0%)}
+/* ---- breadcrumb ----------------------------------------------------------
+   The same instrument strip as `.syn` below it: `.page` measure, mono 11px,
+   one hairline. It reports a position; it is not a heading and carries no
+   heading tag, so it cannot enter the document outline. NOT sticky — see
+   Breadcrumb.astro on why a second pinned band would move three sticky rails. */
+.ad .crumb{background:var(--paper);border-bottom:1px solid var(--hair)}
+.ad .crumb ol{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 9px;
+              list-style:none;margin:0;padding:11px 0;font-family:var(--f-mono);
+              font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+              line-height:1.6}
+/* The separator is drawn, not written: a literal "/" in the markup would be
+   read aloud between every crumb. */
+.ad .crumb li + li:before{content:"/";margin-right:9px;color:var(--tx3)}
+.ad .crumb a{color:var(--tx2);border-bottom:1px solid var(--tx3)}
+.ad .crumb a:hover{color:var(--tx);border-bottom-color:var(--sig)}
+.ad .crumb [aria-current]{color:var(--tx)}
+
+/* ---- return band ---------------------------------------------------------
+   Full width, between the last section and the footer, so that it reads as a
+   property of the PAGE rather than of whatever section happens to end above
+   it. `.ar.bk` is the same arrow glyph leading instead of trailing — a return
+   that trails its arrow points the wrong way. */
+.ad .ret{border-top:1px solid var(--hair2);margin-top:100px}
+.ad .ret .page{display:flex;flex-wrap:wrap;gap:22px 44px;
+               padding-top:32px;padding-bottom:32px}
+.ad .lk .ar.bk{margin-left:0;margin-right:9px}
+
 /* the synthetic-data notice is required on every page (SITE-07).
    It is set as an instrument strip, not a banner. */
 .ad .syn{background:var(--flag-bg);border-bottom:1px solid var(--hair)}
@@ -340,6 +375,12 @@
                           text-transform:none;color:var(--tx2)}
 .ad h3{margin-top:0}
 .ad .msr h3{font-size:34px;line-height:1.32;letter-spacing:-.026em;margin:0 0 16px}
+/* The Case Study's opening question, demoted out of the h1 slot. It is a real
+   h2 in the outline, sized as the subtitle it is: the bare `.ad h2` is 40px,
+   which under a 56px display line would read as a second title competing with
+   the work's name rather than as the heading of the lede under it. */
+.ad .hero .msr .ovh{font-size:22px;line-height:1.5;font-weight:600;letter-spacing:-.012em;
+                    color:var(--tx2);margin:0 0 14px;border:0;padding:0}
 .ad ul li h3{font-size:22px;margin:34px 0 8px}
 /* ---- authoring state. A pending string is marked on the machine side and
    with a hairline, never with a badge that competes with the type. */

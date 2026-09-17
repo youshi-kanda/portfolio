@@ -3,24 +3,57 @@
  * A static sticky bar. Position is reported by a mono index and a 2px
  * hairline — an instrument, not a menu. No colour ramp, no label that grows.
  *
- * The item list is derived: a section that is not on this page (05 FEATURED
- * EVIDENCE at zero works) does not get a link, because an anchor that resolves
- * to nothing is a defect rather than a placeholder.
+ * TWO LISTS, TWO JOBS. The masthead used to draw one list everywhere:
+ * `site.sections`, the homepage's own running order, with the anchors rewritten
+ * to `/#work` when it was drawn off the homepage. That is a table of contents
+ * for a document the reader is not reading — and it has no entry for `/work/`,
+ * because the archive is a page and not a band, which is how the archive ended
+ * up with exactly one inbound link on the whole site.
+ *
+ *   homepage   the section index. Unchanged, scroll-spy included.
+ *   elsewhere  the site's routes: WORK INDEX / HOW I BUILD / CONTACT.
+ *
+ * The item list stays derived. On the homepage a section that is not on this
+ * page (05 FEATURED EVIDENCE at zero works) does not get a link, because an
+ * anchor that resolves to nothing is a defect rather than a placeholder.
+ *
+ * `aria-current="page"` NOW MEANS THE PAGE. It was previously emitted on
+ * `/work/`, `/work/<slug>/` and `/work/<slug>/technical/` alike, on a link
+ * whose href was `/#work` — three kinds of page each claiming to be a fourth.
+ * A page that merely lives UNDER an entry gets `data-section`, which draws the
+ * same underline and tells the accessibility tree nothing that is not true.
+ *
+ * THE `Index` BOX IS GONE. Below 768px `.nav ol` is display:none, so the only
+ * thing left in the chrome was a bordered `<span>Index</span>` with no handler
+ * and no tab stop — the one element that looked like a way out, and was not
+ * one. The breadcrumb under this bar carries mobile wayfinding now, with real
+ * links at a real tap size.
  */
-import { brandHref, navItems } from '../../lib/content/derive.ts';
+import { brandHref, navItems, siteNavItems } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
-import { ui } from '../../lib/content/ui.ts';
 
 interface Props {
+  /** Homepage only: the section label to mark. */
   current?: string | null;
   progress?: number;
   hasWorks?: boolean;
-  /** Off the homepage, section anchors are rewritten to point back at it. */
+  /** Off the homepage, the masthead draws the site's routes instead. */
   onHomepage?: boolean;
 }
 
 const { current = null, progress = 0, hasWorks = true, onHomepage = true } = Astro.props;
-const items = navItems(hasWorks, onHomepage);
+
+const sections = onHomepage ? navItems(hasWorks, true) : [];
+/*
+ * NO PAGE TELLS THIS COMPONENT WHICH ENTRY IT IS.
+ *
+ * The marking is read off `Astro.url.pathname`, because a `section` prop would
+ * be passed the same value by `/work/` and by `/work/<slug>/` — quite
+ * reasonably, since both do live under the archive — which would put
+ * `aria-current="page"` back on a link to `/work/` from `/work/crm/`. A page
+ * that can state its own identity is a page that can state it wrongly.
+ */
+const routes = onHomepage ? [] : siteNavItems(Astro.url.pathname);
 ---
 
 <nav class="nav" data-home-nav={onHomepage ? '' : undefined}>
@@ -28,7 +61,7 @@ const items = navItems(hasWorks, onHomepage);
     <a class="nm" href={brandHref(onHomepage)}>{site.handle}<i>{site.kicker}</i></a>
     <ol>
       {
-        items.map((item) => (
+        sections.map((item) => (
           <li>
             <a
               href={item.href}
@@ -40,7 +73,20 @@ const items = navItems(hasWorks, onHomepage);
           </li>
         ))
       }
-    </ol><span class="mob">{ui.nav.mobileIndex}</span>
+      {
+        routes.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={item.isCurrentPage ? 'page' : undefined}
+              data-section={item.isSection ? '' : undefined}
+            >
+              <i>{item.index}</i>{item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
   </div>
   <div class="prg" style={`--p:${progress}%`}></div>
 </nav>

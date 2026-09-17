@@ -63,7 +63,7 @@ describe('UI copy gate', () => {
   });
 
   it('fails a registry row whose string no longer exists', () => {
-    const strings = uiStrings().filter((s) => s.path !== 'nav.mobileIndex');
+    const strings = uiStrings().filter((s) => s.path !== 'nav.breadcrumbLabel');
     const found = uiCopyGate(rows(), { strings, exists: always });
     assert.deepEqual(codes(errors(found)), ['U-ORPHAN']);
   });
