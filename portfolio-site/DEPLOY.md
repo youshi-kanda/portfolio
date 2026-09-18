@@ -12,7 +12,7 @@ two never cross:
 | | branch | workflow | nginx `root` | origin |
 |---|---|---|---|---|
 | production | `main` | `.github/workflows/deploy-production.yml` | `/var/www/portfolio-live/current` (symlink) | https://portfolio.neppepe.net |
-| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net |
+| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net — **Basic Auth, see §10** |
 
 ---
 
@@ -602,6 +602,202 @@ ssh deployer@<host> "
 ```
 
 Then run §6. If it fails, run §7.1.
+
+---
+
+## 10. Staging access control (Basic Auth)
+
+Staging serves the production artifact from a host anyone can reach, so until
+this section is applied a URL is the only thing standing between a third party
+and an unreleased build. `noindex` does not change that — it asks a crawler not
+to list the address, and asks nothing of somebody who already has it. This
+section is the access boundary; the `noindex` layer is separate and is not
+replaced by it.
+
+**Production is not in scope.** Nothing here touches
+`/etc/nginx/sites-enabled/portfolio`, `/var/www/portfolio-live`, or
+`portfolio.neppepe.net`. The staging server block is a different file and the
+two never cross (§0, and the table at the top of this runbook).
+
+### 10.1 What CI already does, and what it cannot
+
+`.github/scripts/staging-smoke.sh` runs after every staging rsync and has two
+modes, chosen by whether the credentials exist — not by a flag:
+
+| `STG_BASIC_USER` / `STG_BASIC_PASS` | mode | what the smoke asserts |
+|---|---|---|
+| both unset | `open` | reachability only. Reports `boundary NOT VERIFIED`. |
+| both set | `guarded` | anonymous `/` and anonymous asset are **refused**; authenticated `/`, every sitemap route, `/robots.txt` and the `/404` body all succeed. |
+| one set | — | refuses to run. A half-configured boundary is a configuration error, not a default. |
+
+So the repository side of this Issue is complete and green *before* the server
+work, and starts gating the moment the credentials exist. **The steps below are
+the only remaining part, and every one of them needs a human on the host or in
+GitHub Settings — none can be done from CI, because CI has neither `sudo` nor
+the password.**
+
+### 10.2 Order matters
+
+The mode table has no "server configured but secrets missing" state, and there
+is no way to add one that is honest: a smoke that shrugs at a 401 is a smoke
+that would also shrug at a broken deploy. So **do §10.4 and §10.5 in the same
+sitting, then dispatch the workflow.** In between, one staging run would be red
+— which is correct, and is why it is worth not leaving it there.
+
+### 10.3 Record the current state first
+
+Read-only. Keep the output; it is what a rollback compares against.
+
+```sh
+# Which file actually serves staging, and its whole server block.
+sudo nginx -T | sed -n '/stg-portfolio\.neppepe\.net/,/^}/p'
+readlink -f /etc/nginx/sites-enabled/*stg* 2>/dev/null
+
+# Is anything already guarding it?
+sudo nginx -T | grep -n 'auth_basic\|satisfy\|allow\|deny'
+
+# What the origin answers today, headers included.
+curl -sSI https://stg-portfolio.neppepe.net/
+curl -sSI https://stg-portfolio.neppepe.net/no-such-page/
+
+# Is there a proxy in front? (a Cloudflare `server`/`cf-ray` header here
+# changes §10.6 — read it before assuming nginx is the edge)
+curl -sSI https://stg-portfolio.neppepe.net/ | grep -i 'server\|cf-ray\|via'
+```
+
+### 10.4 On the VPS (root, interactive, by a human)
+
+`htpasswd` comes from `apache2-utils`. If installing a package on this host is
+not wanted, `openssl passwd -apr1` produces the same file format and the
+alternative is given below.
+
+```sh
+set -eu
+
+# 1. The credential file. Outside every web root, readable only by the nginx
+#    worker. /etc/nginx is not served by any `root` directive in this config,
+#    and this file is never placed under /var/www — a .htpasswd inside a
+#    document root is downloadable.
+sudo install -o root -g www-data -m 640 /dev/null /etc/nginx/.htpasswd-stg
+
+# 2. The user and password. Choose them here, in the shell, on the host.
+#    Do NOT paste them into an Issue, a PR, a commit, or this file.
+#    -B = bcrypt; -c would truncate the file, so it is deliberately absent.
+sudo apt-get update && sudo apt-get install -y apache2-utils
+sudo htpasswd -B /etc/nginx/.htpasswd-stg stg-review
+#   …or, without installing anything:
+#   printf 'stg-review:%s\n' "$(openssl passwd -apr1)" | sudo tee -a /etc/nginx/.htpasswd-stg
+
+sudo chown root:www-data /etc/nginx/.htpasswd-stg
+sudo chmod 640 /etc/nginx/.htpasswd-stg
+sudo test -s /etc/nginx/.htpasswd-stg && echo "ok: credential file written"
+
+# 3. Back up the staging server block before editing it.
+STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)   # confirm with §10.3
+sudo cp -a "$STG"{,.bak-$(date +%Y%m%d-%H%M%S)}
+```
+
+Then edit **the staging server block only**, adding these lines inside the
+`server { ... }` that carries `server_name stg-portfolio.neppepe.net`:
+
+```diff
+     root /var/www/portfolio-stg;
+     index index.html;
+
++    # The access boundary (Issue #36). Declared at server level, not inside
++    # `location /`, so it covers assets, /robots.txt, /sitemap.xml and the
++    # error document too — a boundary with a hole in it is not one.
++    auth_basic           "staging";
++    auth_basic_user_file /etc/nginx/.htpasswd-stg;
++
++    # The one exemption, and it is not optional. TLS here is Certbot-managed
++    # and renewal is HTTP-01: the ACME server fetches this path anonymously,
++    # and a 401 makes renewal fail silently, weeks later, with an expired
++    # certificate as the first symptom.
++    location ^~ /.well-known/acme-challenge/ {
++        auth_basic off;
++        allow all;
++    }
++
+     location / {
+         try_files $uri $uri/ =404;
+     }
+```
+
+`error_page 404 /404.html;` and the `location = /404.html { internal; }` beside
+it stay as they are. `auth_basic` at server level is inherited by both, so the
+error document is inside the boundary; the smoke checks that it answers `404`
+and not `401`.
+
+Apply:
+
+```sh
+sudo nginx -t                  # must pass before anything is reloaded
+sudo systemctl reload nginx
+```
+
+If `nginx -t` fails, stop. Nothing has been reloaded and staging is still
+serving under the previous configuration.
+
+Verify, on the host or from anywhere:
+
+```sh
+curl -sS -o /dev/null -w 'anonymous:     %{http_code}\n' https://stg-portfolio.neppepe.net/
+curl -sS -o /dev/null -w 'authenticated: %{http_code}\n' \
+  -u 'stg-review' https://stg-portfolio.neppepe.net/     # -u without :pass prompts
+# expect 401 then 200
+
+# production must be untouched by all of the above
+curl -sS -o /dev/null -w 'production:    %{http_code}\n' https://portfolio.neppepe.net/
+# expect 200
+```
+
+### 10.5 In GitHub Settings (by a human)
+
+Settings → Secrets and variables → Actions → **Repository secrets**:
+
+| secret | value |
+|---|---|
+| `STG_BASIC_USER` | the user chosen in §10.4 step 2 |
+| `STG_BASIC_PASS` | that user's password, in plaintext — GitHub encrypts it at rest |
+
+`STG_BASIC_PASS` is the password, not the bcrypt hash: the runner is the client
+here, not the server. Both secrets are repository-level, like the five in §5.4,
+so `workflow_dispatch` runs pick them up too.
+
+Then re-run the staging deploy — Actions → **Deploy Portfolio Staging** → Run
+workflow — and read the smoke output. It must say `mode: guarded` and
+`STAGING_SMOKE = PASS`; a `PASS` that still reports `boundary NOT VERIFIED`
+means the secrets did not reach the run.
+
+### 10.6 If staging is behind Cloudflare
+
+§10.3 tells you. If it is, two things change and both are worth checking before
+concluding Basic Auth works:
+
+- A cached `401` served to a later authenticated request, or a cached `200`
+  served to an anonymous one, would defeat the boundary from the edge. `401`
+  is not cacheable by default and the origin sets no `Cache-Control` that would
+  make it so, but confirm with two requests rather than assuming.
+- Cloudflare Access would be the alternative to this section, not an addition
+  to it. It is the better answer only if the host is *already* behind Access for
+  other reasons; adding a new identity provider to guard one review environment
+  is more moving parts than one `auth_basic` line, and this runbook does not
+  carry both.
+
+### 10.7 Rollback
+
+Staging only. Nothing here can affect production.
+
+```sh
+STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)
+sudo cp -a "$(ls -t "$STG".bak-* | head -n 1)" "$STG"
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Then delete `STG_BASIC_USER` and `STG_BASIC_PASS` in GitHub Settings, or the
+next staging smoke will assert a boundary that is no longer there. The smoke
+returns to `open` mode with both removed.
 
 ---
 

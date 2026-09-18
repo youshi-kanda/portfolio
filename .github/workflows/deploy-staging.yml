@@ -7,10 +7,17 @@ on:
     paths:
       - "portfolio-site/**"
       - ".github/workflows/deploy-staging.yml"
+      - ".github/scripts/staging-smoke.sh"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# Staging is a credentialed review environment, not a second public site
+# (Issue #36). The origin is named once, here, so the deploy and the smoke
+# cannot disagree about which host is being checked.
+env:
+  STG_ORIGIN: https://stg-portfolio.neppepe.net
 
 concurrency:
   group: portfolio-staging
@@ -66,8 +73,30 @@ jobs:
             dist/ \
             "$VPS_USER@$VPS_HOST:/var/www/portfolio-stg/"
 
-      - name: Smoke test
-        run: |
-          curl --fail --silent --show-error --location \
-            https://stg-portfolio.neppepe.net/ \
-            > /dev/null
+      # The smoke lives in a script rather than inline, so the procedure a human
+      # runs by hand and the procedure CI runs are the same one:
+      #
+      #   STG_BASIC_USER=... STG_BASIC_PASS=... bash .github/scripts/staging-smoke.sh
+      #
+      # It asserts the access boundary, not just reachability: with the
+      # credentials configured, an anonymous request to staging must be refused
+      # and an authenticated one must succeed. Both are needed — a 200 for
+      # everyone is the state this Issue exists to end, and a 401 for the
+      # deploy itself would mean nothing is being verified at all.
+      #
+      # The two secrets are passed in the environment and read from there by the
+      # script into a mode-0600 netrc file. They are never on a command line, in
+      # a URL, or echoed; `set -x` is not used anywhere in the script for the
+      # same reason.
+      #
+      # Until the one-time server work in portfolio-site/DEPLOY.md §10 is done
+      # and the secrets exist, both are empty and the script runs its
+      # reachability checks anonymously — exactly what the previous inline
+      # `curl` did — while reporting the boundary as NOT VERIFIED. Nothing about
+      # today's green is weakened by this step, and nothing about it is
+      # pretended either.
+      - name: Staging smoke
+        env:
+          STG_BASIC_USER: ${{ secrets.STG_BASIC_USER }}
+          STG_BASIC_PASS: ${{ secrets.STG_BASIC_PASS }}
+        run: bash ../.github/scripts/staging-smoke.sh
