@@ -12,7 +12,7 @@ two never cross:
 | | branch | workflow | nginx `root` | origin |
 |---|---|---|---|---|
 | production | `main` | `.github/workflows/deploy-production.yml` | `/var/www/portfolio-live/current` (symlink) | https://portfolio.neppepe.net |
-| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net — **Basic Auth, see §10** |
+| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net — **Basic Auth pending, see §10** |
 
 ---
 
@@ -609,10 +609,15 @@ Then run §6. If it fails, run §7.1.
 
 Staging serves the production artifact from a host anyone can reach, so until
 this section is applied a URL is the only thing standing between a third party
-and an unreleased build. `noindex` does not change that — it asks a crawler not
-to list the address, and asks nothing of somebody who already has it. This
-section is the access boundary; the `noindex` layer is separate and is not
-replaced by it.
+and an unreleased build.
+
+**`noindex` is already in place, and it is not this.** Staging returns
+`X-Robots-Tag: noindex, nofollow, noarchive` from nginx on every response —
+measured, not assumed; see §10.3. That header asks a crawler not to list the
+address and asks nothing of somebody who already has it, so it is the
+search-engine layer, it is managed separately under **Issue #34**, and nothing
+in this section changes it. This section is the access boundary. Neither
+replaces the other, and the smoke asserts only this one.
 
 **Production is not in scope.** Nothing here touches
 `/etc/nginx/sites-enabled/portfolio`, `/var/www/portfolio-live`, or
@@ -627,7 +632,7 @@ modes, chosen by whether the credentials exist — not by a flag:
 | `STG_BASIC_USER` / `STG_BASIC_PASS` | mode | what the smoke asserts |
 |---|---|---|
 | both unset | `open` | reachability only. Reports `boundary NOT VERIFIED`. |
-| both set | `guarded` | anonymous `/` and anonymous asset are **refused**; authenticated `/`, every sitemap route, `/robots.txt` and the `/404` body all succeed. |
+| both set | `guarded` | anonymous `/`, the build's own `/_astro/` asset, `/robots.txt`, `/sitemap.xml` and an unknown path must all be **refused with `401`**, and anonymous `/` must carry a `WWW-Authenticate: Basic` challenge; authenticated `/` (with the hero copy), every sitemap route, `/robots.txt` and the site's own 404 body must all succeed. |
 | one set | — | refuses to run. A half-configured boundary is a configuration error, not a default. |
 
 So the repository side of this Issue is complete and green *before* the server
@@ -644,9 +649,38 @@ that would also shrug at a broken deploy. So **do §10.4 and §10.5 in the same
 sitting, then dispatch the workflow.** In between, one staging run would be red
 — which is correct, and is why it is worth not leaving it there.
 
-### 10.3 Record the current state first
+### 10.3 The current state, as measured
 
-Read-only. Keep the output; it is what a rollback compares against.
+Read-only survey, run **2026-09-19 JST** (Issue #36). These are the facts §10.4
+is written against; re-run the commands below if staging behaves unexpectedly,
+and keep the output — it is what a rollback compares against.
+
+| | |
+|---|---|
+| site file | `/etc/nginx/sites-available/portfolio-stg` |
+| `server_name` | `stg-portfolio.neppepe.net` |
+| `root` / `index` | `/var/www/portfolio-stg` / `index.html` |
+| `:443` | `listen 443 ssl`, Certbot-managed |
+| `:80` | a **separate** server block: `return 404` |
+| `location /` | `try_files $uri $uri/ =404;` |
+| error document | `error_page 404 /404.html;` — **no `location = /404.html` block exists** |
+| access control today | **none** — no `auth_basic`, `satisfy`, `allow` or `deny` anywhere |
+| anonymous `/` | **`200`** — this is what §10.4 ends |
+| `X-Robots-Tag` | `noindex, nofollow, noarchive`, set by nginx, present on the real response (Issue #34) |
+| proxy in front | **none** — `Server: nginx/1.24.0 (Ubuntu)`, no `cf-ray`, no `via`, so §10.6 does not apply |
+| Certbot | `authenticator = nginx`, `installer = nginx`, `certbot.timer` active |
+
+Two of those decide the shape of the diff in §10.4, and both are easy to get
+wrong from memory:
+
+- **The ACME challenge is answered on port 80, not 443.** The Certbot *nginx*
+  authenticator solves **HTTP-01**, which the ACME server fetches over `http://`.
+  §10.4 therefore touches the `:443` block only and leaves the `:80` block
+  alone, and needs no `/.well-known/acme-challenge/` exemption. See §10.4.
+- **There is no `location = /404.html` block to leave alone**, and §10.4 does
+  not add one. Issue #36 is access control; the error document already works.
+
+The commands, to re-run:
 
 ```sh
 # Which file actually serves staging, and its whole server block.
@@ -697,8 +731,8 @@ STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)   # confirm with §10.
 sudo cp -a "$STG"{,.bak-$(date +%Y%m%d-%H%M%S)}
 ```
 
-Then edit **the staging server block only**, adding these lines inside the
-`server { ... }` that carries `server_name stg-portfolio.neppepe.net`:
+Then edit **the `listen 443 ssl` server block only** — the one that carries
+`server_name stg-portfolio.neppepe.net` — and add exactly these two lines:
 
 ```diff
      root /var/www/portfolio-stg;
@@ -710,24 +744,35 @@ Then edit **the staging server block only**, adding these lines inside the
 +    auth_basic           "staging";
 +    auth_basic_user_file /etc/nginx/.htpasswd-stg;
 +
-+    # The one exemption, and it is not optional. TLS here is Certbot-managed
-+    # and renewal is HTTP-01: the ACME server fetches this path anonymously,
-+    # and a 401 makes renewal fail silently, weeks later, with an expired
-+    # certificate as the first symptom.
-+    location ^~ /.well-known/acme-challenge/ {
-+        auth_basic off;
-+        allow all;
-+    }
-+
      location / {
          try_files $uri $uri/ =404;
      }
 ```
 
-`error_page 404 /404.html;` and the `location = /404.html { internal; }` beside
-it stay as they are. `auth_basic` at server level is inherited by both, so the
-error document is inside the boundary; the smoke checks that it answers `404`
-and not `401`.
+Two lines, and nothing else. In particular:
+
+**No ACME exemption, and that is deliberate.** TLS on this host is Certbot with
+`authenticator = nginx`, and that authenticator solves **HTTP-01** — the ACME
+server fetches `/.well-known/acme-challenge/...` over **`http://`, on port 80**.
+Port 80 is a separate server block (§10.3) which this section does not touch, so
+the challenge path never passes through the `auth_basic` above and there is
+nothing on `:443` to exempt. Adding a `location ^~ /.well-known/acme-challenge/
+{ auth_basic off; }` anyway would not protect renewal — it would only open an
+unauthenticated path inside the boundary for no benefit. If the authenticator is
+ever changed away from HTTP-01-on-port-80, this paragraph is what must be
+re-read first.
+
+**The port 80 server block is not edited by this section.** It answers
+`return 404` today and must keep doing so; the Certbot nginx plugin manages what
+it needs there during renewal.
+
+**No `location = /404.html` is added.** `error_page 404 /404.html;` already
+works through `location /`, and §10.3 records that no `location = /404.html`
+block exists to edit. Issue #36 is access control and this section stays inside
+that scope. The error document needs no block of its own to be inside the
+boundary: `auth_basic` at server level refuses the request before it ever
+reaches an error page, which is why the smoke expects an unknown path to answer
+`401` anonymously and the site's own `404` once authenticated.
 
 Apply:
 
@@ -739,13 +784,28 @@ sudo systemctl reload nginx
 If `nginx -t` fails, stop. Nothing has been reloaded and staging is still
 serving under the previous configuration.
 
-Verify, on the host or from anywhere:
+Verify, on the host or from anywhere. The whole boundary, not just `/` — the
+mistake this catches is `auth_basic` written inside `location /`, which guards
+the home page and leaves everything below readable:
 
 ```sh
-curl -sS -o /dev/null -w 'anonymous:     %{http_code}\n' https://stg-portfolio.neppepe.net/
+for p in / /robots.txt /sitemap.xml /no-such-page/; do
+  printf 'anonymous %-16s %s\n' "$p" \
+    "$(curl -sS -o /dev/null -w '%{http_code}' "https://stg-portfolio.neppepe.net$p")"
+done
+# expect 401 for every one of them, including /no-such-page/
+
+# the challenge itself, not only the status
+curl -sSI https://stg-portfolio.neppepe.net/ | grep -i '^www-authenticate'
+# expect: WWW-Authenticate: Basic realm="staging"
+
 curl -sS -o /dev/null -w 'authenticated: %{http_code}\n' \
   -u 'stg-review' https://stg-portfolio.neppepe.net/     # -u without :pass prompts
-# expect 401 then 200
+# expect 200
+
+# renewal is unaffected: the port 80 block was not edited
+sudo certbot renew --dry-run
+# expect: Congratulations, all simulated renewals succeeded
 
 # production must be untouched by all of the above
 curl -sS -o /dev/null -w 'production:    %{http_code}\n' https://portfolio.neppepe.net/
@@ -772,8 +832,10 @@ means the secrets did not reach the run.
 
 ### 10.6 If staging is behind Cloudflare
 
-§10.3 tells you. If it is, two things change and both are worth checking before
-concluding Basic Auth works:
+**As measured on 2026-09-19 it is not** — no `cf-ray`, no `via`, and
+`Server: nginx/1.24.0 (Ubuntu)` (§10.3) — so none of this applies today. It is
+kept for the day that changes, because then two things change with it and both
+are worth checking before concluding Basic Auth works:
 
 - A cached `401` served to a later authenticated request, or a cached `200`
   served to an anonymous one, would defeat the boundary from the edge. `401`

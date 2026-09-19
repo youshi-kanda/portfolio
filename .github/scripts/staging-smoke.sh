@@ -8,10 +8,14 @@
 #
 # Staging is a pre-production review environment, and Issue #36 makes that a
 # boundary rather than a convention: without credentials the origin must refuse
-# to serve, and that refusal is what this script gates on. `noindex` is a
-# separate layer (#34) and is deliberately not asserted here — keeping a URL out
-# of a search index is not access control, and a script that checked both would
-# blur the two.
+# to serve, and that refusal is what this script gates on.
+#
+# `noindex` is a separate layer and is deliberately not asserted here. Staging
+# already returns `X-Robots-Tag: noindex, nofollow, noarchive` from nginx on
+# every response; that is the search-engine layer, it is managed under Issue
+# #34, and it is not access control — it asks a crawler not to list the address
+# and asks nothing of somebody who already has it. A script that gated on both
+# would blur the two.
 #
 # Credentials never reach argv or the log. They are read from the environment
 # (GitHub Secrets) into a mode-0600 netrc file, and curl is pointed at that
@@ -50,8 +54,9 @@ note()  { printf '  --    %s\n' "$*"; }
 head_() { printf '\n== %s\n' "$*"; }
 
 body=$(mktemp)
+hdrs=$(mktemp)
 netrc=$(mktemp)
-trap 'rm -f "$body" "$netrc"' EXIT
+trap 'rm -f "$body" "$hdrs" "$netrc"' EXIT
 chmod 600 "$netrc"
 
 # Two modes, and which one is running is decided by whether the credentials are
@@ -94,21 +99,6 @@ auth() {
   fi
 }
 
-# ------------------------------------------------------------------ boundary --
-head_ "access boundary"
-
-anon_status=$(anon -o /dev/null -w '%{http_code}' "$ORIGIN/")
-if [ "$MODE" = guarded ]; then
-  case "$anon_status" in
-    401|403) ok "anonymous / -> $anon_status (refused)" ;;
-    *)       bad "anonymous / -> $anon_status (expected 401) — staging is readable without credentials" ;;
-  esac
-else
-  note "anonymous / -> $anon_status; boundary NOT VERIFIED (no credentials configured)"
-  [ "$anon_status" = "200" ] && ok "/ reachable" \
-    || bad "/ -> $anon_status (expected 200 while unguarded)"
-fi
-
 # ------------------------------------------------------------------ home page --
 head_ "home page"
 
@@ -129,36 +119,87 @@ else
   bad "hero copy absent — staging is not serving this build"
 fi
 
-# TLS is Certbot-managed on this host and renewal is HTTP-01. A Basic Auth block
-# that also covers /.well-known/acme-challenge/ breaks renewal silently, weeks
-# later, so the certificate is checked here where a failure is still cheap.
+# TLS is Certbot-managed on this host, and a certificate that quietly stopped
+# renewing is cheap to notice here and expensive to notice from a browser.
+# Renewal is not affected by the boundary: the Certbot nginx authenticator
+# solves HTTP-01 over port 80, and DEPLOY.md §10 puts `auth_basic` on the :443
+# server block only, so the challenge path is never behind it. That is why no
+# `/.well-known/acme-challenge/` exemption exists on :443 to assert.
 if [ "$(auth -o /dev/null -w '%{ssl_verify_result}' "$ORIGIN/")" = "0" ]; then
   ok "TLS verifies"
 else
   bad "TLS did not verify"
 fi
 
-# --------------------------------------------------------------------- assets --
-head_ "assets are inside the boundary"
-
-# Taken out of the page that was just fetched rather than written down here: a
-# hashed asset name changes every build, and a list in a script would be stale
-# by the next one.
+# The asset is read out of the page that was just fetched rather than written
+# down here: a hashed asset name changes every build, and a list in a script
+# would be stale by the next one.
 asset=$(grep -o '/_astro/[A-Za-z0-9._-]*\.\(css\|js\)' "$body" | head -n 1)
-if [ -z "$asset" ]; then
-  bad "no /_astro/ asset referenced by / — cannot check the asset boundary"
-else
+if [ -n "$asset" ]; then
   note "asset: $asset"
+else
+  bad "no /_astro/ asset referenced by / — cannot check the asset boundary"
+fi
+
+# ------------------------------------------------------------------ boundary --
+head_ "access boundary"
+
+if [ "$MODE" = open ]; then
+  note "no credentials configured — boundary NOT VERIFIED (portfolio-site/DEPLOY.md §10)"
+else
+  # Every path a third party could type, not just `/`. `auth_basic` written
+  # inside `location /` rather than at server level would guard the home page
+  # and leave all of the others readable, and that mistake reads as working
+  # until somebody requests one of them.
+  #
+  # The expected refusal is 401 specifically, not "any non-200". §10 configures
+  # nginx `auth_basic`, whose refusal is a 401 carrying a Basic challenge. A
+  # 403 would also keep the build private, so it is not reported as a leak —
+  # but it is not the boundary this runbook describes either, so it is not
+  # accepted silently.
+  anon_refused() {
+    local lbl=$1 url=$2 st
+    st=$(anon -o /dev/null -D "$hdrs" -w '%{http_code}' "$url")
+    case "$st" in
+      401) ok   "anonymous $lbl -> 401" ;;
+      403) bad  "anonymous $lbl -> 403 — refused, but not by auth_basic (§10 configures a 401 boundary)" ;;
+      *)   bad  "anonymous $lbl -> $st — SERVED WITHOUT CREDENTIALS" ;;
+    esac
+  }
+
+  anon_refused "/" "$ORIGIN/"
+
+  # The challenge itself, not only the status line. nginx sends this header
+  # with every `auth_basic` 401; a 401 without it did not come from there.
+  if grep -qi '^WWW-Authenticate:[[:space:]]*Basic' "$hdrs"; then
+    ok "anonymous / carries WWW-Authenticate: Basic"
+  else
+    bad "anonymous / has no WWW-Authenticate: Basic challenge"
+  fi
+
+  # Hashed assets are the unreleased build itself, and a crawler-blocking
+  # header does nothing for them.
+  [ -n "$asset" ] && anon_refused "asset ($asset)" "$ORIGIN$asset"
+
+  # robots.txt and sitemap.xml are the two files that most often end up outside
+  # a boundary, because the instinct is to leave them public. The sitemap lists
+  # every route of an unreleased build.
+  anon_refused "/robots.txt"  "$ORIGIN/robots.txt"
+  anon_refused "/sitemap.xml" "$ORIGIN/sitemap.xml"
+
+  # An unknown path must be refused before it reaches the error document. A 404
+  # here would mean the error document answers anonymously — the same hole,
+  # reached the long way round.
+  anon_refused "/no-such-page/" "$ORIGIN/no-such-page/"
+fi
+
+# --------------------------------------------------------------------- assets --
+head_ "assets"
+
+if [ -n "$asset" ]; then
   [ "$(auth -o /dev/null -w '%{http_code}' "$ORIGIN$asset")" = "200" ] \
     && ok "authenticated asset -> 200" \
     || bad "authenticated asset -> not 200"
-
-  if [ "$MODE" = guarded ]; then
-    case "$(anon -o /dev/null -w '%{http_code}' "$ORIGIN$asset")" in
-      401|403) ok "anonymous asset refused" ;;
-      *)       bad "anonymous asset served — assets are outside the boundary" ;;
-    esac
-  fi
 fi
 
 # --------------------------------------------------------------------- routes --
@@ -199,10 +240,10 @@ rm -f "$sitemap"
 # ------------------------------------------------------------------- not found --
 head_ "error document"
 
-# 404, not 401 and not 200. An unknown path inside the boundary must reach the
-# site's own error document: a 200 here would mean the SPA catch-all that §4.1
-# of the runbook treats as a blocker, and a 401 would mean the error document
-# itself sits outside the boundary.
+# Authenticated, and so 404 — not 200 and not 401. A 200 would mean the SPA
+# catch-all that §4.1 of the runbook treats as a blocker. A 401 would mean the
+# credentials themselves are not being accepted, since the boundary section
+# above has already established that the anonymous answer here is a refusal.
 nf_status=$(auth -o "$body" -w '%{http_code}' "$ORIGIN/no-such-page/")
 [ "$nf_status" = "404" ] && ok "/no-such-page/ -> 404" \
   || bad "/no-such-page/ -> $nf_status (expected 404)"
