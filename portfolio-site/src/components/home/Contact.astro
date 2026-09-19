@@ -1,37 +1,22 @@
 ---
 /**
- * 05 CONTACT — the conversion point.
+ * 05 CONTACT — 相談の入口。
  *
- * Three routes reach it and this is the third: the nav (`site.sections` gives
- * `contact` a label now), the hero's secondary CTA, and the end of the page.
- * Before #7 there were none — the section existed, carried two URLs as plain
- * text, and was not in the nav.
+ * ここへは nav・HERO の第 2 CTA・ページ末尾の 3 経路で着く。
  *
- * THE URLS ARE LINKS NOW. They were `<dd>github.com/…</dd>`: the address of a
- * place, printed, with no way to go there. That is not a stylistic gap, it is
- * a contact section that cannot be used.
+ * 2 つのチャネルは役割が違う。Email は相談の窓口、GitHub は実装の確認先で、
+ * GitHub の CTA が「GitHub で実装を見る」であって「連絡する」でないのは
+ * その区別そのものである（GitHub プロフィールに受信箱は無い）。
  *
- * NO EMAIL, AND #8 DID NOT ADD ONE. #6 searched the repository and the site and
- * found no address the owner publishes as a contact — only `@example.com`
- * fixtures. Publishing one anyway, or reusing a git commit address, would be
- * this site deciding on someone's behalf which of their addresses is public.
- * U-01 is still open, and an open question is not a reason to ship a guess: the
- * section carries the channels that exist and no placeholder for the one that
- * does not.
+ * 公開 Email は本人しか Authority を持たない user-fact で、承認記録を持つ
+ * copy registry から取る。`site.json` には承認の記録が無いため、そこへ書いた
+ * 住所は誰の承認も無いまま出荷される。
  *
- * WHAT THE GITHUB CTA DOES NOT SAY. It says "GitHub を見る", not "連絡する". A
- * GitHub profile is a place to read what someone has published; it has no
- * inbox. A button promising a message would be the same invention as an
- * invented address, wearing a verb instead of an @ sign (#8 §6).
+ * 補助文（#34）は、その Email へ何を書いて送ればよいかを 1 文で案内する。
+ * 見積り・返信期限・対応可能時期のような、本人が約束していないことは言わない。
  *
- * WHICH MEANS THIS SECTION DOES NOT YET DO ITS JOB. #8's completion condition
- * asks for 「最低1つ明確な相談導線」, and reading someone's code is not one. The
- * gap is left visible rather than filled with a CTA that goes nowhere; U-01
- * (a public address) is the open decision that would close it.
- *
- * The band inverts, as it did before — it gives the scroll a floor. The FOOTER
- * is a separate element with a separate job: this asks for something, that
- * identifies the site.
+ * band が反転するのは、スクロールに床を作るため。FOOTER は別の要素で別の仕事
+ * ——こちらは依頼を受け取り、あちらはサイトを名乗る。
  */
 import { copyText } from '../../lib/content/copy.ts';
 import { sectionNumber } from '../../lib/content/derive.ts';
@@ -43,27 +28,27 @@ const c = site.contact;
 const index = sectionNumber('contact');
 
 /**
- * The address, and the label that says what it is for. Both come from the copy
- * registry rather than `site.json`, because the email is a `user-fact` — a
- * value only its owner has the authority to publish — and the registry is where
- * a fact carries the approver that makes it publishable. `site.json` has no
- * approval record, so an address entered there would ship on nobody's say-so.
+ * 住所と、それが何のための窓口かを言うラベル。どちらも copy registry から
+ * 取る——承認者の記録を持つのは registry だけで、`site.json` に書いた住所は
+ * 承認の記録を持たないまま公開面に出る。
  */
 const email = await copyText('home.contact.email');
 const emailKey = await copyText('home.contact.emailKey');
 
-/** A row whose value is a bare host/path we can safely resolve to https. */
+/** 送る前に何を書けばよいかを示す 1 文（#34）。 */
+const helper = await copyText('home.contact.helper');
+
+/** 値が素のホスト名／パスで、https に解決して差し支えない行。 */
 const hrefOf = (value: string): string | null =>
   /^[a-z0-9.-]+\.[a-z]{2,}(\/[\w./-]*)?$/i.test(value) ? `https://${value}` : null;
 
 const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
 
 /**
- * The CTA points at the profile row, not at a hardcoded URL — one row is the
- * owner's account and the other is this repository, and a button labelled
- * "GitHub を見る" that landed on the source of the page you are already reading
- * would be the wrong one of the two. Null when no row resolves, which is what
- * keeps the CTA from rendering with nowhere to go.
+ * CTA は URL 直書きではなく profile 行を指す——2 行のうち 1 つは本人の
+ * アカウント、もう 1 つはこのリポジトリで、いま読んでいるページのソースへ
+ * 着地する方は CTA が指すべき行ではない。解決しなければ null になり、
+ * 行き先の無い CTA は描かれない。
  */
 const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
 ---
@@ -78,11 +63,16 @@ const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
           <p class="lede m0 ct-l">{c.lede}</p>
 
           {/*
-            ASK FIRST, VERIFY SECOND. The address and its CTA come before the
-            GitHub block because they answer different questions and only one of
-            them is what this section is for. A reader who has decided to get in
-            touch should not have to read past a paragraph about source code to
-            find out how.
+            補助文は lede の続きとして置く。主 CTA より弱い `note` の組みで、
+            読む順は「何を書けばよいか」→「どこへ送るか」→「送る」になる。
+          */}
+          <p class="note ct-hp">{helper}</p>
+
+          {/*
+            まず依頼、次に確認。住所とその CTA を GitHub ブロックより前に置く
+            のは、2 つが答えている問いが違い、この節の目的はそのうち片方だけ
+            だからである。連絡すると決めた読み手に、ソースコードの説明を読み
+            越えてから連絡先を探させない。
           */}
           <dl class="ct-d ct-mail">
             <dt>{emailKey}</dt>
@@ -95,8 +85,8 @@ const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
           </p>
 
           {/*
-            The second block is about reading, and says so in its own words
-            before it offers a link. Nothing in it implies a reply.
+            2 つ目のブロックは「読む」ための導線で、リンクを出す前にそれを
+            自分の言葉で言う。返信を示唆する語はここに置かない。
           */}
           <p class="note ct-ch">{ui.contact.channels}</p>
           <dl class="ct-d">

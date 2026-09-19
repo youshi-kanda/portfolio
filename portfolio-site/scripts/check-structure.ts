@@ -53,7 +53,7 @@
  */
 import { readFileSync } from 'node:fs';
 import { shippingWorks } from '../src/lib/content/derive.ts';
-import { loadWorks } from '../src/lib/content/load.ts';
+import { loadCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
@@ -195,6 +195,17 @@ for (const to of MAILTO_LINKS) {
     failures.push(`CONTACT_EMAIL: mailto:${to} が画面に出ている住所と違う`);
   }
 }
+// ---- CONTACT_HELPER ----
+// #34. 補助文は 1 回だけ出る。0 なら「何を書けばよいか」の案内が落ちており、
+// 2 回以上なら同じ案内を二度読ませている。文字列は registry から取る——ここに
+// 書き写せば、承認済みの文と gate の中の文の 2 か所を合わせ続けることになる。
+const helperText = loadCopy().find((c) => c.id === 'home.contact.helper')?.text ?? '';
+if (helperText === '') {
+  failures.push('CONTACT_HELPER: copy registry に home.contact.helper が無い');
+}
+const CONTACT_HELPER = helperText === '' ? 0 : contactHtml.split(helperText).length - 1;
+expect('CONTACT_HELPER', CONTACT_HELPER, 1);
+
 // The GitHub route must survive alongside it. The two channels have different
 // jobs (#8 §1) and collapsing either into the other is the regression.
 if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
@@ -226,7 +237,8 @@ console.log(
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
-    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length})`,
+    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length}) / ` +
+    `CONTACT_HELPER = ${CONTACT_HELPER}`,
 );
 
 if (failures.length > 0) {
