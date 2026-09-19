@@ -32,7 +32,7 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-six approved strings, each in exactly one batch', () => {
+  it('covers all twenty-seven approved strings, each in exactly one batch', () => {
     assert.equal(Object.keys(APPROVED_TEXT).length, 27);
 
     const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance] = APPROVAL_BATCHES;
@@ -109,6 +109,11 @@ describe('approved copy gate', () => {
     // #34 — 補助文。住所を承認した機会（2026-09-13）とは別の occasion で、
     // 別の文である。前のバッチに足せば、その日には存在しなかった文を
     // その日に承認されたものとして記録することになる。
+    //
+    // この `at` は承認をこの表へ記録した時刻で、本人が承認した瞬間の時刻では
+    // ない（approved-text.ts の当該バッチ参照）。ここで押さえているのは
+    // registry の行と承認表が同じ値を指していることであって、承認が何時に
+    // 起きたかではない。
     assert.deepEqual(
       [guidance.by, guidance.at, [...guidance.ids]],
       ['user', '2026-09-19T11:05:56Z', ['home.contact.helper']],
@@ -420,7 +425,19 @@ describe('approved copy gate', () => {
     assert.equal(row.route, '/');
     assert.equal(row.publication.reviewStatus, 'approved');
     assert.equal(row.publication.approvedBy, 'user');
+    // 承認を記録した時刻。承認の瞬間の時刻は残っていない。
     assert.equal(row.publication.approvedAt, '2026-09-19T11:05:56Z');
+
+    // 参照先は実在するものだけを挙げる。Issue #34 §5.1 にあるのは要件で、
+    // 確定文そのものではない——そう書いてある記録を、書いていない場所の
+    // 引用にしない。
+    const refs = row.publication.sourceRefs;
+    assert.equal(refs.some((r) => r.includes('Issue #34 §5.1')), true);
+    assert.equal(
+      refs.some((r) => r.includes('2026-09-19 の実装依頼')),
+      true,
+      '文を確定させた経路が sourceRefs に無い',
+    );
 
     // 約束していないことは言わない。見積り・返信期限・対応可能時期は本人が
     // 承認した 2 点に含まれておらず、この 1 文に紛れ込めば、サイトが本人に

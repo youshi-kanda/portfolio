@@ -35,10 +35,10 @@ const index = sectionNumber('contact');
 const email = await copyText('home.contact.email');
 const emailKey = await copyText('home.contact.emailKey');
 
-/** 送る前に何を書けばよいかを示す 1 文（#34 §5.1）。 */
+/** 送る前に何を書けばよいかを示す 1 文（#34）。 */
 const helper = await copyText('home.contact.helper');
 
-/** A row whose value is a bare host/path we can safely resolve to https. */
+/** 値が素のホスト名／パスで、https に解決して差し支えない行。 */
 const hrefOf = (value: string): string | null =>
   /^[a-z0-9.-]+\.[a-z]{2,}(\/[\w./-]*)?$/i.test(value) ? `https://${value}` : null;
 
