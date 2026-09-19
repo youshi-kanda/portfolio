@@ -193,7 +193,8 @@
       "originalProductScope — document-field-extraction-demo/README.md「Scope」",
       "languages — package.json（engines.node >= 20 / dependencies 無し / type: module）",
       "keyDecision — document-field-extraction-demo/README.md「The interesting parts」",
-      "limitations — 同上 ／ content.py WORKS[dfe].limit"
+      "limitations — 同上 ／ content.py WORKS[dfe].limit",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null
@@ -207,5 +208,28 @@
     "JavaScript (Node.js 20)",
     "node:test",
     "JSON Schema"
-  ]
+  ],
+  "portfolioProfile": {
+    "developmentContext": "personal",
+    "portfolioForm": "public-reconstruction",
+    "implementationStatus": "public-demo",
+    "releaseStatus": "not-claimed",
+    "responsibilityNotes": [
+      "元となる業務機能の一部を synthetic data で公開用に再構成"
+    ],
+    "originProject": {
+      "label": "歯科医院向け業務効率化プラットフォーム",
+      "context": "internal-project",
+      "status": "in-development",
+      "responsibilityScope": [
+        "要件定義から実装まで",
+        "Architecture",
+        "Backend",
+        "Database",
+        "Testing",
+        "CI-CD",
+        "Automation"
+      ]
+    }
+  }
 }

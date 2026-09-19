@@ -48,6 +48,14 @@
     "LLM",
     "Google / Slack 連携"
   ],
+  "portfolioProfile": {
+    "developmentContext": "collaborative",
+    "portfolioForm": "public-reconstruction",
+    "implementationStatus": "implemented",
+    "releaseStatus": "unknown",
+    "responsibilityNotes": [],
+    "originProject": null
+  },
   "keyDecision": [
     {
       "decision": "共通サービスを基盤側へ切り出した。",
@@ -88,7 +96,8 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.3（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 3 位 `ANON-AI-02`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 3 位 `ANON-AI-02`（#5 / PR #14 merged）",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null

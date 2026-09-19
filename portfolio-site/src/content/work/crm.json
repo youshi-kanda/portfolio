@@ -132,7 +132,8 @@
       "originalProductScope — ai-crm-demo/README.md「Differences from the Original Product Scope」",
       "languages — ai-crm-demo/README.md「Technology Stack」「Prerequisites」",
       "keyDecision — content.py CASE.cs6 判断 3 / 判断 2（spec CS-6）",
-      "limitations — ai-crm-demo/README.md ／ spec CS-9・CS-10・CS-12"
+      "limitations — ai-crm-demo/README.md ／ spec CS-9・CS-10・CS-12",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null
@@ -152,5 +153,16 @@
     "Redis / Celery",
     "LINE Messaging API",
     "PWA"
-  ]
+  ],
+  "portfolioProfile": {
+    "developmentContext": "personal",
+    "portfolioForm": "technical-demo",
+    "implementationStatus": "public-demo",
+    "releaseStatus": "not-claimed",
+    "responsibilityNotes": [
+      "開発継続中",
+      "本番運用実績とは表現しない"
+    ],
+    "originProject": null
+  }
 }

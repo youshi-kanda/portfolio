@@ -51,6 +51,14 @@
     "RBAC / RLS",
     "Web Push"
   ],
+  "portfolioProfile": {
+    "developmentContext": "personal",
+    "portfolioForm": "public-reconstruction",
+    "implementationStatus": "poc",
+    "releaseStatus": "not-released",
+    "responsibilityNotes": [],
+    "originProject": null
+  },
   "keyDecision": [
     {
       "decision": "権限とスコープ、状態遷移が、実装より先に設計として確定している。",
@@ -91,7 +99,8 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.4（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null
