@@ -40,7 +40,8 @@
     "Backend",
     "Database",
     "Auth",
-    "Infrastructure"
+    "Infrastructure",
+    "External API Integration"
   ],
   "selectedTech": [
     "React",
@@ -50,6 +51,17 @@
     "Google Calendar API",
     "Twilio"
   ],
+  "portfolioProfile": {
+    "developmentContext": "collaborative",
+    "portfolioForm": "public-reconstruction",
+    "implementationStatus": "implemented",
+    "releaseStatus": "unknown",
+    "responsibilityNotes": [
+      "Twilio を利用した SMS 通知を実装",
+      "面接日・採用・連絡事項等の通知に利用"
+    ],
+    "originProject": null
+  },
   "keyDecision": [
     {
       "decision": "正本を表計算からデータベースへ移した。",
@@ -90,7 +102,8 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.2（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）",
+      "portfolioProfile / role「External API Integration」— #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null

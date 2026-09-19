@@ -119,7 +119,8 @@
       "originalProductScope — 同上 — 元プロダクトの記載が無いことの明示",
       "languages — gas-project-management-demo/README.md「Technology」",
       "keyDecision — gas-project-management-demo/README.md「設計面の見どころ」",
-      "limitations — 同上 ／ content.py WORKS[ppm].limit"
+      "limitations — 同上 ／ content.py WORKS[ppm].limit",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null
@@ -135,5 +136,16 @@
     "Google Sheets",
     "HTML Service",
     "LockService"
-  ]
+  ],
+  "portfolioProfile": {
+    "developmentContext": "personal",
+    "portfolioForm": "technical-demo",
+    "implementationStatus": "implemented",
+    "releaseStatus": "not-claimed",
+    "responsibilityNotes": [
+      "開発継続中",
+      "本番運用実績とは表現しない"
+    ],
+    "originProject": null
+  }
 }
