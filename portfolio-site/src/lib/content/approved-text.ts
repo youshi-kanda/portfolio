@@ -188,6 +188,24 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.contact.emailCta',
     ]),
   }),
+  /**
+   * Issue #34 §5.1 — CONTACT の問い合わせ補助文。
+   *
+   * 1 文だけの独立したバッチである。U-01 のバッチ（2026-09-13）が承認したのは
+   * 住所とそのラベルであって、「何を書いて送ればよいか」を案内する文ではない。
+   * 後から書かれた文を既存のバッチに足せば、その日には読まれていない文を
+   * 承認済みとして記録することになる。
+   *
+   * 承認の記録は Issue #34 §5.1 と、本人がこの文言を確定させた実装指示
+   * （2026-09-19）である。`at` はその指示を受け取った時刻で、丸めた値では
+   * ない。文面は指示に書かれたものをそのまま登録している。
+   */
+  Object.freeze({
+    task: 'ISSUE-34-CONTACT-GUIDANCE (Issue #34 §5.1 / 2026-09-19 実装指示)',
+    by: 'user',
+    at: '2026-09-19T11:05:56Z',
+    ids: Object.freeze(['home.contact.helper']),
+  }),
 ]);
 
 /**
@@ -231,6 +249,11 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // it is for. The CTA that uses them is ui chrome and lives in ui.json.
   "home.contact.emailKey": "開発のご相談",
   "home.contact.email": "kanda02.1203@gmail.com",
+
+  // Issue #34 §5.1 — 送る前に書くことを案内する 1 文。約束はしていない:
+  // 見積り・返信期限・対応可能時期はここに無く、本人が承認したのは
+  // 「何を書けばよいか」と「まずはメールで」の 2 点だけである。
+  "home.contact.helper": "現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。",
 
   // The capability rail — TASK-PORTFOLIO-V4-COPY-APPROVE-01. Three axes, each
   // a name and the line under it, registered as six strings for the same

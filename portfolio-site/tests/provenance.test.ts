@@ -186,8 +186,13 @@ describe('provenance matrix', () => {
     // `Index` box was a span nothing listened to; on this one it is a
     // `<button>` over a disclosure panel, so the string is rendered and its row
     // is not an orphan. +4, not +3: 125 -> 129.
+    //
+    // #34 は fact を 1 つ足す。CONTACT の補助文はラベルでも見出しでもなく、
+    // 本人が何を書いて送ってほしいかを述べた 1 文で、本人の受け方が違えば
+    // 誤りになりうる。だから presentation の免除ではなく、根拠（Issue #34
+    // §5.1 の本人指示）と承認者を持つ側に置かれている。
     assert.equal(presentation.length, 129);
-    assert.equal(fact.length, 33);
+    assert.equal(fact.length, 34);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first

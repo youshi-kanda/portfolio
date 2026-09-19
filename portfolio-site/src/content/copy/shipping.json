@@ -443,6 +443,23 @@
     }
   },
   {
+    "id": "home.contact.helper",
+    "text": "現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "lede の下 — 問い合わせ補助文",
+    "purpose": "問い合わせ時に何を書けばよいかを短く示し、相談開始時の負担を下げる。Email＝問い合わせ / GitHub＝実装確認の役割分離は変更しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "Issue #34 §5.1（2026-09-19）— 本人が実装指示で文言を提示・承認"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-19T11:05:56Z"
+    }
+  },
+  {
     "id": "home.hero.cta.secondary",
     "text": "相談する",
     "route": "/",

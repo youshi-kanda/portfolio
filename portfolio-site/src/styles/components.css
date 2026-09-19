@@ -762,7 +762,14 @@
    does — `word-break:keep-all` then holds compounds together. */
 .ad .ct-h{font-size:clamp(26px,2.6vw,34px);line-height:1.45;letter-spacing:-.02em;
           margin:0 0 16px;max-width:32ch;word-break:keep-all;overflow-wrap:anywhere}
-.ad .ct-l{margin-bottom:34px}
+/* #34 — lede と補助文は 1 つの塊として読ませる。lede の下を詰め、補助文の下で
+   従来どおり 34px 取る: 連絡先の表までの間隔は変わらず、間に入った 1 文が
+   宙に浮かない。 */
+.ad .ct-l{margin-bottom:14px}
+/* 測りは 2 文が 1 文ずつ折り返す幅。`.ct-ch` と同じ 56ch では
+   「まずはメール / でご相談ください。」と語の途中で折れ、日本語には
+   そこで切れない理由がどこにも書かれていない。 */
+.ad .ct-hp{margin:0 0 34px;max-width:46ch}
 .ad .ct-d{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;margin:0;
           border-top:1px solid var(--hair);max-width:720px}
 .ad .ct-d dt,.ad .ct-d dd{padding:13px 0;border-bottom:1px solid var(--hair);margin:0}
