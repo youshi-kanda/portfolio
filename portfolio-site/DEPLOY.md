@@ -12,7 +12,7 @@ two never cross:
 | | branch | workflow | nginx `root` | origin |
 |---|---|---|---|---|
 | production | `main` | `.github/workflows/deploy-production.yml` | `/var/www/portfolio-live/current` (symlink) | https://portfolio.neppepe.net |
-| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net — **Basic Auth pending, see §10** |
+| staging | `develop` | `.github/workflows/deploy-staging.yml` | `/var/www/portfolio-stg` (directory) | https://stg-portfolio.neppepe.net — **Basic Auth 未適用（§10 参照）** |
 
 ---
 
@@ -605,142 +605,142 @@ Then run §6. If it fails, run §7.1.
 
 ---
 
-## 10. Staging access control (Basic Auth)
+## 10. staging のアクセス制御（Basic Auth）
 
-Staging serves the production artifact from a host anyone can reach, so until
-this section is applied a URL is the only thing standing between a third party
-and an unreleased build.
+staging は production の成果物を、誰でも到達できるホストから配信している。つまり
+このセクションを適用するまでは、**URL を知っているかどうかだけ**が、第三者と未公開
+build との間に立っている唯一のものになる。
 
-**`noindex` is already in place, and it is not this.** Staging returns
-`X-Robots-Tag: noindex, nofollow, noarchive` from nginx on every response —
-measured, not assumed; see §10.3. That header asks a crawler not to list the
-address and asks nothing of somebody who already has it, so it is the
-search-engine layer, it is managed separately under **Issue #34**, and nothing
-in this section changes it. This section is the access boundary. Neither
-replaces the other, and the smoke asserts only this one.
+**`noindex` は既に有効だが、それはこれとは別物。** staging は nginx から
+`X-Robots-Tag: noindex, nofollow, noarchive` を全 response に返している——推測では
+なく実測値（§10.3）。この header は crawler に「この URL を一覧に載せないでくれ」
+と頼むだけで、既に URL を知っている相手には何も要求しない。したがってこれは
+検索エンジン向けのレイヤであり、**Issue #34** で別途管理する。本セクションはそれを
+一切変更しない。本セクションが担当するのはアクセス境界の方。どちらも他方の
+代わりにはならず、smoke test が検証するのはアクセス境界だけ。
 
-**Production is not in scope.** Nothing here touches
-`/etc/nginx/sites-enabled/portfolio`, `/var/www/portfolio-live`, or
-`portfolio.neppepe.net`. The staging server block is a different file and the
-two never cross (§0, and the table at the top of this runbook).
+**production は対象外。** ここでは
+`/etc/nginx/sites-enabled/portfolio`、`/var/www/portfolio-live`、
+`portfolio.neppepe.net` のいずれにも触れない。staging の server block は別 file で、
+両者が交差することは無い（§0 および本 runbook 冒頭の表）。
 
-### 10.1 What CI already does, and what it cannot
+### 10.1 CI が既にやっていること、CI にはできないこと
 
-`.github/scripts/staging-smoke.sh` runs after every staging rsync and has two
-modes, chosen by whether the credentials exist — not by a flag:
+`.github/scripts/staging-smoke.sh` は staging の rsync 後に毎回実行される。mode は
+2 つで、どちらになるかは credentials が存在するかどうかだけで決まる（flag では
+切り替えない）:
 
-| `STG_BASIC_USER` / `STG_BASIC_PASS` | mode | what the smoke asserts |
+| `STG_BASIC_USER` / `STG_BASIC_PASS` | mode | smoke test が検証すること |
 |---|---|---|
-| both unset | `open` | reachability only. Reports `boundary NOT VERIFIED`. |
-| both set | `guarded` | anonymous `/`, the build's own `/_astro/` asset, `/robots.txt`, `/sitemap.xml` and an unknown path must all be **refused with `401`**, and anonymous `/` must carry a `WWW-Authenticate: Basic` challenge; authenticated `/` (with the hero copy), every sitemap route, `/robots.txt` and the site's own 404 body must all succeed. |
-| one set | — | refuses to run. A half-configured boundary is a configuration error, not a default. |
+| 両方未設定 | `open` | 到達性のみ。境界は `boundary NOT VERIFIED` と報告する。 |
+| 両方設定済み | `guarded` | anonymous での `/`・その build 自身の `/_astro/` asset・`/robots.txt`・`/sitemap.xml`・存在しない path の全てが **`401` で拒否**され、かつ anonymous の `/` が `WWW-Authenticate: Basic` challenge を伴うこと。認証ありでは `/`（hero コピー入り）・sitemap の全 route・`/robots.txt`・サイト自身の 404 body が全て成功すること。 |
+| 片方だけ設定 | — | 実行を拒否する。境界が半分だけ設定された状態は設定ミスであり、default として扱ってよいものではない。 |
 
-So the repository side of this Issue is complete and green *before* the server
-work, and starts gating the moment the credentials exist. **The steps below are
-the only remaining part, and every one of them needs a human on the host or in
-GitHub Settings — none can be done from CI, because CI has neither `sudo` nor
-the password.**
+つまり本 Issue の **repository 側は server 作業より前に完成しており、green**。
+そして credentials が登録された瞬間から gate として効き始める。**以下の手順が残り
+全部で、そのどれもホスト上の人間か GitHub Settings 上の人間を必要とする。CI には
+`sudo` も password も無いので、CI 側からは実行できない。**
 
-### 10.2 Order matters
+### 10.2 順序が重要
 
-The mode table has no "server configured but secrets missing" state, and there
-is no way to add one that is honest: a smoke that shrugs at a 401 is a smoke
-that would also shrug at a broken deploy. So **do §10.4 and §10.5 in the same
-sitting, then dispatch the workflow.** In between, one staging run would be red
-— which is correct, and is why it is worth not leaving it there.
+上の mode 表には「server は設定済みだが secret が未登録」という状態が無い。そして
+それを正直に足すこともできない——401 を見て見逃す smoke test は、壊れた deploy も
+同じように見逃すから。したがって **§10.4 と §10.5 は同じ作業時間内に続けて実施し、
+その後 workflow を dispatch すること。** その間に staging が 1 回走れば red になるが、
+それは正しい挙動であり、だからこそ中途半端な状態で放置しない価値がある。
 
-### 10.3 The current state, as measured
+### 10.3 現状（実測値）
 
-Read-only survey, run **2026-09-19 JST** (Issue #36). These are the facts §10.4
-is written against; re-run the commands below if staging behaves unexpectedly,
-and keep the output — it is what a rollback compares against.
+read-only の調査を **2026-09-19 JST** に実施（Issue #36）。§10.4 はこの事実を前提に
+書かれている。staging の挙動が想定と違うときは以下のコマンドを再実行し、出力は
+保管しておくこと——rollback 時の比較対象になる。
 
 | | |
 |---|---|
 | site file | `/etc/nginx/sites-available/portfolio-stg` |
 | `server_name` | `stg-portfolio.neppepe.net` |
 | `root` / `index` | `/var/www/portfolio-stg` / `index.html` |
-| `:443` | `listen 443 ssl`, Certbot-managed |
-| `:80` | a **separate** server block: `return 404` |
+| `:443` | `listen 443 ssl`、Certbot 管理 |
+| `:80` | **別の** server block: `return 404` |
 | `location /` | `try_files $uri $uri/ =404;` |
-| error document | `error_page 404 /404.html;` — **no `location = /404.html` block exists** |
-| access control today | **none** — no `auth_basic`, `satisfy`, `allow` or `deny` anywhere |
-| anonymous `/` | **`200`** — this is what §10.4 ends |
-| `X-Robots-Tag` | `noindex, nofollow, noarchive`, set by nginx, present on the real response (Issue #34) |
-| proxy in front | **none** — `Server: nginx/1.24.0 (Ubuntu)`, no `cf-ray`, no `via`, so §10.6 does not apply |
-| Certbot | `authenticator = nginx`, `installer = nginx`, `certbot.timer` active |
+| error document | `error_page 404 /404.html;` — **`location = /404.html` block は存在しない** |
+| 現在のアクセス制御 | **無し** — `auth_basic`・`satisfy`・`allow`・`deny` はどこにも無い |
+| anonymous `/` | **`200`** — §10.4 が終わらせるのはこの状態 |
+| `X-Robots-Tag` | `noindex, nofollow, noarchive`。nginx が付与し、実レスポンスに存在する（Issue #34） |
+| 前段の proxy | **無し** — `Server: nginx/1.24.0 (Ubuntu)`、`cf-ray` も `via` も無いので §10.6 は現状該当しない |
+| Certbot | `authenticator = nginx`、`installer = nginx`、`certbot.timer` は active |
 
-Two of those decide the shape of the diff in §10.4, and both are easy to get
-wrong from memory:
+このうち 2 つが §10.4 の差分の形を決める。どちらも記憶に頼ると間違えやすい:
 
-- **The ACME challenge is answered on port 80, not 443.** The Certbot *nginx*
-  authenticator solves **HTTP-01**, which the ACME server fetches over `http://`.
-  §10.4 therefore touches the `:443` block only and leaves the `:80` block
-  alone, and needs no `/.well-known/acme-challenge/` exemption. See §10.4.
-- **There is no `location = /404.html` block to leave alone**, and §10.4 does
-  not add one. Issue #36 is access control; the error document already works.
+- **ACME challenge に応答するのは port 80 で、443 ではない。** Certbot の *nginx*
+  authenticator が解決するのは **HTTP-01** で、ACME server はそれを `http://` 越しに
+  取得する。したがって §10.4 は `:443` の block だけに触り、`:80` の block は
+  そのまま残す。`/.well-known/acme-challenge/` の例外は不要（§10.4 参照）。
+- **そもそも「残しておくべき」`location = /404.html` block は存在しない。** §10.4 も
+  それを新設しない。Issue #36 はアクセス制御であり、error document は既に機能して
+  いる。
 
-The commands, to re-run:
+再実行用のコマンド:
 
 ```sh
-# Which file actually serves staging, and its whole server block.
+# 実際に staging を配信している file と、その server block 全体。
 sudo nginx -T | sed -n '/stg-portfolio\.neppepe\.net/,/^}/p'
 readlink -f /etc/nginx/sites-enabled/*stg* 2>/dev/null
 
-# Is anything already guarding it?
+# 既に何かで保護されていないか。
 sudo nginx -T | grep -n 'auth_basic\|satisfy\|allow\|deny'
 
-# What the origin answers today, headers included.
+# 現在 origin が返しているもの（header 込み）。
 curl -sSI https://stg-portfolio.neppepe.net/
 curl -sSI https://stg-portfolio.neppepe.net/no-such-page/
 
-# Is there a proxy in front? (a Cloudflare `server`/`cf-ray` header here
-# changes §10.6 — read it before assuming nginx is the edge)
+# 前段に proxy がいないか。（ここに Cloudflare の `server`/`cf-ray` header が出る
+# なら §10.6 の話になる。nginx が edge だと決めつける前に必ず読むこと）
 curl -sSI https://stg-portfolio.neppepe.net/ | grep -i 'server\|cf-ray\|via'
 ```
 
-### 10.4 On the VPS (root, interactive, by a human)
+### 10.4 VPS 上での作業（root・対話的・人間が実施）
 
-`htpasswd` comes from `apache2-utils`. If installing a package on this host is
-not wanted, `openssl passwd -apr1` produces the same file format and the
-alternative is given below.
+`htpasswd` は `apache2-utils` に含まれる。このホストにパッケージを追加したくない
+場合は、`openssl passwd -apr1` が同じ file 形式を生成するので、下に併記した代替手段
+を使う。
 
 ```sh
 set -eu
 
-# 1. The credential file. Outside every web root, readable only by the nginx
-#    worker. /etc/nginx is not served by any `root` directive in this config,
-#    and this file is never placed under /var/www — a .htpasswd inside a
-#    document root is downloadable.
+# 1. credential file。あらゆる web root の外に置き、nginx worker からのみ読める
+#    ようにする。この設定では /etc/nginx はどの `root` directive からも配信されて
+#    いない。また、この file は決して /var/www 配下に置かない——document root の
+#    中にある .htpasswd はダウンロードできてしまう。
 sudo install -o root -g www-data -m 640 /dev/null /etc/nginx/.htpasswd-stg
 
-# 2. The user and password. Choose them here, in the shell, on the host.
-#    Do NOT paste them into an Issue, a PR, a commit, or this file.
-#    -B = bcrypt; -c would truncate the file, so it is deliberately absent.
+# 2. user と password。ホスト上のこの shell で決める。
+#    Issue・PR・commit・この file に貼り付けないこと。
+#    -B = bcrypt。-c は file を切り詰めてしまうので意図的に付けていない。
 sudo apt-get update && sudo apt-get install -y apache2-utils
 sudo htpasswd -B /etc/nginx/.htpasswd-stg stg-review
-#   …or, without installing anything:
+#   …パッケージを追加せずに済ませる場合:
 #   printf 'stg-review:%s\n' "$(openssl passwd -apr1)" | sudo tee -a /etc/nginx/.htpasswd-stg
 
 sudo chown root:www-data /etc/nginx/.htpasswd-stg
 sudo chmod 640 /etc/nginx/.htpasswd-stg
 sudo test -s /etc/nginx/.htpasswd-stg && echo "ok: credential file written"
 
-# 3. Back up the staging server block before editing it.
-STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)   # confirm with §10.3
+# 3. staging の server block を編集する前に backup を取る。
+STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)   # §10.3 で確認すること
 sudo cp -a "$STG"{,.bak-$(date +%Y%m%d-%H%M%S)}
 ```
 
-Then edit **the `listen 443 ssl` server block only** — the one that carries
-`server_name stg-portfolio.neppepe.net` — and add exactly these two lines:
+次に、**`listen 443 ssl` の server block だけ**——`server_name
+stg-portfolio.neppepe.net` を持つ方——を編集し、以下の 2 行だけを追加する:
 
 ```diff
      root /var/www/portfolio-stg;
      index index.html;
 
-+    # The access boundary (Issue #36). Declared at server level, not inside
-+    # `location /`, so it covers assets, /robots.txt, /sitemap.xml and the
-+    # error document too — a boundary with a hole in it is not one.
++    # アクセス境界（Issue #36）。`location /` の中ではなく server レベルで宣言する。
++    # そうすることで asset・/robots.txt・/sitemap.xml・error document まで含めて
++    # 覆える——穴のある境界は境界ではない。
 +    auth_basic           "staging";
 +    auth_basic_user_file /etc/nginx/.htpasswd-stg;
 +
@@ -749,107 +749,106 @@ Then edit **the `listen 443 ssl` server block only** — the one that carries
      }
 ```
 
-Two lines, and nothing else. In particular:
+**2 行だけで、それ以外は何も足さない。** 特に以下の 3 点に注意する:
 
-**No ACME exemption, and that is deliberate.** TLS on this host is Certbot with
-`authenticator = nginx`, and that authenticator solves **HTTP-01** — the ACME
-server fetches `/.well-known/acme-challenge/...` over **`http://`, on port 80**.
-Port 80 is a separate server block (§10.3) which this section does not touch, so
-the challenge path never passes through the `auth_basic` above and there is
-nothing on `:443` to exempt. Adding a `location ^~ /.well-known/acme-challenge/
-{ auth_basic off; }` anyway would not protect renewal — it would only open an
-unauthenticated path inside the boundary for no benefit. If the authenticator is
-ever changed away from HTTP-01-on-port-80, this paragraph is what must be
-re-read first.
+**ACME の例外は作らない。これは意図的な判断。** このホストの TLS は Certbot の
+`authenticator = nginx` で、この authenticator が解決するのは **HTTP-01**
+——ACME server は `/.well-known/acme-challenge/...` を **`http://`、port 80** で
+取得する。port 80 は別の server block（§10.3）であり、本セクションはそこに触れない。
+したがって challenge path が上の `auth_basic` を通ることは無く、`:443` 側に例外を
+作る対象がそもそも存在しない。それでも
+`location ^~ /.well-known/acme-challenge/ { auth_basic off; }` を足した場合、
+更新が守られるわけではなく、**境界の内側に無認証の path を 1 本開けるだけ**で
+見返りが無い。authenticator を HTTP-01 / port 80 以外へ変更する場合は、まずこの
+段落を読み直すこと。
 
-**The port 80 server block is not edited by this section.** It answers
-`return 404` today and must keep doing so; the Certbot nginx plugin manages what
-it needs there during renewal.
+**port 80 の server block は本セクションでは編集しない。** 現在は `return 404` を
+返しており、それを維持する。更新時に port 80 側で必要になるものは Certbot の nginx
+plugin が面倒を見る。
 
-**No `location = /404.html` is added.** `error_page 404 /404.html;` already
-works through `location /`, and §10.3 records that no `location = /404.html`
-block exists to edit. Issue #36 is access control and this section stays inside
-that scope. The error document needs no block of its own to be inside the
-boundary: `auth_basic` at server level refuses the request before it ever
-reaches an error page, which is why the smoke expects an unknown path to answer
-`401` anonymously and the site's own `404` once authenticated.
+**`location = /404.html` は追加しない。** `error_page 404 /404.html;` は既に
+`location /` 経由で機能しており、§10.3 に記録したとおり編集対象となる
+`location = /404.html` block は存在しない。Issue #36 はアクセス制御であり、本
+セクションはその範囲に留まる。また error document を境界の内側に置くために専用の
+block は要らない——server レベルの `auth_basic` は error page に到達する前に
+request を拒否する。だからこそ smoke test は、存在しない path に対して anonymous
+なら `401`、認証ありならサイト自身の `404` を期待している。
 
-Apply:
+適用:
 
 ```sh
-sudo nginx -t                  # must pass before anything is reloaded
+sudo nginx -t                  # reload の前に必ず pass させる
 sudo systemctl reload nginx
 ```
 
-If `nginx -t` fails, stop. Nothing has been reloaded and staging is still
-serving under the previous configuration.
+`nginx -t` が失敗したらそこで中止する。まだ reload していないので、staging は
+従来の設定で配信され続けている。
 
-Verify, on the host or from anywhere. The whole boundary, not just `/` — the
-mistake this catches is `auth_basic` written inside `location /`, which guards
-the home page and leaves everything below readable:
+検証。ホスト上でも外部からでもよい。`/` だけでなく**境界全体**を見る——ここで
+検出したいのは `auth_basic` を `location /` の中に書いてしまう間違いで、それは
+home page だけを守り、その下を全部読めるままにするもの:
 
 ```sh
 for p in / /robots.txt /sitemap.xml /no-such-page/; do
   printf 'anonymous %-16s %s\n' "$p" \
     "$(curl -sS -o /dev/null -w '%{http_code}' "https://stg-portfolio.neppepe.net$p")"
 done
-# expect 401 for every one of them, including /no-such-page/
+# /no-such-page/ を含め、全て 401 になること
 
-# the challenge itself, not only the status
+# status だけでなく challenge 本体も確認する
 curl -sSI https://stg-portfolio.neppepe.net/ | grep -i '^www-authenticate'
-# expect: WWW-Authenticate: Basic realm="staging"
+# 期待値: WWW-Authenticate: Basic realm="staging"
 
 curl -sS -o /dev/null -w 'authenticated: %{http_code}\n' \
-  -u 'stg-review' https://stg-portfolio.neppepe.net/     # -u without :pass prompts
-# expect 200
+  -u 'stg-review' https://stg-portfolio.neppepe.net/     # -u に :pass を付けなければ対話入力になる
+# 期待値: 200
 
-# renewal is unaffected: the port 80 block was not edited
+# 証明書更新が影響を受けていないこと（port 80 の block は編集していない）
 sudo certbot renew --dry-run
-# expect: Congratulations, all simulated renewals succeeded
+# 期待値: Congratulations, all simulated renewals succeeded
 
-# production must be untouched by all of the above
+# 上記すべてによって production が影響を受けていないこと
 curl -sS -o /dev/null -w 'production:    %{http_code}\n' https://portfolio.neppepe.net/
-# expect 200
+# 期待値: 200
 ```
 
-### 10.5 In GitHub Settings (by a human)
+### 10.5 GitHub Settings 上での作業（人間が実施）
 
 Settings → Secrets and variables → Actions → **Repository secrets**:
 
-| secret | value |
+| secret | 値 |
 |---|---|
-| `STG_BASIC_USER` | the user chosen in §10.4 step 2 |
-| `STG_BASIC_PASS` | that user's password, in plaintext — GitHub encrypts it at rest |
+| `STG_BASIC_USER` | §10.4 の手順 2 で決めた user |
+| `STG_BASIC_PASS` | その user の password（平文。GitHub 側で保存時に暗号化される） |
 
-`STG_BASIC_PASS` is the password, not the bcrypt hash: the runner is the client
-here, not the server. Both secrets are repository-level, like the five in §5.4,
-so `workflow_dispatch` runs pick them up too.
+`STG_BASIC_PASS` に入れるのは **password で、bcrypt hash ではない**。ここでの runner
+は server 側ではなく client 側だから。両方とも §5.4 の 5 つと同じく repository
+レベルの secret なので、`workflow_dispatch` 実行時にも読まれる。
 
-Then re-run the staging deploy — Actions → **Deploy Portfolio Staging** → Run
-workflow — and read the smoke output. It must say `mode: guarded` and
-`STAGING_SMOKE = PASS`; a `PASS` that still reports `boundary NOT VERIFIED`
-means the secrets did not reach the run.
+その後 staging deploy を再実行する（Actions → **Deploy Portfolio Staging** → Run
+workflow）。smoke の出力を読み、`mode: guarded` かつ `STAGING_SMOKE = PASS` と
+出ていることを確認する。`PASS` でも `boundary NOT VERIFIED` と出ている場合は、
+secret が実行に渡っていないということ。
 
-### 10.6 If staging is behind Cloudflare
+### 10.6 staging が Cloudflare の背後にある場合
 
-**As measured on 2026-09-19 it is not** — no `cf-ray`, no `via`, and
-`Server: nginx/1.24.0 (Ubuntu)` (§10.3) — so none of this applies today. It is
-kept for the day that changes, because then two things change with it and both
-are worth checking before concluding Basic Auth works:
+**2026-09-19 の実測では背後に無い**——`cf-ray` も `via` も無く、
+`Server: nginx/1.24.0 (Ubuntu)`（§10.3）——ので、現状ここは該当しない。将来変わった
+ときのために残しておく。その場合は次の 2 点が変わり、どちらも「Basic Auth が効いて
+いる」と結論づける前に確認する価値がある:
 
-- A cached `401` served to a later authenticated request, or a cached `200`
-  served to an anonymous one, would defeat the boundary from the edge. `401`
-  is not cacheable by default and the origin sets no `Cache-Control` that would
-  make it so, but confirm with two requests rather than assuming.
-- Cloudflare Access would be the alternative to this section, not an addition
-  to it. It is the better answer only if the host is *already* behind Access for
-  other reasons; adding a new identity provider to guard one review environment
-  is more moving parts than one `auth_basic` line, and this runbook does not
-  carry both.
+- 後続の認証あり request に cache された `401` が返る、あるいは anonymous request に
+  cache された `200` が返ると、edge 側で境界が破られる。`401` は default では
+  cache 対象ではなく、origin もそれを可能にする `Cache-Control` を付けていないが、
+  前提にせず 2 回 request して確認すること。
+- Cloudflare Access は本セクションの**代替**であって、追加ではない。それが良い答えに
+  なるのは、ホストが既に他の理由で Access の背後にある場合だけ。レビュー環境 1 つを
+  守るために identity provider を新規導入するのは `auth_basic` 1 行より可動部が
+  多く、本 runbook は両方を抱えない。
 
 ### 10.7 Rollback
 
-Staging only. Nothing here can affect production.
+staging のみ。ここでの操作が production に影響することは無い。
 
 ```sh
 STG=$(readlink -f /etc/nginx/sites-enabled/portfolio-stg)
@@ -857,9 +856,9 @@ sudo cp -a "$(ls -t "$STG".bak-* | head -n 1)" "$STG"
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Then delete `STG_BASIC_USER` and `STG_BASIC_PASS` in GitHub Settings, or the
-next staging smoke will assert a boundary that is no longer there. The smoke
-returns to `open` mode with both removed.
+その後 GitHub Settings で `STG_BASIC_USER` と `STG_BASIC_PASS` を削除する。削除し
+ないと、次の staging smoke が既に存在しない境界を検証しようとして red になる。両方
+削除すれば smoke は `open` mode に戻る。
 
 ---
 

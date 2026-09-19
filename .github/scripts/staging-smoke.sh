@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
 #
-# Staging smoke for stg-portfolio.neppepe.net, run from the GitHub runner after
-# the rsync. Like the production smoke beside it, it talks to the public origin
-# so it exercises nginx, TLS and the artifact together rather than the files on
-# disk. Unlike the production smoke, its first job is the opposite one: proving
-# that the origin is *not* public.
+# stg-portfolio.neppepe.net の staging smoke test。rsync 後に GitHub runner から
+# 実行する。隣にある production smoke と同じく、ディスク上のファイルではなく
+# 公開 origin 越しに叩くので、nginx・TLS・成果物をまとめて検証できる。
+# ただし production smoke とは目的が逆で、この script の第一の仕事は
+# 「origin が公開されていないこと」を証明することにある。
 #
-# Staging is a pre-production review environment, and Issue #36 makes that a
-# boundary rather than a convention: without credentials the origin must refuse
-# to serve, and that refusal is what this script gates on.
+# staging は公開前レビュー環境であり、Issue #36 はそれを「運用上の慣習」から
+# 「アクセス境界」へ格上げするもの。すなわち、credentials が無ければ origin は
+# 応答を拒否しなければならず、この script はその拒否を gate にする。
 #
-# `noindex` is a separate layer and is deliberately not asserted here. Staging
-# already returns `X-Robots-Tag: noindex, nofollow, noarchive` from nginx on
-# every response; that is the search-engine layer, it is managed under Issue
-# #34, and it is not access control — it asks a crawler not to list the address
-# and asks nothing of somebody who already has it. A script that gated on both
-# would blur the two.
+# `noindex` は別レイヤであり、ここでは意図的に検証しない。staging は既に nginx
+# から `X-Robots-Tag: noindex, nofollow, noarchive` を全 response に返している。
+# これは検索エンジン向けのレイヤで Issue #34 の管轄であり、アクセス制御ではない
+# ——crawler に「URL を一覧に載せないでくれ」と頼むだけで、既に URL を知っている
+# 相手には何も要求しない。両方を一つの script で gate すると、この 2 つの層が
+# 混ざって区別できなくなる。
 #
-# Credentials never reach argv or the log. They are read from the environment
-# (GitHub Secrets) into a mode-0600 netrc file, and curl is pointed at that
-# file; `--user` would put the pair in the process list, and echoing either is
-# never done. The runner is ephemeral and the file is removed on exit.
+# credentials は argv にも log にも出さない。環境変数（GitHub Secrets）から
+# mode-0600 の netrc file へ書き出し、curl にはその file を指定する。`--user`
+# だと process 一覧に user:pass が載ってしまうし、どちらも echo しない。runner は
+# 使い捨てで、file は exit 時に削除する。
 #
-# It does not stop at the first failure. A staging deploy that is wrong in three
-# ways should say so once, not across three re-runs.
+# 最初の失敗で止めない。staging deploy が 3 箇所壊れているなら、3 回 re-run させる
+# のではなく 1 回で 3 箇所とも報告すべきだから。
 
 set -uo pipefail
 
@@ -32,19 +32,20 @@ HOST=${ORIGIN#*://}
 HOST=${HOST%%/*}
 HOST=${HOST%%:*}
 
-# Defaulted in place rather than copied into local names. `scan:public` reads
-# every tracked file in this repository, and its CREDENTIAL rule matches a
-# credential-shaped word assigned a quoted value — which a local variable named
-# after the password here does, correctly: the rule cannot tell an env
-# indirection from a hard-coded value, and a rule that tried to would be the
-# weaker rule. One name per secret, and it is the name GitHub knows it by.
+# ローカル変数へ複製せず、その場で default を与えている。`scan:public` は本
+# repository の tracked file を全て読み、その CREDENTIAL rule は「credential 的な
+# 名前に quote 付きの値を代入している行」に一致する。ここで password を受ける
+# ローカル変数を作ると、まさにその形になって検出される——そしてそれは rule が
+# 正しく働いている。rule には環境変数経由の間接参照とハードコードの区別がつかず、
+# 区別しようとする rule はむしろ弱い rule になる。だから secret ごとに名前は 1 つ、
+# しかも GitHub 側で登録されている名前そのものを使う。
 : "${STG_BASIC_USER:=}"
 : "${STG_BASIC_PASS:=}"
 
-# A string from the hero that no placeholder and no error page can contain. If
-# the home page is served but this is absent, staging is not serving this build.
+# hero にしか存在しない文字列。placeholder にも error page にも含まれ得ない。
+# home page が返ってきてもこれが無ければ、staging はこの build を配信していない。
 HERO_MARKER='業務で使える Web・AI システムへ。'
-# The site's own error document, as built.
+# build 後のサイト自身の error document。
 NOTFOUND_TITLE='404 — ページが見つかりません。'
 
 fails=0
@@ -59,20 +60,18 @@ netrc=$(mktemp)
 trap 'rm -f "$body" "$hdrs" "$netrc"' EXIT
 chmod 600 "$netrc"
 
-# Two modes, and which one is running is decided by whether the credentials are
-# configured — not by a flag someone has to remember to flip.
+# mode は 2 つ。どちらで動くかは credentials が設定されているかどうかだけで決まる。
+# 誰かが切り替えを覚えておかなければならない flag にはしない。
 #
-#   guarded  — STG_BASIC_USER and STG_BASIC_PASS are both set. The access
-#              boundary is asserted: anonymous requests must be refused and
-#              authenticated ones must succeed.
-#   open     — neither is set, which is the state of this repository before the
-#              one-time server work in portfolio-site/DEPLOY.md §10 is done.
-#              The reachability checks still run, anonymously, exactly as the
-#              previous inline smoke did. The boundary is reported as NOT
-#              VERIFIED rather than silently assumed.
+#   guarded  — STG_BASIC_USER と STG_BASIC_PASS の両方が設定済み。アクセス境界を
+#              検証する。すなわち anonymous request は拒否されなければならず、
+#              認証ありの request は成功しなければならない。
+#   open     — どちらも未設定。portfolio-site/DEPLOY.md §10 の一度きりの server
+#              作業が終わるまでの、この repository の現状。到達性の check は
+#              anonymous のまま従来どおり実行される（以前の inline smoke と同じ）。
+#              境界は「黙って前提にする」のではなく NOT VERIFIED と明示する。
 #
-# There is no third mode. Half-configured credentials are a configuration error
-# and are refused rather than guessed at.
+# 第 3 の mode は無い。片方だけ設定された状態は設定ミスなので、推測で補わず拒否する。
 if [ -n "$STG_BASIC_USER" ] && [ -n "$STG_BASIC_PASS" ]; then
   MODE=guarded
   printf 'machine %s\n  login %s\n  password %s\n' "$HOST" "$STG_BASIC_USER" "$STG_BASIC_PASS" > "$netrc"
@@ -85,12 +84,12 @@ fi
 
 printf 'origin: %s\nmode:   %s\n' "$ORIGIN" "$MODE"
 
-# Anonymous. No netrc, and no credential can leak into it by accident.
+# anonymous 用。netrc を渡さないので、事故で credential が混入する余地が無い。
 anon() { curl -sS --max-time 20 "$@"; }
 
-# Authenticated when there is anything to authenticate with. In `open` mode this
-# is the same request as `anon`, which is the point: the reachability checks read
-# identically in both modes and only the boundary assertion differs.
+# 認証材料がある場合のみ認証する。`open` mode では `anon` と同一の request になる
+# ——それが狙いで、到達性の check は両 mode で全く同じように読め、違うのは
+# 境界を検証するかどうかだけになる。
 auth() {
   if [ "$MODE" = guarded ]; then
     curl -sS --max-time 20 --netrc-file "$netrc" "$@"
@@ -102,8 +101,8 @@ auth() {
 # ------------------------------------------------------------------ home page --
 head_ "home page"
 
-# A deploy that has just finished can race nginx's open_file_cache. Give it a
-# bounded chance rather than failing a good release over a two-second window.
+# deploy 直後は nginx の open_file_cache と競合することがある。数秒の窓のせいで
+# 正常な release を落とさないよう、回数を区切って retry する（無制限には待たない）。
 status=""
 for attempt in 1 2 3 4 5 6; do
   status=$(auth -o "$body" -w '%{http_code}' "$ORIGIN/")
@@ -119,21 +118,20 @@ else
   bad "hero copy absent — staging is not serving this build"
 fi
 
-# TLS is Certbot-managed on this host, and a certificate that quietly stopped
-# renewing is cheap to notice here and expensive to notice from a browser.
-# Renewal is not affected by the boundary: the Certbot nginx authenticator
-# solves HTTP-01 over port 80, and DEPLOY.md §10 puts `auth_basic` on the :443
-# server block only, so the challenge path is never behind it. That is why no
-# `/.well-known/acme-challenge/` exemption exists on :443 to assert.
+# このホストの TLS は Certbot 管理。更新が静かに止まっていた場合、ここで気付けば
+# 安いが、browser で気付くと高くつく。なお更新はこの境界の影響を受けない。
+# Certbot の nginx authenticator は port 80 上で HTTP-01 を解決し、DEPLOY.md §10 は
+# `auth_basic` を :443 の server block にしか置かないので、challenge path が
+# 境界の内側に入ることは無い。:443 側に `/.well-known/acme-challenge/` の例外を
+# 作っていないのはそのためで、だから検証すべき例外も存在しない。
 if [ "$(auth -o /dev/null -w '%{ssl_verify_result}' "$ORIGIN/")" = "0" ]; then
   ok "TLS verifies"
 else
   bad "TLS did not verify"
 fi
 
-# The asset is read out of the page that was just fetched rather than written
-# down here: a hashed asset name changes every build, and a list in a script
-# would be stale by the next one.
+# asset 名はここに書かず、今取得した page から読み取る。hash 付き asset 名は build
+# ごとに変わるので、script に列挙すると次の build で必ず陳腐化するから。
 asset=$(grep -o '/_astro/[A-Za-z0-9._-]*\.\(css\|js\)' "$body" | head -n 1)
 if [ -n "$asset" ]; then
   note "asset: $asset"
@@ -147,16 +145,15 @@ head_ "access boundary"
 if [ "$MODE" = open ]; then
   note "no credentials configured — boundary NOT VERIFIED (portfolio-site/DEPLOY.md §10)"
 else
-  # Every path a third party could type, not just `/`. `auth_basic` written
-  # inside `location /` rather than at server level would guard the home page
-  # and leave all of the others readable, and that mistake reads as working
-  # until somebody requests one of them.
+  # `/` だけでなく、第三者が入力し得る path を全て見る。`auth_basic` を server
+  # レベルではなく `location /` の中に書いてしまうと、home page だけが守られて
+  # 残りは全部読めてしまう。しかもその設定ミスは、誰かが実際にそれらの path を
+  # 叩くまで「動いているように見える」。
   #
-  # The expected refusal is 401 specifically, not "any non-200". §10 configures
-  # nginx `auth_basic`, whose refusal is a 401 carrying a Basic challenge. A
-  # 403 would also keep the build private, so it is not reported as a leak —
-  # but it is not the boundary this runbook describes either, so it is not
-  # accepted silently.
+  # 期待する拒否は「200 以外なら何でもよい」ではなく 401 そのもの。§10 が設定する
+  # のは nginx の `auth_basic` で、その拒否は Basic challenge を伴う 401 になる。
+  # 403 でも build は非公開のままなので leak としては報告しない——が、この runbook
+  # が記述している境界ではないので、黙って受け入れることもしない。
   anon_refused() {
     local lbl=$1 url=$2 st
     st=$(anon -o /dev/null -D "$hdrs" -w '%{http_code}' "$url")
@@ -169,27 +166,28 @@ else
 
   anon_refused "/" "$ORIGIN/"
 
-  # The challenge itself, not only the status line. nginx sends this header
-  # with every `auth_basic` 401; a 401 without it did not come from there.
+  # status line だけでなく challenge 本体も確認する。nginx は `auth_basic` による
+  # 401 には必ずこの header を付けるので、この header が無い 401 は auth_basic 由来
+  # ではない（=想定した境界が効いていない）ということになる。
   if grep -qi '^WWW-Authenticate:[[:space:]]*Basic' "$hdrs"; then
     ok "anonymous / carries WWW-Authenticate: Basic"
   else
     bad "anonymous / has no WWW-Authenticate: Basic challenge"
   fi
 
-  # Hashed assets are the unreleased build itself, and a crawler-blocking
-  # header does nothing for them.
+  # hash 付き asset は未公開 build そのもの。crawler 向けの header は、これらに
+  # 対しては何の防御にもならない。
   [ -n "$asset" ] && anon_refused "asset ($asset)" "$ORIGIN$asset"
 
-  # robots.txt and sitemap.xml are the two files that most often end up outside
-  # a boundary, because the instinct is to leave them public. The sitemap lists
-  # every route of an unreleased build.
+  # robots.txt と sitemap.xml は「公開しておくもの」という先入観のせいで、最も
+  # 境界の外に取り残されやすい 2 つ。とくに sitemap は未公開 build の全 route を
+  # 列挙してしまう。
   anon_refused "/robots.txt"  "$ORIGIN/robots.txt"
   anon_refused "/sitemap.xml" "$ORIGIN/sitemap.xml"
 
-  # An unknown path must be refused before it reaches the error document. A 404
-  # here would mean the error document answers anonymously — the same hole,
-  # reached the long way round.
+  # 未知の path は error document に到達する前に拒否されなければならない。ここが
+  # 404 なら error document が anonymous に応答しているということで、遠回りに
+  # 同じ穴を開けているのと変わらない。
   anon_refused "/no-such-page/" "$ORIGIN/no-such-page/"
 fi
 
@@ -205,14 +203,14 @@ fi
 # --------------------------------------------------------------------- routes --
 head_ "routes"
 
-# The route list comes out of the sitemap this deploy just published, so this
-# checks staging against its own claim about what exists rather than against a
-# count typed into a script.
+# route 一覧は、この deploy が今公開した sitemap から取る。script に書いた件数と
+# 突き合わせるのではなく、staging 自身の「何が存在するか」という申告と突き合わせる
+# ことになる。
 #
-# The artifact declares the *production* origin (astro.config.mjs `site:`), and
-# that is correct — staging serves the production artifact unmodified and this
-# script does not assert otherwise. So the sitemap's absolute URLs are mapped
-# onto the staging origin before they are requested.
+# 成果物が宣言している origin は *production* のもの（astro.config.mjs の `site:`）
+# で、それが正しい——staging は production 成果物をそのまま配信しており、この
+# script もそれ以外を主張しない。したがって sitemap の絶対 URL は、request する前に
+# staging の origin へ読み替える。
 sitemap=$(mktemp)
 sm_status=$(auth -o "$sitemap" -w '%{http_code}' "$ORIGIN/sitemap.xml")
 if [ "$sm_status" = "200" ] && grep -qi '<urlset' "$sitemap"; then
@@ -240,10 +238,10 @@ rm -f "$sitemap"
 # ------------------------------------------------------------------- not found --
 head_ "error document"
 
-# Authenticated, and so 404 — not 200 and not 401. A 200 would mean the SPA
-# catch-all that §4.1 of the runbook treats as a blocker. A 401 would mean the
-# credentials themselves are not being accepted, since the boundary section
-# above has already established that the anonymous answer here is a refusal.
+# こちらは認証ありの request なので 404 が正解——200 でも 401 でもない。200 なら
+# runbook §4.1 が blocker として扱う SPA catch-all が効いているということ。401 なら
+# credentials 自体が受け付けられていないということになる（anonymous でここが拒否に
+# なることは、上の boundary section で既に確認済みだから）。
 nf_status=$(auth -o "$body" -w '%{http_code}' "$ORIGIN/no-such-page/")
 [ "$nf_status" = "404" ] && ok "/no-such-page/ -> 404" \
   || bad "/no-such-page/ -> $nf_status (expected 404)"
