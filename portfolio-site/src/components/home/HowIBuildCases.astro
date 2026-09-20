@@ -1,0 +1,109 @@
+---
+/**
+ * 判断事例 — what the method looks like when it is applied to one problem.
+ *
+ * #31. HOW I BUILD states a claim — 「AI へ実装を委譲しても、理解まで委譲しない。」
+ * — and until now the page supported it with a workflow diagram and a roles
+ * table. Both describe an intention. Neither lets a reader check one.
+ *
+ * So this section carries no new claim. It transcribes two public pull
+ * requests in this repository and sends the reader to them: what was there,
+ * what investigation established, what was decided, what it became, and how it
+ * was verified. Every sentence is in `site.howIBuild.decisionCases` with the
+ * PR sections it came from; nothing is written here.
+ *
+ * WHAT THIS SECTION DOES NOT SAY. It never labels an initial design as an AI
+ * proposal. PR #18 and PR #20 record what was measured, rejected, chosen and
+ * verified; they do not record who first suggested the design each one starts
+ * from. Writing 「AI案」 over those would be the site adding a claim to its own
+ * sources — the exact move the section exists to argue against. The first
+ * field says what the situation WAS, with no origin attached to it.
+ *
+ * TWO LAYERS, AND ONLY ONE OF THEM FOLDS (HD-L). 問題 / 確認した事実 / 判断 /
+ * 結果 are always open: they are the case, and a conclusion behind a disclosure
+ * triangle is a conclusion most readers never see. 検証 — the measurements,
+ * the test counts, the conditions — is a `<details>`, because a reader who
+ * wants it is a reader who has already decided to check, and they can. The PR
+ * link sits OUTSIDE the fold for the same reason: the way to verify this page
+ * must not itself be hidden.
+ */
+import { publicPrUrl } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+import { fill, ui } from '../../lib/content/ui.ts';
+
+const cases = site.howIBuild.decisionCases;
+const qa = site.howIBuild.qaRecord;
+
+/**
+ * The four always-open fields, in reading order, paired with their label.
+ *
+ * A list rather than four hand-written rows: the order is the argument (what
+ * happened → what was established → what was chosen → what it became) and
+ * writing it once means the two cases cannot drift into stating it differently.
+ */
+const fields = [
+  { label: ui.howIBuild.caseProblem, of: (c: (typeof cases)[number]) => c.problem },
+  { label: ui.howIBuild.caseObserved, of: (c: (typeof cases)[number]) => c.observed },
+  { label: ui.howIBuild.caseDecision, of: (c: (typeof cases)[number]) => c.decision },
+  { label: ui.howIBuild.caseResult, of: (c: (typeof cases)[number]) => c.result },
+];
+---
+
+<section class="s-open" id="decision-cases" aria-label={ui.howIBuild.casesLabel}>
+  <div class="page">
+    <div class="tr">
+      <div class="ins">
+        <span class="lb">{ui.howIBuild.casesLabel}</span>
+        <span class="lb">{fill(ui.howIBuild.casesCount, { count: cases.length })}</span>
+      </div>
+      <div class="fld">
+        {
+          cases.map((c) => (
+            <article class="dc" data-decision-case={c.id} data-pr={c.prNumber}>
+              <h3 class="dc-t">{c.title}</h3>
+              {/* A description list, because that is what these are: a term
+                  and what it holds. The label is the mono instrument face the
+                  rest of the site uses for a field name, so a reader who has
+                  read one block on this site can read this one. */}
+              <dl class="dc-s">
+                {fields.map((f) => (
+                  <>
+                    <dt class="mo"><b>{f.label}</b></dt>
+                    <dd>{f.of(c)}</dd>
+                  </>
+                ))}
+              </dl>
+              <details class="dc-v">
+                <summary>{ui.howIBuild.caseVerification}</summary>
+                <ul>{c.verification.map((v) => <li>{v}</li>)}</ul>
+              </details>
+              <p class="dc-l m0">
+                <a class="lk" href={publicPrUrl(c.prNumber)} data-decision-pr={c.prNumber}>
+                  {ui.howIBuild.openPr}<span class="ar">→</span>
+                </a>
+              </p>
+            </article>
+          ))
+        }
+
+        {/*
+          PR #19 — HD-J. Not a third case, and shaped so it cannot become one:
+          no 問題, no 判断, because the record has neither. What it has is a
+          range that was checked and a range that was not, and the second half
+          is the reason it is on this page at all.
+        */}
+        <aside class="dc dc-qa" data-qa-record data-pr={qa.prNumber}>
+          <span class="mo"><b>{ui.howIBuild.qaLabel}</b></span>
+          <h3 class="dc-t">{qa.title}</h3>
+          <p class="dc-c">{qa.summary}</p>
+          <ul class="dc-f">{qa.facts.map((f) => <li>{f}</li>)}</ul>
+          <p class="dc-l m0">
+            <a class="lk" href={publicPrUrl(qa.prNumber)} data-decision-pr={qa.prNumber}>
+              {ui.howIBuild.openPr}<span class="ar">→</span>
+            </a>
+          </p>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>

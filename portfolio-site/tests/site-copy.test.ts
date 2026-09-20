@@ -63,10 +63,10 @@ describe('site.json copy coverage', () => {
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
     assert.equal(managed.length, 2);
-    // 120 before #7, 183 after it, 167 after #8. The jump was 02 MORE
-    // PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and lede:
-    // all of it copy the user approved in #6, entered where the section content
-    // it belongs to already lives.
+    // 120 before #7, 183 after it, 167 after #8, 193 after #31. The jump was 02
+    // MORE PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and
+    // lede: all of it copy the user approved in #6, entered where the section
+    // content it belongs to already lives.
     //
     // #8 took 16 off the count and NONE of them by registering a string. They
     // were capability `examples` (work slugs) and category `key` (ordinals) —
@@ -75,7 +75,17 @@ describe('site.json copy coverage', () => {
     // the backlog is real and stays reported: registering a string means
     // recording an approval event for it, and #8 may not sign one on the
     // owner's behalf before the PR review that is supposed to be it.
-    assert.equal(unmanaged.length, 167);
+    //
+    // #31 PUT 26 BACK ON, and on purpose. They are the decision cases and the
+    // QA record — source-derived transcriptions of PR #18 / #19 / #20, each
+    // carrying the PR sections it came from in its own `sourceRefs`. The gate
+    // measures registry coverage, so a transcription that is checked against a
+    // public PR instead of against a registry row is exactly what it reports;
+    // this number going UP is the backlog being honest, not a regression. What
+    // would be a regression is registering them here by writing an approval
+    // event nobody signed — the reason the count has only ever moved by
+    // exempting non-copy or by the owner approving a string.
+    assert.equal(unmanaged.length, 193);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -83,8 +93,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /167 件/);
-    // one finding, not 167 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /193 件/);
+    // one finding, not 193 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 
