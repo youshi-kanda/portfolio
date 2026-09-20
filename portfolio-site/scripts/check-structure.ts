@@ -75,7 +75,9 @@
  *   ABOUT_RETIRED_COPY    the #32 half of the same list, counted on its own so
  *                         the contract Issue #32 asked for has a name: the
  *                         three sentences ABOUT used to end on may not be
- *                         anywhere on a public page.
+ *                         anywhere on a public page — plus the one sentence
+ *                         this branch approved and then narrowed, which is the
+ *                         only retired string here that never shipped.
  *   ABOUT_EXPERIENCE      #32 — 06 ABOUT draws one profile-fact block per entry
  *                         the section content declares, each carrying the
  *                         APPROVED label and body its ids name. Derived from
@@ -385,6 +387,20 @@ const RETIRED_PUBLIC_COPY: readonly { text: string; why: string; issue: '#31' | 
   {
     text: '掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。',
     why: '#32 — home.about.syntheticData が同じ表明を持っている',
+    issue: '#32',
+  },
+  /*
+   * この 1 件だけ性格が違う: この BRANCH が承認して書いた文で、同じ PR の
+   * レビュー中に本人が短くしたものである（Issue #32 comment 5749023659）。
+   * 落ちたのは 2 文目「担当範囲と到達状態は作品ごとに記載しています。」で、
+   * 到達状態はどの公開ページにも出ていなかった。
+   *
+   * 現在の文は旧文の PREFIX なので、`includes` は正しい向きにしか当たらない
+   * ——新しい文だけが出ていれば旧文は含まれず、旧文が戻ってくれば当たる。
+   */
+  {
+    text: '担当範囲と到達状態は作品ごとに記載しています。',
+    why: '#32 — 到達状態は公開面に出ていない。Issue #32 comment 5749023659 で削除',
     issue: '#32',
   },
 ];

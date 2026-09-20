@@ -36,13 +36,29 @@ const ABOUT_COMPONENT = readFileSync(
 );
 
 const APPROVED_AT = '2026-09-20T06:35:42Z';
+/**
+ * `home.about.disclosure` の訂正。同じ PR のレビュー中の別の occasion である。
+ *
+ * 旧文の 2 文目「担当範囲と到達状態は作品ごとに記載しています。」は、到達状態が
+ * どの公開ページにも出ていないため成り立たなかった。本人は公開 UI を足す側では
+ * なく、文を現在の公開面で確認できる範囲へ狭める側を選んでいる
+ * （Issue #32 comment 5749023659）。
+ */
+const DISCLOSURE_APPROVED_AT = '2026-09-20T09:43:50Z';
+
+/** どの文がどの occasion で承認されたか。id が 1 つの機会にだけ属する。 */
+const APPROVAL_OF: Readonly<Record<string, { at: string; comment: string }>> = {
+  'home.about.experience': { at: APPROVED_AT, comment: '5748161578' },
+  'home.about.disclosure': { at: DISCLOSURE_APPROVED_AT, comment: '5749023659' },
+  'home.about.syntheticData': { at: APPROVED_AT, comment: '5748161578' },
+};
 
 /** 本人承認コメントの文言そのまま（Issue #32 comment 5748161578）。 */
 const BODY: Readonly<Record<string, string>> = {
   'home.about.experience':
     '製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。',
   'home.about.disclosure':
-    '公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。担当範囲と到達状態は作品ごとに記載しています。',
+    '公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。',
   'home.about.syntheticData': '掲載画面では実顧客情報を公開せず、合成データを使用しています。',
 };
 
@@ -53,12 +69,24 @@ const LABEL: Readonly<Record<string, string>> = {
   'ui.about.dataLabel': '公開データ',
 };
 
-/** 退役した公開文言。どれも出荷文字列のどこにも残っていてはならない。 */
+/**
+ * 退役した公開文言。どれも出荷文字列のどこにも残っていてはならない。
+ *
+ * 最初の 3 件は ABOUT が終わっていた旧 `known` の行。4 件目だけ性格が違い、
+ * この BRANCH が一度承認して書いた文である——同じ PR のレビューで本人が
+ * 2 文目を落とした。現在の文は旧文の PREFIX なので、包含は正しい向きにしか
+ * 当たらない: 新しい文だけが出ていれば旧文は含まれず、旧文が戻れば当たる。
+ */
 const RETIRED = [
   '個人開発。AI CRM Demo は画面・API・データベース・AI 呼び出し・権限・テストまで 1 人で実装している。',
   '私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。',
   '掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。',
+  '担当範囲と到達状態は作品ごとに記載しています。',
 ];
+
+/** 旧 disclosure の全文。退役した 2 文構成そのもの。 */
+const RETIRED_DISCLOSURE =
+  '公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。担当範囲と到達状態は作品ごとに記載しています。';
 
 const shippingStrings = (): { where: string; text: string }[] => [
   ...siteStrings().map((s) => ({ where: `site.${s.path}`, text: s.text })),
@@ -142,15 +170,16 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
     const rows = loadCopy();
     for (const id of ['home.about.disclosure', 'home.about.syntheticData']) {
       const p = rows.find((r) => r.id === id)!.publication;
+      const approval = APPROVAL_OF[id]!;
       assert.equal(p.claimType, 'fact');
       assert.equal(p.sourceType, 'authored');
       assert.equal(p.reviewStatus, 'approved');
       assert.equal(p.approvedBy, 'user');
-      assert.equal(p.approvedAt, APPROVED_AT);
+      assert.equal(p.approvedAt, approval.at);
       assert.ok(p.sourceRefs.length > 0, `${id} に根拠が無い`);
       assert.ok(
-        p.sourceRefs.some((r) => r.includes('5748161578')),
-        `${id} が承認コメントを根拠に挙げていない`,
+        p.sourceRefs.some((r) => r.includes(approval.comment)),
+        `${id} が現在の文を承認したコメントを挙げていない`,
       );
     }
 
@@ -177,42 +206,73 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
       for (const ref of block.sourceRefs) {
         assert.ok(ref.trim().length > 0, `${block.id} に空の sourceRef がある`);
       }
+      const approval = APPROVAL_OF[block.copyId]!;
       assert.ok(
-        block.sourceRefs.some((r) => r.includes('5748161578')),
-        `${block.id} が承認記録を挙げていない`,
+        block.sourceRefs.some((r) => r.includes(approval.comment)),
+        `${block.id} が現在の文を承認したコメントを挙げていない`,
       );
     }
   });
 
-  it('承認バッチが 6 件をこの 1 回の機会として記録している', () => {
+  it('承認バッチが 2 つの occasion に分かれ、id はそれぞれ 1 つにだけ属する', () => {
+    // 06:35:42Z の機会が 5 件。`home.about.disclosure` はここを離れている——
+    // 同じ PR のレビュー中に文が短くなり、このバッチが承認した 2 文構成は
+    // もうサイトに無いからである。
     const batch = APPROVAL_BATCHES.find((b) => b.ids.includes('home.about.experience'));
     assert.ok(batch);
     assert.equal(batch.by, 'user');
     assert.equal(batch.at, APPROVED_AT);
-    assert.deepEqual([...batch.ids], [...Object.keys(BODY), ...Object.keys(LABEL)]);
+    assert.deepEqual([...batch.ids], [
+      'home.about.experience',
+      'home.about.syntheticData',
+      ...Object.keys(LABEL),
+    ]);
     assert.match(batch.task, /Issue #32 comment 5748161578/);
+    assert.equal(
+      batch.ids.includes('home.about.disclosure'),
+      false,
+      '訂正された文が旧バッチに残っている',
+    );
+
+    // 09:43:50Z の機会は 1 件だけ。
+    const corrected = APPROVAL_BATCHES.find((b) => b.ids.includes('home.about.disclosure'));
+    assert.ok(corrected);
+    assert.equal(corrected.by, 'user');
+    assert.equal(corrected.at, DISCLOSURE_APPROVED_AT);
+    assert.deepEqual([...corrected.ids], ['home.about.disclosure']);
+    assert.match(corrected.task, /Issue #32 comment 5749023659/);
+    assert.notEqual(corrected.at, batch.at);
 
     // 1 approval occasion = 1 batch。#31 のバッチは同じ日の 1 時間前で、
     // ABOUT の文は含まない。
     const premises = APPROVAL_BATCHES.find((b) => b.ids.includes('method.premise.01'))!;
     assert.notEqual(batch.at, premises.at);
-    for (const id of batch.ids) {
+    for (const id of [...Object.keys(BODY), ...Object.keys(LABEL)]) {
       const owners = APPROVAL_BATCHES.filter((b) => b.ids.includes(id));
       assert.equal(owners.length, 1, `${id} が 2 つ以上のバッチにある`);
     }
   });
 
-  it('旧 known 3 行の本文が、出荷文字列のどこにも残っていない', () => {
+  it('退役した本文が、出荷文字列のどこにも残っていない', () => {
     const offenders = shippingStrings().filter((s) => RETIRED.some((r) => s.text.includes(r)));
     assert.deepEqual(offenders.map((s) => `${s.where}: ${s.text}`), []);
+    // 旧 disclosure は全文でも見る。断片（2 文目）と全文の両方を固定するのは、
+    // 現在の文が旧文の PREFIX で、片方だけでは戻ってきた文を捕まえ損ねうるため。
+    const full = shippingStrings().filter((s) => s.text.includes(RETIRED_DISCLOSURE));
+    assert.deepEqual(full.map((s) => s.where), []);
   });
 
   it('旧文言を新しい承認 batch へ書き写していない', () => {
     // 退役した文が承認済みとして残るのが、いちばん静かな失敗である。旧文は
     // 有効で、かつて出ていて、件数も合う。
-    for (const retired of RETIRED) {
+    for (const retired of [...RETIRED, RETIRED_DISCLOSURE]) {
       for (const [id, text] of Object.entries(APPROVED_TEXT)) {
         assert.notEqual(text, retired, `${id} が退役文言を承認済みとして持っている`);
+        assert.equal(
+          text.includes(retired),
+          false,
+          `${id} が退役文言を含んでいる`,
+        );
       }
     }
   });
@@ -225,7 +285,11 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
     assert.match(synthetic, /実顧客情報を公開せず/);
     const disclosure = BODY['home.about.disclosure']!;
     assert.match(disclosure, /公開用に再構成/);
-    assert.match(disclosure, /担当範囲と到達状態/);
+    // 「担当範囲と到達状態は作品ごとに記載しています。」は要求しない。到達状態は
+    // 公開面に出ておらず、出ていないものを指して「記載しています」と言う文は
+    // 公開境界の説明ではなく、確認できない主張だった。削除は内容の喪失ではない
+    // ——掲載作品が何であるかは 1 文目がそのまま述べている。
+    assert.doesNotMatch(disclosure, /到達状態/);
   });
 
   it('年数表現を ABOUT の新規 copy に入れていない', () => {

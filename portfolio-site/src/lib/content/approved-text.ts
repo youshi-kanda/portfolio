@@ -274,10 +274,16 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * 承認コメント Issue #32 comment 5748161578 の作成時刻で、issue の
    * created_at でも commit 時刻でもない。
    *
-   * 6 件が 1 つの機会に入っているのは、本人がこのコメントで見出し 3 語と
-   * 本文 3 件をまとめて確定文として記載しているからである。ラベル 3 件は
-   * ui.json の行なので APPROVED_TEXT には入らない——`ui.howIBuild.premises` と
-   * 同じで、両 registry を跨ぐ一致は approved-copy.test.ts が見ている。
+   * 本人はこのコメントで見出し 3 語と本文 3 件をまとめて確定文として記載して
+   * いる。ラベル 3 件は ui.json の行なので APPROVED_TEXT には入らない——
+   * `ui.howIBuild.premises` と同じで、両 registry を跨ぐ一致は
+   * approved-copy.test.ts が見ている。
+   *
+   * 6 件で始まり、5 件になった。`home.about.disclosure` はこのバッチを離れて
+   * 下の ISSUE-32-ABOUT-DISCLOSURE へ移っている——同じ PR のレビュー中に本人が
+   * 文を短くしたからで、このバッチが承認した 2 文構成はもうサイトに無い。
+   * 移動であって取り消しではない: このバッチは 06:35:42Z に実際に起きた
+   * 承認であり続け、その日に読まれた文が今も出ている 5 件を承認している。
    *
    * REWORD ではなく RETIREMENT + NEW である。置き換わった 3 行——
    * 実装形態 / 公開範囲 / データ——は site.json の節内容として出ていた文で、
@@ -299,12 +305,46 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-20T06:35:42Z',
     ids: Object.freeze([
       'home.about.experience',
-      'home.about.disclosure',
       'home.about.syntheticData',
       'ui.about.experienceLabel',
       'ui.about.disclosureLabel',
       'ui.about.dataLabel',
     ]),
+  }),
+  /**
+   * Issue #32 — 「掲載内容について」の訂正。A REWORD, AND THE ID MOVED.
+   *
+   * これはこのファイルの冒頭が述べている規則がそのまま起きた例である:
+   * 文が書き直されて再承認されたら、id は新しいバッチへ移り、両方には載らない。
+   * スナップショットは 1 id につき 1 本文しか持たないので、2 つのバッチに
+   * いる id は「どちらの機会がいま出ている文を承認したのか」を言えなくなる。
+   *
+   * 何が落ちたか。旧文の 2 文目は
+   * 「担当範囲と到達状態は作品ごとに記載しています。」で、この PR の
+   * レビューでその半分が公開面で成り立たないことが分かった——担当範囲は
+   * Featured Work の Role / 開発背景 として各作品に出ているが、**到達状態
+   * （`portfolioProfile.implementationStatus`）はどの公開ページにも出ていない**。
+   * 作品レコードには 10 件すべてに入っている。つまり読み手に「作品ごとに
+   * 書いてある」と言いながら、探しても半分は見つからない文だった。
+   *
+   * 直し方が 2 つあり、本人が選んだのは後者である（Issue #32 comment
+   * 5749023659）。(a) 到達状態を公開 UI に足して文を真にする。(b) 文を、
+   * 現在の公開面で確認できる範囲まで狭める。(a) は ABOUT の 1 文のために
+   * Featured Work の情報設計を動かすことになり、#32 の対象ではない。
+   * `implementationStatus` は #29 が確定した内部メタデータとして残る——
+   * 消したのは主張であって、事実ではない。
+   *
+   * 旧バッチ（06:35:42Z）は falsify されていない。あの日あのコメントで本人が
+   * 読んだのは 2 文の版で、それは実際に起きた承認である。ただしその文は
+   * もうサイトに無いので、`home.about.disclosure` はここに居る。旧文は
+   * `check:structure` の RETIRED_PUBLIC_COPY 側へ回り、公開面のどこにも
+   * 残らないことが検査される。
+   */
+  Object.freeze({
+    task: 'ISSUE-32-ABOUT-DISCLOSURE (Issue #32 comment 5749023659)',
+    by: 'user',
+    at: '2026-09-20T09:43:50Z',
+    ids: Object.freeze(['home.about.disclosure']),
   }),
 ]);
 
@@ -356,9 +396,12 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   //
   // 2 件目が使う分類語——共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ
   // / 自主開発 / PoC——は #29 の本人確認済み metadata の語で、ABOUT のために
-  // 新しい軸を作っていない。
+  // 新しい軸を作っていない。掲載作品が何であるかだけを述べ、どこに何が
+  // 書いてあるかは述べない: 2 文目にあった「担当範囲と到達状態は作品ごとに
+  // 記載しています。」は、到達状態が公開面に出ていないため削除された
+  // （Issue #32 comment 5749023659）。
   "home.about.experience": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
-  "home.about.disclosure": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。担当範囲と到達状態は作品ごとに記載しています。",
+  "home.about.disclosure": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。",
   "home.about.syntheticData": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
 
   // U-01 — PR #17 comment 5651971896. The address and the label that says what

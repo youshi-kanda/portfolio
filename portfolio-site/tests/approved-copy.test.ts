@@ -47,6 +47,7 @@ describe('approved copy gate', () => {
       withheld,
       premises,
       about,
+      aboutDisclosure,
     ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
@@ -59,9 +60,10 @@ describe('approved copy gate', () => {
         guidance &&
         withheld &&
         premises &&
-        about,
+        about &&
+        aboutDisclosure,
     );
-    assert.equal(APPROVAL_BATCHES.length, 11);
+    assert.equal(APPROVAL_BATCHES.length, 12);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -185,7 +187,6 @@ describe('approved copy gate', () => {
         '2026-09-20T06:35:42Z',
         [
           'home.about.experience',
-          'home.about.disclosure',
           'home.about.syntheticData',
           'ui.about.experienceLabel',
           'ui.about.disclosureLabel',
@@ -195,6 +196,23 @@ describe('approved copy gate', () => {
     );
     assert.match(about.task, /Issue #32 comment 5748161578/);
     assert.notEqual(about.at, premises.at);
+
+    // #32 訂正 — 「掲載内容について」。REWORD なので id は移動し、両方には
+    // 載らない。旧バッチが承認した 2 文目「担当範囲と到達状態は作品ごとに
+    // 記載しています。」は、到達状態がどの公開ページにも出ていないことが
+    // レビューで分かって落ちた。旧バッチは falsify されていない——あの日
+    // 読まれた文は実在し、いまサイトに無いだけである。
+    assert.deepEqual(
+      [aboutDisclosure.by, aboutDisclosure.at, [...aboutDisclosure.ids]],
+      ['user', '2026-09-20T09:43:50Z', ['home.about.disclosure']],
+    );
+    assert.match(aboutDisclosure.task, /Issue #32 comment 5749023659/);
+    assert.notEqual(aboutDisclosure.at, about.at);
+    assert.equal(
+      about.ids.includes('home.about.disclosure'),
+      false,
+      '書き直された id が旧バッチにも残っている',
+    );
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);

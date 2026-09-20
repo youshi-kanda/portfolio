@@ -405,9 +405,9 @@
         "labelId": "ui.about.disclosureLabel",
         "copyId": "home.about.disclosure",
         "sourceRefs": [
+          "Issue #32 comment 5749023659（本人承認 2026-09-20T09:43:50Z）— 到達状態が公開面に出ていないため 2 文目を削除した、現在の文面",
           "Issue #29 comment 5742687087（本人確認済み作品メタデータ 2026-09-19）— 共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ / 自主開発 / PoC の分類",
-          "work/agri ／ work/crm ／ work/ops — portfolioProfile が共同プロジェクトの公開用再構成・個人開発の技術デモ・自主開発の PoC をそれぞれ記録している作品",
-          "Issue #32 comment 5748161578（本人承認 2026-09-20T06:35:42Z）"
+          "work/agri ／ work/crm ／ work/ops — portfolioProfile が共同プロジェクトの公開用再構成・個人開発の技術デモ・自主開発の PoC をそれぞれ記録している作品"
         ]
       },
       {
