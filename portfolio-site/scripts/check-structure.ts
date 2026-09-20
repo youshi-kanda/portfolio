@@ -56,6 +56,43 @@
  *                         longer fits wraps inside its own box where a viewport
  *                         check finds it, instead of disappearing into the
  *                         line after it.
+ *   HOW_PREMISES          #31 — 開発の前提 draws one item per id the section
+ *                         content lists, and every one of them is the APPROVED
+ *                         sentence that id names. Counted against site.json
+ *                         rather than against a literal: the count is content,
+ *                         and what #31 fixed was that these sentences had no
+ *                         approval record, not that there are two of them.
+ *   HOW_OUTLINE           the document outline this page ships, as levels.
+ *                         `h1 → h2 開発の前提 → h2 判断事例 → h3 h3 h3` is a
+ *                         decision (#31), not an accident of which component
+ *                         happens to render first: a decision case that drifts
+ *                         back under 開発の前提 reads as a thing this site is
+ *                         not claiming, which is the opposite of what it is.
+ *   RETIRED_PUBLIC_COPY   zero. Copy the owner has replaced may not still be on
+ *                         a page. A replaced string is not caught by any other
+ *                         gate here — it is valid, it was once approved, and
+ *                         every count still adds up with it present.
+ *   HOW_DECISION_CASES    #31 — /how-i-build/ draws exactly the two decision
+ *                         cases Issue #31 fixed, and the QA record is exactly
+ *                         one. These four are stated as LITERALS, which nothing
+ *                         else in this file is: everywhere else a count is
+ *                         derived, because the content is allowed to grow and a
+ *                         literal would be a second copy of an editorial
+ *                         decision. Here the count IS the editorial decision —
+ *                         #31 §6 says two cases and one supplement, and PR #19
+ *                         being promoted to a third case is precisely the drift
+ *                         this should refuse. Deriving these from site.json
+ *                         would check that the page renders what the file says
+ *                         while letting the file say anything.
+ *   HOW_QA_RECORDS        one, on the same terms.
+ *   HOW_PR_LINKS          three — one per case plus the QA record — and every
+ *                         one built by `publicPrUrl` from `site.repo`. A PR URL
+ *                         typed into a component would pass a count check and
+ *                         fail this one.
+ *   HOW_TOP_LINKS         one `href="#top"` against one `id="top"`, and the
+ *                         control is an `<a>`. A button calling `scrollTo` is
+ *                         the regression: it looks identical in a screenshot
+ *                         and stops existing when the script does not run.
  *   LEAD_ENTRIES          zero. The Lead was retired in #7; a residual one would
  *                         mean a work introduced twice on one page.
  *   ARCHIVE_ROWS          /work/ lists every shipping work. It is the archive,
@@ -77,6 +114,7 @@ import { readFileSync } from 'node:fs';
 import {
   featuredHomepageWorks,
   linkableSourceWorks,
+  publicPrUrl,
   shippingWorks,
   workPublicSourceUrl,
 } from '../src/lib/content/derive.ts';
@@ -286,6 +324,40 @@ for (const route of PUBLIC_ROUTES) {
   }
 }
 
+// ---- RETIRED_PUBLIC_COPY ----
+// Public copy the owner has REPLACED. Held as literals because that is what
+// they are — the exact sentences that were on the page before the decision
+// that removed them — and because nothing else here would notice: a retired
+// string is well-formed, was approved once, and leaves every count correct.
+//
+// #31 replaced the 「主張しないこと」 block. The heading and its two refusals
+// were the whole of it, and the boundary they drew is not gone — it is stated
+// by `method.premise.02` instead. What may not survive is the old wording
+// sitting somewhere this pass did not look.
+const RETIRED_PUBLIC_COPY: readonly { text: string; why: string }[] = [
+  { text: '主張しないこと', why: '#31 — 見出しは 開発の前提 に置き換わった' },
+  {
+    text: '完全自動の Multi-Agent 開発をしているとは主張しない。',
+    why: '#31 — method.premise.02 が同じ境界を述べている',
+  },
+  {
+    text: 'Harness を構築済みであるとは主張しない。',
+    why: '#31 — 同上',
+  },
+];
+let RETIRED_COPY_HITS = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const retired of RETIRED_PUBLIC_COPY) {
+    if (html.includes(retired.text)) {
+      RETIRED_COPY_HITS += 1;
+      failures.push(
+        `RETIRED_PUBLIC_COPY: /${route.replace(/index\.html$/, '')} に「${retired.text}」が残っている — ${retired.why}`,
+      );
+    }
+  }
+}
+
 // ---- WITHHELD_URLS ----
 // #7 C-8, checked on the artifact rather than in the component that decided it.
 //
@@ -359,6 +431,88 @@ if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
   failures.push('CONTACT_EMAIL: GitHub 導線が CONTACT から消えている');
 }
 
+// ---- HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS ----
+// #31. The one place in this file that asserts literals — the header says why.
+const method = read('how-i-build/index.html');
+
+// ---- HOW_PREMISES ----
+// 開発の前提. Derived from the content, and then each rendered item is held
+// against the APPROVED sentence its id names — a block that rendered the right
+// NUMBER of premises from somewhere other than the approval registry is the
+// failure #31 exists to prevent.
+const HOW_PREMISES = [...method.matchAll(/<li data-premise>([\s\S]*?)<\/li>/g)].map(
+  (m) => (m[1] as string).replace(/<[^>]*>/g, '').trim(),
+);
+const premiseCopy = loadCopy();
+const premiseText = site.howIBuild.premises.map(
+  (id) => premiseCopy.find((c) => c.id === id)?.text ?? `(registry に ${id} が無い)`,
+);
+expect('HOW_PREMISES', HOW_PREMISES.length, site.howIBuild.premises.length);
+expect('HOW_PREMISES_TEXT', HOW_PREMISES.join(' | '), premiseText.join(' | '));
+
+// ---- HOW_OUTLINE ----
+// `aria-level` wins over the tag, exactly as check-links reads it: what is
+// under contract is the outline a screen reader is given, not the spelling of
+// the element. Both are true here — every heading below is its own tag — and
+// reading it this way keeps the two checks from disagreeing about what h-level
+// means.
+const HOW_OUTLINE = [...method.matchAll(/<h([1-6])\b([^>]*)>/g)].map(([, tag, attrs]) => {
+  const declared = /aria-level="(\d)"/.exec(attrs ?? '');
+  return Number(declared ? declared[1] : tag);
+});
+expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2 2 3 3 3');
+// The two h2s are the ones #31 named, and they are `<h2>` elements rather than
+// a smaller tag declaring its depth. The section is named once: `aria-label`
+// repeating a heading is the double announcement the decision ruled out.
+for (const heading of ['開発の前提', '判断事例']) {
+  if (!new RegExp(`<h2\\b[^>]*>(?:<[^>]*>)*${heading}`).test(method)) {
+    failures.push(`HOW_OUTLINE: 「${heading}」が <h2> として出ていない`);
+  }
+}
+if (/\saria-label="判断事例"/.test(method)) {
+  failures.push('HOW_OUTLINE: 判断事例 が aria-label と heading の両方で読み上げられる');
+}
+
+const HOW_DECISION_CASES = [...method.matchAll(/\sdata-decision-case="([^"]+)"/g)].map(
+  (m) => m[1] as string,
+);
+expect('HOW_DECISION_CASES', HOW_DECISION_CASES.length, 2);
+
+const HOW_QA_RECORDS = [...method.matchAll(/\sdata-qa-record\b/g)].length;
+expect('HOW_QA_RECORDS', HOW_QA_RECORDS, 1);
+
+// The PR each block cites, read off the artifact. Checked as a SET against the
+// numbers #31 fixed, so a case pointing at the wrong PR fails here rather than
+// passing a count of three.
+const citedPrs = [...method.matchAll(/\sdata-pr="(\d+)"/g)].map((m) => Number(m[1]));
+expect('HOW_CITED_PRS', [...citedPrs].sort((a, b) => a - b).join(' '), '18 19 20');
+
+// Every PR link is the URL `publicPrUrl` builds from `site.repo`. This is what
+// makes HOW_PR_LINKS more than arithmetic: a literal `https://github.com/...`
+// typed into the component would still be three links and would not be these.
+const HOW_PR_LINKS = [...method.matchAll(/<a\b[^>]*\shref="([^"]+)"[^>]*\sdata-decision-pr="(\d+)"/g)];
+expect('HOW_PR_LINKS', HOW_PR_LINKS.length, 3);
+for (const [, href, n] of HOW_PR_LINKS) {
+  const expected = publicPrUrl(Number(n));
+  if (href !== expected) {
+    failures.push(`HOW_PR_LINKS: PR #${n} のリンクが ${href} — 期待は ${expected}`);
+  }
+}
+
+// ---- HOW_TOP_LINKS ----
+const HOW_TOP_LINKS = [...method.matchAll(/\shref="#top"/g)].length;
+expect('HOW_TOP_LINKS', HOW_TOP_LINKS, 1);
+expect('HOW_TOP_ANCHORS', [...method.matchAll(/\sid="top"/g)].length, 1);
+// It is an anchor. The whole point of #31 §9 is that the control works with no
+// script, and a `<button>` here would look the same and do nothing.
+if (!/<a\b[^>]*\shref="#top"/.test(method)) {
+  failures.push('HOW_TOP_LINKS: #top へ送る要素が <a> ではない — JS 無しで動かない');
+}
+// The existing landmark id is not renamed by the addition.
+if (!/<main\b[^>]*\sid="how-i-build"/.test(method)) {
+  failures.push('HOW_TOP_LINKS: <main id="how-i-build"> が無い');
+}
+
 // ---- CASE_SPEC_IDS ----
 // The case-study and technical specs number their sections CS-1…CS-16 and
 // T-0…T-8. Those are filing references for documents a reader does not have,
@@ -390,7 +544,14 @@ console.log(
     `FEATURED_SOURCE_LINKS = ${FEATURED_SOURCE_LINKS.length} / ` +
     `SOURCE_WITHHELD = ${SOURCE_WITHHELD} / ` +
     `PUBLIC_CODE_LINKS = ${PUBLIC_CODE_LINKS.length} / ` +
-    `WITHHELD_URLS = ${WITHHELD_URLS}`,
+    `WITHHELD_URLS = ${WITHHELD_URLS} / ` +
+    `RETIRED_PUBLIC_COPY = ${RETIRED_COPY_HITS} / ` +
+    `HOW_PREMISES = ${HOW_PREMISES.length} / ` +
+    `HOW_OUTLINE = ${HOW_OUTLINE.join(' ')} / ` +
+    `HOW_DECISION_CASES = ${HOW_DECISION_CASES.length} (${HOW_DECISION_CASES.join(' ')}) / ` +
+    `HOW_QA_RECORDS = ${HOW_QA_RECORDS} / ` +
+    `HOW_PR_LINKS = ${HOW_PR_LINKS.length} / ` +
+    `HOW_TOP_LINKS = ${HOW_TOP_LINKS}`,
 );
 
 if (failures.length > 0) {

@@ -482,6 +482,33 @@
 .ad .notclaim li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
                         background:var(--stop)}
 .ad .notclaim h4{color:var(--stop)}
+/* ------------------------------------- #31 開発の前提 (/how-i-build/ only)
+   `.notclaim` STAYS AND IS NOT RENAMED. It is still the right component in the
+   two places that still refuse something — the Case Study lead disclosure and
+   the technical page's scope boundary — and both draw the `--stop` accent
+   because both are telling a reader what is NOT here. HOW I BUILD stopped
+   being one of those (#31): its block now states how the work is done and then
+   bounds what the published content covers, so it gets its own class rather
+   than a red mark on a sentence that is not a refusal.
+
+   EVERY METRIC IS `.notclaim`'s. Same 30px lead, same hairline, same 18px
+   above the label, same 10.5px mono head, same 14.5px list, same 18px indent
+   and 9px tick. What changed is the accent: the head takes the supporting text
+   colour and the tick takes `--sig`, which is the tick the `intent` list
+   directly above it already draws. The two lists read as one thought instead
+   of as a statement followed by a warning.
+
+   `line-height:normal` is stated because the element is an `<h2>` now and
+   `.ad h2` would otherwise hand it 1.42. The `<h4>` it replaced inherited the
+   browser default, and this is that default, written down. */
+.ad .premise{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
+.ad .premise h2{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+                text-transform:uppercase;font-weight:700;line-height:normal;
+                color:var(--tx2);margin:0 0 14px}
+.ad .premise ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
+.ad .premise li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
+.ad .premise li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                       background:var(--sig)}
 /* ---- 03 stack: language → responsibility → work → framework */
 .ad .stk{border-top:2px solid var(--rule)}
 .ad .stk .srow{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:32px;
@@ -852,3 +879,103 @@
 .ad .ft-m a{color:var(--tx2);text-decoration:none;border-bottom:1px solid var(--hair)}
 .ad .ft-m a:hover,.ad .ft-m a:focus-visible{color:var(--tx);border-color:var(--sig)}
 .ad .ft-m .sep{color:var(--tx3)}
+
+/* ------------------------------------ #31 判断事例 (/how-i-build/ only)
+   Two cases and one QA note, set as records rather than as cards. No box, no
+   radius, no shadow: each case is separated from the next by the hairline the
+   rest of the site divides with, and its internal structure is the same term /
+   value pairing the Evidence provenance list and the CONTACT channels use.
+   Nothing new was introduced to draw this — `.mo`, `.lk`, the hairlines and
+   the measure are the whole vocabulary. */
+/* The last section before the footer, so it states its own bottom: every other
+   section is spaced by the NEXT one's top padding, and this one has no next. */
+.ad #decision-cases{padding-bottom:96px}
+.ad .dc{padding:34px 0 0;border-top:1px solid var(--hair);max-width:720px}
+/* The first case opens directly under the section head, so it draws neither
+   the lead nor the rule: `.shead` has already put a 2px rule and 34px above it.
+   Written as an adjacent sibling rather than `:first-of-type` — the QA record
+   is an `<aside>` and would be the first of ITS type, which would have taken
+   the rule off the one block that needs it to read as separate. */
+.ad .shead + .dc{padding-top:0;border-top:0}
+.ad .dc + .dc{margin-top:34px}
+.ad .dc-t{font-size:clamp(21px,1.8vw,26px);line-height:1.45;letter-spacing:-.016em;
+          margin:0 0 20px;max-width:30ch}
+/* The four always-open fields. A 132px label column on the wide measure — the
+   same width the provenance list gives its terms, so the two read as one
+   instrument — collapsing to stacked label-over-value below 768 (responsive). */
+.ad .dc-s{display:grid;grid-template-columns:132px minmax(0,1fr);gap:0 20px;margin:0}
+.ad .dc-s dt{padding:14px 0 0;border-top:1px solid var(--hair)}
+.ad .dc-s dt:first-of-type{padding-top:0;border-top:0}
+.ad .dc-s dd{margin:0;padding:14px 0 16px;border-top:1px solid var(--hair);
+             font-size:15.5px;line-height:1.85;color:var(--tx2)}
+.ad .dc-s dd:first-of-type{padding-top:0;border-top:0}
+/* 判断 is the sentence the case exists for, so it is the one value set in the
+   text colour rather than the supporting one. It is weight, not a new colour. */
+.ad .dc-s dd:nth-of-type(3){color:var(--tx)}
+/* The engineer's layer. A disclosure, never holding a conclusion — the four
+   fields above are the case and they are not in here. */
+.ad .dc-v{border-top:1px solid var(--hair);margin-top:4px}
+.ad .dc-v summary{padding:13px 0;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+                  text-transform:uppercase;color:var(--tx2);cursor:pointer;list-style:none;
+                  display:flex;gap:10px;align-items:center}
+.ad .dc-v summary::-webkit-details-marker{display:none}
+.ad .dc-v summary:before{content:"";width:9px;height:1px;background:var(--sig);flex:0 0 9px}
+.ad .dc-v[open] summary{color:var(--tx)}
+.ad .dc-v ul{list-style:none;margin:0;padding:0 0 18px;font-size:14px;line-height:1.8}
+.ad .dc-v li{padding:0 0 10px 18px;position:relative;color:var(--tx2)}
+.ad .dc-v li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                    background:currentColor;opacity:.55}
+/* The PR link is OUTSIDE the disclosure on purpose — see HowIBuildCases.astro.
+   The way to check this page may not be the part that is folded away. */
+.ad .dc-l{padding-top:4px}
+/* PR #19 — the supplement. Same record, one step quieter: it opens with its own
+   mono label instead of a rule, so it reads as a note on the two above it
+   rather than as a third case. */
+.ad .dc-qa{display:block}
+.ad .dc-qa .mo{display:block;margin-bottom:10px}
+.ad .dc-qa .dc-t{font-size:clamp(18px,1.4vw,21px);margin-bottom:14px}
+.ad .dc-c{font-size:15.5px;line-height:1.85;color:var(--tx2);margin:0 0 16px}
+.ad .dc-f{list-style:none;margin:0 0 18px;padding:0;font-size:14px;line-height:1.8}
+.ad .dc-f li{padding:0 0 10px 18px;position:relative;color:var(--tx2)}
+.ad .dc-f li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                    background:currentColor;opacity:.55}
+
+/* ------------------------- #31 ページ上部へ戻る (/how-i-build/ only)
+   One arrow in the bottom-right corner. 48px square — above the 44px floor
+   with the border inside it — and inset by the safe area on both axes so it
+   does not land under a rounded corner or a home indicator.
+
+   `.is-managed` is added by the script and NOTHING here hides the link without
+   it: with no JavaScript the anchor is simply always there, which is the
+   behaviour this control is designed around. `visibility` rather than opacity
+   alone, so the hidden state is also out of the tab order — a focus ring on an
+   invisible control is worse than a visible control. */
+.ad .totop{position:fixed;z-index:36;
+           right:calc(16px + env(safe-area-inset-right));
+           bottom:calc(16px + env(safe-area-inset-bottom));
+           display:inline-flex;align-items:center;justify-content:center;
+           min-width:48px;min-height:48px;
+           background:var(--paper);border:1px solid var(--hair2);color:var(--tx);
+           font-family:var(--f-mono);font-size:15px;line-height:1}
+.ad .totop:hover{border-color:var(--tx)}
+/* `#top` は節の名前ではなく「文書の先頭」である（site.ts が sections の anchor
+   についてそう書いている）。上の `section[id]{scroll-margin-top:80px}` は、
+   sticky nav の下へ見出しが潜らないための余白で、途中の節には正しい。だが
+   最初の節に当たると nav + synthetic bar のぶん（/how-i-build/ で実測 117px）
+   だけ下で止まり、「ページ上部へ戻る」が上部へ戻らない——masthead と
+   synthetic bar は先頭の一部であって、めくり残してよい chrome ではない。
+   余白を viewport 1 枚ぶんにすると、算出位置が必ず負になり 0 へ clamp される。
+   数値ではなく「この節より上は全部見せる」を書いている。 */
+.ad .hero#top{scroll-margin-top:100vh}
+.ad .totop .totop-g{display:block;transform:translateY(-1px)}
+.ad .totop.is-managed{opacity:0;visibility:hidden;
+                      transition:opacity .18s cubic-bezier(.2,0,0,1),visibility .18s}
+.ad .totop.is-managed.is-away{opacity:1;visibility:visible}
+/* Stated here as well as in the blanket rule above, because this is the one
+   transition #31 added and the preference should be answered where it is
+   written rather than only by a sheet-wide override. No `scroll-behavior` is
+   set anywhere: the anchor keeps the browser's own jump, which is already what
+   a reduced-motion reader asked for. */
+@media (prefers-reduced-motion: reduce){
+  .ad .totop.is-managed{transition:none}
+}

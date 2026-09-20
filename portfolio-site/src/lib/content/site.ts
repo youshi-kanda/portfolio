@@ -110,7 +110,97 @@ const siteSchema = z.object({
     ),
     roles: z.array(z.object({ role: z.string().min(1), duty: z.string().min(1) })),
     intent: z.array(z.string().min(1)),
-    notClaimed: z.array(z.string().min(1)),
+    /**
+     * #31 追加 Human Decision — 「開発の前提」。
+     *
+     * THIS FIELD HOLDS COPY REGISTRY IDS, NOT SENTENCES, and the change of
+     * shape is the point of the rename. `notClaimed` held two sentences, both
+     * written as refusals（「…とは主張しない。」）and both sitting in site.json
+     * where no approval record can reach them. The owner replaced the framing:
+     * the section now says how the work is actually done and then bounds what
+     * the published content covers, and the two sentences are APPROVED copy
+     * (`method.premise.01` / `.02`, Issue #31 comment 5747908981).
+     *
+     * Renaming the field and leaving an array of 否定文 in it would have been
+     * the worse half of the change — a section called 開発の前提 whose data
+     * model still said "things not claimed". What the section content owns now
+     * is the ORDER: which premises this page states, and in which sequence. The
+     * sentences themselves live where their approval lives.
+     *
+     * The ids are resolved by `copyText` at render time, which throws on an id
+     * the registry does not hold — so a premise pointing at nothing fails the
+     * build rather than rendering an empty bullet.
+     */
+    premises: z.array(z.string().min(1)).min(1),
+    /**
+     * #31 — the decision cases, transcribed from public pull requests.
+     *
+     * WHY THE BODY IS DATA AND NOT MARKUP. Every sentence below is a
+     * source-derived fact: it says what was measured, what was rejected and
+     * what was verified, and each one has to stay checkable against the PR it
+     * came from. A paragraph typed into an `.astro` file is outside every gate
+     * this repository has — `siteStrings` does not walk components, so a claim
+     * written there ships with no locator and no way to tell, later, which
+     * sentence rests on which section of which PR.
+     *
+     * `sourceRefs` is required and is the point of the record. It names the
+     * SECTIONS of the PR that support the case, not just the PR: "PR #20" as a
+     * whole is 200 lines, and a reader checking one sentence needs to be sent
+     * to the part that states it.
+     *
+     * `prNumber` is a number rather than a URL, and the URL is built by
+     * `publicPrUrl` from `site.repo` — see derive.ts for why the address is
+     * not stored here.
+     *
+     * WHAT THESE RECORDS DELIBERATELY DO NOT HAVE: a field for whose idea the
+     * initial plan was. The site's claim is that the AUTHOR investigated,
+     * decided and verified — which the PRs do document — and neither PR says
+     * who proposed the design it starts from. A schema with an `aiProposal`
+     * field would be an invitation to fill it in from the site's own narrative,
+     * so the field does not exist; the initial state is stated inside
+     * `problem`, as what was there, with no origin attached to it.
+     */
+    decisionCases: z
+      .array(
+        z
+          .object({
+            id: z.string().min(1),
+            prNumber: z.number().int().positive(),
+            title: z.string().min(1),
+            /** What was happening, including the plan it started from. */
+            problem: z.string().min(1),
+            /** What investigation or measurement established. */
+            observed: z.string().min(1),
+            /** What was chosen, and what was dropped. */
+            decision: z.string().min(1),
+            /** What it became. */
+            result: z.string().min(1),
+            /** The engineer's layer: measurements, tests, conditions. */
+            verification: z.array(z.string().min(1)).min(1),
+            sourceRefs: z.array(z.string().min(1)).min(1),
+          })
+          .strict(),
+      )
+      .min(1),
+    /**
+     * #31 HD-J — the QA record, which is NOT a third case.
+     *
+     * Its own shape, because it makes a different kind of statement. A decision
+     * case says "this was wrong, this was found, this was chosen"; this one
+     * says how far the checking reached and where it stopped. Giving it the
+     * case shape would have meant inventing a `problem` and a `decision` for a
+     * record that has neither, which is how a QA pass gets written up as a
+     * dramatic fix it never was.
+     */
+    qaRecord: z
+      .object({
+        prNumber: z.number().int().positive(),
+        title: z.string().min(1),
+        summary: z.string().min(1),
+        facts: z.array(z.string().min(1)).min(1),
+        sourceRefs: z.array(z.string().min(1)).min(1),
+      })
+      .strict(),
     sourceRefs: z.array(z.string().min(1)).min(1),
   }),
   stack: z.object({
@@ -256,6 +346,25 @@ export const SITE_NON_SHIPPING: readonly SiteStringExemption[] = [
       'capability category の序数。`index` と同じ理由で免除し、同じ条件を付ける — ' +
       '数字でなくなった瞬間に、それは構造ではなく読ませる語なので免除が外れる。',
     valuePattern: /^\d+$/,
+  },
+  /*
+   * #31 — 「開発の前提」が出す文の id。
+   *
+   * `work` / `example` / `featured` と同じ理由で免除する。読者が見るのは copy
+   * registry が持つ承認済みの文で、ここにあるのはどれをどの順で出すかという
+   * 参照である。文そのものをここに置けば、承認記録の無い場所に承認を要する
+   * 文が座ることになり、この Issue が直したのはまさにそれだった。
+   *
+   * `index` / `key` と同じく条件付きである。id の形（小文字のドット区切り）を
+   * していない値が入った瞬間、それは参照ではなく読ませる文なので免除が外れ、
+   * 未登録の出荷文字列として報告される。
+   */
+  {
+    leaf: 'premise',
+    why:
+      'copy registry の id。承認済みの文は shipping.json にあり、ここにあるのは ' +
+      '「どの文をどの順で出すか」という参照 — id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
   },
 ];
 

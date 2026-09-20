@@ -720,23 +720,23 @@
     }
   },
   {
-    "id": "ui.howIBuild.notClaimed",
-    "path": "howIBuild.notClaimed",
-    "text": "主張しないこと",
+    "id": "ui.howIBuild.premises",
+    "path": "howIBuild.premises",
+    "text": "開発の前提",
     "kind": "ui-system",
-    "route": "/",
-    "section": "02 HOW I BUILD",
-    "slot": "ブロック見出し",
-    "purpose": "主張しないことのブロック見出し。誤読防止の要。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」ブロックの見出し",
+    "purpose": "節が何を述べているかを言う見出し。旧「主張しないこと」は、下に並ぶ 2 文がどちらも否定の宣言だったことの言い換えでしかなかった。本人の決定で、節は実際の開発体制を述べてから公開内容の範囲を区切る形になり、見出しもその内容を指す語になった。境界そのものは 2 文目が保持している。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:70"
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しとして「開発の前提」を指定"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
     }
   },
   {
@@ -2899,6 +2899,219 @@
         "portfolio-site/src/lib/content/schema.ts — DEVELOPMENT_CONTEXTS / PORTFOLIO_FORMS の各値の定義（#29 / PR #39 merged）",
         "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様 §2 の enum → 表示語 対応表",
         "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.casesLabel",
+    "path": "howIBuild.casesLabel",
+    "text": "判断事例",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "rail ラベル / section のアクセシブル名",
+    "purpose": "公開 PR から転記した判断の記録であることを言う欄名。事例の本文ではなく、欄の名前。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.casesCount",
+    "path": "howIBuild.casesCount",
+    "text": "{count} 件",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "rail 件数（導出値）",
+    "purpose": "主事例の件数。`fill` が埋める導出値で、数字を書き写していない。本人が Issue #31 §8 で列挙した公開ラベル 9 語には含まれず、既存の count UI と同じ書式をもう 1 箇所へ適用したもの。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/ui.ts — stack.count / principles.count と同じ導出 UI の書式（件数を literal で書かないための既存パターン）",
+        "portfolio-site/src/lib/content/ui.ts — howIBuild.workflowCount（同じ節が既に使っている {count} 書式）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.caseProblem",
+    "path": "howIBuild.caseProblem",
+    "text": "問題",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "事例の項目名 1",
+    "purpose": "何が起きていたか。最初にあった設計・初期状態もここに入る。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.caseObserved",
+    "path": "howIBuild.caseObserved",
+    "text": "確認した事実",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "事例の項目名 2",
+    "purpose": "調査・計測で分かったこと。推測と分けるための欄名。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.caseDecision",
+    "path": "howIBuild.caseDecision",
+    "text": "判断",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "事例の項目名 3",
+    "purpose": "何を採り、何を捨てたか。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.caseResult",
+    "path": "howIBuild.caseResult",
+    "text": "結果",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "事例の項目名 4",
+    "purpose": "どうなったか。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.caseVerification",
+    "path": "howIBuild.caseVerification",
+    "text": "検証",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "折りたたみの summary",
+    "purpose": "どう確かめたか。実測値・test・検証条件を開くための語で、結論そのものはこの中に入れない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.openPr",
+    "path": "howIBuild.openPr",
+    "text": "公開PRで確認する",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "公開 PR への CTA",
+    "purpose": "読み手が自分で原本を読みに行く導線。行き先は prNumber から `publicPrUrl` が組み立てる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 §5.2 — 各事例を共通構造で書く（問題 / 人が確認した事実 / 棄却・採用した判断 / 実装結果 / 検証方法 / 公開PRへのリンク）"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.qaLabel",
+    "path": "howIBuild.qaLabel",
+    "text": "QA / 検証記録",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "補足ブロックの欄名",
+    "purpose": "PR #19 を 3 件目の事例ではなく補足として置く欄の名前。HD-J の決定をそのまま欄名にしている。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.howIBuild.toTop",
+    "path": "howIBuild.toTop",
+    "text": "ページ上部へ戻る",
+    "kind": "ui-system",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "右下固定リンクのアクセシブル名",
+    "purpose": "ページ上部へ戻るリンクの名前。画面には矢印だけが出て、この語は aria-label として読み上げられる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
+        "Issue #31 comment 5747567291（本人決定 2026-09-20）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747567291"
       ],
       "approvedBy": null,
       "approvedAt": null

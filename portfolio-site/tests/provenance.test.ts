@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 134 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 144 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -203,8 +203,31 @@ describe('provenance matrix', () => {
     // （個人開発 / 共同プロジェクト / 公開用再構成 / 技術デモ）。これはラベルでは
     // なく値で、作品の成立背景を述べる——本人確認の結果が違えば誤りになる。
     // 5 件目は HD-I の 1 文で、shipping registry の側にある。
-    assert.equal(presentation.length, 134);
-    assert.equal(fact.length, 39);
+    //
+    // #31 は presentation を 10 足し、fact を 1 件も足さない。これは偶然ではなく
+    // この Issue の設計そのものである。判断事例の本文——計測値・棄却した案・
+    // テストの本数——は世界について述べる FACT だが、その 1 文字も registry に
+    // 入っていない。本文は `site.howIBuild.decisionCases` にあり、PR #18 / #19 /
+    // #20 の該当節を `sourceRefs` に持つ source-derived な転記として扱われる。
+    // registry に来たのは欄の名前だけ（判断事例 / 問題 / 確認した事実 / 判断 /
+    // 結果 / 検証 / 公開PRで確認する / QA・検証記録 / ページ上部へ戻る と件数の
+    // template）で、どれも「何の欄か」しか言っていない。
+    //
+    // 逆だったら誤りだった: 本文を authored な fact として registry へ入れれば、
+    // 承認者の欄が空いた状態で 1,828ms や contract test 22 本を出すことになり、
+    // その数値の正しさは公開 PR ではなく承認記録が支えていることになる。
+    //
+    // #31 追加 Human Decision は fact を 2 足し、presentation の数を動かさない。
+    // fact 2 件は「開発の前提」の本文——`method.premise.01` / `.02`——で、
+    // どちらも本人が承認した authored fact である。registry の外（site.json の
+    // `notClaimed`）にあった文が、承認記録を持って中へ入ったぶんの +2 であり、
+    // 新しく書かれた文ではない。
+    //
+    // presentation が動かないのは、見出しの行が置き換わっただけだからである:
+    // `ui.howIBuild.notClaimed`（主張しないこと）が
+    // `ui.howIBuild.premises`（開発の前提）になった。1 行が 1 行になっている。
+    assert.equal(presentation.length, 144);
+    assert.equal(fact.length, 41);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first

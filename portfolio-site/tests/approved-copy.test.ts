@@ -32,15 +32,24 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-eight approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 28);
+  it('covers all thirty approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 30);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance, withheld] =
+    const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance, withheld, premises] =
       APPROVAL_BATCHES;
     assert.ok(
-      homepage && notFound && v4 && workLede && issue6 && issue8 && email && guidance && withheld,
+      homepage &&
+        notFound &&
+        v4 &&
+        workLede &&
+        issue6 &&
+        issue8 &&
+        email &&
+        guidance &&
+        withheld &&
+        premises,
     );
-    assert.equal(APPROVAL_BATCHES.length, 9);
+    assert.equal(APPROVAL_BATCHES.length, 10);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -129,6 +138,26 @@ describe('approved copy gate', () => {
     assert.match(withheld.task, /Issue #30 comment 5746615341/);
     assert.notEqual(withheld.at, guidance.at);
 
+    // #31 追加 Human Decision — 「開発の前提」。REWORD ではなく REPLACEMENT で
+    // ある: 置き換わった 2 文は site.json の節内容として出ていて、どの承認
+    // バッチにも APPROVED_TEXT にも無かった。だから旧バッチから移動した id は
+    // 無く、registry の外にあった文が承認を持って中へ入っている。
+    //
+    // 見出しの行 `ui.howIBuild.premises` が同じバッチにいるのは、同じ
+    // コメントで同じ人が同時に指定した語だからである。ui.json の行なので
+    // APPROVED_TEXT には入らない——下の「スナップショットより広い」節と、
+    // 両 registry を跨ぐテストがその差を受け持っている。
+    assert.deepEqual(
+      [premises.by, premises.at, [...premises.ids]],
+      [
+        'user',
+        '2026-09-20T05:37:32Z',
+        ['method.premise.01', 'method.premise.02', 'ui.howIBuild.premises'],
+      ],
+    );
+    assert.match(premises.task, /Issue #31 comment 5747908981/);
+    assert.notEqual(premises.at, withheld.at);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -156,6 +185,9 @@ describe('approved copy gate', () => {
       'ui.contact.channels',
       'ui.contact.emailCta',
       'ui.contact.githubCta',
+      // #31 — 「開発の前提」の見出し。本人が本文 2 文と同じコメントで指定した
+      // 語で、ui.json の行なのでここに来る。
+      'ui.howIBuild.premises',
     ]);
     assert.equal(uiOnly.every((id) => id.startsWith('ui.')), true);
   });
@@ -198,10 +230,11 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 28);
+    // 28 before #31; the two 開発の前提 sentences are the 29th and 30th.
+    assert.equal(approved.length, 30);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      28,
+      30,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.

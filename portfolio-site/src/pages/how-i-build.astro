@@ -12,13 +12,26 @@
  * same `site.json` data the homepage rendered — the component moved, the words
  * did not. The homepage keeps the one sentence it all supports, plus a link
  * here (03 CAPABILITIES).
+ *
+ * #31 adds the second half of that argument and nothing else: `HowIBuildCases`
+ * shows what the method looked like on two problems, transcribed from two
+ * public PRs. The homepage is untouched — HD-K put the depth here rather than
+ * back on the front page it was moved off.
+ *
+ * THREE COMPONENTS, NOT ONE. The method, the cases and the way back up are
+ * separate files because they answer to different things: `HowIBuild` is
+ * shared with the homepage's own section history, `HowIBuildCases` is bound to
+ * the PR records, and `ScrollToTop` is route furniture that exists because this
+ * page in particular got long.
  */
 import { getCollection } from 'astro:content';
 import HowIBuild from '../components/home/HowIBuild.astro';
+import HowIBuildCases from '../components/home/HowIBuildCases.astro';
 import Footer from '../components/layout/Footer.astro';
 import Rail from '../components/layout/Rail.astro';
 import SyntheticBar from '../components/layout/SyntheticBar.astro';
 import Nav from '../components/navigation/Nav.astro';
+import ScrollToTop from '../components/navigation/ScrollToTop.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { shippingWorks } from '../lib/content/derive.ts';
 import { site } from '../lib/content/site.ts';
@@ -37,7 +50,12 @@ const h = site.howIBuild;
         twice, the lede twice and two `M` rails on the one page that uses it
         (#10). The component's head is suppressed and its rail labels are
         raised to the rail here, so nothing approved is lost. */}
-    <section class="hero">
+    {/* #31 — `id="top"` is the anchor the fixed control at the bottom right
+        points at. It is on the hero rather than on `<main id="how-i-build">`
+        because the landmark's id is what /#how-i-build would mean to anything
+        linking here, and renaming it would be changing this page's address to
+        add a button to it. */}
+    <section class="hero" id="top">
       <div class="page">
         <div class="tr">
           <Rail index="M" labels={h.railLabels} />
@@ -49,6 +67,11 @@ const h = site.howIBuild;
       </div>
     </section>
     <HowIBuild heading={false} />
+    <HowIBuildCases />
     <Footer />
+    {/* Last in the DOM, so the tab order reaches it after the page rather than
+        beside it. It is fixed in the corner visually; nothing about the reading
+        order is reversed in CSS. */}
+    <ScrollToTop />
   </main>
 </BaseLayout>

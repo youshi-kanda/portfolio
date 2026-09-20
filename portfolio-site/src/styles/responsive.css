@@ -446,3 +446,28 @@
 .ad .ct-d{grid-template-columns:1fr}
 .ad .ct-d dt{border-bottom:0;padding-bottom:2px}
 }
+
+/* ------------------------------------ #31 判断事例 / ページ上部へ戻る
+   Below 768 the two-track grid is already one column (§ above), so the record's
+   own term column goes with it: 132px of label beside a 340px measure leaves a
+   sentence about 20 characters wide. Label over value, same order, same rules
+   drawn between the same pairs — the DOM order is unchanged and nothing here
+   moves a field past another one. */
+@media (max-width:767px){
+.ad #decision-cases{padding-bottom:64px}
+.ad .dc-s{grid-template-columns:minmax(0,1fr)}
+.ad .dc-s dt{padding:14px 0 4px;border-top:1px solid var(--hair)}
+.ad .dc-s dt:first-of-type{padding-top:0;border-top:0}
+.ad .dc-s dd{padding:0 0 16px;border-top:0;font-size:15px}
+.ad .dc-s dd:first-of-type{padding-top:0}
+.ad .dc-t{max-width:none}
+/* The summary and the PR link are the two controls in this block; both get the
+   44px floor a finger needs, taken from padding rather than from type size. */
+.ad .dc-v summary{min-height:44px;padding:12px 0}
+.ad .dc-l .lk{min-height:44px;display:inline-flex;align-items:center}
+/* The corner comes in slightly at the narrow widths — 12px of inset plus the
+   safe area, so the control clears the screen edge on a rounded display
+   without eating more of a 360px measure than it has to. */
+.ad .totop{right:calc(12px + env(safe-area-inset-right));
+           bottom:calc(12px + env(safe-area-inset-bottom))}
+}

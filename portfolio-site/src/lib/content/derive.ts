@@ -280,6 +280,23 @@ export function workPublicSourceUrl(work: Work): string | null {
 }
 
 /**
+ * #31 — the public URL of one pull request in this repository.
+ *
+ * THE ONE PLACE A PR URL IS BUILT, on the same terms as `workPublicSourceUrl`
+ * above. HOW I BUILD's decision cases each cite a PR, and the alternative was
+ * to store the whole URL on every case — the repository address written out
+ * three more times, in the file where nobody would think to change it, and
+ * three chances for one of them to name a different repository than the site's
+ * own footer does.
+ *
+ * What a case stores is the NUMBER, which is the only part of the address that
+ * is about that case. Everything else is read from `site.repo`.
+ */
+export function publicPrUrl(prNumber: number): string {
+  return `${site.repo.replace(/\/+$/, '')}/pull/${prNumber}`;
+}
+
+/**
  * #30 — every shipping work whose source this site publishes a way into.
  *
  * CONTACT lists these by name. Derived, never enumerated: a fixed array of

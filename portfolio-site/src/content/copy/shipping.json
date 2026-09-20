@@ -495,5 +495,45 @@
       "approvedBy": "user",
       "approvedAt": "2026-09-20T01:11:07Z"
     }
+  },
+  {
+    "id": "method.premise.01",
+    "text": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」1 文目 — 実際の開発体制",
+    "purpose": "誰が何を持っているかを述べる。ラベルではなく事実で、本人の実際の進め方が違えば誤りになるため、承認者と根拠を持つ側に置く。同じページの工程表・役割表・判断事例が述べていることを 1 文にしたもので、新しい主張を足していない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表（同ページに掲載）",
+        "site.howIBuild.decisionCases — PR #20 / PR #18 の公開記録。調査・計測・採否・検証を Human が行っている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
+    }
+  },
+  {
+    "id": "method.premise.02",
+    "text": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」2 文目 — 公開内容の対象範囲",
+    "purpose": "誇張防止の境界線。旧 notClaimed が名指ししていた 2 つ（完全自動の Multi-Agent 開発 / 構築済み Harness の運用）を、否定形の宣言ではなく公開内容の対象範囲として述べる。境界そのものは削除していない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
+        "Issue #31 comment 5747908981「実装上の意味」— 誇張防止の境界線は削除せず、否定形だけを前面に出す構成から「実際の開発体制 + 対象範囲」の説明へ置き換える",
+        "site.howIBuild.intent — 定型的・低学習価値の作業は将来的に Selective Harness Engineering へ移行できる（＝現時点では構築済みではない）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
+    }
   }
 ]
