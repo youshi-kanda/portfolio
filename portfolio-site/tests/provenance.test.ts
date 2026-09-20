@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 144 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 147 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -226,18 +226,44 @@ describe('provenance matrix', () => {
     // presentation が動かないのは、見出しの行が置き換わっただけだからである:
     // `ui.howIBuild.notClaimed`（主張しないこと）が
     // `ui.howIBuild.premises`（開発の前提）になった。1 行が 1 行になっている。
-    assert.equal(presentation.length, 144);
-    assert.equal(fact.length, 41);
+    //
+    // #32 は presentation を 3、fact を 3 足す。ABOUT の 3 ブロックで、
+    // ラベルと本文がきれいに 2 軸へ分かれた例である。
+    //
+    // presentation 3 件はラベル（業務経験 / 掲載内容について / 公開データ）。
+    // どれも「何の欄か」しか言っていない。本人が語を指定したので authored で、
+    // 承認者を持つが、世界について述べていないので基礎は求められない。
+    //
+    // fact 3 件は本文である。業務経験は `user-fact`——本人しか Authority を
+    // 持たない経歴で、この registry の 2 件目の user-fact になる。残る 2 件は
+    // authored fact で、掲載内容は #29 の本人確認済み metadata を、公開データは
+    // 各 README / PUBLISH-MAP と本人承認を基礎に持つ。
+    //
+    // 旧 3 行はここに現れない。site.json の節内容として出ていて registry の外に
+    // あったので、置き換わったぶんの相殺は無く、3 件そのままの増加である。
+    assert.equal(presentation.length, 147);
+    assert.equal(fact.length, 44);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first
     // `user-fact` — the cell that demands a non-empty value AND an approver,
     // which is why the slot stayed empty until its owner filled it.
+    //
+    // #32 added the SECOND one, and it is the other item content-model §5 names:
+    // 経歴. ABOUT carried no line about the owner's working background because
+    // nobody had provided one, which is the same reason the address slot sat
+    // empty — and it arrives the same way, with the subject's own wording and a
+    // real approval, not with a plausible sentence written for them.
     const userFacts = all.filter((c) => c.publication.sourceType === 'user-fact');
-    assert.deepEqual(userFacts.map((c) => c.id), ['home.contact.email']);
-    assert.equal(userFacts[0]!.publication.claimType ?? 'fact', 'fact');
-    assert.equal(userFacts[0]!.publication.approvedBy, 'user');
-    assert.ok(userFacts[0]!.text.length > 0);
+    assert.deepEqual(
+      userFacts.map((c) => c.id).sort(),
+      ['home.about.experience', 'home.contact.email'],
+    );
+    for (const row of userFacts) {
+      assert.equal(row.publication.claimType ?? 'fact', 'fact');
+      assert.equal(row.publication.approvedBy, 'user');
+      assert.ok(row.text.length > 0);
+    }
     // ui-system is the registry's own word for label / heading / button, which
     // is what presentation means on this axis. Nothing else was reclassified.
     assert.equal(

@@ -3116,5 +3116,65 @@
       "approvedBy": null,
       "approvedAt": null
     }
+  },
+  {
+    "id": "ui.about.experienceLabel",
+    "path": "about.experienceLabel",
+    "text": "業務経験",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "06 ABOUT",
+    "slot": "「業務経験」ブロックのラベル",
+    "purpose": "下の 1 文が何の欄かを言う。注意書きではなく profile fact の欄だと分かる語であることが要点で、本人がこの語を指定している。語そのものは世界について何も主張しないので presentation。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開見出しとして「業務経験」「掲載内容について」「公開データ」を指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "ui.about.disclosureLabel",
+    "path": "about.disclosureLabel",
+    "text": "掲載内容について",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "06 ABOUT",
+    "slot": "公開境界ブロック 1 行目のラベル",
+    "purpose": "掲載作品の成り立ちを述べる欄の名前。「注意」「免責」ではないのは、この欄が述べるのが禁止事項ではなく掲載物の性質だからである。本人指定の語。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開見出しとして「業務経験」「掲載内容について」「公開データ」を指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "ui.about.dataLabel",
+    "path": "about.dataLabel",
+    "text": "公開データ",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "06 ABOUT",
+    "slot": "公開境界ブロック 2 行目のラベル",
+    "purpose": "掲載画面のデータが何であるかを述べる欄の名前。旧 `データ` 行のラベルより何についての欄かが明確で、本人がこの語を指定している。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開見出しとして「業務経験」「掲載内容について」「公開データ」を指定"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
   }
 ]
