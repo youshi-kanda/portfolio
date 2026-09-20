@@ -465,6 +465,10 @@
    44px floor a finger needs, taken from padding rather than from type size. */
 .ad .dc-v summary{min-height:44px;padding:12px 0}
 .ad .dc-l .lk{min-height:44px;display:inline-flex;align-items:center}
+/* #33 — the 3分概要 links are the block's only controls, and on a phone they
+   sit in stacked lists. Same 44px floor the return band and the decision-case
+   links take, from padding rather than from type size. */
+.ad .csq .lk{min-height:44px;display:inline-flex;align-items:center}
 /* The corner comes in slightly at the narrow widths — 12px of inset plus the
    safe area, so the control clears the screen edge on a rounded display
    without eating more of a 360px measure than it has to. */

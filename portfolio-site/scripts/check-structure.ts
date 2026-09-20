@@ -110,6 +110,31 @@
  *                         control is an `<a>`. A button calling `scrollTo` is
  *                         the regression: it looks identical in a screenshot
  *                         and stops existing when the script does not run.
+ *   CASE_QUICK_SUMMARIES  #33 — every published Case Study opens with the 3分概要
+ *                         block, and the expected number is the number of
+ *                         published Case Studies, computed from the work
+ *                         records. A ledger saying "three" would be the same
+ *                         editorial fact written twice.
+ *   CASE_QUICK_ITEMS      the item keys and their visible labels, in artifact
+ *                         order, IDENTICAL across the three. The whole promise
+ *                         of the block is that a reader can compare works, and
+ *                         a component that grew one slug-shaped branch would
+ *                         still render, still count right, and quietly stop
+ *                         being comparable.
+ *   CASE_QUICK_INTERNAL_STATUS
+ *                         zero. `public-demo` / `implemented` / `poc` are
+ *                         internal enum members; a reader sees the display word
+ *                         or the build stops. This is PUBLIC_INTERNAL's rule
+ *                         aimed at the one field #33 newly publishes.
+ *   CASE_QUICK_DEAD_ANCHORS
+ *                         zero. Every in-page href the block emits resolves to
+ *                         an id in the same document. The 詳しく見る rows are
+ *                         built from `caseSections`, so a dead one means the
+ *                         section list and the page disagree.
+ *   CASE_QUICK_ORDER      DFE's `leadDisclosure` appears before the summary.
+ *                         Order is the whole content of that rule: 「この作品は
+ *                         OCR を実行していない」 after 実装したもの is a
+ *                         correction arriving after the belief it corrects.
  *   LEAD_ENTRIES          zero. The Lead was retired in #7; a residual one would
  *                         mean a work introduced twice on one page.
  *   ARCHIVE_ROWS          /work/ lists every shipping work. It is the archive,
@@ -136,7 +161,7 @@ import {
   workPublicSourceUrl,
 } from '../src/lib/content/derive.ts';
 import { workSourceIsLinkable } from '../src/lib/content/compat.ts';
-import { loadCopy, loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
+import { loadCaseStudies, loadCopy, loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
@@ -676,6 +701,113 @@ if (!/<main\b[^>]*\sid="how-i-build"/.test(method)) {
   failures.push('HOW_TOP_LINKS: <main id="how-i-build"> が無い');
 }
 
+// ---- CASE_QUICK_SUMMARIES / CASE_QUICK_ITEMS / CASE_QUICK_INTERNAL_STATUS ----
+// #33. The 3分概要 block, checked on the artifact because every one of these
+// properties looks correct in the component that produced it: one component
+// renders all three, so "does it render" is answered once and says nothing
+// about whether the three pages ended up comparable.
+const caseRoutes = shipping
+  .filter((w) => w.caseStudyPublished)
+  .map((w) => ({ slug: w.slug, route: `work/${w.slug}/index.html` }));
+
+/** The quick-summary block of one Case Study, or '' when the page has none. */
+const quickBlock = (html: string): string => {
+  const at = html.indexOf('id="cs-quick"');
+  if (at < 0) return '';
+  const from = html.lastIndexOf('<section', at);
+  return html.slice(from, html.indexOf('</section>', at));
+};
+
+const stripTags = (html: string): string => html.replace(/<[^>]*>/g, '').trim();
+
+let CASE_QUICK_SUMMARIES = 0;
+let CASE_QUICK_INTERNAL_STATUS = 0;
+let CASE_QUICK_DEAD_ANCHORS = 0;
+const quickItemLists: { slug: string; items: string }[] = [];
+
+for (const { slug, route } of caseRoutes) {
+  const html = read(route);
+  const block = quickBlock(html);
+  if (block === '') {
+    failures.push(`CASE_QUICK_SUMMARIES: /work/${slug}/ に 3分概要 が無い`);
+    continue;
+  }
+  CASE_QUICK_SUMMARIES += 1;
+
+  // The block names itself with a real h2, and the section points at it.
+  if (!/<h2\b[^>]*\sid="cs-quick-h"/.test(block)) {
+    failures.push(`CASE_QUICK_ITEMS: /work/${slug}/ の 3分概要 が <h2 id="cs-quick-h"> を持たない`);
+  }
+  if (!/\saria-labelledby="cs-quick-h"/.test(block)) {
+    failures.push(`CASE_QUICK_ITEMS: /work/${slug}/ の 3分概要 section が h2 を参照していない`);
+  }
+
+  // Item keys AND their visible labels, in artifact order. Reading both in one
+  // pass is what keeps a page from having the right keys under the wrong names.
+  const items = [
+    ...block.matchAll(/<div class="r"\s+data-quick-item="([^"]+)">([\s\S]*?)<div class="v">/g),
+  ].map((m) => `${m[1]}=${stripTags(m[2] as string)}`);
+  quickItemLists.push({ slug, items: items.join(' | ') });
+
+  // Internal enum members, inside this block only. The scope table elsewhere on
+  // the page legitimately prints the column head `Implemented`, which is not
+  // this — so the scan is the block, and the match is the enum spelling.
+  for (const member of ['public-demo', 'implemented', 'poc']) {
+    const hit = new RegExp(`(?<![A-Za-z0-9-])${member}(?![A-Za-z0-9-])`).test(stripTags(block));
+    if (hit) {
+      CASE_QUICK_INTERNAL_STATUS += 1;
+      failures.push(
+        `CASE_QUICK_INTERNAL_STATUS: /work/${slug}/ の 3分概要に内部 enum ${member} が出ている`,
+      );
+    }
+  }
+
+  // Every in-page link the block emits lands on an id this document has.
+  for (const m of block.matchAll(/href="#([^"]+)"/g)) {
+    const id = m[1] as string;
+    if (!new RegExp(`\\sid="${id}"`).test(html)) {
+      CASE_QUICK_DEAD_ANCHORS += 1;
+      failures.push(`CASE_QUICK_DEAD_ANCHORS: /work/${slug}/ の 3分概要 が #${id} を指すが無い`);
+    }
+  }
+}
+
+expect('CASE_QUICK_SUMMARIES', CASE_QUICK_SUMMARIES, caseRoutes.length);
+
+// SAME ITEMS, SAME ORDER, SAME LABELS — the comparability contract. Compared
+// against each other rather than against a literal list: the item set is an
+// editorial decision recorded in the component, and a list here would be that
+// decision written a second time, in the file least likely to be reread.
+const distinctItemLists = new Set(quickItemLists.map((q) => q.items));
+if (distinctItemLists.size > 1) {
+  failures.push(
+    `CASE_QUICK_ITEMS: 3分概要の項目が Case Study 間で揃っていない\n` +
+      quickItemLists.map((q) => `      ${q.slug}: ${q.items}`).join('\n'),
+  );
+}
+
+// ---- CASE_QUICK_ORDER ----
+// The disclosure comes first where there is one. Derived from the content, so
+// the check follows `leadDisclosure` rather than naming the work that has one.
+const caseStudyBySlug = new Map(loadCaseStudies().map((c) => [c.slug, c]));
+for (const { slug, route } of caseRoutes) {
+  const disclosure = caseStudyBySlug.get(slug)?.leadDisclosure;
+  if (!disclosure) continue;
+  const html = read(route);
+  const at = html.indexOf(disclosure);
+  const quickAt = html.indexOf('id="cs-quick"');
+  if (at < 0) {
+    failures.push(`CASE_QUICK_ORDER: /work/${slug}/ に leadDisclosure が出ていない`);
+    continue;
+  }
+  if (quickAt >= 0 && at > quickAt) {
+    failures.push(
+      `CASE_QUICK_ORDER: /work/${slug}/ の leadDisclosure が 3分概要より後にある — ` +
+        `訂正は誤解のあとに届いても遅い`,
+    );
+  }
+}
+
 // ---- CASE_SPEC_IDS ----
 // The case-study and technical specs number their sections CS-1…CS-16 and
 // T-0…T-8. Those are filing references for documents a reader does not have,
@@ -701,6 +833,10 @@ console.log(
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
+    `CASE_QUICK_SUMMARIES = ${CASE_QUICK_SUMMARIES} / ` +
+    `CASE_QUICK_INTERNAL_STATUS = ${CASE_QUICK_INTERNAL_STATUS} / ` +
+    `CASE_QUICK_DEAD_ANCHORS = ${CASE_QUICK_DEAD_ANCHORS} / ` +
+    `CASE_QUICK_ITEMS = ${distinctItemLists.size} 種 / ` +
     `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length}) / ` +
     `CONTACT_HELPER = ${CONTACT_HELPER} / ` +
     `FEATURED_TIERS = ${featuredBlocks.map((b) => `${b.slug}:${b.tier}`).join(' ')} / ` +

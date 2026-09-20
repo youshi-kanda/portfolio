@@ -3176,5 +3176,269 @@
       "approvedBy": "user",
       "approvedAt": "2026-09-20T06:35:42Z"
     }
+  },
+  {
+    "id": "ui.caseStudy.quick.head",
+    "path": "caseStudy.quick.head",
+    "text": "3分概要",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "ブロック見出し（h2）",
+    "purpose": "冒頭ブロックが何であるかを言う見出し。読み終わるまでの目安を名前にしている——本文を読むかどうかをここで決められる、という約束がこの語である。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.problem",
+    "path": "caseStudy.quick.problem",
+    "text": "解決する課題",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 1",
+    "purpose": "何の問題を解くものかを出す行の名前。値は work.problem で、この欄のために短縮文を作らない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.targetUser",
+    "path": "caseStudy.quick.targetUser",
+    "text": "想定利用者",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 2",
+    "purpose": "誰が使うものかを出す行の名前。値は work.targetUser。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.role",
+    "path": "caseStudy.quick.role",
+    "text": "担当範囲",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 4",
+    "purpose": "本人がどこを担当したかを出す行の名前。値は #29 で本人確認済みの work.role。`ui.work.role`（Role）と別なのは、こちらが非エンジニア読者向けの日本語欄名だからである。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.status",
+    "path": "caseStudy.quick.status",
+    "text": "実装状況",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 5",
+    "purpose": "どこまで到達しているかを出す行の名前。値は implementationStatus の表示語で、内部 enum は出さない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.built",
+    "path": "caseStudy.quick.built",
+    "text": "実装したもの",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 6",
+    "purpose": "実際に動く範囲を出す行の名前。値は caseStudy.built。本文側の節名「作ったもの」と語が違うのは、HD-O が冒頭ブロックの語としてこちらを指定しているためで、指している対象は同じ。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.source",
+    "path": "caseStudy.quick.source",
+    "text": "公開コード",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 7",
+    "purpose": "コードが読める場所を出す行の名前。CTA 自体は既存の ui.work.sourceCta（公開コードを見る）を再利用する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.limitations",
+    "path": "caseStudy.quick.limitations",
+    "text": "未実装・対象外",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 9",
+    "purpose": "含んでいない範囲を出す行の名前。値は work.limitations で、scope 表全体の複製ではない。否定ではなく境界の欄なので、警告色は使わない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.quick.details",
+    "path": "caseStudy.quick.details",
+    "text": "詳しく見る",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "項目ラベル 10",
+    "purpose": "続きをどこで読むかを出す行の名前。行き先は caseSections が返す既存 section の id と title。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #33 §5.1 — 冒頭ブロックに持たせる項目の一覧（解決する課題 / 想定利用者 / 担当範囲 / 実装済み範囲 / 公開コード / 確認できる証拠 / 未実装・対象外 / 詳細への導線）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。本人が 3分概要の公開ラベルを列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749344650",
+        "Issue #33 comment 5749351778 §5 — 実装仕様が UI registry で管理する語として列挙 https://github.com/youshi-kanda/portfolio/issues/33#issuecomment-5749351778"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.statusLabels.public-demo",
+    "path": "caseStudy.statusLabels.public-demo",
+    "text": "公開デモとして動作",
+    "kind": "editorial",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "実装状況の値",
+    "purpose": "implementationStatus = public-demo の表示語。ラベルではなく値であり、作品がどこまで到達しているかを述べる——本人確認の結果が違えば誤りになるので fact として扱う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — IMPLEMENTATION_STATUSES の public-demo の定義（#29 / PR #39 merged）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。implementationStatus の公開表示語の対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.statusLabels.implemented",
+    "path": "caseStudy.statusLabels.implemented",
+    "text": "実装済み",
+    "kind": "editorial",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "実装状況の値",
+    "purpose": "implementationStatus = implemented の表示語。同上。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — IMPLEMENTATION_STATUSES の implemented の定義（#29 / PR #39 merged）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。implementationStatus の公開表示語の対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.statusLabels.poc",
+    "path": "caseStudy.statusLabels.poc",
+    "text": "PoC",
+    "kind": "editorial",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / 3分概要",
+    "slot": "実装状況の値",
+    "purpose": "implementationStatus = poc の表示語。同上。検証目的の実装で、製品として完成させていないことを言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — IMPLEMENTATION_STATUSES の poc の定義（#29 / PR #39 merged）",
+        "Issue #33 comment 5749344650（2026-09-20）— HD-O 確定。implementationStatus の公開表示語の対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
   }
 ]
