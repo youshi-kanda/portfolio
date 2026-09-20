@@ -23,6 +23,28 @@
  *                         overruled.
  *   MORE_ROWS             02 MORE PROJECTS draws one row per `more` work, on the
  *                         same terms.
+ *   FEATURED_TIERS        #30 — every FEATURED block carries the tier its record
+ *                         declares, and the two sets are the ones the owner
+ *                         decided (HD-G). Read off `data-featured-tier` rather
+ *                         than off the content, so a component that stopped
+ *                         emitting the attribute fails here instead of shipping
+ *                         five blocks with no hierarchy in them.
+ *   FEATURED_ORDER        the running order of the blocks, as the artifact has
+ *                         them. `featuredOrder` is one number per file and
+ *                         nothing in a single record can see the sequence.
+ *   FEATURED_SOURCE_LINKS one public-code CTA per linkable FEATURED work, and
+ *                         no more. The count is derived from the source model,
+ *                         so the day a `linkPolicy` flips this check moves with
+ *                         it rather than having to be remembered.
+ *   SOURCE_WITHHELD       the works with no source link carry the owner's
+ *                         approved explanation — exactly once each. A block
+ *                         that ends in silence is what HD-I exists to prevent.
+ *   PUBLIC_CODE_LINKS     CONTACT names every shipping work whose source is
+ *                         linkable, and only those.
+ *   WITHHELD_URLS         no URL of a withheld or private source is anywhere in
+ *                         the artifact. The scan is the other half of #7 C-8:
+ *                         `linkPolicy` decides, and this proves the decision
+ *                         survived rendering.
  *   HERO_DISPLAY_LINES    the display is cut into lines by hand, and each
  *                         line is an element carrying `data-hero-line`. V3
  *                         counted `<br>`, which measures the authoring and not
@@ -52,7 +74,13 @@
  * produced it.
  */
 import { readFileSync } from 'node:fs';
-import { shippingWorks } from '../src/lib/content/derive.ts';
+import {
+  featuredHomepageWorks,
+  linkableSourceWorks,
+  shippingWorks,
+  workPublicSourceUrl,
+} from '../src/lib/content/derive.ts';
+import { workSourceIsLinkable } from '../src/lib/content/compat.ts';
 import { loadCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
 
@@ -67,6 +95,17 @@ const expect = (label: string, actual: unknown, wanted: unknown): void => {
 };
 
 const home = read('index.html');
+
+/**
+ * The CONTACT band's own HTML. A function rather than a constant because two
+ * checks now slice it and they are written far apart in this file; computing it
+ * twice with two hand-written indexOf pairs is how they would come to disagree
+ * about where the section ends.
+ */
+const contactSection = (): string => {
+  const at = home.indexOf('id="contact"');
+  return at < 0 ? '' : home.slice(at, home.indexOf('</section>', at));
+};
 
 // ---- CAPABILITY_CATEGORIES ----
 const CAPABILITY_CATEGORIES = [...home.matchAll(/<div class="cap-i">/g)].length;
@@ -102,6 +141,81 @@ const moreAt = home.indexOf('id="more"');
 const moreHtml = moreAt < 0 ? '' : home.slice(moreAt, home.indexOf('</section>', moreAt));
 const MORE_ROWS = [...moreHtml.matchAll(/class="r[^"]*"[^>]*\sdata-w="/g)].length;
 expect('MORE_ROWS', MORE_ROWS, works.filter((w) => w.homepage === 'more').length);
+
+// ---- FEATURED_TIERS / FEATURED_ORDER ----
+// #30 HD-G. The blocks are matched in ONE pass so that the order the artifact
+// has them in is the order the tiers are read off — two separate scans could
+// each pass while disagreeing about which block is which.
+const featuredBlocks = [
+  ...home.matchAll(/<article class="fw"[^>]*\sdata-w="([^"]+)"[^>]*\sdata-featured-tier="([^"]+)"/g),
+].map((m) => ({ slug: m[1] as string, tier: m[2] as string }));
+
+const featuredContent = featuredHomepageWorks(works);
+expect('FEATURED_TIERED', featuredBlocks.length, featuredContent.length);
+expect(
+  'FEATURED_ORDER',
+  featuredBlocks.map((b) => b.slug).join(' → '),
+  featuredContent.map((w) => w.slug).join(' → '),
+);
+for (const block of featuredBlocks) {
+  const declared = featuredContent.find((w) => w.slug === block.slug)?.featuredTier;
+  if (declared !== block.tier) {
+    failures.push(
+      `FEATURED_TIERS: ${block.slug} は data-featured-tier="${block.tier}" だが ` +
+        `record は ${declared ?? '(なし)'}`,
+    );
+  }
+}
+const tierOf = (tier: string): string =>
+  featuredBlocks.filter((b) => b.tier === tier).map((b) => b.slug).sort().join(' ');
+expect(
+  'FEATURED_PRIMARY',
+  tierOf('primary'),
+  featuredContent.filter((w) => w.featuredTier === 'primary').map((w) => w.slug).sort().join(' '),
+);
+expect(
+  'FEATURED_SUPPORTING',
+  tierOf('supporting'),
+  featuredContent.filter((w) => w.featuredTier === 'supporting').map((w) => w.slug).sort().join(' '),
+);
+
+// ---- FEATURED_SOURCE_LINKS / SOURCE_WITHHELD ----
+// The CTA count is derived from the source model, never from a literal: it is
+// 1 today because `crm` is the only linkable FEATURED work, and it becomes 2
+// on its own the day HD-D resolves.
+const FEATURED_SOURCE_LINKS = [...home.matchAll(/\sdata-featured-source-link="([^"]+)"/g)].map(
+  (m) => m[1] as string,
+);
+const linkableFeatured = featuredContent.filter((w) => workSourceIsLinkable(w)).map((w) => w.slug);
+expect('FEATURED_SOURCE_LINKS', FEATURED_SOURCE_LINKS.join(' '), linkableFeatured.join(' '));
+
+// HD-I. Every FEATURED work with no source link explains why, once. Counted
+// against the blocks rather than against a number, and the sentence is read
+// from the registry — copying it here would leave the approved text and the
+// gate's copy of it to be kept in step by hand.
+const withheldText = loadCopy().find((c) => c.id === 'home.works.sourceWithheld')?.text ?? '';
+if (withheldText === '') {
+  failures.push('SOURCE_WITHHELD: copy registry に home.works.sourceWithheld が無い');
+}
+const SOURCE_WITHHELD = withheldText === '' ? 0 : home.split(withheldText).length - 1;
+expect(
+  'SOURCE_WITHHELD',
+  SOURCE_WITHHELD,
+  featuredContent.length - linkableFeatured.length,
+);
+
+// ---- PUBLIC_CODE_LINKS ----
+// CONTACT names the works a reader can actually read the code of. Derived from
+// every SHIPPING work, not from the FEATURED five: `ppm` and `dfe` are not on
+// that tier and their code is just as public.
+const PUBLIC_CODE_LINKS = [...contactSection().matchAll(/\sdata-public-code-link="([^"]+)"/g)].map(
+  (m) => m[1] as string,
+);
+expect(
+  'PUBLIC_CODE_LINKS',
+  PUBLIC_CODE_LINKS.join(' '),
+  linkableSourceWorks(works).map((w) => w.slug).join(' '),
+);
 
 // ---- ARCHIVE_ROWS ----
 const archive = read('work/index.html');
@@ -172,13 +286,46 @@ for (const route of PUBLIC_ROUTES) {
   }
 }
 
+// ---- WITHHELD_URLS ----
+// #7 C-8, checked on the artifact rather than in the component that decided it.
+//
+// STATED AS A WHITELIST, WHICH IS THE ONLY WAY IT CAN BE STATED. A blacklist
+// would have to name the URL a withheld work WOULD have, and that string is
+// precisely what the record refuses to hold: `sourceSchema` forbids a path on
+// anything not linkable, so there is nothing to search for. So the check runs
+// the other way — every `/tree/main/…` the site emits must be one
+// `workPublicSourceUrl` built for a work the source model calls linkable, and
+// any other is a URL nobody derived and therefore nobody checked.
+//
+// That catches the real failure mode: a component reading `access` directly
+// would emit a tree URL for `hire`, which is genuinely `public-repo`, and no
+// blacklist could have been written for it in advance.
+const allowedTreeUrls = new Set(
+  shipping.flatMap((w) => {
+    const url = workPublicSourceUrl(w);
+    return url ? [url] : [];
+  }),
+);
+let WITHHELD_URLS = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const m of html.matchAll(/href="(https:\/\/github\.com\/[^"]*\/tree\/[^"]*)"/g)) {
+    const url = m[1] as string;
+    if (allowedTreeUrls.has(url)) continue;
+    WITHHELD_URLS += 1;
+    failures.push(
+      `WITHHELD_URLS: /${route.replace(/index\.html$/, '')} の ${url} は ` +
+        `linkable な作品の source ではない`,
+    );
+  }
+}
+
 // ---- CONTACT_EMAIL ----
 // U-01. The address ships on one approval covering one email, so the rendered
 // section must carry exactly that: one visible address, reachable, once. Two
 // would mean a second channel nobody approved; zero would mean the conversion
 // point regressed to "read the code" while the copy still promises a reply.
-const contactAt = home.indexOf('id="contact"');
-const contactHtml = contactAt < 0 ? '' : home.slice(contactAt, home.indexOf('</section>', contactAt));
+const contactHtml = contactSection();
 const visibleEmails = [...contactHtml.matchAll(/>([^<>@\s]+@[a-z0-9.-]+\.[a-z]{2,})</gi)].map(
   (m) => m[1] as string,
 );
@@ -238,7 +385,12 @@ console.log(
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
     `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length}) / ` +
-    `CONTACT_HELPER = ${CONTACT_HELPER}`,
+    `CONTACT_HELPER = ${CONTACT_HELPER} / ` +
+    `FEATURED_TIERS = ${featuredBlocks.map((b) => `${b.slug}:${b.tier}`).join(' ')} / ` +
+    `FEATURED_SOURCE_LINKS = ${FEATURED_SOURCE_LINKS.length} / ` +
+    `SOURCE_WITHHELD = ${SOURCE_WITHHELD} / ` +
+    `PUBLIC_CODE_LINKS = ${PUBLIC_CODE_LINKS.length} / ` +
+    `WITHHELD_URLS = ${WITHHELD_URLS}`,
 );
 
 if (failures.length > 0) {

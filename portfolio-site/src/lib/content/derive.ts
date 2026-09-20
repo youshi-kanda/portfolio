@@ -15,7 +15,14 @@
  * All of it is pure. The components read it, and the tests exercise it at
  * 0, 1 and 3 works without rendering anything.
  */
-import type { Work, CaseStudy, Evidence } from './schema.ts';
+import type {
+  Work,
+  CaseStudy,
+  Evidence,
+  FeaturedTier,
+  PortfolioProfile,
+} from './schema.ts';
+import { workRepoPath, workSourceIsLinkable } from './compat.ts';
 import { site } from './site.ts';
 import { ui } from './ui.ts';
 
@@ -189,6 +196,98 @@ export const featuredHomepageWorks = (works: readonly Work[]): Work[] =>
 
 export const moreHomepageWorks = (works: readonly Work[]): Work[] =>
   shippingWorks(works).filter((w) => w.homepage === 'more');
+
+/**
+ * #30 — a Featured work's editorial weight on the homepage.
+ *
+ * Total over the works this can legally be asked about, and the schema is what
+ * makes it total: `homepage === 'featured'` requires `featuredTier`, and every
+ * other work is refused one. So reaching the throw means a component drew a
+ * FEATURED block for a work that is not on that tier — a routing defect, the
+ * same shape as `workFigure`'s.
+ *
+ * Falling back to `'supporting'` would have been one line shorter and would
+ * have made the defect invisible: a work missing from the hierarchy would
+ * silently render as the quiet half of a decision nobody made.
+ */
+export function workFeaturedTier(work: Work): FeaturedTier {
+  if (!work.featuredTier) {
+    throw new Error(
+      `work/${work.slug} に featuredTier が無いのに FEATURED として描画された。` +
+        `homepage = "featured" の作品には schema が featuredTier を要求する。`,
+    );
+  }
+  return work.featuredTier;
+}
+
+/** #30 — 代表作か。`data-featured-tier` と表示ラベルはどちらもこれを読む。 */
+export const isPrimaryFeatured = (work: Work): boolean =>
+  workFeaturedTier(work) === 'primary';
+
+/**
+ * #30 — a work's background, in the words a reader sees.
+ *
+ * PURE, AND THE ONLY PLACE THE TWO ENUMS BECOME JAPANESE. The work records
+ * hold `personal` / `collaborative` and `public-reconstruction` /
+ * `technical-demo` and nothing else; storing the rendered phrase next to the
+ * enum would be the same fact in two places, and the day one of them is edited
+ * the record and the page disagree about what a work IS.
+ *
+ * Unknown members throw rather than printing the raw enum. A homepage that
+ * prints `technical-demo` to a reader is leaking an internal vocabulary
+ * (`check:structure`'s PUBLIC_INTERNAL is the same rule from the other side),
+ * and a silent fallback is what would let a new enum member ship that way.
+ */
+export function developmentBackground(profile: PortfolioProfile): string {
+  const labels: Record<string, string> = ui.work.profileLabels;
+  const context = labels[profile.developmentContext];
+  const form = labels[profile.portfolioForm];
+  if (!context || !form) {
+    throw new Error(
+      `ui.work.profileLabels に ` +
+        `${!context ? profile.developmentContext : profile.portfolioForm} の表示語が無い。` +
+        `enum を足したら、読者が読む語も決めること。`,
+    );
+  }
+  return `${context} / ${form}`;
+}
+
+/**
+ * #30 — where this work's code can actually be read, or null.
+ *
+ * THE ONE PLACE A PUBLIC SOURCE URL IS BUILT. Every caller asks here rather
+ * than assembling a host and a path of its own, and none of them looks at
+ * `showcase.source.access`: the two halves of "may this be linked" are already
+ * combined by `workSourceIsLinkable`, and a component that asked `access` on
+ * its own would publish a repository this portfolio has decided to withhold
+ * while being right about the access (compat.ts says why).
+ *
+ * `workRepoPath` is the second half of the same contract and returns null for
+ * anything not linkable, so `withheld` and `private-repo` come out null here
+ * without this function ever naming either value.
+ *
+ * The repository is READ from `site.repo` rather than written here. That field
+ * already holds `https://github.com/<owner>/portfolio` — the same address
+ * CONTACT prints as its repository row — and a `github.com/...` literal in this
+ * function would be that address stated a second time, in the one place nobody
+ * would think to change.
+ */
+export function workPublicSourceUrl(work: Work): string | null {
+  const path = workRepoPath(work);
+  if (!path) return null;
+  // `workRepoPath` answers `ai-crm-demo/`; a tree URL takes no trailing slash.
+  return `${site.repo.replace(/\/+$/, '')}/tree/main/${path.replace(/^\/+|\/+$/g, '')}`;
+}
+
+/**
+ * #30 — every shipping work whose source this site publishes a way into.
+ *
+ * CONTACT lists these by name. Derived, never enumerated: a fixed array of
+ * three titles is the withhold decision written down a second time, and it
+ * would go on naming a work the day its `linkPolicy` changed to `withheld`.
+ */
+export const linkableSourceWorks = (works: readonly Work[]): Work[] =>
+  shippingWorks(works).filter((w) => workSourceIsLinkable(w));
 
 /**
  * A section's displayed number: its position in the running order.

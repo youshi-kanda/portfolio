@@ -4,8 +4,9 @@
   "status": "published",
   "shipping": true,
   "featured": true,
-  "featuredOrder": 4,
+  "featuredOrder": 5,
   "homepage": "featured",
+  "featuredTier": "supporting",
   "productType": "Business Operations / Permissions / Multi-tenant",
   "targetUser": "現場スタッフと管理者",
   "problem": [
@@ -100,7 +101,8 @@
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.4（#6 / PR #15 merged）",
       "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 4 位 `ANON-PLATFORM-02`（#5 / PR #14 merged）",
-      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087",
+      "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人が HD-G を確定：FEATURED 5 件維持・代表作 ins-ai / crm・補助作品 hire / assist / ops・表示順 ins-ai → crm → hire → assist → ops"
     ],
     "approvedBy": null,
     "approvedAt": null

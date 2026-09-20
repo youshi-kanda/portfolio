@@ -32,12 +32,15 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-seven approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 27);
+  it('covers all twenty-eight approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 28);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email && guidance);
-    assert.equal(APPROVAL_BATCHES.length, 8);
+    const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance, withheld] =
+      APPROVAL_BATCHES;
+    assert.ok(
+      homepage && notFound && v4 && workLede && issue6 && issue8 && email && guidance && withheld,
+    );
+    assert.equal(APPROVAL_BATCHES.length, 9);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -117,6 +120,15 @@ describe('approved copy gate', () => {
     assert.match(guidance.task, /Issue #34/);
     assert.notEqual(guidance.at, email.at);
 
+    // #30 HD-I — コードリンクを掲載しない作品の説明文。#34 のバッチが承認したの
+    // は CONTACT の補助文で、この文ではない。別の occasion、別の文、別のバッチ。
+    assert.deepEqual(
+      [withheld.by, withheld.at, [...withheld.ids]],
+      ['user', '2026-09-20T01:11:07Z', ['home.works.sourceWithheld']],
+    );
+    assert.match(withheld.task, /Issue #30 comment 5746615341/);
+    assert.notEqual(withheld.at, guidance.at);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -186,10 +198,10 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 27);
+    assert.equal(approved.length, 28);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      27,
+      28,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.
