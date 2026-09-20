@@ -100,6 +100,40 @@ export const ui = {
     role: 'Role',
     selectedTech: 'Selected technology',
     caseStudyCta: 'Case Study を読む',
+    /*
+     * #30 — Featured ブロックが Role / Selected technology の前に置く 1 行の
+     * ラベル。作品が「どういう成り立ちで、Portfolio 上どういう形で出ているか」
+     * （#29 の portfolioProfile）を読む前に、それが何の欄なのかを言う。
+     */
+    background: '開発背景',
+    /*
+     * #30 — 証拠導線の見出し。「Evidence」でも「Links」でもないのは、この欄が
+     * 答えているのが「読み手が自分で何を確認しに行けるか」だからである。
+     * 確認しに行ける先が無い作品では、同じ欄が「なぜ出していないか」を言う。
+     */
+    evidenceHead: '確認できるもの',
+    /** #30 — 公開されている作品コードへ直接送る CTA。 */
+    sourceCta: '公開コードを見る',
+    /*
+     * #30 HD-G — 代表作に付く小さな表示ラベル。編集上の強弱であって、技術力の
+     * 評価でも品質の順位でもない。補助作品の側に対になる語を置かないのは、
+     * 「代表作ではない」を名乗るラベルが必ず評価語として読まれるからである。
+     */
+    featuredPrimary: '代表作',
+    /*
+     * #30 — `portfolioProfile` の enum を読者向けの語にする対応表。
+     *
+     * JSON 側へ日本語を二重に持たせない。作品レコードが持つのは enum だけで、
+     * 表示語はここにしか無い——両方に置けば、片方だけ直した日に作品が別のことを
+     * 言い出す。語は #29 が schema.ts に書いた各 enum 値の定義からの転記で、
+     * 新しい判断を足していない。
+     */
+    profileLabels: {
+      personal: '個人開発',
+      collaborative: '共同プロジェクト',
+      'public-reconstruction': '公開用再構成',
+      'technical-demo': '技術デモ',
+    },
     fieldsTableLabel: 'extracted fields ({count})',
     /*
      * The two return labels, and the reason they are not `allWorksCta`.
@@ -196,6 +230,15 @@ export const ui = {
     channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
     emailCta: 'メールで相談する',
     githubCta: 'GitHub で実装を見る',
+    /*
+     * #30 — 作品別の公開コード一覧の見出し。
+     *
+     * `channels` は「GitHub で読める」と言うだけで、どの作品のコードが読めるの
+     * かは言っていなかった。この欄はその不足だけを埋める。一覧そのものは固定
+     * 配列ではなく、出荷中の作品のうち source が linkable なものから導出する
+     * ——ここに作品名を書けば、リンクを出す / 出さないの判断が 2 か所になる。
+     */
+    publicCode: '公開コード',
   },
 
   mobileBar: {

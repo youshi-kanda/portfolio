@@ -634,8 +634,12 @@
 .ad .cta-ghost:hover,.ad .cta-ghost:focus-visible{border-color:var(--tx)}
 
 /* ---------------------------------------------------- 01 FEATURED WORK
-   One block per work. The rhythm is broad / narrow by position: `data-width`
-   is on the article, so the two widths are one rule and not two components. */
+   One block per work. `data-width` is on the article, so the two widths stay
+   one rule and not two components — #30 only changed what DECIDES it. It was
+   position (broad / narrow / broad …, an alternating beat that was explicitly
+   not a ranking); it is now `featuredTier`, which is one. Nothing below is a
+   second card style: supporting is this block with a shorter figure, a smaller
+   title and tighter spacing, on the same paper, rails and rules. */
 .ad .fw{padding:56px 0 0;position:relative}
 .ad .fw:first-of-type{padding-top:10px}
 .ad .fw-t{font-size:clamp(26px,2.5vw,36px);line-height:1.2;letter-spacing:-.025em;
@@ -664,6 +668,37 @@
 .ad .fw-m .fx p{margin:0;font-size:14.5px;line-height:1.65;color:var(--tx2)}
 .ad .fw[data-width="narrow"] .fw-f .crop img{height:262px}
 .ad .fw-l{margin-top:6px}
+/* #30 — 代表作. A state chip, the same instrument the register uses, above the
+   title rather than beside it: set on the title's line it competed with a
+   36px display for the first fixation, which is the one thing the title needs
+   to keep. `.st` gives it its own border and mono face, so it reads as a mark
+   on the block and not as a word of the heading. */
+.ad .fw-tier{margin:0 0 10px}
+/* #30 — 確認できるもの. The block every FEATURED work ends on: the label, then
+   whichever routes exist, then — when there are none — the owner's sentence
+   saying so. Ruled off the facts above it because it answers a different
+   question: those say what the work IS, this says what a reader can go and
+   check. */
+.ad .fw-e{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--hair)}
+.ad .fw-e .mo{display:block;margin-bottom:8px}
+/* Two CTAs sit side by side on one line and wrap as a pair, never overlapping:
+   `.lk` is inline-block with its own 1px rule, and the row gap keeps the two
+   rules from touching when they stack. */
+.ad .fw-e .fw-l{margin:0 26px 0 0}
+.ad .fw-e .fw-l:last-child{margin-right:0}
+/* The explanation is prose, not a control. Held to the measure so it reads as
+   one sentence rather than as a banner across the field. */
+.ad .fw-w{max-width:58ch;font-size:13.5px;line-height:1.75;color:var(--tx3)}
+
+/* THE TIER, AS SPACING. Same order, same items, same type ramp — one step
+   quieter. The figure is already shorter through `data-width`; these take the
+   block's own rhythm down with it so a supporting work reads as the same kind
+   of thing at a smaller scale, rather than as a different component. */
+.ad .fw[data-featured-tier="supporting"]{padding-top:44px}
+.ad .fw[data-featured-tier="supporting"] .fw-t{font-size:clamp(22px,1.9vw,27px)}
+.ad .fw[data-featured-tier="supporting"] .fw-c{font-size:15.5px;max-width:58ch}
+.ad .fw[data-featured-tier="supporting"] .fw-f{margin-top:18px}
+.ad .fw[data-featured-tier="supporting"] .fw-e{margin-top:14px;padding-top:12px}
 /* the work's pigment as an edge on the rail, the same device the register uses */
 .ad .fw .ins .ix:before{content:"";display:block;width:9px;height:9px;
                         background:var(--sig);margin-bottom:10px}
@@ -792,6 +827,17 @@
    address would otherwise push the page into a horizontal scroll. */
 .ad .ct-mail{margin-bottom:0}
 .ad .ct-d dd a{overflow-wrap:anywhere}
+/* #30 — 公開コード. One more row on the same list, so the work titles read as
+   part of the channel table rather than as a new block: the question it
+   answers ("which of these can I actually read?") belongs to the GitHub rows
+   directly above it. The titles are prose in a mono column, so they get the
+   UI face and a little more room than a host name needs. */
+.ad .ct-src{margin-top:0;border-top:0}
+.ad .ct-sl{list-style:none;margin:0;padding:0}
+.ad .ct-sl li{margin:0 0 7px}
+.ad .ct-sl li:last-child{margin-bottom:0}
+.ad .ct-sl a{font-family:var(--f-ui);font-size:13.5px;line-height:1.6;
+             display:inline-block;overflow-wrap:anywhere}
 /* The GitHub CTA is the quieter of the two. Same component, less weight —
    the section has one primary action and this is not it. */
 .ad .ct-cta .lk-q{font-weight:400;opacity:.82}

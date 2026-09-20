@@ -4,8 +4,9 @@
   "status": "published",
   "shipping": true,
   "featured": true,
-  "featuredOrder": 2,
+  "featuredOrder": 3,
   "homepage": "featured",
+  "featuredTier": "supporting",
   "productType": "業務 Web Application",
   "targetUser": "採用担当者と応募者",
   "problem": [
@@ -103,7 +104,8 @@
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §5.2（#6 / PR #15 merged）",
       "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §3 2 位 `ANON-WEBAPP-01`（#5 / PR #14 merged）",
-      "portfolioProfile / role「External API Integration」— #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      "portfolioProfile / role「External API Integration」— #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087",
+      "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人が HD-G を確定：FEATURED 5 件維持・代表作 ins-ai / crm・補助作品 hire / assist / ops・表示順 ins-ai → crm → hire → assist → ops"
     ],
     "approvedBy": null,
     "approvedAt": null

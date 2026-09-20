@@ -22,24 +22,63 @@
  * meant desktop and mobile were two different arguments about what a reader
  * should meet first.
  *
- * THE RHYTHM. broad / narrow / broad / narrow / broad, by position. Not by
- * importance — every block says the same things — so the eye gets a beat
- * instead of five identical stops. Mobile drops it (responsive.css): at one
- * column there is no second width to alternate with.
+ * THE HIERARCHY — #30 HD-G. broad / narrow was POSITION: alternating widths so
+ * the eye got a beat instead of five identical stops, explicitly not a ranking.
+ * It is now the ranking. The owner decided (Issue #30 comment 5746615341) that
+ * two of the five are 代表作 and the other three show the range, and a page
+ * whose only width signal contradicted that decision would be arguing with it.
+ *
+ * So `data-width` is derived from `featuredTier` and the alternation is gone:
+ * primary keeps the full field and the large figure, supporting keeps the
+ * measure and a shorter one. FIVE BLOCKS, ONE DESIGN. Supporting is the same
+ * component with a tighter figure, title and rhythm — not a second card style —
+ * and it loses no information: background, Role, Selected technology and the
+ * evidence block are rendered identically on all five.
+ *
+ * NO WORD FOR THE OTHER HALF. `代表作` is printed on the two; nothing is
+ * printed on the three. Any label that named the supporting tier would be read
+ * as a grade, and the tier is an editorial weighting on one page — not a
+ * judgement about the work.
+ *
+ * WHAT EACH BLOCK ANSWERS. #30 §2: what the work is for (purpose), how it came
+ * about (開発背景, derived from #29's portfolioProfile), what this engineer did
+ * (Role), what it is built with (Selected technology), and what a reader can go
+ * and check for themselves (確認できるもの). The last one is the point of the
+ * issue: a portfolio that shows work without saying what can be verified leaves
+ * the reader to guess, and a portfolio that links nothing and explains nothing
+ * reads as a portfolio with something to hide.
  *
  * CASE STUDY LINKS. Gated on `caseStudyPublished` and nothing else — the same
  * condition `EntryCta` uses. Not on whether /work/<slug>/ exists: that page is
  * emitted as soon as a work's Evidence resolves, Case Study or no, so linking
  * on it would put the label "Case Study を読む" in front of the entry screen.
  *
- * Four of these five have no Case Study yet (that is #8), and their blocks end
- * after the technologies with no link, no "準備中" and no greyed-out
- * affordance. A portfolio that labels its own gaps is describing its backlog.
+ * AND NOT ON THE SOURCE LINK EITHER. The two CTAs are independent conditions on
+ * purpose: `crm` shows both, a work with a published Case Study and a withheld
+ * source would show only the first, and folding the source into the Case Study
+ * condition would silently retire a link whose own condition still holds.
+ *
+ * THE SOURCE LINK. Built by `workPublicSourceUrl`, which returns null for
+ * anything `workSourceIsLinkable` refuses. This component never reads
+ * `showcase.source.access`: a work whose repository is genuinely public and
+ * whose link this portfolio withholds would be linked by a component that asked
+ * `access` alone, and it would be RIGHT about the access while doing it.
+ *
+ * Four of these five have no source link, and their evidence block says so in
+ * the owner's own approved sentence (HD-I) rather than ending in silence or in
+ * a greyed-out affordance. The sentence states only what is certain in public —
+ * that the link is not published — and distinguishes neither private
+ * repositories nor withheld public ones, because distinguishing them would
+ * publish the thing withholding is for.
  */
 import {
+  developmentBackground,
+  isPrimaryFeatured,
   pad2,
+  workFeaturedTier,
   workFigure,
   workHref,
+  workPublicSourceUrl,
   workSelectedTech,
   workShowsCaseStudyCta,
   sectionNumber,
@@ -58,15 +97,31 @@ const { works } = Astro.props;
 const index = sectionNumber('work');
 const h2 = await copyText('home.works.h2');
 
-const blocks = works.map((work, i) => ({
-  work,
-  n: pad2(i + 1),
-  /** broad / narrow / broad / narrow / broad — position, not rank. */
-  broad: i % 2 === 0,
-  showsCaseStudy: workShowsCaseStudyCta(work),
-  figure: workFigure(work),
-  eager: i === 0,
-}));
+/**
+ * HD-I, read from the registry rather than written here. The sentence is the
+ * owner's, approved at Issue #30 comment 5746615341, and a component holding a
+ * copy of it would be a second place for an approved string to live — which is
+ * exactly what `approvedCopyGate` cannot see and so cannot hold.
+ */
+const sourceWithheld = await copyText('home.works.sourceWithheld');
+
+const blocks = works.map((work, i) => {
+  const tier = workFeaturedTier(work);
+  return {
+    work,
+    n: pad2(i + 1),
+    tier,
+    primary: isPrimaryFeatured(work),
+    /** #30 — width IS the tier now. It was position; see the note above. */
+    broad: tier === 'primary',
+    showsCaseStudy: workShowsCaseStudyCta(work),
+    /** null unless the source model says this site publishes a way in. */
+    sourceUrl: workPublicSourceUrl(work),
+    background: developmentBackground(work.portfolioProfile),
+    figure: workFigure(work),
+    eager: i === 0,
+  };
+});
 ---
 
 <section class="s-open" id="work" data-mx-n={index}>
@@ -109,17 +164,22 @@ const blocks = works.map((work, i) => ({
   </div>
 
   {
-    blocks.map(({ work: w, n, broad, showsCaseStudy, figure, eager }) => (
+    blocks.map(
+      ({ work: w, n, tier, primary, broad, showsCaseStudy, sourceUrl, background, figure, eager }) => (
       <article
         class="fw"
         data-w={w.slug}
         data-featured-block
+        data-featured-tier={tier}
         data-width={broad ? 'broad' : 'narrow'}
       >
         <div class="page">
           <div class="tr">
             <Rail index={n} labels={[w.productType]} />
             <div class="msr">
+              {/* The two the owner chose, named. Nothing is printed on the
+                  other three — see NO WORD FOR THE OTHER HALF above. */}
+              {primary && <p class="fw-tier"><span class="st">{ui.work.featuredPrimary}</span></p>}
               <h3 class="fw-t">{w.title}</h3>
             </div>
           </div>
@@ -146,7 +206,14 @@ const blocks = works.map((work, i) => ({
             <div class="ins" />
             <div class="msr">
               <p class="fw-c">{w.purpose}</p>
+              {/* One order, every width. 背景 → Role → 技術 is the reading the
+                  spec fixes (#30 §5), and nothing below reorders it in CSS:
+                  the tab order and the visual order are the DOM order. */}
               <div class="fw-m">
+                <span class="fx">
+                  <span class="mo">{ui.work.background}</span>
+                  <p>{background}</p>
+                </span>
                 {w.role.length > 0 && (
                   <span class="fx">
                     <span class="mo">{ui.work.role}</span>
@@ -158,16 +225,30 @@ const blocks = works.map((work, i) => ({
                   <p>{workSelectedTech(w).join(' · ')}</p>
                 </span>
               </div>
-              {showsCaseStudy && (
-                <a class="lk fw-l" href={workHref(w.slug, false)}>
-                  {ui.work.caseStudyCta}<span class="ar">→</span>
-                </a>
-              )}
+              {/* 確認できるもの — the block every Featured work ends on, with
+                  either the routes to check it or the reason there are none.
+                  It is never empty: an absent explanation is what makes a
+                  missing link read as something withheld from the reader. */}
+              <div class="fw-e">
+                <span class="mo">{ui.work.evidenceHead}</span>
+                {showsCaseStudy && (
+                  <a class="lk fw-l" href={workHref(w.slug, false)}>
+                    {ui.work.caseStudyCta}<span class="ar">→</span>
+                  </a>
+                )}
+                {sourceUrl && (
+                  <a class="lk fw-l" href={sourceUrl} data-featured-source-link={w.slug}>
+                    {ui.work.sourceCta}<span class="ar">→</span>
+                  </a>
+                )}
+                {sourceUrl === null && <p class="note fw-w m0">{sourceWithheld}</p>}
+              </div>
             </div>
           </div>
         </div>
       </article>
-    ))
+      ),
+    )
   }
 </section>
 

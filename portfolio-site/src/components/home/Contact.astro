@@ -15,15 +15,36 @@
  * 補助文（#34）は、その Email へ何を書いて送ればよいかを 1 文で案内する。
  * 見積り・返信期限・対応可能時期のような、本人が約束していないことは言わない。
  *
+ * #30 — GitHub 欄は「GitHub で読める」とだけ言い、どの作品のコードが読めるのか
+ * を言っていなかった。リポジトリ全体を指すリンク 1 本では、読み手は 10 件の
+ * 作品のうちどれを確認しに行けるのか分からない。作品名を出して、その作品の
+ * ソースへ直接送る。
+ *
+ * 一覧は固定配列ではなく、出荷中の作品のうち source が linkable なものから
+ * 導出する。ここに 3 件の題名を書けば、リンクを出す / 出さないの判断が
+ * `workSourceIsLinkable` とこのファイルの 2 か所に分かれ、`linkPolicy` を
+ * withheld にした日にこちらだけが作品名を出し続けることになる。
+ *
  * band が反転するのは、スクロールに床を作るため。FOOTER は別の要素で別の仕事
  * ——こちらは依頼を受け取り、あちらはサイトを名乗る。
  */
 import { copyText } from '../../lib/content/copy.ts';
-import { sectionNumber } from '../../lib/content/derive.ts';
+import {
+  linkableSourceWorks,
+  sectionNumber,
+  workPublicSourceUrl,
+} from '../../lib/content/derive.ts';
+import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
 
+interface Props {
+  /** Every work the site knows about; the list below filters it. */
+  works: readonly Work[];
+}
+
+const { works } = Astro.props;
 const c = site.contact;
 const index = sectionNumber('contact');
 
@@ -51,6 +72,16 @@ const rows = c.rows.map((row) => ({ ...row, href: hrefOf(row.value) }));
  * 行き先の無い CTA は描かれない。
  */
 const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
+
+/**
+ * 作品名 → その作品の公開コード。`workPublicSourceUrl` は linkable でない作品に
+ * null を返すので、この map が空要素を落とすことは無い——それでも filter して
+ * いるのは、null を握りつぶさずに型の上でも 1 本のリンクにするため。
+ */
+const publicCode = linkableSourceWorks(works).flatMap((work) => {
+  const href = workPublicSourceUrl(work);
+  return href ? [{ title: work.title, slug: work.slug, href }] : [];
+});
 ---
 
 <section class="contact inv" id="contact" data-mx-n={index}>
@@ -101,6 +132,27 @@ const github = rows.find((row) => row.key === 'GitHub')?.href ?? null;
               ))
             }
           </dl>
+          {/*
+            どの作品のコードを確認できるか。`channels` の 1 行が述べていることを、
+            作品名で具体化する。0 件なら何も描かない——見出しだけが残った空の欄は、
+            この節が持っていないものを読み手に数えさせる。
+          */}
+          {
+            publicCode.length > 0 && (
+              <dl class="ct-d ct-src">
+                <dt>{ui.contact.publicCode}</dt>
+                <dd>
+                  <ul class="ct-sl">
+                    {publicCode.map((w) => (
+                      <li>
+                        <a href={w.href} data-public-code-link={w.slug}>{w.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </dl>
+            )
+          }
           {
             github && (
               <p class="ct-cta">

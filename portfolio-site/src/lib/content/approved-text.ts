@@ -207,6 +207,29 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-19T11:26:31Z',
     ids: Object.freeze(['home.contact.helper']),
   }),
+  /**
+   * Issue #30 HD-I — 公開コードリンクを掲載しない作品の説明文。
+   *
+   * 独立したバッチである。#34 のバッチ（2026-09-19）が承認したのは CONTACT の
+   * 問い合わせ補助文であって、FEATURED WORK でコードリンクが無い理由を述べる
+   * 文ではない。既存バッチに足せば、その日には読まれていない文を承認済みとして
+   * 記録することになる。
+   *
+   * `at` は承認コメント Issue #30 comment 5746615341 の作成時刻。本人が HD-G と
+   * 並べてこの文を引用し、「この文言を公開コピーとして使用することを承認します」
+   * と述べている。同じ文は Issue #30 §8.1 にも確定文言として記載されている。
+   *
+   * この 1 文が承認を要するのは、ラベルではなく事実を述べているからである
+   * ——「掲載していない」も「公開可能な情報に限定して記載している」も、本人の
+   * 公開方針が違えば誤りになる。だから presentation の免除ではなく、根拠と
+   * 承認者を持つ側に置かれている。
+   */
+  Object.freeze({
+    task: 'ISSUE-30-SOURCE-WITHHELD (Issue #30 comment 5746615341 / §8.1)',
+    by: 'user',
+    at: '2026-09-20T01:11:07Z',
+    ids: Object.freeze(['home.works.sourceWithheld']),
+  }),
 ]);
 
 /**
@@ -267,6 +290,12 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.capability.02.value": "AI・自動処理と、人が判断する範囲を分ける",
   "home.hero.capability.03.key": "確認できる形で作る",
   "home.hero.capability.03.value": "テスト・実行記録・人手確認で確かめる",
+
+  // Issue #30 HD-I — 公開コードリンクを出さない Featured Work の説明。
+  // private repository と public-repo + withheld を公開面で区別せず、公開面で
+  // 確実に言えることだけを述べる: コードが存在しないとも、非公開 repository が
+  // あるとも言っていない。
+  "home.works.sourceWithheld": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
 
   "home.works.h2": "何のためのサービスを、どこまで実装したのか。",
   "home.works.lede": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",

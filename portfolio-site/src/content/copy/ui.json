@@ -2714,5 +2714,194 @@
       "approvedBy": "user",
       "approvedAt": "2026-09-16T00:00:00Z"
     }
+  },
+  {
+    "id": "ui.work.background",
+    "path": "work.background",
+    "text": "開発背景",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "項目ラベル",
+    "purpose": "Featured ブロックで、作品の成立背景（共同プロジェクト / 個人開発 × 公開用再構成 / 技術デモ）を出す行のラベル。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.evidenceHead",
+    "path": "work.evidenceHead",
+    "text": "確認できるもの",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "証拠導線の見出し",
+    "purpose": "読み手が自分で確認しに行ける先（Case Study / 公開コード）、または確認先を出していない理由を示す欄の見出し。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.sourceCta",
+    "path": "work.sourceCta",
+    "text": "公開コードを見る",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "CTA ラベル",
+    "purpose": "公開されている作品コードへ送る CTA。何をしに行くのかを動詞で言う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.featuredPrimary",
+    "path": "work.featuredPrimary",
+    "text": "代表作",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "代表作に付く表示ラベル",
+    "purpose": "homepage 上で先に深く読んでほしい 2 件を示す編集上のラベル。技術力・品質の順位ではない。補助作品の側に対になる評価語は置かない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人が HD-G を確定：代表作は ins-ai / crm",
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.contact.publicCode",
+    "path": "contact.publicCode",
+    "text": "公開コード",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "作品別公開コード一覧の見出し",
+    "purpose": "GitHub 欄で、どの作品のコードを確認できるかを示す一覧の見出し。一覧自体は出荷中の作品から導出する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.profileLabels.personal",
+    "path": "work.profileLabels.personal",
+    "text": "個人開発",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "開発背景の値",
+    "purpose": "developmentContext = personal の表示語。ラベルではなく値であり、作品について読み手が誤りだと分かりうることを述べるので fact として扱う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — DEVELOPMENT_CONTEXTS / PORTFOLIO_FORMS の各値の定義（#29 / PR #39 merged）",
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様 §2 の enum → 表示語 対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.profileLabels.collaborative",
+    "path": "work.profileLabels.collaborative",
+    "text": "共同プロジェクト",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "開発背景の値",
+    "purpose": "developmentContext = collaborative の表示語。ラベルではなく値であり、作品について読み手が誤りだと分かりうることを述べるので fact として扱う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — DEVELOPMENT_CONTEXTS / PORTFOLIO_FORMS の各値の定義（#29 / PR #39 merged）",
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様 §2 の enum → 表示語 対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.profileLabels.public-reconstruction",
+    "path": "work.profileLabels.public-reconstruction",
+    "text": "公開用再構成",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "開発背景の値",
+    "purpose": "portfolioForm = public-reconstruction の表示語。ラベルではなく値であり、作品について読み手が誤りだと分かりうることを述べるので fact として扱う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — DEVELOPMENT_CONTEXTS / PORTFOLIO_FORMS の各値の定義（#29 / PR #39 merged）",
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様 §2 の enum → 表示語 対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.work.profileLabels.technical-demo",
+    "path": "work.profileLabels.technical-demo",
+    "text": "技術デモ",
+    "kind": "editorial",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "開発背景の値",
+    "purpose": "portfolioForm = technical-demo の表示語。ラベルではなく値であり、作品について読み手が誤りだと分かりうることを述べるので fact として扱う。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "source-derived",
+      "claimType": "fact",
+      "sourceRefs": [
+        "portfolio-site/src/lib/content/schema.ts — DEVELOPMENT_CONTEXTS / PORTFOLIO_FORMS の各値の定義（#29 / PR #39 merged）",
+        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様 §2 の enum → 表示語 対応表",
+        "各作品の値の根拠 — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
+      ],
+      "approvedBy": null,
+      "approvedAt": null
+    }
   }
 ]

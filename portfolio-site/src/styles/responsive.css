@@ -372,9 +372,36 @@
 /* The floor the spec sets for a mobile figure: ≥200px, taken by cropping the
    sides rather than by scaling the whole picture down to fit. A reconstructed
    interface that has been shrunk until nothing in it can be read is not
-   evidence of anything. */
-.ad .fw-f .crop img{aspect-ratio:auto;height:236px;min-height:200px;object-fit:cover}
+   evidence of anything.
+
+   BOTH WIDTHS, ONE RULE. `[data-width="narrow"]` carries the desktop height at
+   a higher specificity than this selector had, so between 390 and 767px the
+   narrow blocks kept 262px while the others dropped to 236 — a figure that was
+   LARGER on the quieter tier. Harmless while width was an alternating rhythm;
+   with #30 it is the hierarchy, drawn upside down. The narrow selector is named
+   here so the mobile height wins for both, exactly as the 320 block below
+   already did. */
+.ad .fw-f .crop img,
+.ad .fw[data-width="narrow"] .fw-f .crop img{aspect-ratio:auto;height:236px;min-height:200px;
+                                             object-fit:cover}
+/* One step down, still above the floor: at one column the tier has no width to
+   express itself in, so the figure is where the difference goes. */
+.ad .fw[data-featured-tier="supporting"] .fw-f .crop img{height:212px}
 .ad .fw-m{margin-top:20px}
+/* #30 — at one column the two tiers stop being widths and become rhythm only.
+   The supporting block keeps every item; what it gives up is the space around
+   them, which is the only thing there is left to give up at 375px. */
+.ad .fw[data-featured-tier="supporting"]{padding-top:30px}
+.ad .fw[data-featured-tier="supporting"] .fw-t{font-size:19px}
+.ad .fw[data-featured-tier="supporting"] .fw-c{font-size:15px}
+.ad .fw-tier{margin-bottom:8px}
+.ad .fw-e{margin-top:16px;padding-top:12px}
+/* The two CTAs stack rather than sharing a line: side by side at 360px the
+   second wrapped onto the first's underline. Each keeps a 44px row so the
+   touch targets do not abut. */
+.ad .fw-e .fw-l{display:block;margin:0 0 6px;min-height:44px;padding-top:11px}
+.ad .fw-e .fw-l:last-child{margin-bottom:0}
+.ad .fw-w{font-size:13.5px;max-width:none}
 
 /* Two tracks, not one: the number keeps its own narrow column so the row does
    not spend a whole line on it. */
@@ -400,6 +427,12 @@
 .ad .contact{margin-top:112px}
 .ad .contact .in{padding:56px 0 64px}
 .ad .ct-d{grid-template-columns:110px minmax(0,1fr)}
+/* The work titles are sentences, not host names: at 110px of term track a
+   two-column row leaves them ~200px, which breaks a title mid-word. The
+   public-code row goes to one column at every mobile width. */
+.ad .ct-src{grid-template-columns:1fr}
+.ad .ct-src dt{border-bottom:0;padding-bottom:2px}
+.ad .ct-sl a{min-height:44px;display:flex;align-items:center}
 .ad .foot .in{padding:32px 0 40px}
 }
 /* 320: the narrowest supported width. The figure floor drops to 180px and the
@@ -408,6 +441,8 @@
 @media (max-width:389px){
 .ad .fw-f .crop img,
 .ad .fw[data-width="narrow"] .fw-f .crop img{height:196px;min-height:180px}
+/* 180 is the floor itself here, so supporting sits ON it rather than below. */
+.ad .fw[data-featured-tier="supporting"] .fw-f .crop img{height:180px}
 .ad .ct-d{grid-template-columns:1fr}
 .ad .ct-d dt{border-bottom:0;padding-bottom:2px}
 }

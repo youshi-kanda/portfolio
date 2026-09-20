@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 129 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 134 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -191,8 +191,20 @@ describe('provenance matrix', () => {
     // 本人が何を書いて送ってほしいかを述べた 1 文で、本人の受け方が違えば
     // 誤りになりうる。だから presentation の免除ではなく、根拠（Issue #34
     // §5.1 の本人指示）と承認者を持つ側に置かれている。
-    assert.equal(presentation.length, 129);
-    assert.equal(fact.length, 34);
+    //
+    // #30 は presentation を 5、fact を 5 足す。
+    //
+    // presentation 5 件はすべてラベルである: 開発背景 / 確認できるもの /
+    // 公開コードを見る / 代表作 / 公開コード。`代表作` を含めているのは、これが
+    // homepage 上の編集上の強弱を示す表示であって、作品の品質や技術力について
+    // 読み手が誤りだと分かりうることを述べていないからである。
+    //
+    // fact 5 件のうち 4 件は `portfolioProfile` の enum の表示語
+    // （個人開発 / 共同プロジェクト / 公開用再構成 / 技術デモ）。これはラベルでは
+    // なく値で、作品の成立背景を述べる——本人確認の結果が違えば誤りになる。
+    // 5 件目は HD-I の 1 文で、shipping registry の側にある。
+    assert.equal(presentation.length, 134);
+    assert.equal(fact.length, 39);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first

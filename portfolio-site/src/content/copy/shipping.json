@@ -476,5 +476,24 @@
       "approvedBy": "user",
       "approvedAt": "2026-09-13T00:13:13Z"
     }
+  },
+  {
+    "id": "home.works.sourceWithheld",
+    "text": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "「確認できるもの」欄 — 公開コードリンクを出さない作品",
+    "purpose": "公開コードへのリンクが無いことを、読み手が不信として読まないための説明。private repository と public-repo + withheld を公開面で区別せず、公開面で確実に言える「掲載していない」という事実だけを述べる。顧客名・発注元名・非公開リポジトリ名につながる情報は出さない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人がこの文言を公開コピーとして使用することを承認（HD-I）",
+        "Issue #30 §8.1 — HD-I の公開文言として、この文がそのまま記載されている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T01:11:07Z"
+    }
   }
 ]
