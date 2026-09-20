@@ -52,6 +52,28 @@ const CODE = COMPONENT.replace(/\/\*[\s\S]*?\*\//g, '');
 const CASE_PAGE = src('pages/work/[slug]/index.astro');
 const TECHNICAL_PAGE = src('pages/work/[slug]/technical.astro');
 
+const COMPONENTS_CSS = src('styles/components.css');
+const RESPONSIVE_CSS = src('styles/responsive.css');
+
+/**
+ * Is `needle` written at the top level of this stylesheet — i.e. NOT inside an
+ * `@media` block?
+ *
+ * Searching for the declaration alone cannot answer the question this file has
+ * to answer, because the bug being fixed is a rule that EXISTED and applied at
+ * one range of widths only. Brace depth is the property that distinguishes
+ * them: at depth 0 the rule applies at every width, and inside `@media` it does
+ * not. Comments are stripped first, since a brace inside prose is not a block.
+ */
+const atTopLevel = (css: string, needle: string): boolean => {
+  const at = css.indexOf(needle);
+  if (at < 0) return false;
+  const before = css.slice(0, at).replace(/\/\*[\s\S]*?\*\//g, '');
+  const open = (before.match(/\{/g) ?? []).length;
+  const close = (before.match(/\}/g) ?? []).length;
+  return open === close;
+};
+
 const works = loadWorks();
 const caseStudies = loadCaseStudies();
 const bySlug = new Map(works.map((w) => [w.slug, w]));
@@ -139,6 +161,12 @@ describe('#33 3分概要 — 冒頭だけで読み切れる索引', () => {
       for (const key of FORBIDDEN) {
         assert.equal(key in c, false, `case-study/${c.slug}.json に ${key} がある`);
       }
+    }
+    // 概要の正本を work 側へ移したときの逃げ道も塞ぐ。Case Study 側に
+    // 「概要用の built」を足すのは、まさにこの Issue が禁じた 3 つ目の正本。
+    for (const c of caseStudies) {
+      assert.equal('implementationScope' in c, false, `case-study/${c.slug}.json に implementationScope がある`);
+      assert.equal('builtScope' in c, false, `case-study/${c.slug}.json に builtScope がある`);
     }
     // schema 側も同じ。`.strict()` ではないなら、足しても静かに通ってしまう。
     for (const key of ['quickSummary', 'builtSummary']) {
@@ -234,15 +262,120 @@ describe('#33 3分概要 — 冒頭だけで読み切れる索引', () => {
     assert.equal(CODE.includes('implemented'), false);
   });
 
-  it('実装したものは caseStudy.built の name / what をそのまま出す', () => {
-    assert.match(COMPONENT, /caseStudy\.built\.map/);
-    assert.match(COMPONENT, /\{b\.name\}/);
-    assert.match(COMPONENT, /\{b\.what\}/);
+  it('実装したものの正本は work.implementationScope で、caseStudy.built ではない', () => {
+    assert.match(COMPONENT, /work\.implementationScope\.map/);
+    for (const { work } of pairs) {
+      assert.ok(
+        work.implementationScope.length > 0,
+        `work/${work.slug} に implementationScope が無い`,
+      );
+      for (const item of work.implementationScope) {
+        assert.ok(item.trim().length > 0, `work/${work.slug} の implementationScope に空行`);
+      }
+    }
+    // 3分概要は built を読まない。読んでいたら、下の「未実装が混ざる」テストが
+    // 守っている性質はデータ側の偶然に戻る。
+    assert.doesNotMatch(CODE, /caseStudy\.built/);
+    assert.doesNotMatch(CODE, /\bb\.name\b/);
+    assert.doesNotMatch(CODE, /\bb\.what\b/);
+    // 件数を人手で固定していない。
+    assert.doesNotMatch(CODE, /implementationScope\.slice\(/);
+  });
+
+  it('実装したものに未実装の行が混ざらない — built はそれを持ちうる', () => {
+    // WHY THIS SPLIT EXISTS, stated as data rather than as a comment.
+    // `caseStudy.built` は本文側の台帳で、読者がその作品を開いたときに出会う
+    // ものを並べる——だから「まだ作っていない画面」や「含めていません」の行を
+    // 正当に持つ。それを 実装したもの という見出しの下に、名前と説明を — で
+    // つないだ 1 行として出すと、意味が反転する。
+    const UNBUILT = ['まだ作っていない', '実装予定', '含めていません', '未実装'];
+    const unbuiltRow = (b: { name: string; what: string }): boolean =>
+      UNBUILT.some((t) => b.name.includes(t) || b.what.includes(t));
+
+    // 危険が実在すること。built 側から未実装行が消えたらこのテストは用済みに
+    // 見えるが、そのときは本文の台帳が変わっているので気づく側でありたい。
+    const hazards = pairs.filter(({ caseStudy }) => caseStudy.built.some(unbuiltRow));
+    assert.ok(
+      hazards.length > 0,
+      'built に未実装行を持つ Case Study が 1 件も無い — この契約が守る対象が消えた',
+    );
+    const ppm = caseBySlug.get('ppm')!;
+    assert.ok(
+      ppm.built.some((b) => b.name.includes('まだ作っていない画面')),
+      'PPM の built から「まだ作っていない画面」が消えている',
+    );
+
+    // 正本側には 1 件も無い。slug を名指しせず 3 件すべてに効かせる。
+    for (const { work } of pairs) {
+      for (const item of work.implementationScope) {
+        for (const t of UNBUILT) {
+          assert.equal(
+            item.includes(t),
+            false,
+            `work/${work.slug} の implementationScope に未実装の語「${t}」がある`,
+          );
+        }
+      }
+    }
+
+    // そして概要に出る値は、その未実装行と一致しない。
+    for (const { work, caseStudy } of pairs) {
+      for (const b of caseStudy.built.filter(unbuiltRow)) {
+        assert.equal(
+          work.implementationScope.includes(b.name),
+          false,
+          `${work.slug}: 未実装行「${b.name}」が 3分概要に出る`,
+        );
+      }
+    }
+  });
+
+  it('本文の 作ったもの は従来どおり caseStudy.built を描く', () => {
+    // 役割分担であって置き換えではない。詳細本文は未実装の画面を名指しする
+    // 必要があり、概要はしてはならない——両方が真であってはじめて分担になる。
+    const body = src('components/case/CaseBody.astro');
+    assert.match(body, /c\.built\.map/);
+    assert.match(body, /id="cs5"/);
     for (const { caseStudy } of pairs) {
       assert.ok(caseStudy.built.length > 0, `${caseStudy.slug} に built が無い`);
+      for (const b of caseStudy.built) {
+        assert.ok(b.name.trim().length > 0);
+        assert.ok(b.what.trim().length > 0);
+      }
     }
-    // 件数を人手で固定していない。
-    assert.doesNotMatch(CODE, /built\.slice\(/);
+  });
+
+  it('3分概要のリンクの 44px は breakpoint に閉じていない', () => {
+    // THE BUG THIS FIXES. 指の当たり判定は `responsive.css` の
+    // `max-width:767px` に置くのが普通で、この 1 本だけはそれが誤りだった——
+    // 1440px 実測で 30.2px。タッチ対応ラップトップもスタイラスも、同じ幅で
+    // 同じリンクに触る。
+    const RULE = '.ad .csq .lk{min-height:44px;display:inline-flex;align-items:center}';
+    assert.ok(
+      COMPONENTS_CSS.includes(RULE),
+      'components.css に .ad .csq .lk の 44px 指定が無い',
+    );
+    assert.ok(
+      atTopLevel(COMPONENTS_CSS, RULE),
+      '.ad .csq .lk の 44px 指定が @media の中にある — desktop / tablet に効かない',
+    );
+
+    // 同じ宣言を 2 か所に持たない。2 本あれば、片方だけ直した日から両者は
+    // 黙ってずれる。
+    assert.equal(
+      RESPONSIVE_CSS.includes('.csq .lk'),
+      false,
+      'responsive.css に .csq .lk が残っている',
+    );
+    const declared = [COMPONENTS_CSS, RESPONSIVE_CSS, src('styles/evidence.css')]
+      .join('\n')
+      .match(/\.ad \.csq \.lk\s*\{/g);
+    assert.equal((declared ?? []).length, 1, '.ad .csq .lk が 1 か所だけではない');
+
+    // サイト全体の `.lk` は変えていない。基本形は今までどおり inline-block。
+    assert.match(COMPONENTS_CSS, /\.ad \.lk\{display:inline-block;/);
+    // 他ブロックの 44px 指定は responsive のまま——今回の対象は .csq だけ。
+    assert.match(RESPONSIVE_CSS, /\.ad \.dc-l \.lk\{min-height:44px;/);
   });
 
   it('公開コードは workPublicSourceUrl() で、URL を直書きしていない', () => {

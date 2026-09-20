@@ -841,12 +841,20 @@
 .ad .csq .spx .v > ul.dash > li:first-child{border-top:0}
 .ad .csq .spx .v > ul.dash > li:last-child{border-bottom:0}
 .ad .csq .spx .v > ul.dash > li{font-size:15px}
-/* The name in 実装したもの — mono, so a five-item list reads as five things
-   rather than as five sentences. */
-.ad .csq .spx .v > ul.dash > li b{font-family:var(--f-mono);font-size:12.5px;
-                                  letter-spacing:.04em;font-weight:700;color:var(--tx)}
 .ad .csq .csq-m{margin:14px 0 0}
 .ad .csq .csq-n{margin:12px 0 0;font-size:13px}
+/* The block's links are its only controls, and the 44px floor they take is NOT
+   a phone rule. It lived in `responsive.css` under `max-width:767px`, which is
+   where a tap target usually belongs and is wrong for this one: measured at
+   1440px the links came back 30.2px, and a touch laptop, a stylus and an
+   imprecise trackpad all meet the same link at that width. So the floor is a
+   normal rule here and the breakpoint copy is gone — one declaration, every
+   width.
+   Scoped to `.csq`, because the site's other `.lk` links are drawn as an
+   inline-block rule under a line of type and are not controls in a stacked
+   list; the height comes from the box, not from the type size, so nothing
+   about how the link READS changes. */
+.ad .csq .lk{min-height:44px;display:inline-flex;align-items:center}
 
 /* -------------------------------------------------------------- CONTACT
    The band inverts, as the old contact footer did: it gives the scroll a

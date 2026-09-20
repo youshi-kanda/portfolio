@@ -15,14 +15,14 @@
  *
  * NOT ONE NEW SENTENCE IS WRITTEN HERE, AND THAT IS THE DESIGN. Every value
  * below is READ from the record that already owns it — `work.problem`,
- * `work.targetUser`, `work.role`, `work.limitations`, `caseStudy.built`,
- * `caseStudy.repository`. The obvious way to build a summary is to write one
- * into each Case Study as `quickSummary`, and that would make three files the
- * 正本 of the same facts: the work record, the Case Study body, and the
- * summary. They agree on the day they are written and drift on every day after,
- * and the summary is the copy nobody rereads. So the summary is an INDEX, not a
- * précis — it points at facts that live elsewhere, and it is wrong only if they
- * are.
+ * `work.targetUser`, `work.role`, `work.implementationScope`,
+ * `work.limitations`, `caseStudy.repository`. The obvious way to build a
+ * summary is to write one into each Case Study as `quickSummary`, and that
+ * would make three files the 正本 of the same facts: the work record, the Case
+ * Study body, and the summary. They agree on the day they are written and
+ * drift on every day after, and the summary is the copy nobody rereads. So the
+ * summary is an INDEX, not a précis — it points at facts that live elsewhere,
+ * and it is wrong only if they are.
  *
  * NO SLUG APPEARS IN THIS FILE. The three published Case Studies render the
  * same items in the same order from the same component; the only thing that
@@ -168,16 +168,31 @@ const details = DETAIL_SECTIONS.flatMap((id) => {
           </div>
 
           {/*
-            `built` as name — what, the same pairing 作ったもの draws further
-            down in a three-column ledger. The ledger is not reused here: its
-            first column is a position number, and a summary that numbers five
-            screens invites the reader to count them rather than read them.
+            `work.implementationScope` — the 正本 of what was actually built,
+            and NOT `caseStudy.built`.
+
+            The two look interchangeable and are not. `caseStudy.built` is the
+            detail body's ledger of what a reader meets when they open the
+            work, so it legitimately carries rows for things that are NOT
+            implemented — PPM lists 「まだ作っていない画面」 because the sheet
+            really does show an 「実装予定」 placeholder, and DFE lists a review
+            screen whose `what` begins 「含めていません」. Printed under a
+            heading that reads 実装したもの with nothing but a dash between the
+            name and its explanation, those rows say the opposite of what they
+            mean: the summary is read in seconds, and the seconds go to the
+            names. `work.implementationScope` is the record that answers
+            「実装した範囲」 and only that, which is the question this row asks.
+
+            So the two stay split by role — 3分概要 reads the scope, 作ったもの
+            further down reads the ledger — rather than being reconciled into
+            one field, because the detail body genuinely needs to name the
+            unbuilt screen and this row genuinely must not.
           */}
           <div class="r" data-quick-item="built">
             <div class="k">{Q.built}</div>
             <div class="v">
               <ul class="dash">
-                {caseStudy.built.map((b) => <li><b>{b.name}</b> — {b.what}</li>)}
+                {work.implementationScope.map((item) => <li>{item}</li>)}
               </ul>
             </div>
           </div>
