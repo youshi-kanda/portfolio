@@ -35,6 +35,14 @@ const cases = site.howIBuild.decisionCases;
 const qa = site.howIBuild.qaRecord;
 
 /**
+ * The id the section's `aria-labelledby` points at, written once.
+ *
+ * Two places have to agree on it and they are 30 lines apart; a literal typed
+ * twice is a region that silently loses its name the day one of them changes.
+ */
+const HEADING_ID = 'decision-cases-head';
+
+/**
  * The four always-open fields, in reading order, paired with their label.
  *
  * A list rather than four hand-written rows: the order is the argument (what
@@ -49,14 +57,31 @@ const fields = [
 ];
 ---
 
-<section class="s-open" id="decision-cases" aria-label={ui.howIBuild.casesLabel}>
+{/*
+  #31 — THE SECTION IS NAMED BY ITS HEADING, ONCE.
+
+  It carried `aria-label="判断事例"` and printed the same word again as a rail
+  label, which named the region twice for a screen reader and gave the document
+  outline no heading at all: the two decision cases were `h3`s hanging under
+  開発の前提, a section they are not part of. Now the word appears exactly once,
+  as the `<h2>` the outline needs, and `aria-labelledby` points the region at
+  it instead of repeating it.
+
+  It is drawn as the section head the rest of this page already uses — a mono
+  label on the 2px rule, the same instrument as ROLES above it. `.mo` outranks
+  `.ad h2` on every property that would have made it a 40px display line, so
+  the heading is a heading in the markup and unchanged on the page.
+*/}
+<section class="s-open" id="decision-cases" aria-labelledby={HEADING_ID}>
   <div class="page">
     <div class="tr">
       <div class="ins">
-        <span class="lb">{ui.howIBuild.casesLabel}</span>
         <span class="lb">{fill(ui.howIBuild.casesCount, { count: cases.length })}</span>
       </div>
       <div class="fld">
+        <div class="shead">
+          <h2 class="mo" id={HEADING_ID}><b>{ui.howIBuild.casesLabel}</b></h2>
+        </div>
         {
           cases.map((c) => (
             <article class="dc" data-decision-case={c.id} data-pr={c.prNumber}>

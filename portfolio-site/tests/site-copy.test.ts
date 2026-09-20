@@ -41,7 +41,20 @@ describe('site.json copy coverage', () => {
     assert.equal(paths.has('howIBuild.sourceRefs.1'), false);
     assert.equal(paths.has('stack.languages.1.work'), false);
     assert.equal(paths.has('hero.index'), false);
+    // #31 — 開発の前提 holds copy registry ids, not sentences
+    assert.equal(paths.has('howIBuild.premises.1'), false);
     for (const e of SITE_NON_SHIPPING) assert.ok(e.why.length > 0);
+  });
+
+  it('stops exempting a premise reference once it stops being an id', () => {
+    // #31. `premises` is exempt because it holds copy registry ids. A SENTENCE
+    // there is the defect the move to the registry fixed — copy sitting where
+    // no approval record can reach it — so the exemption lifts and the walk
+    // reports it as an unregistered shipping string.
+    assert.deepEqual(siteStrings({ howIBuild: { premises: ['method.premise.01'] } }), []);
+    assert.deepEqual(siteStrings({ howIBuild: { premises: ['前提です。'] } }), [
+      { path: 'howIBuild.premises.1', text: '前提です。' },
+    ]);
   });
 
   it('stops exempting a section index once it stops being a number', () => {
@@ -63,7 +76,7 @@ describe('site.json copy coverage', () => {
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
     assert.equal(managed.length, 2);
-    // 120 before #7, 183 after it, 167 after #8, 193 after #31. The jump was 02
+    // 120 before #7, 183 after it, 167 after #8, 191 after #31. The jump was 02
     // MORE PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and
     // lede: all of it copy the user approved in #6, entered where the section
     // content it belongs to already lives.
@@ -85,7 +98,14 @@ describe('site.json copy coverage', () => {
     // would be a regression is registering them here by writing an approval
     // event nobody signed — the reason the count has only ever moved by
     // exempting non-copy or by the owner approving a string.
-    assert.equal(unmanaged.length, 193);
+    //
+    // AND THE OTHER DIRECTION HAPPENED IN THE SAME ISSUE. #31's follow-up took
+    // 2 OFF by the legitimate route: `notClaimed`'s two sentences left
+    // site.json for the copy registry with a real approval event behind them
+    // (Issue #31 comment 5747908981), and `premises` now holds their ids —
+    // which are references, exempt for the same reason a work slug is. 193
+    // after the decision cases landed, 191 after the premises moved out.
+    assert.equal(unmanaged.length, 191);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -93,8 +113,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /193 件/);
-    // one finding, not 193 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /191 件/);
+    // one finding, not 191 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

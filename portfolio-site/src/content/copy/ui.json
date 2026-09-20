@@ -720,23 +720,23 @@
     }
   },
   {
-    "id": "ui.howIBuild.notClaimed",
-    "path": "howIBuild.notClaimed",
-    "text": "主張しないこと",
+    "id": "ui.howIBuild.premises",
+    "path": "howIBuild.premises",
+    "text": "開発の前提",
     "kind": "ui-system",
-    "route": "/",
-    "section": "02 HOW I BUILD",
-    "slot": "ブロック見出し",
-    "purpose": "主張しないことのブロック見出し。誤読防止の要。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」ブロックの見出し",
+    "purpose": "節が何を述べているかを言う見出し。旧「主張しないこと」は、下に並ぶ 2 文がどちらも否定の宣言だったことの言い換えでしかなかった。本人の決定で、節は実際の開発体制を述べてから公開内容の範囲を区切る形になり、見出しもその内容を指す語になった。境界そのものは 2 文目が保持している。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/art-direction/adbuild2.py:70"
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しとして「開発の前提」を指定"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
     }
   },
   {
@@ -2932,15 +2932,15 @@
     "kind": "ui-system",
     "route": "/how-i-build/",
     "section": "HOW I BUILD / 判断事例",
-    "slot": "rail 件数",
-    "purpose": "主事例の件数。`fill` で埋める導出値で、数字を書き写していない。",
+    "slot": "rail 件数（導出値）",
+    "purpose": "主事例の件数。`fill` が埋める導出値で、数字を書き写していない。本人が Issue #31 §8 で列挙した公開ラベル 9 語には含まれず、既存の count UI と同じ書式をもう 1 箇所へ適用したもの。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "source-derived",
       "claimType": "presentation",
       "sourceRefs": [
-        "Issue #31 comment 5747573639 §8（実装仕様が列挙した label）https://github.com/youshi-kanda/portfolio/issues/31#issuecomment-5747573639",
-        "portfolio-site/src/lib/content/ui.ts — stack.count / principles.count と同形"
+        "portfolio-site/src/lib/content/ui.ts — stack.count / principles.count と同じ導出 UI の書式（件数を literal で書かないための既存パターン）",
+        "portfolio-site/src/lib/content/ui.ts — howIBuild.workflowCount（同じ節が既に使っている {count} 書式）"
       ],
       "approvedBy": null,
       "approvedAt": null

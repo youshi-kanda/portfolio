@@ -482,6 +482,33 @@
 .ad .notclaim li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
                         background:var(--stop)}
 .ad .notclaim h4{color:var(--stop)}
+/* ------------------------------------- #31 開発の前提 (/how-i-build/ only)
+   `.notclaim` STAYS AND IS NOT RENAMED. It is still the right component in the
+   two places that still refuse something — the Case Study lead disclosure and
+   the technical page's scope boundary — and both draw the `--stop` accent
+   because both are telling a reader what is NOT here. HOW I BUILD stopped
+   being one of those (#31): its block now states how the work is done and then
+   bounds what the published content covers, so it gets its own class rather
+   than a red mark on a sentence that is not a refusal.
+
+   EVERY METRIC IS `.notclaim`'s. Same 30px lead, same hairline, same 18px
+   above the label, same 10.5px mono head, same 14.5px list, same 18px indent
+   and 9px tick. What changed is the accent: the head takes the supporting text
+   colour and the tick takes `--sig`, which is the tick the `intent` list
+   directly above it already draws. The two lists read as one thought instead
+   of as a statement followed by a warning.
+
+   `line-height:normal` is stated because the element is an `<h2>` now and
+   `.ad h2` would otherwise hand it 1.42. The `<h4>` it replaced inherited the
+   browser default, and this is that default, written down. */
+.ad .premise{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
+.ad .premise h2{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+                text-transform:uppercase;font-weight:700;line-height:normal;
+                color:var(--tx2);margin:0 0 14px}
+.ad .premise ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
+.ad .premise li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
+.ad .premise li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                       background:var(--sig)}
 /* ---- 03 stack: language → responsibility → work → framework */
 .ad .stk{border-top:2px solid var(--rule)}
 .ad .stk .srow{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:32px;
@@ -864,7 +891,12 @@
    section is spaced by the NEXT one's top padding, and this one has no next. */
 .ad #decision-cases{padding-bottom:96px}
 .ad .dc{padding:34px 0 0;border-top:1px solid var(--hair);max-width:720px}
-.ad .dc:first-child{padding-top:0;border-top:0}
+/* The first case opens directly under the section head, so it draws neither
+   the lead nor the rule: `.shead` has already put a 2px rule and 34px above it.
+   Written as an adjacent sibling rather than `:first-of-type` — the QA record
+   is an `<aside>` and would be the first of ITS type, which would have taken
+   the rule off the one block that needs it to read as separate. */
+.ad .shead + .dc{padding-top:0;border-top:0}
 .ad .dc + .dc{margin-top:34px}
 .ad .dc-t{font-size:clamp(21px,1.8vw,26px);line-height:1.45;letter-spacing:-.016em;
           margin:0 0 20px;max-width:30ch}

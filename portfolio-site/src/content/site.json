@@ -146,9 +146,9 @@
       "学習中の言語・Framework・Architecture、仕様逸脱、重要判断については、Human involvement を厚くする。",
       "定型的・低学習価値の作業は、将来的に Selective Harness Engineering へ移行できる。"
     ],
-    "notClaimed": [
-      "完全自動の Multi-Agent 開発をしているとは主張しない。",
-      "Harness を構築済みであるとは主張しない。"
+    "premises": [
+      "method.premise.01",
+      "method.premise.02"
     ],
     "decisionCases": [
       {

@@ -17,6 +17,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
+import { APPROVED_TEXT, APPROVAL_BATCHES } from '../src/lib/content/approved-text.ts';
 import { publicPrUrl } from '../src/lib/content/derive.ts';
 import { loadCopy, loadUiCopy } from '../src/lib/content/load.ts';
 import { site, siteStrings } from '../src/lib/content/site.ts';
@@ -31,6 +32,7 @@ const src = (path: string): string =>
 
 const CASES_COMPONENT = src('components/home/HowIBuildCases.astro');
 const TOP_COMPONENT = src('components/navigation/ScrollToTop.astro');
+const METHOD_COMPONENT = src('components/home/HowIBuild.astro');
 const PAGE = src('pages/how-i-build.astro');
 
 /** Everything one case states, as one string — the body a reader gets. */
@@ -64,6 +66,7 @@ const markupOf = (component: string): string => {
 
 const CASES_MARKUP = markupOf(CASES_COMPONENT);
 const TOP_MARKUP = markupOf(TOP_COMPONENT);
+const METHOD_MARKUP = markupOf(METHOD_COMPONENT);
 const PAGE_MARKUP = markupOf(PAGE);
 
 describe('#31 判断事例 — 件数と PR の割り当て', () => {
@@ -273,14 +276,242 @@ describe('#31 AI と Human の境界 — 出所を推測しない', () => {
     );
   });
 
-  it('既存の notClaimed 2 件が維持されている', () => {
-    assert.equal(h.notClaimed.length, 2);
-    assert.match(h.notClaimed.join('\n'), /完全自動の Multi-Agent 開発をしているとは主張しない。/);
-    assert.match(h.notClaimed.join('\n'), /Harness を構築済みであるとは主張しない。/);
-    // 工程表・役割・intent も弱体化しない（#31 §2 / §13）
+  it('既存の工程表・役割・intent が維持されている', () => {
+    // #31 §2 / §13。前提の節は置き換わったが、その上の 3 つは触っていない。
     assert.equal(h.workflow.length, 8);
     assert.equal(h.roles.length, 3);
     assert.equal(h.intent.length, 3);
+  });
+});
+
+/**
+ * #31 追加 Human Decision（comment 5747908981）— 「開発の前提」。
+ *
+ * 置き換えたのは framing であって境界ではない、というのがこの Issue の主張で、
+ * 主張である以上は固定しておく対象である。旧 `notClaimed` の 2 文は
+ * 「…とは主張しない。」という否定の宣言で、site.json に座っていて承認記録を
+ * 持てなかった。新しい 2 文は、実際の体制を述べてから公開内容の範囲を区切り、
+ * 本人の承認を持つ copy registry の行として出る。
+ *
+ * ここで守るのは 3 つ: 旧文言が公開面に残っていないこと、新しい 2 文が
+ * 一字一句そのままであること、そして 2 文目が旧 2 文の境界——完全自動の
+ * Multi-Agent 開発と構築済み Harness——を今も対象外にしていること。
+ */
+describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説明へ', () => {
+  const PREMISE_IDS = ['method.premise.01', 'method.premise.02'];
+  const APPROVED_AT = '2026-09-20T05:37:32Z';
+  /** 本人承認コメントの文言そのまま（Issue #31 comment 5747908981）。 */
+  const PREMISE_TEXT = [
+    'Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。',
+    '現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。',
+  ];
+  /** 置き換えられた公開文言。どれも公開面に残っていてはならない。 */
+  const RETIRED = [
+    '主張しないこと',
+    '完全自動の Multi-Agent 開発をしているとは主張しない。',
+    'Harness を構築済みであるとは主張しない。',
+  ];
+
+  const shippingStrings = (): { where: string; text: string }[] => [
+    ...siteStrings().map((s) => ({ where: `site.${s.path}`, text: s.text })),
+    ...uiStrings().map((s) => ({ where: `ui.${s.path}`, text: s.text })),
+    ...loadCopy().map((c) => ({ where: `copy/${c.id}`, text: c.text })),
+    ...loadUiCopy().map((c) => ({ where: `copy/${c.id}`, text: c.text })),
+  ];
+
+  it('premises は 2 件で、copy registry の id を持つ', () => {
+    assert.deepEqual([...h.premises], PREMISE_IDS);
+    assert.equal('notClaimed' in h, false, 'notClaimed が schema に残っている');
+  });
+
+  it('本人承認済みの 2 文が完全一致で registry にある', () => {
+    const rows = loadCopy();
+    for (const [i, id] of PREMISE_IDS.entries()) {
+      const row = rows.find((r) => r.id === id);
+      assert.ok(row, `${id} が shipping registry に無い`);
+      assert.equal(row.text, PREMISE_TEXT[i], `${id} の文言が承認済みの文と違う`);
+      assert.equal(APPROVED_TEXT[id], PREMISE_TEXT[i], `${id} が承認スナップショットと違う`);
+    }
+  });
+
+  it('2 文とも authored fact として、根拠と承認者を持つ', () => {
+    const rows = loadCopy();
+    for (const id of PREMISE_IDS) {
+      const p = rows.find((r) => r.id === id)!.publication;
+      assert.equal(p.claimType, 'fact');
+      assert.equal(p.sourceType, 'authored');
+      assert.equal(p.reviewStatus, 'approved');
+      assert.equal(p.approvedBy, 'user');
+      assert.equal(p.approvedAt, APPROVED_AT);
+      assert.ok(p.sourceRefs.length > 0, `${id} に根拠が無い`);
+      assert.ok(
+        p.sourceRefs.some((r) => r.includes('5747908981')),
+        `${id} が承認コメントを根拠に挙げていない`,
+      );
+    }
+  });
+
+  it('承認バッチが 3 件をこの 1 回の機会として記録している', () => {
+    const batch = APPROVAL_BATCHES.find((b) => b.ids.includes('method.premise.01'));
+    assert.ok(batch);
+    assert.equal(batch.by, 'user');
+    assert.equal(batch.at, APPROVED_AT);
+    assert.deepEqual([...batch.ids], [...PREMISE_IDS, 'ui.howIBuild.premises']);
+    assert.match(batch.task, /Issue #31 comment 5747908981/);
+  });
+
+  it('公開見出しが「開発の前提」である', () => {
+    assert.equal(ui.howIBuild.premises, '開発の前提');
+    assert.equal('notClaimed' in ui.howIBuild, false, 'notClaimed のラベルが残っている');
+    const row = loadUiCopy().find((r) => r.path === 'howIBuild.premises');
+    assert.ok(row);
+    assert.equal(row.text, '開発の前提');
+    assert.equal(row.publication.approvedBy, 'user');
+    assert.equal(row.publication.approvedAt, APPROVED_AT);
+  });
+
+  it('置き換えられた公開文言が、出荷文字列のどこにも残っていない', () => {
+    const offenders = shippingStrings().filter((s) =>
+      RETIRED.some((r) => s.text.includes(r)),
+    );
+    assert.deepEqual(offenders.map((s) => `${s.where}: ${s.text}`), []);
+  });
+
+  it('誇張防止の境界は消えていない — 2 文目が同じ 2 つを対象外にしている', () => {
+    // 見出しを変えたぶん、境界が一緒に落ちていないかを見る。#31 の決定は
+    // 「否定形だけを前面に出す構成から置き換える」であって、削除ではない。
+    const bound = PREMISE_TEXT[1]!;
+    assert.match(bound, /完全自動の Multi-Agent 開発/);
+    assert.match(bound, /Harness/);
+    assert.match(bound, /前提としたものではありません。/);
+  });
+
+  it('component は本文を直書きせず、id を registry で解決する', () => {
+    for (const text of PREMISE_TEXT) {
+      assert.equal(
+        METHOD_COMPONENT.includes(text),
+        false,
+        '承認済みの文が component に直書きされている',
+      );
+    }
+    assert.match(METHOD_COMPONENT, /copyText\(id\)/);
+    assert.match(METHOD_COMPONENT, /site\.howIBuild\.premises/);
+  });
+});
+
+/**
+ * #31 追加 Human Decision — document outline。
+ *
+ * 期待する形は 1 つしかない:
+ *
+ *   h1 HOW I BUILD
+ *   ├─ h2 開発の前提
+ *   └─ h2 判断事例
+ *      ├─ h3 PR #20
+ *      ├─ h3 PR #18
+ *      └─ h3 PR #19 QA
+ *
+ * 判断事例が h2 でなければ、その下の 3 件は「開発の前提」——この site が
+ * 主張していないことを述べる節——の配下として読まれる。見出しの深さが 1 段
+ * ずれているだけに見えて、意味は反転する。
+ *
+ * 描画後の実レベルは `check:structure` の HOW_OUTLINE が dist に対して数える。
+ * ここで見るのは source 側の契約である。
+ */
+describe('#31 見出し階層 — 判断事例は開発の前提の配下ではない', () => {
+  it('「開発の前提」が実 h2 として出る', () => {
+    assert.match(METHOD_MARKUP, /<h2 aria-level=\{heading \? 3 : undefined\}>\{ui\.howIBuild\.premises\}<\/h2>/);
+    // 見た目は変えない: `.premise h2` が mono 10.5px を宣言し直しているので
+    // `.ad h2` の 40px display は当たらない。
+    const css = src('styles/components.css');
+    assert.match(css, /\.ad \.premise h2\{font-family:var\(--f-mono\);font-size:10\.5px/);
+  });
+
+  it('「判断事例」が実 h2 として出て、aria-label と二重にならない', () => {
+    assert.match(CASES_MARKUP, /<h2 class="mo" id=\{HEADING_ID\}><b>\{ui\.howIBuild\.casesLabel\}<\/b><\/h2>/);
+    assert.equal(
+      /aria-label=\{ui\.howIBuild\.casesLabel\}/.test(CASES_MARKUP),
+      false,
+      '同じ語が aria-label と heading の両方にある',
+    );
+    assert.match(CASES_MARKUP, /aria-labelledby=\{HEADING_ID\}/);
+    // rail から重複した語が外れ、件数だけが残っている
+    assert.equal(
+      /<span class="lb">\{ui\.howIBuild\.casesLabel\}<\/span>/.test(CASES_MARKUP),
+      false,
+      'rail が heading と同じ語を繰り返している',
+    );
+    assert.match(CASES_MARKUP, /<span class="lb">\{fill\(ui\.howIBuild\.casesCount/);
+  });
+
+  it('事例と QA は h3 で、すべて h2 の後に出る', () => {
+    // source の `<h3` は 2 つ（`cases.map` の中と QA の aside）で、描画されると
+    // 3 つになる。描画後の 1 2 2 3 3 3 は check:structure の HOW_OUTLINE が
+    // dist に対して数えており、ここで見るのは「h3 しか使っていないこと」と
+    // 「どれも h2 より後にあること」——つまり 3 件がこの節の配下であること。
+    const h3s = [...CASES_MARKUP.matchAll(/<h3\b/g)];
+    assert.equal(h3s.length, 2);
+    assert.equal([...CASES_MARKUP.matchAll(/<h([1-6])\b/g)].length, 3, 'h2 1 つ + h3 2 つ');
+    assert.equal([...CASES_MARKUP.matchAll(/<h2\b/g)].length, 1);
+    const h2at = CASES_MARKUP.indexOf('<h2');
+    for (const m of h3s) assert.ok(m.index! > h2at, 'h3 が h2 より前に出ている');
+  });
+
+  it('ページの h1 は 1 つだけで、node は追加していない', () => {
+    assert.equal([...PAGE_MARKUP.matchAll(/<h1\b/g)].length, 1);
+    assert.equal([...PAGE_MARKUP.matchAll(/<h2\b/g)].length, 0);
+  });
+});
+
+/**
+ * #31 — `casesCount` の根拠。
+ *
+ * 本人が §8 で列挙した 9 語は公開ラベルであり、`{count} 件` はその中に無い。
+ * 列挙されていないものを「列挙された」と書けば、それは出所の捏造である——
+ * この PR が事例本文について守っているのと同じ規則が、自分の registry 行にも
+ * 適用される。
+ */
+describe('#31 casesCount — 本人指定のラベル一覧を根拠にしない', () => {
+  const row = () => {
+    const r = loadUiCopy().find((x) => x.path === 'howIBuild.casesCount');
+    assert.ok(r, 'ui.howIBuild.casesCount の行が無い');
+    return r;
+  };
+
+  it('§8 の label 一覧を sourceRef に挙げていない', () => {
+    for (const ref of row().publication.sourceRefs) {
+      assert.equal(
+        /5747573639/.test(ref),
+        false,
+        `casesCount が §8 の label 一覧を根拠にしている: ${ref}`,
+      );
+    }
+  });
+
+  it('既存の count UI パターンを根拠にしている', () => {
+    const refs = row().publication.sourceRefs;
+    assert.ok(refs.length > 0);
+    assert.ok(
+      refs.some((r) => r.includes('stack.count') && r.includes('principles.count')),
+      '既存の導出 UI パターンを根拠に挙げていない',
+    );
+  });
+
+  it('本人指定の 9 語の側は、その根拠を持ったままである', () => {
+    const rows = loadUiCopy();
+    const NAMED = [
+      'casesLabel', 'caseProblem', 'caseObserved', 'caseDecision',
+      'caseResult', 'caseVerification', 'openPr', 'qaLabel', 'toTop',
+    ];
+    for (const key of NAMED) {
+      const r = rows.find((x) => x.path === `howIBuild.${key}`);
+      assert.ok(r, `howIBuild.${key} の行が無い`);
+      assert.ok(
+        r.publication.sourceRefs.some((ref) => ref.includes('5747573639')),
+        `howIBuild.${key} が §8 の label 一覧を根拠に挙げていない`,
+      );
+    }
+    assert.equal(NAMED.length, 9);
   });
 });
 

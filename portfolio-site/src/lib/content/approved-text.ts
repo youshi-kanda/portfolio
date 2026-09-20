@@ -230,6 +230,41 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-20T01:11:07Z',
     ids: Object.freeze(['home.works.sourceWithheld']),
   }),
+  /**
+   * Issue #31 追加 Human Decision — HOW I BUILD の「開発の前提」。
+   *
+   * これは REWORD ではなく REPLACEMENT である。置き換わったのは
+   * `site.howIBuild.notClaimed` の 2 文——「完全自動の Multi-Agent 開発を
+   * しているとは主張しない。」「Harness を構築済みであるとは主張しない。」——で、
+   * どちらも承認バッチにも APPROVED_TEXT にも無かった。site.json の節内容として
+   * 出ていた文であり、registry の外にいたからである（`W-SITE-UNMANAGED` が
+   * 数えていた backlog のうちの 2 件）。なので「id が旧バッチから移動する」
+   * 話ではなく、**registry の外にあった文が、承認を持って registry の中へ入る**
+   * のがこのバッチである。
+   *
+   * 否定の境界線は消えていない。2 文目が同じ 2 つの主張——完全自動の
+   * Multi-Agent 開発と、構築済み Harness の運用——を名指しで対象外にしている。
+   * 変わったのは順序で、「何を主張しないか」を先に読ませる構成から、
+   * 「実際にどうやっているか」を述べてからその範囲を区切る構成になった。
+   *
+   * `at` は承認コメント Issue #31 comment 5747908981 の作成時刻。本人が
+   * 公開見出しと公開本文 2 文を確定文として記載している。
+   *
+   * 見出し `開発の前提` も同じバッチにある。本人がこのコメントで指定した語で、
+   * ui.json 側の行として出るため APPROVED_TEXT には入らない——この snapshot が
+   * 守っているのは `approvedCopyGate` が読む shipping registry であり、
+   * ui 行の一致は approved-copy.test.ts が両 registry を跨いで見ている。
+   */
+  Object.freeze({
+    task: 'ISSUE-31-DEV-PREMISES (Issue #31 comment 5747908981)',
+    by: 'user',
+    at: '2026-09-20T05:37:32Z',
+    ids: Object.freeze([
+      'method.premise.01',
+      'method.premise.02',
+      'ui.howIBuild.premises',
+    ]),
+  }),
 ]);
 
 /**
@@ -296,6 +331,13 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // 確実に言えることだけを述べる: コードが存在しないとも、非公開 repository が
   // あるとも言っていない。
   "home.works.sourceWithheld": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
+
+  // Issue #31 — /how-i-build/ の「開発の前提」。順序が内容である: 1 文目が
+  // 実際の開発体制を述べ、2 文目がその公開内容の対象範囲を区切る。2 文目は
+  // 旧 `notClaimed` が名指ししていた 2 つ（完全自動の Multi-Agent 開発 /
+  // 構築済み Harness）をそのまま対象外に保っている。
+  "method.premise.01": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
+  "method.premise.02": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
 
   "home.works.h2": "何のためのサービスを、どこまで実装したのか。",
   "home.works.lede": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",
