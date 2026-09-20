@@ -388,21 +388,37 @@
       "AI は目的ではなく、検索・判断支援・自動化など、業務に効果がある部分へ組み込みます。",
       "自動処理や AI に任せる範囲と、人が判断する範囲を分けて設計します。"
     ],
-    "known": [
+    "profile": [
       {
-        "key": "実装形態",
-        "value": "個人開発。AI CRM Demo は画面・API・データベース・AI 呼び出し・権限・テストまで 1 人で実装している。",
-        "sourceRef": "spec CS-8"
+        "id": "experience",
+        "labelId": "ui.about.experienceLabel",
+        "copyId": "home.about.experience",
+        "sourceRefs": [
+          "Issue #32 comment 5748116465（HD-C 確定 2026-09-20T06:25:47Z）— 年数を出さず、現場から営業までの業務フロー理解と現在の要件整理・システム化への接続を公開する",
+          "Issue #32 comment 5748161578（本人承認 2026-09-20T06:35:42Z）— ABOUT 3 ブロックの公開文面確定"
+        ]
+      }
+    ],
+    "disclosure": [
+      {
+        "id": "published-work",
+        "labelId": "ui.about.disclosureLabel",
+        "copyId": "home.about.disclosure",
+        "sourceRefs": [
+          "Issue #29 comment 5742687087（本人確認済み作品メタデータ 2026-09-19）— 共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ / 自主開発 / PoC の分類",
+          "work/agri ／ work/crm ／ work/ops — portfolioProfile が共同プロジェクトの公開用再構成・個人開発の技術デモ・自主開発の PoC をそれぞれ記録している作品",
+          "Issue #32 comment 5748161578（本人承認 2026-09-20T06:35:42Z）"
+        ]
       },
       {
-        "key": "公開範囲",
-        "value": "私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。",
-        "sourceRef": "spec CS-8 ／ ai-crm-demo/README.md"
-      },
-      {
-        "key": "データ",
-        "value": "掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。",
-        "sourceRef": "各 README ／ PUBLISH-MAP.md"
+        "id": "synthetic-data",
+        "labelId": "ui.about.dataLabel",
+        "copyId": "home.about.syntheticData",
+        "sourceRefs": [
+          "各作品の README ／ PUBLISH-MAP.md — 掲載画面が合成データであることの旧 about 行が持っていた根拠",
+          "site.synthetic — 全作品ページに出ている合成データの表明",
+          "Issue #32 comment 5748161578（本人承認 2026-09-20T06:35:42Z）"
+        ]
       }
     ]
   },

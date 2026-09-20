@@ -265,6 +265,47 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.howIBuild.premises',
     ]),
   }),
+  /**
+   * Issue #32 Phase 9-4 — ABOUT の業務経験と公開境界。
+   *
+   * 別の occasion である。#31 のバッチ（05:37:32Z）が承認したのは
+   * /how-i-build/ の「開発の前提」2 文で、ABOUT の文ではない。同じ日の 1 時間
+   * 後に、本人が別のコメントで ABOUT 3 ブロックを確定している。`at` はその
+   * 承認コメント Issue #32 comment 5748161578 の作成時刻で、issue の
+   * created_at でも commit 時刻でもない。
+   *
+   * 6 件が 1 つの機会に入っているのは、本人がこのコメントで見出し 3 語と
+   * 本文 3 件をまとめて確定文として記載しているからである。ラベル 3 件は
+   * ui.json の行なので APPROVED_TEXT には入らない——`ui.howIBuild.premises` と
+   * 同じで、両 registry を跨ぐ一致は approved-copy.test.ts が見ている。
+   *
+   * REWORD ではなく RETIREMENT + NEW である。置き換わった 3 行——
+   * 実装形態 / 公開範囲 / データ——は site.json の節内容として出ていた文で、
+   * どの承認バッチにも APPROVED_TEXT にも無かった（`W-SITE-UNMANAGED` が
+   * 数えていた backlog の 3 件）。だから旧バッチから移動する id は無く、
+   * 旧文言は退役文字列として `check:structure` の RETIRED_PUBLIC_COPY が
+   * 公開面から締め出す側に置いた。旧文を新しいバッチに書き写せば、本人が
+   * 読んでいない文を今日の承認として記録することになる。
+   *
+   * 退役の理由は文体ではなく事実である。旧 `実装形態` 行は Portfolio 全体を
+   * 「個人開発」と言っていて、#29 が共同プロジェクトの公開用再構成を
+   * 本人確認済みの事実として記録した時点で成り立たない。公開境界そのものは
+   * 消えていない——合成データの表明は `home.about.syntheticData` が、
+   * 公開範囲の説明は `home.about.disclosure` が引き継いでいる。
+   */
+  Object.freeze({
+    task: 'ISSUE-32-ABOUT-PROFILE (Issue #32 comment 5748161578)',
+    by: 'user',
+    at: '2026-09-20T06:35:42Z',
+    ids: Object.freeze([
+      'home.about.experience',
+      'home.about.disclosure',
+      'home.about.syntheticData',
+      'ui.about.experienceLabel',
+      'ui.about.disclosureLabel',
+      'ui.about.dataLabel',
+    ]),
+  }),
 ]);
 
 /**
@@ -303,6 +344,22 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // on: GitHub is where the work can be READ, and this site still publishes no
   // way to send anyone a message (U-01).
   "home.about.h2": "業務要件を整理し、設計から実装・運用まで形にする。",
+
+  // Issue #32 — ABOUT の 3 ブロック。読み順が内容である: 現在の開発姿勢
+  // (`about.now`) → 業務経験 → 掲載内容の公開境界。旧 3 行は「これは本物では
+  // ない」が 3 本並ぶ構造で、業務背景はサイトのどこにも無かった。
+  //
+  // 年数は入っていない。HD-C の決定で、「製造業で約 12 年間」のような年数表現は
+  // ABOUT に出さず、出すのは現場から営業までの業務フロー理解と、それが現在の
+  // 要件整理・システム化へ接続していることだけである。勤務先名・顧客名・
+  // 発注元名・取引先名も無い。
+  //
+  // 2 件目が使う分類語——共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ
+  // / 自主開発 / PoC——は #29 の本人確認済み metadata の語で、ABOUT のために
+  // 新しい軸を作っていない。
+  "home.about.experience": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
+  "home.about.disclosure": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。担当範囲と到達状態は作品ごとに記載しています。",
+  "home.about.syntheticData": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
 
   // U-01 — PR #17 comment 5651971896. The address and the label that says what
   // it is for. The CTA that uses them is ui chrome and lives in ui.json.

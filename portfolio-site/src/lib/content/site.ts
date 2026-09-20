@@ -24,6 +24,29 @@ const railed = {
   railLabels: z.array(z.string().min(1)),
 };
 
+/**
+ * #32 — one ABOUT block: a visible label, a body, and where both came from.
+ *
+ * `labelId` / `copyId` are REGISTRY IDS. The two strings a reader sees are
+ * approved copy (Issue #32 comment 5748161578) and live in the registries that
+ * hold their approval records; what this file holds is which block appears,
+ * in what order, and on what sourcing. Writing either string here would put an
+ * approved sentence where `approvedCopyGate` cannot see it, which is the defect
+ * #31 fixed for 開発の前提 and the one #32 would otherwise reintroduce.
+ *
+ * `.strict()`, so a `value` or a `text` field added back is an error rather
+ * than a second home for the body.
+ */
+const aboutBlock = z
+  .object({
+    /** Stable within the section. Not rendered; it names the block in a diff. */
+    id: z.string().min(1),
+    labelId: z.string().min(1),
+    copyId: z.string().min(1),
+    sourceRefs: z.array(z.string().min(1)).min(1),
+  })
+  .strict();
+
 const siteSchema = z.object({
   handle: z.string().min(1),
   kicker: z.string().min(1),
@@ -257,26 +280,65 @@ const siteSchema = z.object({
    * has to be a decision someone takes on purpose rather than a field someone
    * fills in.
    *
-   * `known` carries `sourceRef` per row and that stays required: a profile fact
-   * without a locator is the thing this whole section exists to prevent.
+   * EVERY ABOUT BLOCK CARRIES ITS OWN LOCATORS AND THAT STAYS REQUIRED: a
+   * profile fact without one is the thing this whole section exists to prevent.
+   * What changed in #32 is where the SENTENCE lives, not whether the record has
+   * to say where it came from.
    */
   about: z
     .object({
       ...railed,
       /**
        * #7 — the short statement of how this engineer works, which ABOUT did
-       * not have. `known` stays exactly as it was and moves below it: the
-       * premises were never the introduction, they were the fine print under
-       * one.
+       * not have. It opens the section: the rest of ABOUT is read after it, not
+       * as the fine print above it.
        */
       now: z.array(z.string().min(1)).min(1),
-      known: z.array(
-        z.object({
-          key: z.string().min(1),
-          value: z.string().min(1),
-          sourceRef: z.string().min(1),
-        }),
-      ),
+      /**
+       * #32 — 業務経験. A PROFILE FACT, not a disclaimer, and that distinction
+       * is the reason it is its own field rather than a row in the list below.
+       *
+       * ABOUT used to end on three rows — 実装形態 / 公開範囲 / データ — which
+       * were all the same kind of statement: what this site is NOT claiming.
+       * A reader met the caveats and never met the person, and there was no
+       * line about the owner's working background anywhere on the site. The
+       * owner decided what that line says (HD-C, Issue #32 comment 5748116465)
+       * and approved its wording (comment 5748161578); giving it a field of its
+       * own is what keeps it from being drawn, coloured and read as a fourth
+       * caveat.
+       *
+       * HOLDS IDS, NOT SENTENCES — the shape `premises` took in #31, for the
+       * same reason. `copyId` names the approved body in the shipping registry
+       * and `labelId` names its visible label in the ui registry, so the
+       * sentence sits where its approval record sits and this file owns the
+       * order and the sourcing. `copyText` throws on an id the registry does
+       * not hold, so a block pointing at nothing fails the build rather than
+       * rendering an empty row.
+       *
+       * `sourceRefs` is required and non-empty per block. It is the half of the
+       * old `known` contract that had nothing to do with where the sentence was
+       * stored: a fact on this page says where it came from, whether the words
+       * are here or in a registry.
+       */
+      profile: z.array(aboutBlock).min(1),
+      /**
+       * #32 — 掲載内容について / 公開データ. The compliance half, compressed
+       * into ONE block instead of three rows standing on their own.
+       *
+       * Nothing was dropped to compress it. 合成データ is still stated here, and
+       * the scope sentence now says what #29 established — that the published
+       * work includes a collaborative project rebuilt for publication, personal
+       * technical demos and a self-directed PoC — where the old 実装形態 row
+       * said 個人開発 of the whole portfolio, which stopped being true when #29
+       * recorded the collaborative half.
+       *
+       * Separate from `profile` because the two are drawn differently and the
+       * count of each is a rendering contract (`ABOUT_DISCLOSURE_ROWS`). One
+       * list with a `kind` discriminator would put the editorial decision —
+       * this is a fact about me, that is a boundary about the page — inside a
+       * field a renderer has to branch on.
+       */
+      disclosure: z.array(aboutBlock).min(2),
     })
     .strict(),
   contact: z
@@ -364,6 +426,33 @@ export const SITE_NON_SHIPPING: readonly SiteStringExemption[] = [
     why:
       'copy registry の id。承認済みの文は shipping.json にあり、ここにあるのは ' +
       '「どの文をどの順で出すか」という参照 — id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
+  },
+  /*
+   * #32 — ABOUT の各ブロックが指す registry id。
+   *
+   * `premise` と同じ理由・同じ条件で免除する。読者が読むのは registry が持つ
+   * 承認済みの文とラベルで、ここにあるのは「どれをどの順で出すか」という参照
+   * である。`labelId` / `copyId` という名前で `label` / `copy` ではないのは、
+   * `sections.label` が nav に出る本物の出荷文字列だからで、`label` を免除すれば
+   * 節名が黙って gate の外へ出る。
+   *
+   * 条件付きである。id の形（小文字のドット区切り）をしていない値が入った瞬間、
+   * それは参照ではなく読ませる文なので免除が外れ、未登録の出荷文字列として
+   * 報告される — ABOUT の本文が site.json へ戻ってきたら、それがここで出る。
+   */
+  {
+    leaf: 'labelId',
+    why:
+      'ui registry の id。ABOUT のラベルは ui.json にあり、ここにあるのは参照 — ' +
+      'id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
+  },
+  {
+    leaf: 'copyId',
+    why:
+      'copy registry の id。ABOUT の本文は shipping.json にあり、ここにあるのは ' +
+      '参照 — id の形をしている間だけ免除する。',
     valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
   },
 ];

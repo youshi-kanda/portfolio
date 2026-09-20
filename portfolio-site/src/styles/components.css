@@ -813,6 +813,18 @@
 .ad .ab-now{max-width:62ch;margin-top:26px}
 .ad .ab-now p{font-size:17px;line-height:1.95;color:var(--tx);margin:0 0 14px}
 .ad .ab-now p:last-child{margin-bottom:0}
+/* #32 — the compliance block, one step quieter than the profile fact above it.
+   It is the SAME `.spx` table, so every responsive and desktop rule ABOUT
+   already has for `.spx.wide .r` applies unchanged — the label sits above the
+   sentence at every width, and the reading order is the DOM order.
+   What this modifier changes is emphasis and nothing else: a hairline where the
+   section rule is 2px, and the supporting text colour at the supporting size.
+   `--tx2`, not `--tx3`: the contrast contract holds --tx2 above AA on paper and
+   the type hierarchy test holds it stronger than --tx3, so "quieter" here costs
+   no legibility. No warning colour — `--stop` would tell a reader to discount a
+   statement about what the published work actually is. */
+.ad .spx.ab-disc{border-top:1px solid var(--hair2);margin-top:30px}
+.ad .spx.ab-disc .v{font-size:14.5px;color:var(--tx2)}
 
 /* -------------------------------------------------------------- CONTACT
    The band inverts, as the old contact footer did: it gives the scroll a

@@ -72,6 +72,21 @@
  *                         a page. A replaced string is not caught by any other
  *                         gate here — it is valid, it was once approved, and
  *                         every count still adds up with it present.
+ *   ABOUT_RETIRED_COPY    the #32 half of the same list, counted on its own so
+ *                         the contract Issue #32 asked for has a name: the
+ *                         three sentences ABOUT used to end on may not be
+ *                         anywhere on a public page.
+ *   ABOUT_EXPERIENCE      #32 — 06 ABOUT draws one profile-fact block per entry
+ *                         the section content declares, each carrying the
+ *                         APPROVED label and body its ids name. Derived from
+ *                         `site.about.profile`, so the count is content; what
+ *                         is held against a literal is only the editorial
+ *                         decision itself (one 業務経験 block, two disclosure
+ *                         rows), for the reason HOW_DECISION_CASES states.
+ *   ABOUT_DISCLOSURE_ROWS #32 — the compliance block, on the same terms. TWO,
+ *                         inside ONE container: 掲載内容について and 公開データ
+ *                         are read together, and a third row appearing here is
+ *                         ABOUT drifting back toward a column of caveats.
  *   HOW_DECISION_CASES    #31 — /how-i-build/ draws exactly the two decision
  *                         cases Issue #31 fixed, and the QA record is exactly
  *                         one. These four are stated as LITERALS, which nothing
@@ -119,7 +134,7 @@ import {
   workPublicSourceUrl,
 } from '../src/lib/content/derive.ts';
 import { workSourceIsLinkable } from '../src/lib/content/compat.ts';
-import { loadCopy, loadWorks } from '../src/lib/content/load.ts';
+import { loadCopy, loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
@@ -334,23 +349,53 @@ for (const route of PUBLIC_ROUTES) {
 // were the whole of it, and the boundary they drew is not gone — it is stated
 // by `method.premise.02` instead. What may not survive is the old wording
 // sitting somewhere this pass did not look.
-const RETIRED_PUBLIC_COPY: readonly { text: string; why: string }[] = [
-  { text: '主張しないこと', why: '#31 — 見出しは 開発の前提 に置き換わった' },
+//
+// #32 retired ABOUT's three closing rows. Only the SENTENCES are listed, not
+// their labels: 実装形態 is also `ui.technical.aboutFields.role` and still ships
+// on every Technical page, and 「データ」 is a substring of half the synthetic
+// data copy on the site — a literal that matches a string which is still
+// correct somewhere else does not check retirement, it just fails.
+//
+// The boundary those three drew is not gone either. `home.about.disclosure`
+// states the publication scope and `home.about.syntheticData` states the
+// synthetic data; what is retired is the wording, including the claim that the
+// whole portfolio is 個人開発, which #29 established it is not.
+const RETIRED_PUBLIC_COPY: readonly { text: string; why: string; issue: '#31' | '#32' }[] = [
+  { text: '主張しないこと', why: '#31 — 見出しは 開発の前提 に置き換わった', issue: '#31' },
   {
     text: '完全自動の Multi-Agent 開発をしているとは主張しない。',
     why: '#31 — method.premise.02 が同じ境界を述べている',
+    issue: '#31',
   },
   {
     text: 'Harness を構築済みであるとは主張しない。',
     why: '#31 — 同上',
+    issue: '#31',
+  },
+  {
+    text: '個人開発。AI CRM Demo は画面・API・データベース・AI 呼び出し・権限・テストまで 1 人で実装している。',
+    why: '#32 — Portfolio 全体を個人開発と言う行。#29 が共同プロジェクトを記録した時点で成り立たない',
+    issue: '#32',
+  },
+  {
+    text: '私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。',
+    why: '#32 — home.about.disclosure が公開範囲を述べている',
+    issue: '#32',
+  },
+  {
+    text: '掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。',
+    why: '#32 — home.about.syntheticData が同じ表明を持っている',
+    issue: '#32',
   },
 ];
 let RETIRED_COPY_HITS = 0;
+let ABOUT_RETIRED_COPY = 0;
 for (const route of PUBLIC_ROUTES) {
   const html = read(route);
   for (const retired of RETIRED_PUBLIC_COPY) {
     if (html.includes(retired.text)) {
       RETIRED_COPY_HITS += 1;
+      if (retired.issue === '#32') ABOUT_RETIRED_COPY += 1;
       failures.push(
         `RETIRED_PUBLIC_COPY: /${route.replace(/index\.html$/, '')} に「${retired.text}」が残っている — ${retired.why}`,
       );
@@ -429,6 +474,108 @@ expect('CONTACT_HELPER', CONTACT_HELPER, 1);
 // jobs (#8 §1) and collapsing either into the other is the regression.
 if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
   failures.push('CONTACT_EMAIL: GitHub 導線が CONTACT から消えている');
+}
+
+// ---- ABOUT_EXPERIENCE / ABOUT_DISCLOSURE_ROWS ----
+// #32. 06 ABOUT reads 現在の開発姿勢 → 業務経験 → 公開境界, and each block is
+// drawn from registry ids rather than from a sentence in the section content.
+// So there are two ways this can break that no count alone would see: a block
+// could render the right NUMBER of rows from text nobody approved, and the
+// visual order could disagree with the DOM order. The first is checked by
+// holding every rendered label and body against the registry row its id names;
+// the second cannot be checked here at all and is a viewport check — what IS
+// checked is that the DOM has label before body, and 業務経験 before the
+// disclosure block.
+const aboutAt = home.indexOf('id="about"');
+const aboutHtml = aboutAt < 0 ? '' : home.slice(aboutAt, home.indexOf('</section>', aboutAt));
+if (aboutHtml === '') failures.push('ABOUT: 06 ABOUT の section が artifact に無い');
+
+const strip = (html: string): string => html.replace(/<[^>]*>/g, '').trim();
+
+/** The rows one ABOUT block rendered, in artifact order, label and body apart. */
+const aboutRows = (attr: string): { id: string; label: string; body: string }[] =>
+  [
+    ...aboutHtml.matchAll(
+      new RegExp(`<div class="r"[^>]*\\s${attr}="([^"]+)"[^>]*>([\\s\\S]*?)</div>`, 'g'),
+    ),
+  ].map((m) => {
+    const inner = m[2] as string;
+    return {
+      id: m[1] as string,
+      label: strip(/<span class="k">([\s\S]*?)<\/span>/.exec(inner)?.[1] ?? ''),
+      body: strip(/<span class="v">([\s\S]*?)<\/span>/.exec(inner)?.[1] ?? ''),
+    };
+  });
+
+const aboutCopy = loadCopy();
+const aboutUiCopy = loadUiCopy();
+/** What the section content says a block must render — resolved the same way. */
+const aboutExpected = (
+  blocks: readonly { id: string; labelId: string; copyId: string }[],
+): { id: string; label: string; body: string }[] =>
+  blocks.map((b) => ({
+    id: b.id,
+    label: aboutUiCopy.find((r) => r.id === b.labelId)?.text ?? `(ui registry に ${b.labelId} が無い)`,
+    body: aboutCopy.find((r) => r.id === b.copyId)?.text ?? `(registry に ${b.copyId} が無い)`,
+  }));
+
+const renderedFacts = aboutRows('data-about-fact');
+const renderedDisclosure = aboutRows('data-about-disclosure');
+const ABOUT_EXPERIENCE = renderedFacts.length;
+const ABOUT_DISCLOSURE_ROWS = renderedDisclosure.length;
+
+expect('ABOUT_EXPERIENCE', ABOUT_EXPERIENCE, site.about.profile.length);
+expect('ABOUT_DISCLOSURE_ROWS', ABOUT_DISCLOSURE_ROWS, site.about.disclosure.length);
+expect(
+  'ABOUT_EXPERIENCE_TEXT',
+  JSON.stringify(renderedFacts),
+  JSON.stringify(aboutExpected(site.about.profile)),
+);
+expect(
+  'ABOUT_DISCLOSURE_TEXT',
+  JSON.stringify(renderedDisclosure),
+  JSON.stringify(aboutExpected(site.about.disclosure)),
+);
+
+// THE ONE LITERAL PAIR HERE, and it is the editorial decision rather than a
+// count. Issue #32 §6 fixes the shape: ONE 業務経験 block, and TWO rows inside
+// ONE compact disclosure container. The checks above prove the page renders
+// what the content declares; these prove the content still declares what was
+// decided — without them the file could say "four disclosure rows" and every
+// assertion above would pass on a section that had drifted back into a column
+// of caveats.
+expect('ABOUT_PROFILE_DECLARED', site.about.profile.length, 1);
+expect('ABOUT_DISCLOSURE_DECLARED', site.about.disclosure.length, 2);
+
+// One container, not two. The disclosure rows are read together, so a second
+// `.ab-disc` block would be the compression #32 asked for coming undone.
+expect('ABOUT_DISCLOSURE_BLOCKS', [...aboutHtml.matchAll(/class="spx wide ab-disc"/g)].length, 1);
+
+// Reading order, as the DOM has it: the profile fact comes before the
+// disclosure block, and inside every row the label comes before the body. The
+// visual order is not reordered in CSS — `.spx.wide .r` is a single-column grid
+// in source order at every width — so DOM order is reading order.
+if (aboutHtml.indexOf('data-about-fact') > aboutHtml.indexOf('data-about-disclosure')) {
+  failures.push('ABOUT_ORDER: 業務経験 が公開境界ブロックより後に出ている');
+}
+if (aboutHtml.indexOf('class="ab-now"') > aboutHtml.indexOf('data-about-fact')) {
+  failures.push('ABOUT_ORDER: about.now が業務経験より後に出ている');
+}
+
+// #32 — 業務経験 is a profile fact and is not drawn as a warning. `--stop` is
+// the site's alert pigment; ABOUT may not reach for it, and a large card or
+// banner class appearing in this section is the same regression in another
+// spelling.
+for (const forbidden of ['--stop', 'var(--stop)', 'class="alert', 'class="banner']) {
+  if (aboutHtml.includes(forbidden)) {
+    failures.push(`ABOUT_TONE: 06 ABOUT に ${forbidden} がある — 業務経験は警告ではない`);
+  }
+}
+
+// 年数表現。HD-C の決定は「ABOUT に年数を出さない」であって、書き方を変えれば
+// 通るものではない。数字 + 年 / ヶ月 の形を節ごと見る。
+for (const m of aboutHtml.matchAll(/(?<![0-9A-Za-z_])(約\s*)?\d+\s*(年間|年|ヶ月|か月)/g)) {
+  failures.push(`ABOUT_NO_TENURE: 06 ABOUT に年数表現「${m[0]}」がある（HD-C）`);
 }
 
 // ---- HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS ----
@@ -546,6 +693,9 @@ console.log(
     `PUBLIC_CODE_LINKS = ${PUBLIC_CODE_LINKS.length} / ` +
     `WITHHELD_URLS = ${WITHHELD_URLS} / ` +
     `RETIRED_PUBLIC_COPY = ${RETIRED_COPY_HITS} / ` +
+    `ABOUT_RETIRED_COPY = ${ABOUT_RETIRED_COPY} / ` +
+    `ABOUT_EXPERIENCE = ${ABOUT_EXPERIENCE} / ` +
+    `ABOUT_DISCLOSURE_ROWS = ${ABOUT_DISCLOSURE_ROWS} / ` +
     `HOW_PREMISES = ${HOW_PREMISES.length} / ` +
     `HOW_OUTLINE = ${HOW_OUTLINE.join(' ')} / ` +
     `HOW_DECISION_CASES = ${HOW_DECISION_CASES.length} (${HOW_DECISION_CASES.join(' ')}) / ` +

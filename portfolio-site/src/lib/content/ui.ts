@@ -256,6 +256,36 @@ export const ui = {
    * The removal is a deletion only. No replacement sentence was written, which
    * is what keeps PROFILE_INVENTED = NO true through the change.
    */
+
+  /**
+   * #32 — 06 ABOUT の 3 つのラベル.
+   *
+   * THE FIRST STRINGS ABOUT HAS EVER HAD IN THIS FILE, and they arrive under
+   * the rule the block above states rather than around it. The 未記入 labels
+   * were removed because a slot with a name and no value is a site listing what
+   * it does not have; these three name values that exist, are approved, and are
+   * the owner's own words (Issue #32 comment 5748161578).
+   *
+   * 業務経験 IS NOT A DISCLAIMER LABEL, and the ordering of this object says
+   * so: it comes first, above the two that bound what the page publishes. What
+   * ABOUT used to end with — 実装形態 / 公開範囲 / データ — was three labels for
+   * the same statement, and a reader met all three before meeting the person.
+   *
+   * 掲載内容について rather than 注意 or 免責: the block says what the published
+   * work IS (a collaborative project rebuilt for publication, personal technical
+   * demos, a self-directed PoC), and a label promising a disclaimer would make a
+   * reader read a fact as a hedge. Same for 公開データ against the old bare
+   * データ — the old label named a column, this one names the question.
+   *
+   * `presentation`, `authored`, with an approver. A label asserts nothing about
+   * the world so the matrix asks it for no basis; it does ask that a person
+   * chose the wording, and the person who chose it is the one who approved it.
+   */
+  about: {
+    experienceLabel: '業務経験',
+    disclosureLabel: '掲載内容について',
+    dataLabel: '公開データ',
+  },
   /*
    * #8 — CONTACT stopped ending on a disclaimer and started ending on a way in.
    *
@@ -449,6 +479,31 @@ export const ui = {
     designDocsHead: '設計文書の読む順',
   },
 } as const;
+
+/**
+ * A UI chrome string looked up by its REGISTRY ID — the `ui.` counterpart of
+ * `copyText`.
+ *
+ * #32 needed it because ABOUT's labels are named by `site.json` rather than
+ * reached through a component's own `ui.about.experienceLabel` expression: the
+ * section content states which block appears and what its label is, and a
+ * component that then hard-coded the property access would be deciding the
+ * second half of that pairing for itself.
+ *
+ * Accepts the id with its `ui.` prefix, which is how `ui.json` writes it, and
+ * resolves against the same walk the coverage gate uses — so an id that reaches
+ * here is by construction one that gate can see. A missing path THROWS rather
+ * than rendering an empty label, for the reason `copyText` does: a silently
+ * blank label is how a registry drifts out of use with nobody noticing.
+ */
+export function uiText(id: string): string {
+  const path = id.startsWith('ui.') ? id.slice('ui.'.length) : id;
+  const found = uiStrings().find((s) => s.path === path);
+  if (found === undefined) {
+    throw new Error(`ui inventory に ${id} が無い（src/content/copy/ui.json / lib/content/ui.ts）`);
+  }
+  return found.text;
+}
 
 /** `fill('{count} 件', { count: 3 })` → `'3 件'` */
 export function fill(template: string, values: Record<string, string | number>): string {

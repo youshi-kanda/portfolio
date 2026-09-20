@@ -25,7 +25,7 @@ describe('site.json copy coverage', () => {
       'howIBuild.workflow.1.name',
       'stack.languages.1.responsibility',
       'principles.spineBody',
-      'about.known.1.value',
+      'about.now.1',
     ]) {
       assert.ok(paths.includes(expected), `${expected} が対象に入っていない`);
     }
@@ -43,6 +43,12 @@ describe('site.json copy coverage', () => {
     assert.equal(paths.has('hero.index'), false);
     // #31 — 開発の前提 holds copy registry ids, not sentences
     assert.equal(paths.has('howIBuild.premises.1'), false);
+    // #32 — ABOUT の各ブロックも同じ。ラベルと本文は registry にあり、
+    // site.json が持つのは参照と出所である。
+    assert.equal(paths.has('about.profile.1.labelId'), false);
+    assert.equal(paths.has('about.profile.1.copyId'), false);
+    assert.equal(paths.has('about.disclosure.1.copyId'), false);
+    assert.equal(paths.has('about.disclosure.1.sourceRefs.1'), false);
     for (const e of SITE_NON_SHIPPING) assert.ok(e.why.length > 0);
   });
 
@@ -55,6 +61,24 @@ describe('site.json copy coverage', () => {
     assert.deepEqual(siteStrings({ howIBuild: { premises: ['前提です。'] } }), [
       { path: 'howIBuild.premises.1', text: '前提です。' },
     ]);
+  });
+
+  it('stops exempting an ABOUT block reference once it stops being an id', () => {
+    // #32. Same rule as `premises`, on the two leaves ABOUT added. The defect
+    // being guarded is the body coming back to site.json — where no approval
+    // record reaches it — under a field name that reads like a reference.
+    assert.deepEqual(
+      siteStrings({ about: { profile: [{ copyId: 'home.about.experience' }] } }),
+      [],
+    );
+    assert.deepEqual(
+      siteStrings({ about: { profile: [{ copyId: '製造現場から営業までの業務経験。' }] } }),
+      [{ path: 'about.profile.1.copyId', text: '製造現場から営業までの業務経験。' }],
+    );
+    assert.deepEqual(
+      siteStrings({ about: { disclosure: [{ labelId: '業務経験' }] } }),
+      [{ path: 'about.disclosure.1.labelId', text: '業務経験' }],
+    );
   });
 
   it('stops exempting a section index once it stops being a number', () => {
@@ -75,7 +99,7 @@ describe('site.json copy coverage', () => {
     const { copy, uiCopy } = loadAll();
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
-    assert.equal(managed.length, 2);
+    assert.equal(managed.length, 1);
     // 120 before #7, 183 after it, 167 after #8, 191 after #31. The jump was 02
     // MORE PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and
     // lede: all of it copy the user approved in #6, entered where the section
@@ -105,7 +129,18 @@ describe('site.json copy coverage', () => {
     // (Issue #31 comment 5747908981), and `premises` now holds their ids —
     // which are references, exempt for the same reason a work slug is. 193
     // after the decision cases landed, 191 after the premises moved out.
-    assert.equal(unmanaged.length, 191);
+    //
+    // #32 TOOK 5 MORE OFF BY THE SAME ROUTE, and MANAGED went 2 → 1 in the same
+    // move. ABOUT's three closing rows left site.json: the three sentences were
+    // unmanaged and are now registered with a real approval event behind them
+    // (Issue #32 comment 5748161578), and their three labels went with them.
+    // Two of those labels — 公開範囲 and データ — were unmanaged too; the third,
+    // 実装形態, was one of the two MANAGED strings, matched by text against
+    // `ui.technical.aboutFields.role`, which is a different label on a different
+    // page that happens to read the same. So 191 − 5 = 186 unmanaged and 2 − 1
+    // = 1 managed, and the section content that replaced them adds nothing to
+    // either count: ids and locators, exempt for the reasons stated above.
+    assert.equal(unmanaged.length, 186);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -113,8 +148,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /191 件/);
-    // one finding, not 191 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /186 件/);
+    // one finding, not 186 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

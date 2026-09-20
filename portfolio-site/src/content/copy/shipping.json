@@ -535,5 +535,68 @@
       "approvedBy": "user",
       "approvedAt": "2026-09-20T05:37:32Z"
     }
+  },
+  {
+    "id": "home.about.experience",
+    "text": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
+    "route": "/",
+    "section": "06 ABOUT / 業務経験",
+    "slot": "「業務経験」1 文 — 業務背景と現在の開発のつながり",
+    "purpose": "この engineer の業務背景を述べる。ABOUT には業務経験の記述が 1 行も無く、読み手からは注意書き 3 行しか見えていなかった。年数・勤務先・職務の列挙は出さない（HD-C）: 出すのは「現場から営業までの業務フローを理解していること」と「現在の要件整理・システム化へ接続していること」だけで、それ以上は職務経歴書側の仕事である。本人しか Authority を持たない経歴なので user-fact。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "user-fact",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #32 comment 5748116465（2026-09-20T06:25:47Z）— HD-C 確定。年数表現を使わず、この文を業務経験の基準文とする",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "home.about.disclosure",
+    "text": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。担当範囲と到達状態は作品ごとに記載しています。",
+    "route": "/",
+    "section": "06 ABOUT / 掲載内容について",
+    "slot": "「掲載内容について」1 ブロック — 掲載作品の成り立ちと、その読み方",
+    "purpose": "掲載作品がどういう成り立ちのものかを述べる。旧 `実装形態` 行は Portfolio 全体を「個人開発」と言っていて、#29 が共同プロジェクトの公開用再構成を本人確認済みの事実として記録した時点で成り立たなくなった。ここで使う分類語は #29 の metadata と同じもので、新しい軸を作っていない。2 文目は、成り立ちの違いを作品単位で読みに行けることを述べる。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #29 comment 5742687087（2026-09-19）— 本人確認済み作品メタデータ。共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ / 自主開発 / PoC の分類と、作品ごとの担当範囲・到達状態",
+        "work/agri",
+        "work/crm",
+        "work/ops",
+        "src/content/work/*.json portfolioProfile — agri が collaborative / public-reconstruction、crm が personal / technical-demo、ops が personal / poc。文が挙げる 3 種がそれぞれ実在する",
+        "ui.work.profileLabels — enum を読者向けの語にする唯一の対応表。この文が使う語はそこから来ている",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "home.about.syntheticData",
+    "text": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
+    "route": "/",
+    "section": "06 ABOUT / 公開データ",
+    "slot": "「公開データ」1 文 — 掲載画面のデータが何であるか",
+    "purpose": "掲載画面が合成データであることを述べる。旧 `データ` 行を圧縮したもので、表明そのものは削っていない: 実顧客情報を公開しないという理由と、合成データを使っているという事実の 2 つが残っている。「実顧客・実案件・本番運用の記録ではない」という否定形の列挙をやめたのは、同じ内容が理由の側から言えるからである。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "各作品の README ／ PUBLISH-MAP.md — 旧 about.known `データ` 行が根拠にしていた合成データの記録。圧縮しても根拠は引き継ぐ",
+        "site.synthetic — 作品ページ・Case Study・/how-i-build/ に出ている合成データの表明",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
   }
 ]

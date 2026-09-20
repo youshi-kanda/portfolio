@@ -32,11 +32,22 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all thirty approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 30);
+  it('covers all thirty-three approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 33);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email, guidance, withheld, premises] =
-      APPROVAL_BATCHES;
+    const [
+      homepage,
+      notFound,
+      v4,
+      workLede,
+      issue6,
+      issue8,
+      email,
+      guidance,
+      withheld,
+      premises,
+      about,
+    ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
         notFound &&
@@ -47,9 +58,10 @@ describe('approved copy gate', () => {
         email &&
         guidance &&
         withheld &&
-        premises,
+        premises &&
+        about,
     );
-    assert.equal(APPROVAL_BATCHES.length, 10);
+    assert.equal(APPROVAL_BATCHES.length, 11);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -158,6 +170,32 @@ describe('approved copy gate', () => {
     assert.match(premises.task, /Issue #31 comment 5747908981/);
     assert.notEqual(premises.at, withheld.at);
 
+    // #32 Phase 9-4 — ABOUT の業務経験と公開境界。同じ日の別の occasion である:
+    // #31 のバッチは 05:37:32Z に /how-i-build/ の 2 文を承認していて、ABOUT の
+    // 文は含まない。本人が 06:35:42Z の別コメントで見出し 3 語と本文 3 件を
+    // まとめて確定しているので、6 件が 1 バッチに入る。
+    //
+    // REWORD ではない。置き換わった 3 行は site.json の節内容として出ていた文で、
+    // どのバッチにも APPROVED_TEXT にも無かった——だから旧バッチから移動する id
+    // は無く、旧文言は退役文字列として check:structure が公開面から締め出す。
+    assert.deepEqual(
+      [about.by, about.at, [...about.ids]],
+      [
+        'user',
+        '2026-09-20T06:35:42Z',
+        [
+          'home.about.experience',
+          'home.about.disclosure',
+          'home.about.syntheticData',
+          'ui.about.experienceLabel',
+          'ui.about.disclosureLabel',
+          'ui.about.dataLabel',
+        ],
+      ],
+    );
+    assert.match(about.task, /Issue #32 comment 5748161578/);
+    assert.notEqual(about.at, premises.at);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -181,6 +219,11 @@ describe('approved copy gate', () => {
     }
     const uiOnly = ids.filter((id) => !(id in APPROVED_TEXT));
     assert.deepEqual(uiOnly.sort(), [
+      // #32 — ABOUT の 3 ラベル。本人が本文 3 件と同じコメントで指定した語で、
+      // ui.json の行なのでここに来る。
+      'ui.about.dataLabel',
+      'ui.about.disclosureLabel',
+      'ui.about.experienceLabel',
       'ui.caseStudy.repositoryAuthNote',
       'ui.contact.channels',
       'ui.contact.emailCta',
@@ -230,11 +273,12 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    // 28 before #31; the two 開発の前提 sentences are the 29th and 30th.
-    assert.equal(approved.length, 30);
+    // 28 before #31; the two 開発の前提 sentences are the 29th and 30th, and
+    // #32's three ABOUT bodies are the 31st to 33rd.
+    assert.equal(approved.length, 33);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      30,
+      33,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.
