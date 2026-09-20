@@ -253,6 +253,35 @@ export function developmentBackground(profile: PortfolioProfile): string {
 }
 
 /**
+ * #33 — how far a work got, in the words a reader sees.
+ *
+ * THE SECOND PLACE AN ENUM BECOMES JAPANESE, and deliberately the only one for
+ * this field. `implementationStatus` was recorded by #29 and kept internal by
+ * #32, which declined to add it to ABOUT rather than claim it was published.
+ * The Case Study is the page whose whole job is to say how far a work got, so
+ * this is where it surfaces — through one function, so a second component
+ * cannot invent a second wording.
+ *
+ * NO FALLBACK TO THE RAW ENUM. Returning `profile.implementationStatus` when
+ * the table has no entry would ship `public-demo` to a reader, which is the
+ * leak `check:structure`'s PUBLIC_INTERNAL exists to catch from the other side
+ * — and it would pass every test that only asks "is something rendered". A new
+ * enum member is a decision about what to call it in public; until someone
+ * makes that decision the build stops here.
+ */
+export function implementationStatusLabel(profile: PortfolioProfile): string {
+  const labels: Record<string, string> = ui.caseStudy.statusLabels;
+  const label = labels[profile.implementationStatus];
+  if (!label) {
+    throw new Error(
+      `ui.caseStudy.statusLabels に ${profile.implementationStatus} の表示語が無い。` +
+        `enum を足したら、読者が読む語も決めること。`,
+    );
+  }
+  return label;
+}
+
+/**
  * #30 — where this work's code can actually be read, or null.
  *
  * THE ONE PLACE A PUBLIC SOURCE URL IS BUILT. Every caller asks here rather

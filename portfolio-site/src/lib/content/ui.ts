@@ -443,6 +443,49 @@ export const ui = {
      */
     repositoryAuthNote:
       'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
+    /*
+     * #33 — 3分概要のラベル。HD-O（Issue #33 comment 5749344650）で本人が
+     * 列挙した語で、こちらで選んでいない。
+     *
+     * 選ばないことに意味がある。この欄の名前は「何を書く欄か」を決めてしまう
+     * ——「こだわり」「工夫」のような語を置けば、既存の正本が持っていない性質の
+     * 話を書ける欄になる。課題 / 利用者 / 担当 / 実装状況 / 対象外 は、書ける
+     * 内容を Work と Case Study が既に記録している範囲に閉じる。
+     *
+     * ここに無い 2 語は、既に他所にあるので再利用している:
+     *   開発背景      `ui.work.background`（#30）
+     *   確認できるもの `ui.work.evidenceHead`（#30）
+     * 同じ語を 2 つの path に置けば、片方だけ直した日に同じ欄が 2 つの名前で
+     * 呼ばれる。CTA も同じ理由で `ui.work.sourceCta` を使う。
+     */
+    quick: {
+      head: '3分概要',
+      problem: '解決する課題',
+      targetUser: '想定利用者',
+      role: '担当範囲',
+      status: '実装状況',
+      built: '実装したもの',
+      source: '公開コード',
+      limitations: '未実装・対象外',
+      details: '詳しく見る',
+    },
+    /*
+     * #33 — `implementationStatus` の公開表示語。
+     *
+     * ラベルではなく VALUE である。`ui.work.profileLabels` と同じ立場で、
+     * 作品がどこまで到達しているかを述べる——本人確認の結果が違えば誤りになる
+     * ので、registry では presentation の免除ではなく fact 側に置いてある。
+     *
+     * 内部 enum は公開しない。`public-demo` が読者の前に出るのは、この対応表を
+     * 通らずに描画されたときだけで、`implementationStatusLabel` は未知の値に
+     * fallback を返さず throw する——raw enum を出して通るより、build が
+     * 止まるほうがよい。
+     */
+    statusLabels: {
+      'public-demo': '公開デモとして動作',
+      implemented: '実装済み',
+      poc: 'PoC',
+    },
   },
 
   /**

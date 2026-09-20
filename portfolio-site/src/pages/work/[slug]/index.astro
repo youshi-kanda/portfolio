@@ -20,6 +20,7 @@ import { getCollection } from 'astro:content';
 import CaseBody from '../../../components/case/CaseBody.astro';
 import CaseContents from '../../../components/case/CaseContents.astro';
 import CaseHead from '../../../components/case/CaseHead.astro';
+import CaseQuickSummary from '../../../components/case/CaseQuickSummary.astro';
 import CaseSpine from '../../../components/case/CaseSpine.astro';
 import EvidenceDialog from '../../../components/evidence/EvidenceDialog.astro';
 import Footer from '../../../components/layout/Footer.astro';
@@ -111,6 +112,20 @@ const returnLinks = [
       caseStudy ? (
         <>
           <CaseHead work={work} caseStudy={caseStudy} />
+
+          {/*
+            #33 — 3分概要, immediately after the hero and before everything
+            else. The position is the feature: a reader who cannot tell from
+            the opening paragraph whether this work is worth twenty minutes
+            gets the answer in one screen, and the detail below is unchanged.
+
+            AFTER `CaseHead`, WHICH IS WHERE DFE'S DISCLOSURE LIVES. `CaseHead`
+            renders `leadDisclosure` inside its own hero, so 「この作品は OCR を
+            実行していない」 is above this block on the one page that has one.
+            Putting the summary first would let a reader meet 実装したもの and
+            form the belief the disclosure exists to prevent.
+          */}
+          <CaseQuickSummary work={work} caseStudy={caseStudy} />
 
           {/*
             The spine, in this work's declared case variant.

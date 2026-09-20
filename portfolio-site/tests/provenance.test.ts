@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 147 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 156 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -241,8 +241,29 @@ describe('provenance matrix', () => {
     //
     // 旧 3 行はここに現れない。site.json の節内容として出ていて registry の外に
     // あったので、置き換わったぶんの相殺は無く、3 件そのままの増加である。
-    assert.equal(presentation.length, 147);
-    assert.equal(fact.length, 44);
+    //
+    // #33 は presentation を 9、fact を 3 足す。Case Study 冒頭の 3分概要で、
+    // #30 と同じ線が引かれている。
+    //
+    // presentation 9 件は欄の名前だけである（3分概要 / 解決する課題 /
+    // 想定利用者 / 担当範囲 / 実装状況 / 実装したもの / 公開コード /
+    // 未実装・対象外 / 詳しく見る）。どれも「何の欄か」しか言っていない。
+    //
+    // fact 3 件は `implementationStatus` の表示語（公開デモとして動作 /
+    // 実装済み / PoC）。`ui.work.profileLabels` と同じ立場で、ラベルではなく
+    // 値である——作品がどこまで到達しているかを述べ、本人確認の結果が違えば
+    // 誤りになる。
+    //
+    // 概要の本文は 1 文字も registry に入っていない。課題・利用者・担当・
+    // 実装したもの・対象外はすべて Work と Case Study の既存レコードから
+    // 導出していて、`caseStudy.quickSummary` のような二重正本を作っていない。
+    // 逆だったら誤りだった: 概要を authored fact として registry へ入れれば、
+    // 同じ事実の正本が 3 か所になる。
+    //
+    // 開発背景 / 確認できるもの / 公開コードを見る を数えていないのは、
+    // #30 の行をそのまま再利用しているからである（新しい path を作らない）。
+    assert.equal(presentation.length, 156);
+    assert.equal(fact.length, 47);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first
