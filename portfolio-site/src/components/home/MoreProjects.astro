@@ -17,6 +17,7 @@ import type { Evidence, Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
+import SectionMotif from './SectionMotif.astro';
 import Register from '../work/Register.astro';
 
 interface Props {
@@ -33,6 +34,8 @@ const m = site.moreProjects;
 {
   rows.length > 0 && (
     <section class="s-open" id="more" data-mx-n={index}>
+      {/* #46 — the chapter mark. Decorative, `aria-hidden`, z-index:-1. */}
+      <SectionMotif motif="more" />
       <div class="page">
         <div class="tr more-shell">
           <div class="more-rail-sticky">

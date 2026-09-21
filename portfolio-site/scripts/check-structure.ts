@@ -850,6 +850,50 @@ for (const { slug, route } of caseRoutes) {
   }
 }
 
+// ---- SECTION_MOTIFS ----
+// #46 — the five chapter marks, and the fact that they are decoration.
+//
+// Three properties, and the count is the least interesting of them:
+//
+//   one per section, five in all. The layer's whole job is to make a boundary
+//   legible, so a section that lost its motif is a boundary that stopped being
+//   one — and a section that gained a second is two drawings pinned in the
+//   same place.
+//   `aria-hidden` on every one. A background graphic that reaches the
+//   accessibility tree is a page reading its own wallpaper aloud.
+//   no text inside any of them, ever. This is the rule that matters: the
+//   moment a motif carries a word, the page says something only sighted
+//   readers with CSS get, and this whole layer stops being deletable. Checked
+//   against the artifact, because a component cannot see what it renders.
+//
+// Homepage only. The five are the homepage's own sections; a motif on a work
+// page would be this layer leaking into a composition that never asked for it.
+const MOTIF_SECTIONS = ['work', 'more', 'capabilities', 'about', 'contact'] as const;
+const motifs = [...home.matchAll(/<div class="smo" data-smo="([a-z]+)"([^>]*)>([\s\S]*?)<\/svg>/g)];
+const SECTION_MOTIFS = motifs.length;
+expect('SECTION_MOTIFS', SECTION_MOTIFS, MOTIF_SECTIONS.length);
+for (const section of MOTIF_SECTIONS) {
+  const n = motifs.filter((m) => m[1] === section).length;
+  if (n !== 1) failures.push(`SECTION_MOTIFS: #${section} の背景モチーフが ${n} 個 — 各セクション 1 個`);
+}
+for (const [, name, attrs = '', body = ''] of motifs) {
+  if (!attrs.includes('aria-hidden="true"')) {
+    failures.push(`SECTION_MOTIFS: ${name} のモチーフに aria-hidden が無い — 装飾が読み上げられる`);
+  }
+  const text = body.replace(/<[^>]*>/g, '').replace(/\s+/g, '');
+  if (text !== '') {
+    failures.push(`SECTION_MOTIFS: ${name} のモチーフが文字を持っている（${text.slice(0, 40)}）— 装飾に意味を載せない`);
+  }
+}
+let MOTIFS_OFF_HOME = 0;
+for (const route of PUBLIC_ROUTES.filter((r) => r !== 'index.html')) {
+  const n = [...read(route).matchAll(/<div class="smo"/g)].length;
+  if (n > 0) {
+    MOTIFS_OFF_HOME += n;
+    failures.push(`SECTION_MOTIFS: /${route.replace(/index\.html$/, '')} に背景モチーフが ${n} 個 — HOME 専用の層`);
+  }
+}
+
 // ---- CASE_SPEC_IDS ----
 // The case-study and technical specs number their sections CS-1…CS-16 and
 // T-0…T-8. Those are filing references for documents a reader does not have,
@@ -875,6 +919,7 @@ console.log(
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
+    `SECTION_MOTIFS = ${SECTION_MOTIFS} (off-home ${MOTIFS_OFF_HOME}) / ` +
     `CASE_QUICK_SUMMARIES = ${CASE_QUICK_SUMMARIES} / ` +
     `CASE_QUICK_INTERNAL_STATUS = ${CASE_QUICK_INTERNAL_STATUS} / ` +
     `CASE_QUICK_DEAD_ANCHORS = ${CASE_QUICK_DEAD_ANCHORS} / ` +

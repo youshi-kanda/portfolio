@@ -87,6 +87,7 @@ import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
+import SectionMotif from './SectionMotif.astro';
 import { copyText } from '../../lib/content/copy.ts';
 
 interface Props {
@@ -125,6 +126,8 @@ const blocks = works.map((work, i) => {
 ---
 
 <section class="s-open" id="work" data-mx-n={index}>
+  {/* #46 — the chapter mark. Decorative, `aria-hidden`, z-index:-1. */}
+  <SectionMotif motif="work" />
   {/* Desktop-only visual rail. It spans the whole section so `sticky` can stay
       pinned while all five works pass on the right. The original Rails remain
       in the DOM and keep the mobile/accessibility reading order unchanged. */}
