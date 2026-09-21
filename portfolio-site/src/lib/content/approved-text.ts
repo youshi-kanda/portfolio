@@ -114,15 +114,22 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * The timestamp is PR #15's actual merge time as GitHub records it, not a
    * rounded stand-in. An approval record with a tidy 00:00:00 in it is a
    * record nobody checked against anything.
+   *
+   * 6 件で始まり、3 件になった。`home.hero.display.01` / `.02` / `home.hero.lede`
+   * は #44 で書き直され、下の ISSUE-44-HERO-COPY へ移っている——この batch が
+   * 承認した 2 行 display とその lede はもうサイトに無い。移動であって取り消し
+   * ではない: この batch は 2026-09-13T00:13:13Z に実際に起きた承認であり続け、
+   * その日に読まれた文が今も出ている 3 件——role.02 と CTA 2 件——を承認している。
+   *
+   * 上の 2 段落は当時の判断の記録としてそのまま残す。「業務で使える」を選んだ
+   * 理由も、「実際に使われる」を採らなかった理由も、その occasion に実際に
+   * 効いた判断であり、後の改稿がそれを無かったことにするわけではない。
    */
   Object.freeze({
     task: 'ISSUE-6-HOME-IA-CONTENT-SPEC',
     by: 'user',
     at: '2026-09-13T00:13:13Z',
     ids: Object.freeze([
-      'home.hero.display.01',
-      'home.hero.display.02',
-      'home.hero.lede',
       'home.hero.role.02',
       'home.hero.cta.primary',
       'home.hero.cta.secondary',
@@ -346,6 +353,47 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-20T09:43:50Z',
     ids: Object.freeze(['home.about.disclosure']),
   }),
+  /**
+   * Issue #44 — HERO の display 2 行と lede。A REWORD, AND THE IDS MOVED.
+   *
+   * このファイルの冒頭の規則がそのまま起きている: 3 件とも #6 のバッチ
+   * （2026-09-13T00:13:13Z）で承認された文を持っていたが、書き直されたので
+   * id は新しいバッチへ移り、両方には載らない。#6 のバッチには role.02 と
+   * CTA 2 件が残る——あの日読まれたまま今も出ている 3 件である。
+   *
+   * `at` は承認コメント Issue #44 comment 5751276538 の作成時刻で、issue の
+   * created_at でも commit 時刻でもない。本人がそのコメントで 3 文を id ごとに
+   * 引用したうえで「上記 3 文を公開コピーとして使用することを承認します」と
+   * 述べている。誰でも開いて、何が・誰に・いつ承認されたかを読める記録である。
+   *
+   * 何が変わったか。#6 の display は「業務課題を、／業務で使える Web・AI
+   * システムへ。」で、読者が持ち込むもの（課題）を主語に置いていた。新しい
+   * display は「業務を理解し、／現場で使える仕組みをつくる。」で、主語が
+   * 書き手の仕事の順序——まず業務を理解し、そのうえで作る——に変わっている。
+   *
+   * 主張の強さは上がっていない。#6 §4.1 が「実際に使われる」を退けた理由は
+   * 稼働実績を含意するからで、その境界は「現場で使える」でも守られている:
+   * 業務要件への適合の主張であって、運用されているという主張ではない。
+   * 稼働状況・利用者数・商用実績は、このサイトのどこにも無いままである。
+   *
+   * lede は長い 1 文から、領域と工程を簡潔に示す 1 文へ書き直され、工程名
+   * （要件整理 / 設計 / 実装）と領域名（Web システム / AI / 業務自動化）だけを
+   * 述べる。文の数は変わっていない——旧 lede
+   * 「業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、
+   * 実際に運用できる仕組みとして設計・実装します。」も 1 文である。
+   * 件数はここにも無い——`heroLede` の導出が V4 で消えて以来この行が守って
+   * いる性質で、approved-copy.test.ts の「no count anywhere」がそれを見ている。
+   */
+  Object.freeze({
+    task: 'ISSUE-44-HERO-COPY (Issue #44 comment 5751276538)',
+    by: 'user',
+    at: '2026-09-20T17:03:02Z',
+    ids: Object.freeze([
+      'home.hero.display.01',
+      'home.hero.display.02',
+      'home.hero.lede',
+    ]),
+  }),
 ]);
 
 /**
@@ -372,9 +420,9 @@ export const PENDING_APPROVAL: readonly { id: string; text: string; registry: st
 export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.role.01": "ソフトウェアエンジニア",
   "home.hero.role.02": "業務システム / AI 活用 / 業務自動化",
-  "home.hero.display.01": "業務課題を、",
-  "home.hero.display.02": "業務で使える Web・AI システムへ。",
-  "home.hero.lede": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+  "home.hero.display.01": "業務を理解し、",
+  "home.hero.display.02": "現場で使える仕組みをつくる。",
+  "home.hero.lede": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
   "home.hero.cta.primary": "実績を見る",
   "home.hero.cta.secondary": "相談する",
 

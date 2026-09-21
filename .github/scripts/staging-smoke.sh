@@ -44,7 +44,7 @@ HOST=${HOST%%:*}
 
 # hero にしか存在しない文字列。placeholder にも error page にも含まれ得ない。
 # home page が返ってきてもこれが無ければ、staging はこの build を配信していない。
-HERO_MARKER='業務で使える Web・AI システムへ。'
+HERO_MARKER='現場で使える仕組みをつくる。'
 # build 後のサイト自身の error document。
 NOTFOUND_TITLE='404 — ページが見つかりません。'
 

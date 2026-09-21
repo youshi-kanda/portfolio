@@ -48,6 +48,7 @@ describe('approved copy gate', () => {
       premises,
       about,
       aboutDisclosure,
+      heroCopy,
     ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
@@ -61,9 +62,10 @@ describe('approved copy gate', () => {
         withheld &&
         premises &&
         about &&
-        aboutDisclosure,
+        aboutDisclosure &&
+        heroCopy,
     );
-    assert.equal(APPROVAL_BATCHES.length, 12);
+    assert.equal(APPROVAL_BATCHES.length, 13);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -82,9 +84,13 @@ describe('approved copy gate', () => {
       // the #6 batch that approved their current text — one batch per id.
       ['user', '2026-09-07T22:24:15Z', 6],
     );
+    // 6 before #44. The two display lines and the lede were REWORDED there and
+    // moved to the #44 batch with their new sentences; what stays is the three
+    // strings this occasion approved that are still on the page — role.02 and
+    // the two CTAs.
     assert.deepEqual(
       [issue6.by, issue6.at, issue6.ids.length],
-      ['user', '2026-09-13T00:13:13Z', 6],
+      ['user', '2026-09-13T00:13:13Z', 3],
     );
     assert.deepEqual(
       [workLede.by, workLede.at, [...workLede.ids]],
@@ -95,7 +101,8 @@ describe('approved copy gate', () => {
     // sentence that ships, and `A-BATCH` fails the build for exactly that.
     assert.equal(homepage.ids.includes('home.hero.lede'), false);
     assert.equal(v4.ids.includes('home.hero.lede'), false);
-    assert.equal(issue6.ids.includes('home.hero.lede'), true);
+    assert.equal(issue6.ids.includes('home.hero.lede'), false);
+    assert.equal(heroCopy.ids.includes('home.hero.lede'), true);
     assert.equal(homepage.ids.includes('home.about.h2'), false);
     assert.equal(issue8.ids.includes('home.about.h2'), true);
 
@@ -213,6 +220,28 @@ describe('approved copy gate', () => {
       false,
       '書き直された id が旧バッチにも残っている',
     );
+
+    // #44 — HERO の display 2 行と lede。REWORD なので 3 件とも #6 のバッチを
+    // 離れてここに居る。別の occasion であり、`at` は承認コメント
+    // Issue #44 comment 5751276538 の作成時刻で、issue の created_at でも
+    // commit 時刻でもない。
+    assert.deepEqual(
+      [heroCopy.by, heroCopy.at, [...heroCopy.ids]],
+      [
+        'user',
+        '2026-09-20T17:03:02Z',
+        ['home.hero.display.01', 'home.hero.display.02', 'home.hero.lede'],
+      ],
+    );
+    assert.match(heroCopy.task, /Issue #44 comment 5751276538/);
+    assert.notEqual(heroCopy.at, aboutDisclosure.at);
+    for (const id of heroCopy.ids) {
+      assert.equal(
+        issue6.ids.includes(id),
+        false,
+        `書き直された ${id} が #6 のバッチにも残っている`,
+      );
+    }
 
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
@@ -406,25 +435,38 @@ describe('approved copy gate', () => {
     assert.match(findings[0]!.message, /home\.works\.h2/);
   });
 
-  it('ships the hero copy the user approved in #6, verbatim', () => {
-    // Two lines, not three, and the claim is fitness rather than track record:
-    // 「実際に使われる」 would say these works are in live use, which is a
-    // claim this site makes nowhere else (#6 spec §4.1).
-    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務課題を、');
-    assert.equal(APPROVED_TEXT['home.hero.display.02'], '業務で使える Web・AI システムへ。');
+  it('ships the hero copy the user approved, verbatim', () => {
+    // The display and the lede come from #44; role.02 and the two CTAs are
+    // still the strings #6 approved. Two lines, not three.
+    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務を理解し、');
+    assert.equal(APPROVED_TEXT['home.hero.display.02'], '現場で使える仕組みをつくる。');
     assert.equal(APPROVED_TEXT['home.hero.display.03'], undefined);
+    assert.equal(
+      APPROVED_TEXT['home.hero.lede'],
+      'Webシステム・AI・業務自動化を、要件整理から設計・実装まで。',
+    );
     assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');
     assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '実績を見る');
     assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '相談する');
 
+    // The claim stays fitness rather than track record. #6 §4.1 refused
+    // 「実際に使われる」 because it implies works in live use, which this site
+    // claims nowhere else; 「現場で使える」 keeps that boundary, and the words
+    // that would cross it are absent from the display and the lede.
+    for (const id of ['home.hero.display.01', 'home.hero.display.02', 'home.hero.lede']) {
+      assert.doesNotMatch(APPROVED_TEXT[id]!, /実際に使われ|稼働|導入実績|利用者数/);
+    }
+
     // No count anywhere in the V4 hero and work copy. That is the property
     // that let `heroLede` and `capabilityVerify` be deleted rather than turned
     // into literals — a static string with a "3" in it is the defect those
-    // derivations existed to prevent.
+    // derivations existed to prevent. The #44 batch is held to it too: the
+    // lede was rewritten, and a rewrite is exactly when a count gets typed in.
     for (const id of [
       ...APPROVAL_BATCHES[2]!.ids,
       ...APPROVAL_BATCHES[3]!.ids,
       ...APPROVAL_BATCHES[4]!.ids,
+      ...APPROVAL_BATCHES[12]!.ids,
     ]) {
       assert.doesNotMatch(APPROVED_TEXT[id]!, /\d+\s*(作品|つの動くデモ|tests|passed)/);
     }

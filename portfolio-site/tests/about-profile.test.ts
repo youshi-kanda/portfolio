@@ -403,11 +403,15 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
 
   it('ABOUT 以外の承認済み公開文面を動かしていない', () => {
     // #32 の対象は ABOUT だけである。HERO / HOW I BUILD / h2 / now は不変。
-    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務課題を、');
-    assert.equal(APPROVED_TEXT['home.hero.display.02'], '業務で使える Web・AI システムへ。');
+    //
+    // HERO の display 2 行と lede はその後 #44 で書き直されている。これは #32
+    // が動かしたのではなく、別の occasion の別の承認（Issue #44 comment
+    // 5751276538）による変更で、ここでは #44 の確定文を期待値として固定する。
+    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務を理解し、');
+    assert.equal(APPROVED_TEXT['home.hero.display.02'], '現場で使える仕組みをつくる。');
     assert.equal(
       APPROVED_TEXT['home.hero.lede'],
-      '業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。',
+      'Webシステム・AI・業務自動化を、要件整理から設計・実装まで。',
     );
     assert.equal(APPROVED_TEXT['home.hero.role.01'], 'ソフトウェアエンジニア');
     assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');

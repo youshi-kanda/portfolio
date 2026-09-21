@@ -35,53 +35,53 @@
   },
   {
     "id": "home.hero.display.01",
-    "text": "業務課題を、",
+    "text": "業務を理解し、",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 1 行目",
-    "purpose": "課題 → 実装 → 動く仕組み の順序を display で宣言する（1/3）。",
+    "purpose": "業務理解 → 現場で使える仕組み の順序を display で宣言する（1/2）。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.display.02",
-    "text": "業務で使える Web・AI システムへ。",
+    "text": "現場で使える仕組みをつくる。",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 2 行目",
-    "purpose": "同上（2/3）。作れるものを、抽象語ではなく実装の単位で言う。",
+    "purpose": "同上（2/2）。作るものを、動くことではなく現場で使えることで言う。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.lede",
-    "text": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+    "text": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
     "route": "/",
     "section": "00 HERO",
     "slot": "answer 行の下のリード",
-    "purpose": "どういう設計をするエンジニアかを 2 文で言う。件数も、全作品共通の検証手段名も置かない。",
+    "purpose": "扱う領域と、関与する工程の範囲を 1 文で言う。件数も、全作品共通の検証手段名も置かない。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
