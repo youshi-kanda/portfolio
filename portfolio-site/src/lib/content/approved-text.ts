@@ -376,10 +376,13 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * 業務要件への適合の主張であって、運用されているという主張ではない。
    * 稼働状況・利用者数・商用実績は、このサイトのどこにも無いままである。
    *
-   * lede は 2 文から 1 文になり、工程名（要件整理 / 設計 / 実装）と領域名
-   * （Web システム / AI / 業務自動化）だけを述べる。件数はここにも無い——
-   * `heroLede` の導出が V4 で消えて以来この行が守っている性質で、
-   * approved-copy.test.ts の「no count anywhere」がそれを見ている。
+   * lede は長い 1 文から、領域と工程を簡潔に示す 1 文へ書き直され、工程名
+   * （要件整理 / 設計 / 実装）と領域名（Web システム / AI / 業務自動化）だけを
+   * 述べる。文の数は変わっていない——旧 lede
+   * 「業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、
+   * 実際に運用できる仕組みとして設計・実装します。」も 1 文である。
+   * 件数はここにも無い——`heroLede` の導出が V4 で消えて以来この行が守って
+   * いる性質で、approved-copy.test.ts の「no count anywhere」がそれを見ている。
    */
   Object.freeze({
     task: 'ISSUE-44-HERO-COPY (Issue #44 comment 5751276538)',
