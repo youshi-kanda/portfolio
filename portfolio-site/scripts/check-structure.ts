@@ -387,7 +387,30 @@ for (const route of PUBLIC_ROUTES) {
 // states the publication scope and `home.about.syntheticData` states the
 // synthetic data; what is retired is the wording, including the claim that the
 // whole portfolio is 個人開発, which #29 established it is not.
-const RETIRED_PUBLIC_COPY: readonly { text: string; why: string; issue: '#31' | '#32' }[] = [
+// #44 retired the HERO display's second line and the lede. Only TWO of the
+// three reworded strings are listed, and the omission is the point.
+//
+// 旧 `home.hero.display.01` は「業務課題を、」——6 文字で、述語も無い。これを
+// `includes` に入れると、当たるかどうかがこの 6 文字の並びだけで決まる断片検査に
+// なる。同じ語はいま公開面に別の意味で実在していて（`想定業務課題` の節見出し、
+// CONTACT の「業務課題の整理から、」）、どちらも退役とは無関係に正しい文である。
+// 今日は「業務課題を、」という並びには当たらないが、当たらない理由が読点の位置
+// だけというのは検査ではなく偶然である。
+//
+// 代わりに display の相方で見る。この 2 行は 1 つの display として一緒に出ていた
+// ものなので、旧 display が戻ってくれば 2 行目が必ず一緒に戻る。長くて一意な側で
+// 組を検出できるなら、短い側を断片で見る理由は無い。
+//
+// なお 3 件とも id は registry に残っていて、`approvedCopyGate` の `A-CHANGED`
+// が snapshot との不一致を先に捕まえる。ここが足すのはその外側——snapshot ごと
+// 巻き戻された場合と、承認registryを経由せずに文字列が公開面へ現れた場合だけで
+// ある。#31 / #32 の行が site.json の節内容（registry の外）だったのとは違い、
+// これは二重化であって唯一の防波堤ではない。
+const RETIRED_PUBLIC_COPY: readonly {
+  text: string;
+  why: string;
+  issue: '#31' | '#32' | '#44';
+}[] = [
   { text: '主張しないこと', why: '#31 — 見出しは 開発の前提 に置き換わった', issue: '#31' },
   {
     text: '完全自動の Multi-Agent 開発をしているとは主張しない。',
@@ -427,6 +450,25 @@ const RETIRED_PUBLIC_COPY: readonly { text: string; why: string; issue: '#31' | 
     text: '担当範囲と到達状態は作品ごとに記載しています。',
     why: '#32 — 到達状態は公開面に出ていない。Issue #32 comment 5749023659 で削除',
     issue: '#32',
+  },
+  /*
+   * #44 の 2 件。退役の理由が #31 / #32 とは違う——これらは事実として誤りに
+   * なったのではなく、書き直されただけである。#6 §4.1 が「業務で使える」を
+   * 選んだ判断（稼働実績ではなく適合の主張に留める）は今も有効で、新しい
+   * 「現場で使える仕組みをつくる。」も同じ境界の内側にいる。
+   *
+   * それでも公開面から締め出すのは、旧文と新文が同時に出ている状態が
+   * 「どちらが現在の HERO か」を読者に対して曖昧にするからである。
+   */
+  {
+    text: '業務で使える Web・AI システムへ。',
+    why: '#44 — 旧 display 2 行目。home.hero.display.02 が 現場で使える仕組みをつくる。 に置き換わった',
+    issue: '#44',
+  },
+  {
+    text: '業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。',
+    why: '#44 — 旧 lede。home.hero.lede が Webシステム・AI・業務自動化を、要件整理から設計・実装まで。 に置き換わった',
+    issue: '#44',
   },
 ];
 let RETIRED_COPY_HITS = 0;
