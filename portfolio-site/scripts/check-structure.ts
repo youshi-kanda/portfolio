@@ -157,6 +157,7 @@ import {
   featuredHomepageWorks,
   linkableSourceWorks,
   publicPrUrl,
+  sectionNumber,
   shippingWorks,
   workPublicSourceUrl,
 } from '../src/lib/content/derive.ts';
@@ -850,47 +851,97 @@ for (const { slug, route } of caseRoutes) {
   }
 }
 
-// ---- SECTION_MOTIFS ----
-// #46 — the five chapter marks, and the fact that they are decoration.
+// ---- SECTION_MARKERS ----
+// #46 A' — the five chapter openings, and the fact that they are decoration
+// carrying nothing of their own.
 //
-// Three properties, and the count is the least interesting of them:
+// PR #47's five SVG motifs were rejected in staging review; this is what
+// replaced them, and the contract moved with it rather than being deleted. The
+// count is still the least interesting property:
 //
 //   one per section, five in all. The layer's whole job is to make a boundary
-//   legible, so a section that lost its motif is a boundary that stopped being
-//   one — and a section that gained a second is two drawings pinned in the
-//   same place.
+//   legible, so a section that lost its marker is a boundary that stopped
+//   being one — and a section that gained a second is two folios in one place.
 //   `aria-hidden` on every one. A background graphic that reaches the
-//   accessibility tree is a page reading its own wallpaper aloud.
-//   no text inside any of them, ever. This is the rule that matters: the
-//   moment a motif carries a word, the page says something only sighted
-//   readers with CSS get, and this whole layer stops being deletable. Checked
-//   against the artifact, because a component cannot see what it renders.
+//   accessibility tree is a page reading its own chapter number twice: the
+//   rail beside it already says 03 and CAPABILITIES at full contrast.
+//   THE TWO STRINGS ARE THE PAGE'S OWN. The number has to be what
+//   `sectionNumber()` derives from the running order, and the word has to be
+//   the `site.sections` label the nav prints. This is the rule that matters,
+//   because it is the one that decides whether this layer carries public copy:
+//   if the marker can say something the rail and the nav do not, then it is
+//   text, it needs approval, and it stops being deletable.
+//   NOTHING ELSE INSIDE. Whatever is left after those two spans is removed has
+//   to be empty. A marker that grew a third word grew it unapproved.
 //
-// Homepage only. The five are the homepage's own sections; a motif on a work
+// Homepage only. The five are the homepage's own chapters; a marker on a work
 // page would be this layer leaking into a composition that never asked for it.
-const MOTIF_SECTIONS = ['work', 'more', 'capabilities', 'about', 'contact'] as const;
-const motifs = [...home.matchAll(/<div class="smo" data-smo="([a-z]+)"([^>]*)>([\s\S]*?)<\/svg>/g)];
-const SECTION_MOTIFS = motifs.length;
-expect('SECTION_MOTIFS', SECTION_MOTIFS, MOTIF_SECTIONS.length);
-for (const section of MOTIF_SECTIONS) {
-  const n = motifs.filter((m) => m[1] === section).length;
-  if (n !== 1) failures.push(`SECTION_MOTIFS: #${section} の背景モチーフが ${n} 個 — 各セクション 1 個`);
+const MARKER_SECTIONS = ['work', 'more', 'capabilities', 'about', 'contact'] as const;
+const markers = [
+  ...home.matchAll(/<div class="smk" data-section-marker="([a-z]+)"([^>]*)>([\s\S]*?)<\/div>/g),
+];
+const SECTION_MARKERS = markers.length;
+expect('SECTION_MARKERS', SECTION_MARKERS, MARKER_SECTIONS.length);
+for (const section of MARKER_SECTIONS) {
+  const n = markers.filter((m) => m[1] === section).length;
+  if (n !== 1) failures.push(`SECTION_MARKERS: #${section} の章標が ${n} 個 — 各セクション 1 個`);
 }
-for (const [, name, attrs = '', body = ''] of motifs) {
+for (const [, name = '', attrs = '', body = ''] of markers) {
   if (!attrs.includes('aria-hidden="true"')) {
-    failures.push(`SECTION_MOTIFS: ${name} のモチーフに aria-hidden が無い — 装飾が読み上げられる`);
+    failures.push(`SECTION_MARKERS: ${name} の章標に aria-hidden が無い — 章番号が 2 回読み上げられる`);
   }
-  const text = body.replace(/<[^>]*>/g, '').replace(/\s+/g, '');
-  if (text !== '') {
-    failures.push(`SECTION_MOTIFS: ${name} のモチーフが文字を持っている（${text.slice(0, 40)}）— 装飾に意味を載せない`);
+  const label = body.match(/<span class="smk-l">([^<]*)<\/span>/)?.[1] ?? '';
+  const index = body.match(/<span class="smk-n">([^<]*)<\/span>/)?.[1] ?? '';
+  const declaredLabel = site.sections.find((x) => x.id === name)?.label ?? null;
+  if (declaredLabel === null) {
+    failures.push(`SECTION_MARKERS: ${name} は site.sections に label を持たない節 — 章標を置けない`);
+  } else if (label !== declaredLabel) {
+    failures.push(
+      `SECTION_MARKERS: ${name} の章標が "${label}" — site.sections の label は "${declaredLabel}"`,
+    );
+  }
+  const declaredIndex = sectionNumber(name);
+  if (index !== declaredIndex) {
+    failures.push(`SECTION_MARKERS: ${name} の章標が ${index} — sectionNumber は ${declaredIndex}`);
+  }
+  const rest = body
+    .replace(/<span class="smk-[ln]">[^<]*<\/span>/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, '');
+  if (rest !== '') {
+    failures.push(
+      `SECTION_MARKERS: ${name} の章標が番号と label 以外の文字を持っている（${rest.slice(0, 40)}）` +
+        ` — 装飾に承認を通っていない文章を載せない`,
+    );
   }
 }
-let MOTIFS_OFF_HOME = 0;
+let MARKERS_OFF_HOME = 0;
 for (const route of PUBLIC_ROUTES.filter((r) => r !== 'index.html')) {
-  const n = [...read(route).matchAll(/<div class="smo"/g)].length;
+  const n = [...read(route).matchAll(/<div class="smk"/g)].length;
   if (n > 0) {
-    MOTIFS_OFF_HOME += n;
-    failures.push(`SECTION_MOTIFS: /${route.replace(/index\.html$/, '')} に背景モチーフが ${n} 個 — HOME 専用の層`);
+    MARKERS_OFF_HOME += n;
+    failures.push(`SECTION_MARKERS: /${route.replace(/index\.html$/, '')} に章標が ${n} 個 — HOME 専用の層`);
+  }
+}
+
+// ---- RETIRED_SECTION_MOTIFS ----
+// Zero, on every public page. The SVG layer PR #47 shipped is deleted, not
+// hidden: no `.smo` wrapper, no `data-smo`, and no stylesheet left behind for
+// one to be re-mounted against. Checked against the artifact rather than the
+// source, because "the component is gone" and "the drawing is not served" are
+// different claims and this file exists to make the second one.
+let RETIRED_SECTION_MOTIFS = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const dead of ['class="smo"', 'data-smo', 'smo-svg', 'smo-fig']) {
+    const n = html.split(dead).length - 1;
+    if (n > 0) {
+      RETIRED_SECTION_MOTIFS += n;
+      failures.push(
+        `RETIRED_SECTION_MOTIFS: /${route.replace(/index\.html$/, '')} に ${dead} が ${n} 箇所 —` +
+          ` PR #47 の SVG モチーフは撤去済みのはず`,
+      );
+    }
   }
 }
 
@@ -919,7 +970,8 @@ console.log(
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
-    `SECTION_MOTIFS = ${SECTION_MOTIFS} (off-home ${MOTIFS_OFF_HOME}) / ` +
+    `SECTION_MARKERS = ${SECTION_MARKERS} (off-home ${MARKERS_OFF_HOME}) / ` +
+    `RETIRED_SECTION_MOTIFS = ${RETIRED_SECTION_MOTIFS} / ` +
     `CASE_QUICK_SUMMARIES = ${CASE_QUICK_SUMMARIES} / ` +
     `CASE_QUICK_INTERNAL_STATUS = ${CASE_QUICK_INTERNAL_STATUS} / ` +
     `CASE_QUICK_DEAD_ANCHORS = ${CASE_QUICK_DEAD_ANCHORS} / ` +
