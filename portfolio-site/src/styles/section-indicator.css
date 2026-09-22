@@ -1,0 +1,219 @@
+/**
+ * #46 — CURRENT-SECTION INDICATOR. The small readout that says which chapter
+ * is being read, and the whole of its geometry.
+ *
+ * This sheet is NOT one of the six frozen stylesheets and restyles none of
+ * them. It introduces its own `.sid*` names and its own custom properties and
+ * reaches outside itself for nothing at all — not even the folio, which
+ * section-marker.css already owns. **It does not touch `.smk`.** The chapter
+ * opening's crop, zone, numeral size, bleed and label position are exactly
+ * what PR #48 shipped; this is a second, separate layer added beside it.
+ *
+ * ------------------------------------------------- what this is NOT
+ *
+ * It is not a second chapter opening. The marker is drawn once at the head of
+ * the section at 142px and scrolls away; this is 11px, rides under the nav for
+ * the length of the section, and leaves with it. Two layers, two jobs, and the
+ * size ratio between them is thirteen to one so that no reader has to be told
+ * which is which.
+ *
+ * It is not a navigation control. No link, no focus stop, no pointer events,
+ * `aria-hidden` on the layer. The nav and the instrument rail are the
+ * controls; this is a folio.
+ *
+ * ---------------------------------------------------------- the track
+ *
+ * `.sid-t` is absolutely positioned against the section, and both halves of
+ * that matter.
+ *
+ * TAKES NO SPACE. An in-flow sticky element would add its line to the head of
+ * the section and push every existing composition down by ~20px — including
+ * the relationship between the chapter opening and the first thing under it,
+ * which #46 measured and which this change is not allowed to move. Absolute
+ * positioning is what makes this layer additive. It is also the pattern
+ * already in the page: `.fw-master-track` and `.cap-master-page` (polish.css)
+ * are the same absolute-track / sticky-child pair.
+ *
+ * THE SECTION IS THE STICKY CONTAINING BLOCK. `[data-mx-n]{position:relative}`
+ * (motion.css §A) is on all five homepage sections, so `top`/`bottom` here
+ * resolve against the section's own padding box and the sticky child is
+ * constrained to it. 01's indicator therefore CANNOT be shown over 02: it is
+ * pushed out by 01's own bottom edge, which is 02's top edge. That is a
+ * property of the box tree, not of a scroll handler that has to notice.
+ *
+ * --------------------------------------------------- the start, and why
+ *
+ * `--sid-start` is 232px, and it is `--smk-zone-h` — the chapter opening's
+ * own height, mirrored here because custom properties declared ON `.smk` are
+ * not readable from a sibling. (Same mirror, same reason, as `--smk-mg` and
+ * `--mx-mg` copying `.page{--mg}`. If one changes the other must change with
+ * it, which is why the number is written once here and commented there.)
+ *
+ * What it buys is that the two layers can never be drawn over each other, at
+ * any scroll position, without either of them being measured:
+ *
+ *   indicator top = max(stick line, sectionTop + 232)
+ *   marker ink    = [sectionTop + 82, sectionTop + 222.5]   (section-marker.css)
+ *   max(a, b) >= b, so indicator top >= sectionTop + 232 > sectionTop + 222.5
+ *
+ * The indicator is below the last of the marker's ink for every value of
+ * sectionTop. At the chapter opening the two are ~14px apart and visibly
+ * stacked on the same right line; from 117px of scroll onward the indicator
+ * has pinned and the marker has gone. #46 §18 permits lowering this start if
+ * review finds the stack reads as one lockup — any value >= 232 keeps the
+ * proof above intact, so that is a one-number change.
+ *
+ * ------------------------------------------------------ the stick line
+ *
+ * `calc(var(--mx-nav, 75px) + 40px)` is not a new number. It is the line three
+ * existing sticky elements already pin to — `.fw-master-rail`,
+ * `.cap-master-rail` (polish.css) and the hero/work instrument rails
+ * (motion.css §2) — so the indicator lands level with the rail on the other
+ * side of the page instead of introducing a second horizon. `--mx-nav` is the
+ * measured nav height (75px pre-script; MotionStage writes the real one back),
+ * so the clearance is 40px of a nav that states its own height rather than
+ * 16-32px of one that was assumed. #46 §7's range is the floor, not the
+ * target: matching the existing rail is worth the extra 8px.
+ *
+ * ----------------------------------------------------- the right line
+ *
+ * Right-aligned to the page's right content line — the same line the chapter
+ * marker's LABEL is set to, and computed the same way (`--sid-edge` mirrors
+ * `--smk-edge`, which mirrors motion.css's folio expression). The marker's
+ * numeral is the one element allowed past that line; nothing else is, and this
+ * is not an exception. The negative margin gives back the trailing
+ * letter-space so the last glyph's right edge lands ON the line.
+ *
+ * Horizontal overflow is impossible by construction: the right edge is the
+ * page's margin line, the box is `max-content` wide, and `margin-left:auto`
+ * absorbs the rest. Nothing is positioned from the left.
+ *
+ * ----------------------------------------------- 1280, and not 1024
+ *
+ * MEASURED, then decided. What the indicator needs is the strip between the
+ * measure's right line and the page's right line — the same right editorial
+ * zone the marker uses. `01 CAPABILITIES` is 121.8px wide at the rail's own
+ * type. The strip, at the three QA widths (15px classic scrollbar included,
+ * which is what the page actually gets):
+ *
+ *     1024   clientWidth 1009   measure ends 896    page line 961    =  65px
+ *     1280   clientWidth 1265   measure ends 1048   page line 1193   = 145px
+ *     1440   clientWidth 1425   measure ends 1048   page line 1353   = 305px
+ *
+ * 65px against 121.8px: at 1024 the indicator does not fit beside the measure,
+ * it fits ON it, and #46 §8 says not to put it over the text. The strip only
+ * reaches 121.8px at about 1081 — inside the 1024-1279 grid, which shares one
+ * set of column values top to bottom. Rescuing the upper half of that grid
+ * would mean a fourth breakpoint in a system that has three, and an indicator
+ * that appears at 1200 and is gone at 1199 for no reason a reader can see. So
+ * the indicator is drawn on the wide grid only, where the strip is 145px at
+ * its narrowest. #46 §13's escalation, with its own measurements.
+ *
+ * Below that: nothing is drawn and nothing is left behind. `display:none` is
+ * the DEFAULT here, not the override, so the layer has to be switched on by a
+ * width rather than switched off by one — a media query that an engine fails
+ * to apply leaves the page without the indicator, never with an unplaced one.
+ * Nothing is lost below 1280: the instrument rail lies down above the heading
+ * (responsive.css) and is the first thing read in every section.
+ *
+ * ----------------------------------------------------------- no motion
+ *
+ * No animation, no transition, no scroll timeline, no keyframes, no script.
+ * `position:sticky` is layout, not motion: the element is at one place in the
+ * containing block and the page scrolls past it, exactly as `prefers-reduced-
+ * motion` users already experience three sticky rails and the sticky nav on
+ * this same page. Nothing here is gated on the preference because there is
+ * nothing here for it to turn off.
+ *
+ * There is also no `position:fixed` anywhere in this file, and that is the
+ * load-bearing absence: a fixed indicator would be pinned to the VIEWPORT and
+ * would need a script to know when to change what it says. Sticky is pinned to
+ * the SECTION and needs nothing.
+ */
+
+@layer utilities {
+  /* The default, at every width. See the head of this file: the layer is
+     switched ON by a width, never off by one. */
+  .ad .sid-t {
+    display: none;
+  }
+
+  /* -------------------------------------------------------------- >= 1280
+     The wide grid — the only one with a right editorial zone big enough to
+     set `01 CAPABILITIES` in. */
+  @media (min-width: 1280px) {
+    .ad .sid-t {
+      /* Mirrors `.page{--mg}`. `--mg` is declared ON `.page`, and custom
+         properties inherit downward only — a section is `.page`'s parent, so
+         this layer cannot read it and needs its own copy. Same mirror as
+         `--smk-mg` (section-marker.css) and `--mx-mg` (motion.css §A); the
+         wide grid is the only breakpoint this layer draws at, so it is the
+         only value there is to state. */
+      --sid-mg: 72px;
+      /* The page's right content line, measured from the section's right edge.
+         The same expression `--smk-edge` and motion.css §A's folio use, so the
+         indicator lands on the same margin as the chapter marker's label at
+         every width — including past 1440, where `.page` stops growing and
+         centres itself. `100%` is the section's width here, because `.sid-t`
+         is as wide as the section. */
+      --sid-edge: calc((100% - min(100%, 1440px)) / 2 + var(--sid-mg));
+      /* The chapter opening's own height — `--smk-zone-h`, mirrored. See the
+         head of this file for the two-line proof this buys. */
+      --sid-start: 232px;
+
+      display: block;
+      position: absolute;
+      /* The section is the containing block (`[data-mx-n]{position:relative}`),
+         so this box starts below the chapter opening and ends ON the section's
+         bottom edge. Those two edges are the whole of the sticky range. */
+      top: var(--sid-start);
+      right: 0;
+      bottom: 0;
+      left: 0;
+      /* Under the page's ink, on the same terms as the chapter marker. The
+         indicator is decoration: where it passes an Evidence plate the plate
+         is drawn over it and the indicator is the thing that disappears, which
+         is the right way round. */
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .ad .sid {
+      position: sticky;
+      /* The line three existing sticky rails already pin to. */
+      top: calc(var(--mx-nav, 75px) + 40px);
+      /* Right-aligned without a `left` or a `right`: the box is its own width
+         and the auto margin absorbs the rest, so nothing can push the document
+         wider than the page. */
+      width: max-content;
+      margin-left: auto;
+      margin-right: var(--sid-edge);
+      font-family: var(--f-mono);
+      font-weight: 500;
+      font-size: 11px;
+      line-height: 1.8;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* The number, in the signal colour, and the label in the secondary text
+       colour. This is not a new pair: it is exactly what `.ins .ix` and
+       `.ins .lb` (base.css) already do in the instrument rail on the other
+       side of the page — the index is the coloured half there too. No colour
+       is introduced, no square is drawn, and `--sig` / `--tx2` both invert by
+       themselves inside `.inv`, which is how 05 CONTACT is set on ink. */
+    .ad .sid-n {
+      color: var(--sig);
+      margin-right: 14px;
+    }
+
+    .ad .sid-l {
+      color: var(--tx2);
+      /* gives back the trailing letter-space, so the last glyph's right edge
+         is ON the page's margin line and not a fifth of an em inside it —
+         the same correction `.smk-l` makes */
+      margin-right: -0.2em;
+    }
+  }
+}

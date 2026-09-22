@@ -1,0 +1,72 @@
+---
+/**
+ * #46 — the current-section indicator. One per top-level homepage section,
+ * and NOT a second chapter opening.
+ *
+ * THE TWO LAYERS DO DIFFERENT JOBS. SectionMarker is the chapter opening: it
+ * is drawn once, at folio size, at the head of the section, and it says "a
+ * chapter starts here". It is bounded to a 232px zone and scrolls away with
+ * the page like any other ink. This says something the marker cannot, because
+ * the marker is gone by then: "the chapter you are reading now is 03". It
+ * rides down the section under the nav and leaves when the section does.
+ *
+ * NOTHING IS TYPED HERE EITHER. Same two strings, same two sources: the number
+ * is `sectionNumber()` derived from the position in `site.sections`, the word
+ * is that entry's own `label` — the string the nav prints. Reordering
+ * `site.sections` renumbers the nav, the rail, the marker and this in one
+ * edit, and there is no public copy in this component to approve.
+ *
+ * IT CARRIES NOTHING. `aria-hidden`, no pointer events, no script, no link,
+ * no focus stop. The instrument rail beside it already says the same number
+ * and the same word to a screen reader — twice on the page is a page reading
+ * its own chapter twice, three times is worse. Delete this component and its
+ * stylesheet and the homepage loses no sentence, no link and no control.
+ *
+ * THE TRACK IS THE COMPONENT'S ONLY STRUCTURE, and it is the half that makes
+ * the sticky correct. `.sid-t` is absolutely positioned against the section
+ * (`[data-mx-n]{position:relative}`, motion.css §A), which does two things at
+ * once: it takes no space in the flow, so the section's existing composition
+ * does not move by a pixel; and it makes the SECTION the sticky containing
+ * block, so 01's indicator cannot survive into 02 — it is pushed out by an
+ * edge that is the section's own. All geometry is in section-indicator.css;
+ * this component states none.
+ *
+ * NO STATE. There is no active-section variable anywhere, in this file or in
+ * the sheet: no IntersectionObserver, no scroll listener, no class toggled on
+ * a timer. Five sticky elements in five containing blocks produce the sequence
+ * 01 → 02 → 03 → 04 → 05 on their own, and a mechanism with nothing to get out
+ * of sync cannot show the wrong chapter.
+ */
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+
+interface Props {
+  /** the `site.sections` id of the section this indicator belongs to */
+  section: string;
+}
+
+const { section } = Astro.props;
+
+const entry = site.sections.find((s) => s.id === section);
+if (!entry) {
+  throw new Error(
+    `SectionIndicator: site.sections に節 ${section} が無い。` +
+      `番号も名前もその配列から導くので、載っていない節には現在地を出せない。`,
+  );
+}
+if (!entry.label) {
+  throw new Error(
+    `SectionIndicator: 節 ${section} に label が無い。` +
+      `現在地表示は nav が印字している label をそのまま使う（新しい語は書かない）。`,
+  );
+}
+
+/** the rail's own index, derived from the running order — never typed */
+const index = sectionNumber(section);
+/** the nav's own token for this section — never typed */
+const label = entry.label;
+---
+
+<div class="sid-t" data-section-indicator={section} aria-hidden="true">
+  <div class="sid"><span class="sid-n">{index}</span><span class="sid-l">{label}</span></div>
+</div>

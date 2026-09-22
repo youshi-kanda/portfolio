@@ -39,6 +39,7 @@ import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
 import SectionMarker from './SectionMarker.astro';
+import SectionIndicator from './SectionIndicator.astro';
 
 interface Props {
   /** Every work the site knows about; the list below filters it. */
@@ -90,6 +91,10 @@ const publicCode = linkableSourceWorks(works).flatMap((work) => {
       folio size; decorative, `aria-hidden`, and bounded to the head of
       the section by section-marker.css. */}
   <SectionMarker section="contact" />
+  {/* #46 — the current-section readout. Not a second chapter opening:
+      11px, `aria-hidden`, and sticky INSIDE this section only, so it says
+      which chapter is being read and leaves when the chapter does. */}
+  <SectionIndicator section="contact" />
   <div class="page">
     <div class="in">
       <div class="tr">

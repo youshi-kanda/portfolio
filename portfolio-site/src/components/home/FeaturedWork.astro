@@ -88,6 +88,7 @@ import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
 import SectionMarker from './SectionMarker.astro';
+import SectionIndicator from './SectionIndicator.astro';
 import { copyText } from '../../lib/content/copy.ts';
 
 interface Props {
@@ -130,6 +131,10 @@ const blocks = works.map((work, i) => {
       folio size; decorative, `aria-hidden`, and bounded to the head of
       the section by section-marker.css. */}
   <SectionMarker section="work" />
+  {/* #46 — the current-section readout. Not a second chapter opening:
+      11px, `aria-hidden`, and sticky INSIDE this section only, so it says
+      which chapter is being read and leaves when the chapter does. */}
+  <SectionIndicator section="work" />
   {/* Desktop-only visual rail. It spans the whole section so `sticky` can stay
       pinned while all five works pass on the right. The original Rails remain
       in the DOM and keep the mobile/accessibility reading order unchanged. */}

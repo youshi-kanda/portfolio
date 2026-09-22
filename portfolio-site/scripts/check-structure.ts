@@ -924,6 +924,110 @@ for (const route of PUBLIC_ROUTES.filter((r) => r !== 'index.html')) {
   }
 }
 
+// ---- SECTION_INDICATORS ----
+// #46 — the current-section readout, and the fact that it is the marker's
+// second layer rather than a second marker.
+//
+// The chapter opening is drawn once at the head of the section and scrolls
+// away; this one rides the section under the nav and leaves with it. Both are
+// decoration, so both carry the same three obligations — one per section,
+// `aria-hidden`, and not one string of their own — and this block states them
+// against the artifact for the same reason the marker's does: "the component
+// renders correctly" and "the shipped page has five of them, each saying what
+// the nav says" are different claims.
+//
+//   one per section, five in all. The layer's job is to keep the chapter
+//   legible after its opening has scrolled past; a section that lost its
+//   indicator is a stretch of page that stops answering "where am I", and a
+//   section with two is two answers to it.
+//   `aria-hidden` on every one. The nav names the chapter, the instrument rail
+//   names it again, and the marker names it a third time. A fourth voice in
+//   the accessibility tree is the page reading its own chapter number to a
+//   screen reader for the third time in one section.
+//   THE TWO STRINGS ARE THE PAGE'S OWN — `sectionNumber()` and the
+//   `site.sections` label, exactly as the marker's are. If this layer could
+//   say something the nav and the rail do not, it would be public copy.
+//   NOTHING ELSE INSIDE. Whatever is left after the two spans are removed has
+//   to be empty.
+//
+// Homepage only, on the same terms as the marker.
+const indicators = [
+  ...home.matchAll(
+    /<div class="sid-t" data-section-indicator="([a-z]+)"([^>]*)><div class="sid">([\s\S]*?)<\/div><\/div>/g,
+  ),
+];
+const SECTION_INDICATORS = indicators.length;
+expect('SECTION_INDICATORS', SECTION_INDICATORS, MARKER_SECTIONS.length);
+for (const section of MARKER_SECTIONS) {
+  const n = indicators.filter((m) => m[1] === section).length;
+  if (n !== 1) failures.push(`SECTION_INDICATORS: #${section} の現在地表示が ${n} 個 — 各セクション 1 個`);
+}
+for (const [, name = '', attrs = '', body = ''] of indicators) {
+  if (!attrs.includes('aria-hidden="true"')) {
+    failures.push(
+      `SECTION_INDICATORS: ${name} の現在地表示に aria-hidden が無い — 章番号が 3 回読み上げられる`,
+    );
+  }
+  const index = body.match(/<span class="sid-n">([^<]*)<\/span>/)?.[1] ?? '';
+  const label = body.match(/<span class="sid-l">([^<]*)<\/span>/)?.[1] ?? '';
+  const declaredLabel = site.sections.find((x) => x.id === name)?.label ?? null;
+  if (declaredLabel === null) {
+    failures.push(`SECTION_INDICATORS: ${name} は site.sections に label を持たない節 — 現在地表示を置けない`);
+  } else if (label !== declaredLabel) {
+    failures.push(
+      `SECTION_INDICATORS: ${name} の現在地表示が "${label}" — site.sections の label は "${declaredLabel}"`,
+    );
+  }
+  const declaredIndex = sectionNumber(name);
+  if (index !== declaredIndex) {
+    failures.push(
+      `SECTION_INDICATORS: ${name} の現在地表示が ${index} — sectionNumber は ${declaredIndex}`,
+    );
+  }
+  const rest = body
+    .replace(/<span class="sid-[ln]">[^<]*<\/span>/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, '');
+  if (rest !== '') {
+    failures.push(
+      `SECTION_INDICATORS: ${name} の現在地表示が番号と label 以外の文字を持っている（${rest.slice(0, 40)}）` +
+        ` — 装飾に承認を通っていない文章を載せない`,
+    );
+  }
+}
+// The marker and the indicator are one per section EACH, and they are the same
+// two strings twice. If a future edit ever makes one of them say something the
+// other does not, the page has two different answers to "which chapter is
+// this" — so the artifact is checked for agreement rather than for two counts
+// that happen to be five.
+for (const section of MARKER_SECTIONS) {
+  const mk = markers.find((m) => m[1] === section);
+  const ix = indicators.find((m) => m[1] === section);
+  if (!mk || !ix) continue;
+  const read = (body: string, kind: 'smk' | 'sid') => [
+    body.match(new RegExp(`<span class="${kind}-n">([^<]*)</span>`))?.[1] ?? '',
+    body.match(new RegExp(`<span class="${kind}-l">([^<]*)</span>`))?.[1] ?? '',
+  ];
+  const a = read(mk[3] ?? '', 'smk');
+  const b = read(ix[3] ?? '', 'sid');
+  if (a[0] !== b[0] || a[1] !== b[1]) {
+    failures.push(
+      `SECTION_INDICATORS: #${section} の章標が「${a[0]} ${a[1]}」で現在地表示が「${b[0]} ${b[1]}」` +
+        ` — 同じ節に 2 つの答えがある`,
+    );
+  }
+}
+let INDICATORS_OFF_HOME = 0;
+for (const route of PUBLIC_ROUTES.filter((r) => r !== 'index.html')) {
+  const n = [...read(route).matchAll(/<div class="sid-t"/g)].length;
+  if (n > 0) {
+    INDICATORS_OFF_HOME += n;
+    failures.push(
+      `SECTION_INDICATORS: /${route.replace(/index\.html$/, '')} に現在地表示が ${n} 個 — HOME 専用の層`,
+    );
+  }
+}
+
 // ---- RETIRED_SECTION_MOTIFS ----
 // Zero, on every public page. The SVG layer PR #47 shipped is deleted, not
 // hidden: no `.smo` wrapper, no `data-smo`, and no stylesheet left behind for
@@ -971,6 +1075,7 @@ console.log(
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
     `SECTION_MARKERS = ${SECTION_MARKERS} (off-home ${MARKERS_OFF_HOME}) / ` +
+    `SECTION_INDICATORS = ${SECTION_INDICATORS} (off-home ${INDICATORS_OFF_HOME}) / ` +
     `RETIRED_SECTION_MOTIFS = ${RETIRED_SECTION_MOTIFS} / ` +
     `CASE_QUICK_SUMMARIES = ${CASE_QUICK_SUMMARIES} / ` +
     `CASE_QUICK_INTERNAL_STATUS = ${CASE_QUICK_INTERNAL_STATUS} / ` +

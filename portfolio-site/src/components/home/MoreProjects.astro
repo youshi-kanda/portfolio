@@ -18,6 +18,7 @@ import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
 import SectionMarker from './SectionMarker.astro';
+import SectionIndicator from './SectionIndicator.astro';
 import Register from '../work/Register.astro';
 
 interface Props {
@@ -38,6 +39,10 @@ const m = site.moreProjects;
           folio size; decorative, `aria-hidden`, and bounded to the head of
           the section by section-marker.css. */}
       <SectionMarker section="more" />
+      {/* #46 — the current-section readout. Not a second chapter opening:
+          11px, `aria-hidden`, and sticky INSIDE this section only, so it says
+          which chapter is being read and leaves when the chapter does. */}
+      <SectionIndicator section="more" />
       <div class="page">
         <div class="tr more-shell">
           <div class="more-rail-sticky">

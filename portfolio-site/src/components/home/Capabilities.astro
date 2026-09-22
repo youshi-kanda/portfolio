@@ -23,6 +23,7 @@ import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import Rail from '../layout/Rail.astro';
 import SectionMarker from './SectionMarker.astro';
+import SectionIndicator from './SectionIndicator.astro';
 
 interface Props {
   works: readonly Work[];
@@ -48,6 +49,10 @@ const categories = c.categories.map((cat) => ({
       folio size; decorative, `aria-hidden`, and bounded to the head of
       the section by section-marker.css. */}
   <SectionMarker section="capabilities" />
+  {/* #46 — the current-section readout. Not a second chapter opening:
+      11px, `aria-hidden`, and sticky INSIDE this section only, so it says
+      which chapter is being read and leaves when the chapter does. */}
+  <SectionIndicator section="capabilities" />
   {/* Desktop-only persistent contents rail. 02 MORE PROJECTS deliberately keeps
       its static rail; the changing readout resumes here for the four capability
       categories. The original Rail remains in flow for mobile and accessibility. */}

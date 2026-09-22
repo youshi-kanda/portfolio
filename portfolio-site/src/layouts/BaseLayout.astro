@@ -32,6 +32,14 @@ import '../styles/polish.css';
    be ordered the same way, but keeping the two #46 sheets' successor next to
    the layer it overrides is what makes that relationship readable. */
 import '../styles/section-marker.css';
+/* #46 — the current-section indicator, the second layer of the same issue.
+   Its own sheet rather than more of section-marker.css: that file is the
+   chapter opening and states in its own head that it adds no sticky and no
+   motion, and growing a sticky inside it would make it disagree with itself.
+   Two files, two layers, and either can be deleted without the other. Ordered
+   after it so the relationship reads in the import list the way it does on the
+   page — the opening, then the readout that outlives it. */
+import '../styles/section-indicator.css';
 import { site } from '../lib/content/site.ts';
 
 interface Props {
