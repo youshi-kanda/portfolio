@@ -38,7 +38,7 @@ import type { Work } from '../../lib/content/schema.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
-import SectionMotif from './SectionMotif.astro';
+import SectionMarker from './SectionMarker.astro';
 
 interface Props {
   /** Every work the site knows about; the list below filters it. */
@@ -86,8 +86,10 @@ const publicCode = linkableSourceWorks(works).flatMap((work) => {
 ---
 
 <section class="contact inv" id="contact" data-mx-n={index}>
-  {/* #46 — the chapter mark. Decorative, `aria-hidden`, z-index:-1. */}
-  <SectionMotif motif="contact" />
+  {/* #46 — the chapter opening. The section's own number and name at
+      folio size; decorative, `aria-hidden`, and bounded to the head of
+      the section by section-marker.css. */}
+  <SectionMarker section="contact" />
   <div class="page">
     <div class="in">
       <div class="tr">

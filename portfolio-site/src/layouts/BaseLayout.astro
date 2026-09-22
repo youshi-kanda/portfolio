@@ -23,12 +23,15 @@ import '../styles/motion.css';
 /* Small, late-stage visual corrections live outside the frozen sheets so the
    original art-direction remains auditable. */
 import '../styles/polish.css';
-/* #46 — the homepage section motifs. Its own sheet rather than more of
+/* #46 — the homepage section markers. Its own sheet rather than more of
    polish.css: that file is corrections to things that already exist, and this
-   is a layer that did not. Imported here, alongside motion.css, and NOT from
-   index.css — the sheet uses a view timeline, and index.css explains why
-   anything reached from it loses `animation-timeline` in the build. */
-import '../styles/section-motif.css';
+   is a layer that did not. Imported here, alongside motion.css, rather than
+   from index.css, because it has to win over the folio rule in motion.css:
+   both declare into `utilities` / `motion`, and index.css's `@layer` statement
+   is what orders them — a sheet imported into `utilities` from index.css would
+   be ordered the same way, but keeping the two #46 sheets' successor next to
+   the layer it overrides is what makes that relationship readable. */
+import '../styles/section-marker.css';
 import { site } from '../lib/content/site.ts';
 
 interface Props {

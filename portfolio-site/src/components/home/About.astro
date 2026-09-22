@@ -47,7 +47,7 @@ import { sectionNumber } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
 import { uiText } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
-import SectionMotif from './SectionMotif.astro';
+import SectionMarker from './SectionMarker.astro';
 
 const a = site.about;
 const index = sectionNumber('about');
@@ -66,8 +66,10 @@ const disclosure = await Promise.all(a.disclosure.map(resolve));
 
 {/* `data-mx-n` — see Hero.astro. The index is `site.about`'s own. */}
 <section class="s-open" id="about" data-mx-n={index}>
-  {/* #46 — the chapter mark. Decorative, `aria-hidden`, z-index:-1. */}
-  <SectionMotif motif="about" />
+  {/* #46 — the chapter opening. The section's own number and name at
+      folio size; decorative, `aria-hidden`, and bounded to the head of
+      the section by section-marker.css. */}
+  <SectionMarker section="about" />
   <div class="page">
     <div class="tr">
       <Rail index={index} labels={a.railLabels} />
