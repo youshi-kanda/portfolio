@@ -434,4 +434,74 @@
       display: none;
     }
   }
+  /* NAV: which section the reader is in, said once and in the instrument's own
+     vocabulary. #46.
+
+     The masthead already tracks the current section — `Nav.astro`'s observer
+     writes `aria-current="location"` onto exactly one link — and already draws
+     it twice over: the label goes to `--tx` and the 2px signal underline is
+     brought to `scaleX(1)`. What it lacked was a mark you find without reading,
+     which is the job the rest of this site gives a 7px signal square. This adds
+     that one square and nothing else. The label colour, the underline and the
+     mono index are all left exactly as the frozen sheet authored them.
+
+     NO DOM, AND NOTHING FOR THE ACCESSIBILITY TREE. `components.css:41` carries
+     a `.ad .nav ol a .sq` rule, but the desktop masthead has never printed a
+     `.sq` element — its links are `<a><i>01</i>WORK</a>` — so that rule is dead
+     and a square drawn through it would mean adding markup. A `::before` says
+     the same thing to the eye and says nothing at all to a screen reader, which
+     is correct: `aria-current="location"` is already the whole claim, and a
+     second announcement of it would be noise.
+
+     THE SELECTOR IS GATED TWICE, AND BOTH GATES ARE LOAD-BEARING.
+
+       [data-home-nav]           the attribute is written only when `onHomepage`
+                                 (Nav.astro), so `/work/`, `/work/<slug>/`,
+                                 `/work/<slug>/technical/` and `/how-i-build/`
+                                 cannot match however they are marked.
+       [aria-current='location'] the value the scroll spy writes. The masthead's
+                                 other states are `aria-current="page"` (this
+                                 link IS the current URL) and `data-section`
+                                 (the page lives under it) — both are claims
+                                 about a route, and a square that meant "the
+                                 section you are scrolling through" would be
+                                 saying something untrue on a page that is not
+                                 scrolling through anything.
+
+     `.page ol` is the third gate and the one that keeps this off the phone: the
+     mobile index lives in `.mob-panel`, a SIBLING of `.page`, and its links are
+     deliberately given no `aria-current` at all (Nav.astro). Below 768px the
+     `<ol>` here is `display:none` (responsive.css) and the square goes with it.
+
+     GEOMETRY — the square is drawn INSIDE the padding the link already has, so
+     it costs the layout nothing: no flex item, no width, no reflow when the
+     current section changes. `a` is `position:relative` in the frozen sheet, so
+     the containing block is already there. 7px and `--sig` are what
+     `components.css:41` specifies for this square; neither is invented here.
+
+     `left:4px` against an 18px padding leaves 7px to the link's own index and
+     14px+ back to the previous link's label, so the square reads as belonging
+     to the item on its right. Below 1024px that padding is 12px
+     (responsive.css), which would leave 1px — too tight to read as a separate
+     mark — so the inset is re-centred there rather than the square being
+     shrunk: 7px is the size this mark is everywhere else on the site.
+
+     `top` is a `calc`, not a `translate`: the link's `:after` already animates
+     `transform`, and keeping this pseudo off that property entirely means there
+     is no chance of the two being composited as one moving thing. */
+  .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: calc(50% - 3.5px);
+    width: 7px;
+    height: 7px;
+    background: var(--sig);
+  }
+
+  @media (max-width: 1023px) {
+    .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+      left: 2.5px;
+    }
+  }
 }
