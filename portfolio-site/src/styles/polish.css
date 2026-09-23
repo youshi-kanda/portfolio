@@ -486,10 +486,49 @@
      mark — so the inset is re-centred there rather than the square being
      shrunk: 7px is the size this mark is everywhere else on the site.
 
-     `top` is a `calc`, not a `translate`: the link's `:after` already animates
-     `transform`, and keeping this pseudo off that property entirely means there
-     is no chance of the two being composited as one moving thing. */
-  .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+     `top` is a `calc` rather than a `translate` because `transform` on this
+     pseudo now belongs to the state change below, and a centring offset baked
+     into the same property would be something the transition had to carry.
+
+     THE SQUARE AND THE UNDERLINE CHANGE TOGETHER. The first version of this
+     drew the square only on the current link, which made its arrival instant
+     while the underline beside it took .18s to travel — and staging's scroll
+     video caught the gap: for that moment the square names the section you are
+     entering and the underline is still leaving the one behind it. Two marks
+     for one fact, disagreeing about which fact it is.
+
+     The fix is to give the square the underline's timing, not to take the
+     underline's timing away: .18s is the frozen sheet's decision about how this
+     masthead moves, and making the underline instant to match a new mark would
+     be the new mark editing the old one. So the square is drawn on EVERY
+     homepage link, collapsed at `scaleX(0)`, and the current link opens it to
+     `scaleX(1)` — which is exactly the mechanism `components.css:42-52` already
+     uses for the underline, with the same duration, the same easing and the
+     same `transform-origin`. Both marks now leave the old section and arrive at
+     the new one on the same curve.
+
+     A collapsed square is not a drawn one: `scaleX(0)` paints nothing, takes no
+     space (the pseudo is absolute either way) and reaches no accessibility
+     tree. `[data-home-nav]` still gates the base rule, so off the homepage the
+     pseudo is never generated at all — `aria-current="page"` and `data-section`
+     have nothing to collapse or open.
+
+     REDUCED MOTION needs no rule here, and deliberately gets none. The frozen
+     sheet ends its motion section with
+
+       @media (prefers-reduced-motion: reduce){
+         .ad *,.ad *:before,.ad *:after{animation:none !important;
+                                        transition-duration:.01ms !important}
+       }
+
+     which already reaches this pseudo — `!important` reverses layer order, so
+     that declaration in `components` wins over this one in `utilities`. The
+     square and the underline are shortened by the same rule to the same
+     duration, which is the outcome that matters: under `reduce` they are still
+     in step, both effectively instant. Wrapping the transition below in
+     `no-preference` would arrive at the same look by a second mechanism, and
+     the two marks would then be quiet for different reasons. */
+  .ad .nav[data-home-nav] .page ol a::before {
     content: '';
     position: absolute;
     left: 4px;
@@ -497,11 +536,42 @@
     width: 7px;
     height: 7px;
     background: var(--sig);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+    transform: scaleX(1);
   }
 
   @media (max-width: 1023px) {
-    .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+    .ad .nav[data-home-nav] .page ol a::before {
       left: 2.5px;
+    }
+  }
+
+  /* ABOUT -> CONTACT: the approach to the last section was reading as a pause
+     rather than a break. #46.
+
+     `components.css:862` sets `.contact{margin-top:120px}` — the widest gap
+     between two adjacent homepage sections, and one the scroll video spent
+     noticeably longer crossing than any other seam. 88px is not a new number
+     chosen to feel better: it is `.s-tight` (`layout.css:31`), the rhythm this
+     composition already uses for a close join, so the seam moves from the
+     open step to the tight one without inventing a step between them.
+
+     DESKTOP AND TABLET ONLY. Below 768px `responsive.css:427` sets 112px, and
+     that is a different composition — one column, no facing whitespace, and a
+     seam the video review did not look at. `min-width:768px` leaves it exactly
+     where it was rather than assuming the same edit applies there.
+
+     The section's own box is untouched: `.contact .in` keeps its padding and
+     the 2px rule keeps its place. What moves is only the distance from the end
+     of ABOUT to that rule. */
+  @media (min-width: 768px) {
+    .ad .contact {
+      margin-top: 88px;
     }
   }
 }
