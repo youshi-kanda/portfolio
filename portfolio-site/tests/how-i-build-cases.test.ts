@@ -31,6 +31,8 @@ const src = (path: string): string =>
   readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 
 const CASES_COMPONENT = src('components/home/HowIBuildCases.astro');
+/** #52 — PR #19 の記録は独立 component になった。判断事例とは別 section。 */
+const QA_COMPONENT = src('components/home/HowIBuildQaRecord.astro');
 const TOP_COMPONENT = src('components/navigation/ScrollToTop.astro');
 const METHOD_COMPONENT = src('components/home/HowIBuild.astro');
 const PAGE = src('pages/how-i-build.astro');
@@ -65,6 +67,7 @@ const markupOf = (component: string): string => {
 };
 
 const CASES_MARKUP = markupOf(CASES_COMPONENT);
+const QA_MARKUP = markupOf(QA_COMPONENT);
 const TOP_MARKUP = markupOf(TOP_COMPONENT);
 const METHOD_MARKUP = markupOf(METHOD_COMPONENT);
 const PAGE_MARKUP = markupOf(PAGE);
@@ -137,6 +140,7 @@ describe('#31 公開 PR の URL — site.repo から導出する', () => {
   it('component が GitHub の URL を直書きしていない', () => {
     for (const [name, component] of [
       ['HowIBuildCases.astro', CASES_COMPONENT],
+      ['HowIBuildQaRecord.astro', QA_COMPONENT],
       ['ScrollToTop.astro', TOP_COMPONENT],
       ['how-i-build.astro', PAGE],
     ] as const) {
@@ -147,6 +151,7 @@ describe('#31 公開 PR の URL — site.repo から導出する', () => {
       );
     }
     assert.match(CASES_COMPONENT, /publicPrUrl\(/);
+    assert.match(QA_COMPONENT, /publicPrUrl\(/);
   });
 
   it('本文データが PR の URL を保存していない — 持つのは番号だけ', () => {
@@ -238,9 +243,12 @@ describe('#31 AI と Human の境界 — 出所を推測しない', () => {
   });
 
   it('component も日本語ラベルを直書きしていない — registry 経由で出る', () => {
-    assert.equal(AI_ORIGIN.test(CASES_COMPONENT.replace(/\/\*[\s\S]*?\*\//g, '')), false);
+    for (const component of [CASES_COMPONENT, QA_COMPONENT]) {
+      assert.equal(AI_ORIGIN.test(component.replace(/\/\*[\s\S]*?\*\//g, '')), false);
+    }
     for (const label of [
       ui.howIBuild.casesLabel,
+      ui.howIBuild.casesLead,
       ui.howIBuild.caseProblem,
       ui.howIBuild.caseObserved,
       ui.howIBuild.caseDecision,
@@ -249,11 +257,16 @@ describe('#31 AI と Human の境界 — 出所を推測しない', () => {
       ui.howIBuild.openPr,
       ui.howIBuild.qaLabel,
     ]) {
-      assert.equal(
-        CASES_COMPONENT.includes(`>${label}<`),
-        false,
-        `${label} が component に直書きされている`,
-      );
+      for (const [name, component] of [
+        ['HowIBuildCases.astro', CASES_COMPONENT],
+        ['HowIBuildQaRecord.astro', QA_COMPONENT],
+      ] as const) {
+        assert.equal(
+          component.includes(`>${label}<`),
+          false,
+          `${label} が ${name} に直書きされている`,
+        );
+      }
     }
     assert.equal(TOP_COMPONENT.includes(`"${ui.howIBuild.toTop}"`), false);
     assert.match(TOP_COMPONENT, /ui\.howIBuild\.toTop/);
@@ -444,17 +457,32 @@ describe('#31 見出し階層 — 判断事例は開発の前提の配下では�
     assert.match(CASES_MARKUP, /<span class="lb">\{fill\(ui\.howIBuild\.casesCount/);
   });
 
-  it('事例と QA は h3 で、すべて h2 の後に出る', () => {
-    // source の `<h3` は 2 つ（`cases.map` の中と QA の aside）で、描画されると
-    // 3 つになる。描画後の 1 2 2 3 3 3 は check:structure の HOW_OUTLINE が
-    // dist に対して数えており、ここで見るのは「h3 しか使っていないこと」と
-    // 「どれも h2 より後にあること」——つまり 3 件がこの節の配下であること。
+  it('事例は h3 で、h2 の後に出る', () => {
+    // source の `<h3` は 1 つ（`cases.map` の中）で、描画されると 2 つになる。
+    // 描画後の outline は check:structure の HOW_OUTLINE が dist に対して
+    // 数えており、ここで見るのは「h3 しか使っていないこと」と「h2 より後に
+    // あること」——つまり事例がこの節の配下であること。
     const h3s = [...CASES_MARKUP.matchAll(/<h3\b/g)];
-    assert.equal(h3s.length, 2);
-    assert.equal([...CASES_MARKUP.matchAll(/<h([1-6])\b/g)].length, 3, 'h2 1 つ + h3 2 つ');
+    assert.equal(h3s.length, 1);
+    assert.equal([...CASES_MARKUP.matchAll(/<h([1-6])\b/g)].length, 2, 'h2 1 つ + h3 1 つ');
     assert.equal([...CASES_MARKUP.matchAll(/<h2\b/g)].length, 1);
     const h2at = CASES_MARKUP.indexOf('<h2');
     for (const m of h3s) assert.ok(m.index! > h2at, 'h3 が h2 より前に出ている');
+  });
+
+  it('#52 QA は自分の h2 を持ち、その配下の h3 が qa.title である', () => {
+    // 判断事例の配下ではない。ここが #52 の主眼で、レベルが 1 段深いままなら
+    // 「3 件目の事例」という読みが outline に残る。
+    assert.equal([...QA_MARKUP.matchAll(/<h2\b/g)].length, 1);
+    assert.equal([...QA_MARKUP.matchAll(/<h3\b/g)].length, 1);
+    assert.equal([...QA_MARKUP.matchAll(/<h([1-6])\b/g)].length, 2);
+    assert.ok(QA_MARKUP.indexOf('<h3') > QA_MARKUP.indexOf('<h2'));
+    // 判断事例と同じ道具で描かれている: rule の上の mono ラベル。
+    assert.match(QA_MARKUP, /<div class="shead">/);
+    assert.match(QA_MARKUP, /<h2 class="mo" id=\{HEADING_ID\}><b>\{ui\.howIBuild\.qaLabel\}<\/b><\/h2>/);
+    assert.match(QA_MARKUP, /aria-labelledby=\{HEADING_ID\}/);
+    // 語は 1 回だけ。aria-label と heading の二重読み上げを持ち込まない。
+    assert.equal(/aria-label=\{ui\.howIBuild\.qaLabel\}/.test(QA_MARKUP), false);
   });
 
   it('ページの h1 は 1 つだけで、node は追加していない', () => {
@@ -692,10 +720,25 @@ describe('#31 二層構造 — 結論は折りたたみの外', () => {
     // 描画後の件数は check:structure が dist に対して数える
     // （HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS）。
     // ここで見るのは、数える対象の目印を component が実際に書いていること。
+    //
+    // #52 — 目印は 2 つの component に分かれた。判断事例側に QA の目印が
+    // 「無い」ことが契約である: 同じ component にある限り、DOM 上で 3 件目に
+    // なる書き方がいつでもできてしまう。
     assert.match(CASES_MARKUP, /data-decision-case=\{c\.id\}/);
-    assert.match(CASES_MARKUP, /data-qa-record\b/);
-    assert.equal([...CASES_MARKUP.matchAll(/data-decision-pr=/g)].length, 2);
+    assert.equal(
+      /data-qa-record\b/.test(CASES_MARKUP),
+      false,
+      'QA の目印が判断事例 component に戻っている — 3 件目に見える構造',
+    );
+    assert.equal([...CASES_MARKUP.matchAll(/data-decision-pr=/g)].length, 1);
+    assert.match(QA_MARKUP, /data-qa-record\b/);
+    assert.equal(/data-decision-case=/.test(QA_MARKUP), false, 'QA が事例を名乗っている');
+    assert.equal([...QA_MARKUP.matchAll(/data-decision-pr=/g)].length, 1);
     assert.match(PAGE_MARKUP, /<HowIBuildCases \/>/);
+    assert.match(PAGE_MARKUP, /<HowIBuildQaRecord \/>/);
     assert.match(PAGE_MARKUP, /<ScrollToTop \/>/);
+    // 読み順: 判断事例 → QA → Footer → TOP
+    assert.ok(PAGE_MARKUP.indexOf('<HowIBuildQaRecord') > PAGE_MARKUP.indexOf('<HowIBuildCases'));
+    assert.ok(PAGE_MARKUP.indexOf('<Footer') > PAGE_MARKUP.indexOf('<HowIBuildQaRecord'));
   });
 });

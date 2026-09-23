@@ -476,6 +476,43 @@
 .ad .flow .d{font-size:14.5px;line-height:1.7;color:var(--tx2)}
 .ad .flow .g{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
              color:var(--sig);font-weight:700;text-align:right}
+
+/* ------------------------------ #52 ledger variant (PPM Case Study only)
+   `.flow` is the generic ruled instrument list and three places draw with it:
+   HOW I BUILD's eight-step workflow, AI CRM's walkthrough, and PPM's register.
+   Only the last one needs column heads and only the last one has PPM's
+   proportions, so the fix is a variant rather than a change to the instrument
+   all three share. Nothing below can reach `.flow` without `.flow-ledger`.
+
+   WHAT WAS WRONG WITH THE GENERIC TRACKS HERE. `232px` of 処理 and `148px` of
+   実行主体 against PPM's content: the widest 処理 is 循環検出 at 60px and every
+   実行主体 on this page is the same 40px word, so 280px of the row was blank
+   while 内容 — sentences of up to 38 units — took whatever was left. Measured
+   on the shipped page that was 365px at 1440, 205px at 1280, 65px at 1024 and
+   29px at 768, where the longest stage wrapped to twenty-two lines. The tracks
+   here give the two short columns what they actually need and hand the rest to
+   the sentence.
+
+   THE GATE COLUMN IS SIZED FROM ITS TEXT, NOT FROM WHAT IS LEFT OVER. The two
+   gates measure 100.8px and 95.8px at the 10.5px instrument size, so the track
+   is 156px: both sit on one line at their own size, with room for a longer
+   refusal than either. Shrinking the type to fit was the other way to make the
+   column work and it is the wrong one — the gate is the thing this register
+   exists to show, and it may not be the smallest thing on the row. */
+.ad .flow-ledger .fhd,
+.ad .flow-ledger .fst{grid-template-columns:52px minmax(0,112px) 108px minmax(0,1fr) minmax(0,156px)}
+/* The head is a row of the same grid, drawn as the lane key above the workflow
+   is drawn: mono at instrument size, tertiary, on the rule. It names the axis;
+   it is not a heading and must not read as one. */
+.ad .flow-ledger .fhd{display:grid;column-gap:24px;align-items:baseline;
+                      border-bottom:1px solid var(--hair2);padding:13px 0}
+.ad .flow-ledger .fhd span{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+                           text-transform:uppercase;color:var(--tx3);font-weight:700}
+.ad .flow-ledger .fhd .g{text-align:right}
+/* The floor under the track width, for the sentence this register does not
+   hold yet: a refusal longer than the column breaks rather than leaving the
+   page. Same pairing the display lines use (base.css) and the same reason. */
+.ad .flow-ledger .g{overflow-wrap:anywhere}
 .ad .notclaim{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
 .ad .notclaim ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
 .ad .notclaim li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
@@ -929,19 +966,41 @@
    value pairing the Evidence provenance list and the CONTACT channels use.
    Nothing new was introduced to draw this — `.mo`, `.lk`, the hairlines and
    the measure are the whole vocabulary. */
-/* The last section before the footer, so it states its own bottom: every other
-   section is spaced by the NEXT one's top padding, and this one has no next. */
-.ad #decision-cases{padding-bottom:96px}
+/* #52 — the bottom belongs to whichever section is last, and that is no longer
+   this one. Every other section is spaced by the NEXT one's top padding; the
+   last one has no next and states its own. QA / 検証記録 now follows. */
+.ad #qa-record{padding-bottom:96px}
 .ad .dc{padding:34px 0 0;border-top:1px solid var(--hair);max-width:720px}
-/* The first case opens directly under the section head, so it draws neither
-   the lead nor the rule: `.shead` has already put a 2px rule and 34px above it.
-   Written as an adjacent sibling rather than `:first-of-type` — the QA record
-   is an `<aside>` and would be the first of ITS type, which would have taken
-   the rule off the one block that needs it to read as separate. */
+/* A record that opens directly under a section head draws neither the lead nor
+   the rule: `.shead` has already put a 2px rule and 34px above it. That is the
+   QA record now — in 判断事例 the lead sits between the head and the first
+   case, and there the rule is what separates the sentence from the case. */
 .ad .shead + .dc{padding-top:0;border-top:0}
 .ad .dc + .dc{margin-top:34px}
+/* #52 — the sentence between the head and the first case. Set as the section
+   ledes on this page are: the measure of a record, the supporting colour, and
+   nothing else. It introduces the fields below; it is not a claim and must not
+   read at the weight of one. */
+.ad .dc-lead{font-size:15.5px;line-height:1.85;color:var(--tx2);margin:0 0 30px;max-width:720px}
+/* #52 — 30ch is the measure; `keep-all` is what decides where the line breaks
+   inside it. Japanese line-breaking allows a break between any two kana, so the
+   default put 「…確認し、デプロ / イの方式を変更した」 on the page — a break
+   through the middle of デプロイ, which is a word. Measured by sweeping this
+   element's width at 2px steps: the bad break stood from 432px to 444px of
+   measure, which is the block's own width below 768 (where max-width is
+   released) on a 472–484px screen. `keep-all` leaves only the breaks the
+   punctuation gives, so the same title breaks at the 読点 instead, and the
+   sweep from 300px to 760px now produces it at no width at all.
+
+   `overflow-wrap:anywhere` is the floor under it and is not optional — the same
+   pairing, for the same reason, as the display lines in base.css. keep-all
+   makes the fit conditional on the copy: it holds while every run between two
+   punctuation marks is shorter than the measure, and the next approved title
+   does not have to honour that. Alone, keep-all answers a long run by putting
+   it outside the page. Together they say what is meant: break at the
+   punctuation, and break the word only rather than the layout. */
 .ad .dc-t{font-size:clamp(21px,1.8vw,26px);line-height:1.45;letter-spacing:-.016em;
-          margin:0 0 20px;max-width:30ch}
+          margin:0 0 20px;max-width:30ch;word-break:keep-all;overflow-wrap:anywhere}
 /* The four always-open fields. A 132px label column on the wide measure — the
    same width the provenance list gives its terms, so the two read as one
    instrument — collapsing to stacked label-over-value below 768 (responsive). */
@@ -970,11 +1029,11 @@
 /* The PR link is OUTSIDE the disclosure on purpose — see HowIBuildCases.astro.
    The way to check this page may not be the part that is folded away. */
 .ad .dc-l{padding-top:4px}
-/* PR #19 — the supplement. Same record, one step quieter: it opens with its own
-   mono label instead of a rule, so it reads as a note on the two above it
-   rather than as a third case. */
+/* PR #19 — the record, in its own section since #52. Its title is set below the
+   case titles: the section head above it already names what the block is, and a
+   record whose title matched a case title in size would be reading as a third
+   case again in the one property that survives the section break. */
 .ad .dc-qa{display:block}
-.ad .dc-qa .mo{display:block;margin-bottom:10px}
 .ad .dc-qa .dc-t{font-size:clamp(18px,1.4vw,21px);margin-bottom:14px}
 .ad .dc-c{font-size:15.5px;line-height:1.85;color:var(--tx2);margin:0 0 16px}
 .ad .dc-f{list-style:none;margin:0 0 18px;padding:0;font-size:14px;line-height:1.8}

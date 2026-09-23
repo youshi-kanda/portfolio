@@ -101,7 +101,19 @@
  *                         this should refuse. Deriving these from site.json
  *                         would check that the page renders what the file says
  *                         while letting the file say anything.
- *   HOW_QA_RECORDS        one, on the same terms.
+ *   HOW_QA_RECORDS        one, on the same terms — and #52 adds WHERE. The
+ *                         record is drawn in `#qa-record`, a section of its
+ *                         own, and there are zero of them inside
+ *                         `#decision-cases`. Counting alone could not see the
+ *                         defect #52 fixed: the QA log WAS exactly one, and it
+ *                         was the third block under 判断事例's head, which is
+ *                         the reading HD-J ruled out. A count says how many; a
+ *                         section says which section they belong to.
+ *   HOW_CASES_LEAD        #52 — the approved sentence between the 判断事例 head
+ *                         and the first case, exactly once and in that order.
+ *                         Held against the registry text, not a literal: the
+ *                         sentence is the owner's and lives where its approval
+ *                         record lives.
  *   HOW_PR_LINKS          three — one per case plus the QA record — and every
  *                         one built by `publicPrUrl` from `site.repo`. A PR URL
  *                         typed into a component would pass a count check and
@@ -110,6 +122,16 @@
  *                         control is an `<a>`. A button calling `scrollTo` is
  *                         the regression: it looks identical in a screenshot
  *                         and stops existing when the script does not run.
+ *   LEDGER_HEADS          #52 — the PPM register states its five columns, in the
+ *                         row order the rows print, with the labels the ui
+ *                         registry holds. Read off the artifact because the
+ *                         component looks right either way: heads that render
+ *                         in a different order from the cells below them is a
+ *                         table that lies, and it lies identically in source.
+ *   LEDGER_VARIANT        the variant class is on PPM's register and on no
+ *                         other page. `.flow` is shared with HOW I BUILD's
+ *                         workflow and AI CRM's walkthrough, and the whole
+ *                         point of #52's variant is that neither moved.
  *   CASE_QUICK_SUMMARIES  #33 — every published Case Study opens with the 3分概要
  *                         block, and the expected number is the number of
  *                         published Case Studies, computed from the work
@@ -164,6 +186,7 @@ import {
 import { workSourceIsLinkable } from '../src/lib/content/compat.ts';
 import { loadCaseStudies, loadCopy, loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
+import { ui } from '../src/lib/content/ui.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const read = (route: string): string => readFileSync(`${DIST}${route}`, 'utf8');
@@ -691,17 +714,22 @@ const HOW_OUTLINE = [...method.matchAll(/<h([1-6])\b([^>]*)>/g)].map(([, tag, at
   const declared = /aria-level="(\d)"/.exec(attrs ?? '');
   return Number(declared ? declared[1] : tag);
 });
-expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2 2 3 3 3');
-// The two h2s are the ones #31 named, and they are `<h2>` elements rather than
-// a smaller tag declaring its depth. The section is named once: `aria-label`
-// repeating a heading is the double announcement the decision ruled out.
-for (const heading of ['開発の前提', '判断事例']) {
+// #52 — QA / 検証記録 is the third h2 and PR #19's title is the h3 under it.
+// It was `1 2 2 3 3 3`: the QA title sat at the same depth as the two cases,
+// under 判断事例's h2, which is a document outline saying "three cases".
+expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2 2 3 3 2 3');
+// The three h2s are the ones #31 and #52 named, and they are `<h2>` elements
+// rather than a smaller tag declaring its depth. Each section is named once:
+// `aria-label` repeating a heading is the double announcement #31 ruled out.
+for (const heading of ['開発の前提', '判断事例', 'QA / 検証記録']) {
   if (!new RegExp(`<h2\\b[^>]*>(?:<[^>]*>)*${heading}`).test(method)) {
     failures.push(`HOW_OUTLINE: 「${heading}」が <h2> として出ていない`);
   }
 }
-if (/\saria-label="判断事例"/.test(method)) {
-  failures.push('HOW_OUTLINE: 判断事例 が aria-label と heading の両方で読み上げられる');
+for (const heading of ['判断事例', 'QA / 検証記録']) {
+  if (new RegExp(`\\saria-label="${heading}"`).test(method)) {
+    failures.push(`HOW_OUTLINE: ${heading} が aria-label と heading の両方で読み上げられる`);
+  }
 }
 
 const HOW_DECISION_CASES = [...method.matchAll(/\sdata-decision-case="([^"]+)"/g)].map(
@@ -711,6 +739,66 @@ expect('HOW_DECISION_CASES', HOW_DECISION_CASES.length, 2);
 
 const HOW_QA_RECORDS = [...method.matchAll(/\sdata-qa-record\b/g)].length;
 expect('HOW_QA_RECORDS', HOW_QA_RECORDS, 1);
+
+// ---- #52. WHERE each of them is, which counting cannot see. ----
+// The section a block sits in is read by slicing the artifact between the two
+// `<section id=…>` openings — regex over the whole page would find the QA
+// record wherever it was and call the layout correct.
+const sectionOf = (id: string): string => {
+  const open = method.indexOf(`<section class="s-open" id="${id}"`);
+  if (open < 0) return '';
+  const next = method.indexOf('<section', open + 1);
+  return method.slice(open, next < 0 ? method.length : next);
+};
+const decisionSection = sectionOf('decision-cases');
+const qaSection = sectionOf('qa-record');
+if (!decisionSection) failures.push('HOW_QA_RECORDS: <section id="decision-cases"> が無い');
+if (!qaSection) failures.push('HOW_QA_RECORDS: <section id="qa-record"> が無い');
+expect(
+  'HOW_QA_IN_CASES',
+  [...decisionSection.matchAll(/\sdata-qa-record\b/g)].length,
+  0,
+);
+expect('HOW_QA_IN_OWN_SECTION', [...qaSection.matchAll(/\sdata-qa-record\b/g)].length, 1);
+expect(
+  'HOW_CASES_IN_CASES',
+  [...decisionSection.matchAll(/\sdata-decision-case="/g)].length,
+  2,
+);
+expect('HOW_CASES_IN_QA', [...qaSection.matchAll(/\sdata-decision-case="/g)].length, 0);
+// Named regions, both of them, and each by its own heading rather than by a
+// repeated label.
+for (const [id, section] of [
+  ['decision-cases', decisionSection],
+  ['qa-record', qaSection],
+] as const) {
+  const labelledBy = /\saria-labelledby="([^"]+)"/.exec(section);
+  if (!labelledBy) {
+    failures.push(`HOW_QA_IN_OWN_SECTION: #${id} に aria-labelledby が無い`);
+    continue;
+  }
+  if (!new RegExp(`<h2\\b[^>]*\\sid="${labelledBy[1]}"`).test(section)) {
+    failures.push(`HOW_QA_IN_OWN_SECTION: #${id} の aria-labelledby が h2 を指していない`);
+  }
+}
+
+// ---- HOW_CASES_LEAD ----
+// #52. The approved sentence, once, between the head and the first case. Its
+// text comes from the ui registry — a literal here would be a second copy of a
+// string whose approval record lives somewhere else.
+const HOW_CASES_LEAD = [...method.matchAll(/<p class="dc-lead">([\s\S]*?)<\/p>/g)].map((m) =>
+  (m[1] as string).replace(/<[^>]*>/g, '').trim(),
+);
+expect('HOW_CASES_LEAD', HOW_CASES_LEAD.length, 1);
+expect('HOW_CASES_LEAD_TEXT', HOW_CASES_LEAD[0] ?? '', ui.howIBuild.casesLead);
+{
+  const head = decisionSection.indexOf('</h2>');
+  const lead = decisionSection.indexOf('class="dc-lead"');
+  const first = decisionSection.indexOf('data-decision-case="');
+  if (!(head >= 0 && head < lead && lead < first)) {
+    failures.push('HOW_CASES_LEAD: 導入文が見出しと最初の事例の間に無い');
+  }
+}
 
 // The PR each block cites, read off the artifact. Checked as a SET against the
 // numbers #31 fixed, so a case pointing at the wrong PR fails here rather than
@@ -742,6 +830,57 @@ if (!/<a\b[^>]*\shref="#top"/.test(method)) {
 // The existing landmark id is not renamed by the addition.
 if (!/<main\b[^>]*\sid="how-i-build"/.test(method)) {
   failures.push('HOW_TOP_LINKS: <main id="how-i-build"> が無い');
+}
+
+// ---- LEDGER_HEADS / LEDGER_VARIANT ----
+// #52. PPM's register states its columns. Read off the artifact and not off the
+// component, because the component looks correct either way: what has to hold
+// is that the heads come out in the SAME order the cells below them come out
+// in, and a head row that drifted one position renders, counts right, and
+// mislabels every row on the page.
+let LEDGER_HEADS_REPORT = '(none)';
+{
+  const ppm = read('work/ppm/index.html');
+  const open = ppm.indexOf('<div class="flow flow-ledger">');
+  if (open < 0) {
+    failures.push('LEDGER_VARIANT: PPM の register が flow-ledger を名乗っていない');
+  } else {
+    // From the opening tag to the end of the document. Everything read below is
+    // the FIRST match after that point — the head row and the first data row —
+    // so a closing boundary would be precision this does not use.
+    const ledger = ppm.slice(open);
+    const headOpen = ledger.indexOf('<div class="fhd">');
+    const head = ledger.slice(headOpen, ledger.indexOf('</div>', headOpen));
+    const LEDGER_HEADS = [...head.matchAll(/<span class="([a-z]+)">([^<]*)<\/span>/g)].map((m) => [
+      m[1],
+      m[2],
+    ]);
+    const heads = ui.caseStudy.ledgerHeaders;
+    expect(
+      'LEDGER_HEADS',
+      LEDGER_HEADS.map(([c, t]) => `${c}:${t}`).join(' '),
+      `k:${heads.step} n:${heads.name} o:${heads.owner} d:${heads.what} g:${heads.gate}`,
+    );
+    // The first row's cells, in the order they are emitted. Same sequence as
+    // the heads, which is the only thing that makes the heads mean anything.
+    const firstRow = ledger.slice(ledger.indexOf('<div class="fst'));
+    const cells = [...firstRow.slice(0, firstRow.indexOf('</div>')).matchAll(/<span class="([a-z]+)"/g)]
+      .map((m) => m[1])
+      .slice(0, 4);
+    expect('LEDGER_ROW_ORDER', cells.join(' '), 'k n o d');
+    LEDGER_HEADS_REPORT = LEDGER_HEADS.map(([, t]) => t).join(' ');
+  }
+}
+// The variant is PPM's alone. `.flow` is shared with HOW I BUILD's workflow and
+// AI CRM's walkthrough, and #52's whole shape is that neither of them moved.
+for (const [route, wanted] of [
+  ['work/ppm/index.html', 1],
+  ['work/crm/index.html', 0],
+  ['work/dfe/index.html', 0],
+  ['how-i-build/index.html', 0],
+  ['index.html', 0],
+] as const) {
+  expect(`LEDGER_VARIANT ${route}`, [...read(route).matchAll(/\bflow-ledger\b/g)].length, wanted);
 }
 
 // ---- CASE_QUICK_SUMMARIES / CASE_QUICK_ITEMS / CASE_QUICK_INTERNAL_STATUS ----
@@ -990,9 +1129,13 @@ console.log(
     `HOW_PREMISES = ${HOW_PREMISES.length} / ` +
     `HOW_OUTLINE = ${HOW_OUTLINE.join(' ')} / ` +
     `HOW_DECISION_CASES = ${HOW_DECISION_CASES.length} (${HOW_DECISION_CASES.join(' ')}) / ` +
-    `HOW_QA_RECORDS = ${HOW_QA_RECORDS} / ` +
+    `HOW_QA_RECORDS = ${HOW_QA_RECORDS} (in #decision-cases ${
+      [...decisionSection.matchAll(/\sdata-qa-record\b/g)].length
+    }) / ` +
+    `HOW_CASES_LEAD = ${HOW_CASES_LEAD.length} / ` +
     `HOW_PR_LINKS = ${HOW_PR_LINKS.length} / ` +
-    `HOW_TOP_LINKS = ${HOW_TOP_LINKS}`,
+    `HOW_TOP_LINKS = ${HOW_TOP_LINKS} / ` +
+    `LEDGER_HEADS = ${LEDGER_HEADS_REPORT}`,
 );
 
 if (failures.length > 0) {

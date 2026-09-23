@@ -454,7 +454,7 @@
    drawn between the same pairs — the DOM order is unchanged and nothing here
    moves a field past another one. */
 @media (max-width:767px){
-.ad #decision-cases{padding-bottom:64px}
+.ad #qa-record{padding-bottom:64px}
 .ad .dc-s{grid-template-columns:minmax(0,1fr)}
 .ad .dc-s dt{padding:14px 0 4px;border-top:1px solid var(--hair)}
 .ad .dc-s dt:first-of-type{padding-top:0;border-top:0}
@@ -470,4 +470,38 @@
    without eating more of a 360px measure than it has to. */
 .ad .totop{right:calc(12px + env(safe-area-inset-right));
            bottom:calc(12px + env(safe-area-inset-bottom))}
+}
+
+/* --------------------------------------------- #52 ledger (PPM Case Study)
+   THE REGISTER LIES DOWN EARLIER THAN THE GENERIC FLOW DOES, at 1280 rather
+   than at 768. That is not a preference; it is where the five columns stop
+   fitting. The field this register is drawn in measures 1,025px at 1440 and
+   865px at 1280 — both hold the four named tracks and still leave 501px and
+   341px for 内容, where no stage runs past two lines — but 725px at 1024 and
+   689px at 768, where the same tracks leave 201px and 165px. Measured at those
+   two widths the rows run to three and four lines against a measure of 14 and
+   11 characters. Keeping five columns there would be keeping the SHAPE of a
+   table by destroying the thing a table is for. Stacked, every row's sentence
+   is back on one line (649px and 613px of measure).
+
+   Nothing is reordered and nothing is dropped. `.k` takes the left track for
+   the whole row and 処理 / 実行主体 / 内容 / ゲート stack in the right one, in
+   the order they are written in the DOM, which is the order the head names.
+   It is the shape the generic `.flow` already takes below 768, applied to this
+   variant at the width its own content asks for.
+
+   THE HEAD STAYS, AS A KEY RATHER THAN AS COLUMNS. Five heads over one column
+   would be five labels pointing at nothing, and `display:none` would take the
+   column names out of the accessibility tree along with the columns — the
+   reader who most needs to be told what `SYSTEM` is would be the one who
+   loses the answer. So it becomes one wrapped mono line: the fields each row
+   states, in the order each row states them. */
+@media (max-width:1279px){
+.ad .flow-ledger .fst{grid-template-columns:52px minmax(0,1fr);row-gap:4px;padding:14px 0}
+.ad .flow-ledger .fst .k{grid-row:1 / span 4}
+.ad .flow-ledger .fst .o,
+.ad .flow-ledger .fst .d,
+.ad .flow-ledger .fst .g{grid-column:2;text-align:left}
+.ad .flow-ledger .fhd{display:flex;flex-wrap:wrap;column-gap:16px;row-gap:4px;padding:12px 0}
+.ad .flow-ledger .fhd .g{text-align:left}
 }

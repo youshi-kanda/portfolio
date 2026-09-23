@@ -155,7 +155,7 @@ describe('provenance matrix', () => {
     assert.throws(() => matrixCell('editorial' as never, 'authored'), /provenance matrix/);
   });
 
-  it('classifies the shipping registries: 156 presentation, the rest fact', () => {
+  it('classifies the shipping registries: 162 presentation, the rest fact', () => {
     // 24 facts before V4 Phase 3; the capability rail added six shipping
     // strings, each a claim about what this engineer can do and so each a fact.
     const { copy, uiCopy } = loadAll();
@@ -262,7 +262,21 @@ describe('provenance matrix', () => {
     //
     // 開発背景 / 確認できるもの / 公開コードを見る を数えていないのは、
     // #30 の行をそのまま再利用しているからである（新しい path を作らない）。
-    assert.equal(presentation.length, 156);
+    //
+    // #52 は presentation を 6 足し、fact を 1 件も足さない。そこが線である。
+    //
+    // 5 件は PPM ledger の列見出し（STEP / 処理 / 実行主体 / 内容 / ゲート）で、
+    // どれも「何の列か」しか言っていない——値は `caseStudy.flow` が持っていて、
+    // 見出しはそれを指すだけである。残る 1 件は判断事例の導入文で、これは
+    // 文であって label ではないが、やはり世界について何も述べていない:
+    // 下の 5 欄が何の順序かを言うだけで、事例が言っていないことは 1 つも
+    // 言わない。本人が Issue #52 comment 5791022793 でその位置づけを明示して
+    // いる（「新しい実績主張ではなく、既存の読み方を説明する UI 文」）。
+    //
+    // どれも authored presentation なので基礎は求められないが、承認者は持つ。
+    // 導入文を fact にする道もあったが、それは「この節はこう読める」を
+    // 照合可能な主張として出すことになり、照合先が無い。
+    assert.equal(presentation.length, 162);
     assert.equal(fact.length, 47);
 
     // U-01 added three: the email row label and its CTA present, and the
@@ -286,10 +300,27 @@ describe('provenance matrix', () => {
       assert.ok(row.text.length > 0);
     }
     // ui-system is the registry's own word for label / heading / button, which
-    // is what presentation means on this axis. Nothing else was reclassified.
-    assert.equal(
-      uiCopy.every((c) => (c.kind === 'ui-system') === (c.publication.claimType === 'presentation')),
-      true,
+    // is what presentation means on this axis. A label asserts nothing, so this
+    // direction is unconditional.
+    const systemFacts = uiCopy.filter(
+      (c) => c.kind === 'ui-system' && c.publication.claimType !== 'presentation',
     );
+    assert.deepEqual(systemFacts.map((c) => c.id), []);
+
+    // The other direction is NOT the same rule, and #52 is where the two came
+    // apart. An `editorial` row is a SENTENCE, and a sentence is held as a fact
+    // unless someone has decided it asserts nothing — so the exceptions are
+    // named here rather than inferred. `presentation` is an exemption from FACT
+    // provenance; an exemption nobody had to write down is one that spreads.
+    //
+    // `howIBuild.casesLead` is the first and only one. The owner classified it
+    // in Issue #52 comment 5791022793 — 「新しい実績主張ではなく、既存の
+    // 問題 / 確認した事実 / 判断 / 結果 / 検証 の読み方を説明する UI 文」 — and
+    // the sentence does exactly that: it names the five fields printed below it
+    // and states nothing that could be checked against the world.
+    const editorialPresentation = uiCopy
+      .filter((c) => c.kind === 'editorial' && c.publication.claimType === 'presentation')
+      .map((c) => c.id);
+    assert.deepEqual(editorialPresentation, ['ui.howIBuild.casesLead']);
   });
 });
