@@ -19,6 +19,21 @@
  * property that keeps the layout still. A future adjustment of 4px to 3px is a
  * visual decision and should not have to argue with a test.
  *
+ * WHAT CHANGED AFTER THE FIRST STAGING VIDEO. The square used to be drawn only
+ * on the current link, so it appeared instantly while the underline beside it
+ * took .18s to travel, and for that moment the two marks named different
+ * sections. The square is now on every homepage link, collapsed at `scaleX(0)`,
+ * and the current link opens it — the same mechanism, duration and easing the
+ * frozen sheet gives the underline.
+ *
+ * So the rule this file used to enforce — "no pseudo-element exists on an
+ * inactive link" — is gone, because it was a statement about the mechanism and
+ * the mechanism is what changed. It is REPLACED, not relaxed: what a reader can
+ * see is still exactly one square, and that is now asserted about `scaleX`
+ * rather than about `content`. The timing is not hard-coded here either; it is
+ * read off the underline's own rule in `components.css`, so the two cannot
+ * drift apart without this failing.
+ *
  * THE SCROLL SPY IS THE OTHER HALF OF THE CONTRACT. This change is CSS, and its
  * correctness rests entirely on an attribute somebody else writes. If the
  * observer's parameters move, or `setCurrent` starts writing a different value,
@@ -31,6 +46,12 @@ import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
 const CSS = readFileSync(new URL('../src/styles/polish.css', import.meta.url), 'utf8');
+/** The frozen sheet, read so the square's timing can be compared with the
+ *  underline's actual declaration instead of a literal copied into this file. */
+const COMPONENTS = readFileSync(
+  new URL('../src/styles/components.css', import.meta.url),
+  'utf8',
+);
 const NAV = readFileSync(
   new URL('../src/components/navigation/Nav.astro', import.meta.url),
   'utf8',
@@ -116,12 +137,44 @@ const squareRules = (): Rule[] =>
     selectorsOf(r).some((s) => /\.nav\b/.test(s) && /\bol\s+a\b/.test(s) && s.endsWith('::before')),
   );
 
-/** The rule that seats it — the one that says `position`. */
+/** The rule that seats it — the one that says `position`. Also the rule that
+ *  collapses it, since a square that is generated is generated collapsed. */
 const seat = (): Rule => {
   const r = squareRules().find((x) => declared(x, 'position') !== undefined);
   assert.ok(r, 'nav の現在地 square を座らせている規則が無い');
   return r;
 };
+
+/** The rule that OPENS the square — the one that sets a non-zero `transform`. */
+const opener = (): Rule => {
+  const r = squareRules().find((x) => {
+    const t = declared(x, 'transform');
+    return t !== undefined && !/scale[xX]?\(\s*0\s*\)/.test(t);
+  });
+  assert.ok(r, 'square を開いている規則が無い');
+  return r;
+};
+
+/** The underline in the frozen sheet, whose timing the square has to match. */
+const underline = (): Rule => {
+  const r = parse(COMPONENTS).find(
+    (x) =>
+      x.selector.split(',').some((sel) => /\.nav\b/.test(sel) && /\bol\s+a\b/.test(sel) && /:{1,2}after$/.test(sel.trim())) &&
+      declared(x, 'transition') !== undefined,
+  );
+  assert.ok(r, 'components.css に nav 下線の transition が見つからない');
+  return r;
+};
+
+/** `.18s` と `0.18s`、`cubic-bezier(.2,0,0,1)` と `cubic-bezier(0.2, 0, 0, 1)` は
+ *  同じ値の別表記。片方に揃えてから比べる。 */
+const normalise = (value: string): string =>
+  /* 先頭 0 の補完が先。空白を落としてからだと `transform .18s` が
+     `transform.18s` になり、`.` の手前が英字に見えて補完されない。 */
+  value
+    .replace(/(^|[^0-9a-zA-Z.])\./g, '$10.')
+    .replace(/\s+/g, '')
+    .toLowerCase();
 
 describe("#46 B' nav 現在地 square — パーサの前提", () => {
   it('polish.css は CSS ネストを使っていない（ブレース対応だけで読めること）', () => {
@@ -146,15 +199,13 @@ describe("#46 B' square は HOME の現在 section だけに出る", () => {
     }
   });
 
-  it("どの規則も aria-current='location' に限定されている", () => {
-    for (const r of squareRules()) {
-      for (const s of selectorsOf(r)) {
-        assert.match(
-          s,
-          /\[aria-current=['"]location['"]\]/,
-          `scroll 位置以外の状態まで拾う選択子 — ${s}`,
-        );
-      }
+  it("square を開くのは aria-current='location' だけ", () => {
+    for (const s of selectorsOf(opener())) {
+      assert.match(
+        s,
+        /\[aria-current=['"]location['"]\]/,
+        `scroll 位置以外の状態まで開いてしまう選択子 — ${s}`,
+      );
     }
   });
 
@@ -176,14 +227,26 @@ describe("#46 B' square は HOME の現在 section だけに出る", () => {
     }
   });
 
-  it('inactive link には何も描かない — 規則は active 限定のものしか無い', () => {
-    const unguarded = rules.filter(
-      (r) =>
-        selectorsOf(r).some((s) => /\.nav\b/.test(s) && /\bol\s+a\b/.test(s)) &&
-        r.decls.some(([p]) => p === 'content') &&
-        !selectorsOf(r).every((s) => /\[aria-current=['"]location['"]\]/.test(s)),
+  it('inactive link の square は畳まれている — 生成はされても描かれない', () => {
+    /* 契約は「pseudo-element が存在しない」ではなく「見えるものが無い」。
+       素の規則は全 link に square を生成するが、それは scaleX(0) で、
+       塗る面積を持たない。 */
+    const t = declared(seat(), 'transform');
+    assert.ok(t, '素の規則が square を畳んでいない — inactive にも見えてしまう');
+    assert.match(t, /scale[xX]?\(\s*0\s*\)/, `inactive の transform が畳んでいない — ${t}`);
+  });
+
+  it('square を開く規則は 1 本だけ — 見える square は常に 1 個', () => {
+    const openers = squareRules().filter((r) => {
+      const t = declared(r, 'transform');
+      return t !== undefined && !/scale[xX]?\(\s*0\s*\)/.test(t);
+    });
+    assert.equal(openers.length, 1, `square を開く規則が ${openers.length} 本ある`);
+    assert.equal(
+      selectorsOf(openers[0]!).length,
+      1,
+      '開く規則が複数の選択子を持つと、同時に 2 個開く形が作れてしまう',
     );
-    assert.deepEqual(unguarded.map((r) => r.selector), [], 'active 以外に content を描く規則がある');
   });
 });
 
@@ -250,14 +313,69 @@ describe("#46 B' square は装飾であって、レイアウトでも情報で�
     }
   });
 
-  it('動かない — transform も transition も animation も持たない', () => {
-    /* 同じ link の `:after`（下線）が transform を遷移させている。square を
-       その property から完全に外しておくと、2 つが 1 つの動く物として合成
-       される余地が無い。 */
+  it('square が動かすのは transform だけ — animation も scroll timeline も無い', () => {
     for (const r of squareRules()) {
-      for (const prop of ['transform', 'transition', 'animation', 'animation-timeline']) {
+      for (const prop of ['animation', 'animation-name', 'animation-timeline']) {
         assert.equal(declared(r, prop), undefined, `${prop} を持っている — ${r.selector}`);
       }
+      const t = declared(r, 'transition');
+      if (t !== undefined) {
+        assert.match(t, /^transform\b/, `transform 以外まで遷移させている — ${t}`);
+      }
+    }
+  });
+});
+
+describe("#46 B' square は下線と同じ動き方をする（staging 動画で出たずれ）", () => {
+  /* square だけ即時だと、切替の一瞬「square は次の節、下線はまだ前の節から
+     遷移中」になる。2 つの印が別の事実を指している状態なので、square を下線の
+     timing に合わせる ── 下線を即時化するのではなく。数値はここに書かず
+     components.css の下線の宣言から読むので、片方だけ動かすと落ちる。 */
+
+  it('下線と同じ duration / easing', () => {
+    const mine = declared(seat(), 'transition');
+    assert.ok(mine, 'square に transition が無い — 下線と同時に切り替われない');
+    assert.equal(
+      normalise(mine),
+      normalise(underline().decls.filter(([p]) => p === 'transition').at(-1)![1]),
+      'square と下線の transition が一致しない',
+    );
+  });
+
+  it('下線と同じ transform-origin — 同じ向きに開いて閉じる', () => {
+    assert.equal(
+      normalise(declared(seat(), 'transform-origin') ?? ''),
+      normalise(declared(underline(), 'transform-origin') ?? ''),
+      'square と下線の transform-origin が一致しない',
+    );
+  });
+
+  it('下線と同じ畳み方 — どちらも scaleX(0) から開く', () => {
+    assert.match(declared(seat(), 'transform') ?? '', /scale[xX]?\(\s*0\s*\)/);
+    assert.match(declared(underline(), 'transform') ?? '', /scale[xX]?\(\s*0\s*\)/);
+  });
+
+  it('reduced motion に独自規則を足していない — 凍結シートの 1 本が両方に効く', () => {
+    /* components.css の motion 節末尾:
+         @media (prefers-reduced-motion: reduce){
+           .ad *,.ad *:before,.ad *:after{animation:none!important;
+                                          transition-duration:.01ms!important} }
+       `!important` は layer 順を反転させるので、`components` のこの宣言が
+       `utilities` のこちらに勝つ。square と下線は同じ 1 本で同じ長さに
+       詰められる ── それが「reduce でも 2 つが揃っている」ことの根拠。 */
+    const frozen = stripComments(COMPONENTS).replace(/\s+/g, '');
+    assert.ok(
+      frozen.includes('@media(prefers-reduced-motion:reduce)') &&
+        frozen.includes('.ad*:before') &&
+        frozen.includes('transition-duration:.01ms!important'),
+      '凍結シートの reduced-motion 規則が変わっている — square の前提が崩れる',
+    );
+    for (const r of squareRules()) {
+      assert.equal(
+        r.context.some((c) => /prefers-reduced-motion/.test(c)),
+        false,
+        `square が独自の reduced-motion 分岐を持っている — ${r.selector}`,
+      );
     }
   });
 });
@@ -293,5 +411,49 @@ describe("#46 B' が寄りかかっている scroll spy は動いていない", 
     /* 2 本 = mobile disclosure と scroll spy。3 本目が増えたということは、
        CSS だけで済ませるという #46 の前提が崩れたということ。 */
     assert.equal((NAV.match(/<script>/g) ?? []).length, 2, 'Nav.astro の script 本数が変わった');
+  });
+});
+
+describe('#46 ABOUT → CONTACT の間合い', () => {
+  /* staging の scroll 動画で、ABOUT の終わりから CONTACT の罫までが
+     「区切り」ではなく「間」に読めた。`components.css:862` の 120px は
+     隣り合う節の中で最も広い。88px は新しく選んだ数ではなく `.s-tight`
+     ── この組版が既に「詰めた継ぎ目」に使っている刻み。 */
+  const LAYOUT = readFileSync(new URL('../src/styles/layout.css', import.meta.url), 'utf8');
+
+  const contactOverride = (): Rule => {
+    const r = rules.find(
+      (x) =>
+        selectorsOf(x).some((sel) => /\.contact$/.test(sel)) &&
+        declared(x, 'margin-top') !== undefined,
+    );
+    assert.ok(r, 'polish.css に .contact の間合いの上書きが無い');
+    return r;
+  };
+
+  it('88px は新しい数ではなく .s-tight の刻み', () => {
+    const tight = parse(LAYOUT).find((r) => selectorsOf(r).some((sel) => /\.s-tight$/.test(sel)));
+    assert.ok(tight, 'layout.css に .s-tight が無い');
+    const padding = declared(tight, 'padding') ?? '';
+    assert.ok(
+      padding.split(/\s+/).includes(declared(contactOverride(), 'margin-top') ?? ''),
+      `.contact の値が .s-tight（${padding}）の刻みではない`,
+    );
+  });
+
+  it('desktop / tablet だけを動かし、mobile の既存値は上書きしない', () => {
+    const ctx = contactOverride().context.join(' ');
+    assert.match(ctx, /min-width:\s*768px/, 'mobile まで一緒に動かしている');
+    assert.doesNotMatch(ctx, /max-width/, '上限を切ると広い幅で 120px に戻ってしまう');
+  });
+
+  it('CONTACT 自身の箱は動かしていない — 動くのは手前の距離だけ', () => {
+    for (const prop of ['padding', 'padding-top', 'padding-bottom', 'border-top', 'margin-bottom']) {
+      assert.equal(
+        declared(contactOverride(), prop),
+        undefined,
+        `${prop} は節の中身の話で、ABOUT との間合いではない`,
+      );
+    }
   });
 });
