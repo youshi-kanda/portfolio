@@ -574,4 +574,195 @@
       margin-top: 88px;
     }
   }
+
+  /* ==================================================== #52 SECONDARY PAGES
+     Two corrections and one addition, all of them here rather than in the
+     frozen sheets. components.css and responsive.css say at the top what they
+     are — re-emitted rule bodies from the frozen prototype, "Do not restyle
+     here" — and that is the whole value of keeping them: a reader can hold
+     either file against the art-direction source and have the diff be empty.
+     A correction written into them is a correction that can never be told from
+     the original decision again. So this sheet takes them, which is what
+     BaseLayout imports it for.
+
+     `utilities` outranks `components`, so nothing below needs specificity it
+     would not otherwise have, and the frozen declarations stay readable as the
+     thing being corrected. What that DOES mean is that source order inside this
+     block is the whole cascade: the 1279 stack sits after the desktop tracks
+     for that reason, not by accident.
+
+     ---------------------------------------------- PPM ledger (Case Study)
+
+     `.flow` is the generic ruled instrument list and three places draw with it:
+     HOW I BUILD's eight-step workflow, AI CRM's walkthrough, and PPM's
+     register. Only the last one needs column heads and only the last one has
+     PPM's proportions, so this is a variant rather than a change to the
+     instrument all three share. Nothing below can reach `.flow` without
+     `.flow-ledger`.
+
+     WHAT WAS WRONG WITH THE GENERIC TRACKS HERE. `232px` of 処理 and `148px`
+     of 実行主体 against PPM's content: the widest 処理 is 循環検出 at 60px and
+     every 実行主体 on this page is the same 40px word, so 280px of the row was
+     blank while 内容 — sentences of up to 38 units — took whatever was left.
+     Measured on the shipped page that was 365px at 1440, 205px at 1280, 65px at
+     1024 and 29px at 768, where the longest stage wrapped to twenty-two lines.
+     These tracks give the two short columns what they actually need and hand
+     the rest to the sentence.
+
+     THE GATE COLUMN IS SIZED FROM ITS TEXT, NOT FROM WHAT IS LEFT OVER. The two
+     gates measure 100.8px and 95.8px at the 10.5px instrument size, so the
+     track is 156px: both sit on one line at their own size, with room for a
+     longer refusal than either. Shrinking the type to fit was the other way to
+     make the column work and it is the wrong one — the gate is the thing this
+     register exists to show, and it may not be the smallest thing on the row. */
+  .ad .flow-ledger .fhd,
+  .ad .flow-ledger .fst {
+    grid-template-columns: 52px minmax(0, 112px) 108px minmax(0, 1fr) minmax(0, 156px);
+  }
+
+  /* The head is a row of the same grid, drawn as the lane key above the
+     workflow is drawn (components.css `.lanes`): mono at instrument size,
+     tertiary, on a rule. It names the axis; it is not a heading and must not
+     read as one. */
+  .ad .flow-ledger .fhd {
+    display: grid;
+    column-gap: 24px;
+    align-items: baseline;
+    border-bottom: 1px solid var(--hair2);
+    padding: 13px 0;
+  }
+
+  .ad .flow-ledger .fhd span {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tx3);
+    font-weight: 700;
+  }
+
+  .ad .flow-ledger .fhd .g {
+    text-align: right;
+  }
+
+  /* The floor under the track width, for the refusal this register does not
+     hold yet: one longer than the column breaks rather than leaving the page.
+     Same pairing the display lines use (base.css) and the same reason. */
+  .ad .flow-ledger .g {
+    overflow-wrap: anywhere;
+  }
+
+  /* THE REGISTER LIES DOWN EARLIER THAN THE GENERIC FLOW DOES, at 1280 rather
+     than at 768. That is not a preference; it is where the five columns stop
+     fitting. The field this register is drawn in measures 1,025px at 1440 and
+     865px at 1280 — both hold the four named tracks and still leave 501px and
+     341px for 内容, where no stage runs past two lines — but 725px at 1024 and
+     689px at 768, where the same tracks leave 201px and 165px. Measured at
+     those two widths the rows run to three and four lines against a measure of
+     14 and 11 characters. Keeping five columns there would be keeping the SHAPE
+     of a table by destroying the thing a table is for. Stacked, every row's
+     sentence is back on one line (649px and 613px of measure).
+
+     Nothing is reordered and nothing is dropped. `.k` takes the left track for
+     the whole row and 処理 / 実行主体 / 内容 / ゲート stack in the right one, in
+     the order they are written in the DOM, which is the order the head names.
+     It is the shape the generic `.flow` already takes below 768
+     (responsive.css), applied to this variant at the width its own content
+     asks for.
+
+     THE HEAD STAYS, AS A KEY RATHER THAN AS COLUMNS. Five heads over one column
+     would be five labels pointing at nothing, and `display:none` would take the
+     column names out of the accessibility tree along with the columns — the
+     reader who most needs to be told what `SYSTEM` is would be the one who
+     loses the answer. So it becomes one wrapped mono line: the fields each row
+     states, in the order each row states them. */
+  @media (max-width: 1279px) {
+    .ad .flow-ledger .fst {
+      grid-template-columns: 52px minmax(0, 1fr);
+      row-gap: 4px;
+      padding: 14px 0;
+    }
+
+    .ad .flow-ledger .fst .k {
+      grid-row: 1 / span 4;
+    }
+
+    .ad .flow-ledger .fst .o,
+    .ad .flow-ledger .fst .d,
+    .ad .flow-ledger .fst .g {
+      grid-column: 2;
+      text-align: left;
+    }
+
+    .ad .flow-ledger .fhd {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 16px;
+      row-gap: 4px;
+      padding: 12px 0;
+    }
+
+    .ad .flow-ledger .fhd .g {
+      text-align: left;
+    }
+  }
+
+  /* ------------------------------------------- HOW I BUILD 判断事例 / QA
+
+     THE LAST SECTION'S OWN BOTTOM MOVES, AND THE FROZEN RULE STAYS PUT.
+     components.css gives `#decision-cases` a 96px bottom (64px below 768) for
+     one reason it states: every other section is spaced by the NEXT one's top
+     padding, and that one had no next. It has one now — `#qa-record`, which #52
+     split out of it — so the bottom belongs to the new last section. The frozen
+     declaration is not deleted; it is answered here, which is the difference
+     between correcting a sheet and editing it. Both breakpoints are covered by
+     the single zero, because `utilities` outranks `components` at every width. */
+  .ad #decision-cases {
+    padding-bottom: 0;
+  }
+
+  .ad #qa-record {
+    padding-bottom: 96px;
+  }
+
+  @media (max-width: 767px) {
+    .ad #qa-record {
+      padding-bottom: 64px;
+    }
+  }
+
+  /* The sentence between the 判断事例 head and the first case. Set as the
+     records below it are set: the measure of a record, the supporting colour,
+     and nothing else. It introduces the fields; it is not a claim and must not
+     read at the weight of one. */
+  .ad .dc-lead {
+    font-size: 15.5px;
+    line-height: 1.85;
+    color: var(--tx2);
+    margin: 0 0 30px;
+    max-width: 720px;
+  }
+
+  /* 30ch is the measure components.css sets; `keep-all` is what decides where
+     the line breaks inside it. Japanese line-breaking allows a break between
+     any two kana, so the default put 「…確認し、デプロ / イの方式を変更した」 on
+     the page — a break through the middle of デプロイ, which is a word. Measured
+     by sweeping the element's width at 2px steps: the bad break stood from
+     432px to 444px of measure, which is this block's own width below 768 (where
+     responsive.css releases `max-width`) on a 472–484px screen. `keep-all`
+     leaves only the breaks the punctuation gives, so the same title breaks at
+     the 読点 instead, and the sweep from 300px to 760px now produces it at no
+     width at all.
+
+     `overflow-wrap:anywhere` is the floor under it and is not optional — the
+     same pairing, for the same reason, as the display lines in base.css.
+     keep-all makes the fit conditional on the copy: it holds while every run
+     between two punctuation marks is shorter than the measure, and the next
+     approved title does not have to honour that. Alone, keep-all answers a long
+     run by putting it outside the page. Together they say what is meant: break
+     at the punctuation, and break the word only rather than the layout. */
+  .ad .dc-t {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
 }
