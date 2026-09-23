@@ -8,11 +8,24 @@
  * 滑らかになり、滑らかにした結果 PR には無い断定が 1 行増えても、リンク先を
  * 開く人がいなければ誰も気づかない。
  *
- * 見ているのは DATA と COMPONENT SOURCE である。描画された HTML 側の件数契約
- * （HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS）は
- * `check:structure` が dist に対して持っている——`npm run qa` は test を build
- * より先に走らせるので、ここで dist を読めば前回のビルドを検査することに
- * なりうる。同じ契約を、確実に今の入力を見られる側でそれぞれ置いている。
+ * 見ているのは DATA である。描画された HTML 側の契約（HOW_OUTLINE /
+ * HOW_NO_CASE_DEPTH / HOW_TOP_LINKS ほか）は `check:structure` が dist に対して
+ * 持っている——`npm run qa` は test を build より先に走らせるので、ここで dist を
+ * 読めば前回のビルドを検査することになりうる。同じ契約を、確実に今の入力を
+ * 見られる側でそれぞれ置いている。
+ *
+ * **この 2 節は /how-i-build/ から外れた。** 判断事例と QA / 検証記録は、
+ * 「どう作るか」ではなく「なぜその設計・技術判断をしたか」を、名指しの 2 PR に
+ * ついて述べる節だった。それは Case Study の問いで、/work/ 何を作ったか →
+ * /how-i-build/ どう作るか → Case Study なぜそう判断したか の 3 分割では 3 枚目に
+ * 属する。component は消え、**data は残っている**——`decisionCases` と
+ * `qaRecord` は承認記録つきの公開内容のままで、Case Study 側が描く素材である。
+ *
+ * だからこのファイルはほぼそのまま残る。PR #18 / #20 の実測値を丸めない、
+ * 運用情報を持ち込まない、出所を推測しない——どれも「公開面に出ていること」を
+ * 前提にした規則ではなく、この文章がこの文章であることの規則で、描画されて
+ * いない今のほうが静かに壊れやすい。落ちたのは component の markup を見ていた
+ * 節だけで、その代わりに「ページに戻っていないこと」を見る節が入っている。
  */
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
@@ -30,9 +43,6 @@ const qa = h.qaRecord;
 const src = (path: string): string =>
   readFileSync(new URL(`../src/${path}`, import.meta.url), 'utf8');
 
-const CASES_COMPONENT = src('components/home/HowIBuildCases.astro');
-/** #52 — PR #19 の記録は独立 component になった。判断事例とは別 section。 */
-const QA_COMPONENT = src('components/home/HowIBuildQaRecord.astro');
 const TOP_COMPONENT = src('components/navigation/ScrollToTop.astro');
 const METHOD_COMPONENT = src('components/home/HowIBuild.astro');
 const PAGE = src('pages/how-i-build.astro');
@@ -66,8 +76,6 @@ const markupOf = (component: string): string => {
   return body.replace(/\{\/\*[\s\S]*?\*\/\}/g, '');
 };
 
-const CASES_MARKUP = markupOf(CASES_COMPONENT);
-const QA_MARKUP = markupOf(QA_COMPONENT);
 const TOP_MARKUP = markupOf(TOP_COMPONENT);
 const METHOD_MARKUP = markupOf(METHOD_COMPONENT);
 const PAGE_MARKUP = markupOf(PAGE);
@@ -138,9 +146,9 @@ describe('#31 公開 PR の URL — site.repo から導出する', () => {
   });
 
   it('component が GitHub の URL を直書きしていない', () => {
+    // 描画する側が居なくなっても `publicPrUrl` は残す。Case Study 側がこの
+    // data を描くときに通る道で、literal を書いてよい理由にはならない。
     for (const [name, component] of [
-      ['HowIBuildCases.astro', CASES_COMPONENT],
-      ['HowIBuildQaRecord.astro', QA_COMPONENT],
       ['ScrollToTop.astro', TOP_COMPONENT],
       ['how-i-build.astro', PAGE],
     ] as const) {
@@ -150,8 +158,6 @@ describe('#31 公開 PR の URL — site.repo から導出する', () => {
         `${name} が GitHub の URL を直書きしている`,
       );
     }
-    assert.match(CASES_COMPONENT, /publicPrUrl\(/);
-    assert.match(QA_COMPONENT, /publicPrUrl\(/);
   });
 
   it('本文データが PR の URL を保存していない — 持つのは番号だけ', () => {
@@ -242,32 +248,8 @@ describe('#31 AI と Human の境界 — 出所を推測しない', () => {
     assert.deepEqual(offenders.map((s) => `${s.where}: ${s.text}`), []);
   });
 
-  it('component も日本語ラベルを直書きしていない — registry 経由で出る', () => {
-    for (const component of [CASES_COMPONENT, QA_COMPONENT]) {
-      assert.equal(AI_ORIGIN.test(component.replace(/\/\*[\s\S]*?\*\//g, '')), false);
-    }
-    for (const label of [
-      ui.howIBuild.casesLabel,
-      ui.howIBuild.casesLead,
-      ui.howIBuild.caseProblem,
-      ui.howIBuild.caseObserved,
-      ui.howIBuild.caseDecision,
-      ui.howIBuild.caseResult,
-      ui.howIBuild.caseVerification,
-      ui.howIBuild.openPr,
-      ui.howIBuild.qaLabel,
-    ]) {
-      for (const [name, component] of [
-        ['HowIBuildCases.astro', CASES_COMPONENT],
-        ['HowIBuildQaRecord.astro', QA_COMPONENT],
-      ] as const) {
-        assert.equal(
-          component.includes(`>${label}<`),
-          false,
-          `${label} が ${name} に直書きされている`,
-        );
-      }
-    }
+  it('残った component も日本語ラベルを直書きしていない — registry 経由で出る', () => {
+    assert.equal(AI_ORIGIN.test(METHOD_COMPONENT.replace(/\/\*[\s\S]*?\*\//g, '')), false);
     assert.equal(TOP_COMPONENT.includes(`"${ui.howIBuild.toTop}"`), false);
     assert.match(TOP_COMPONENT, /ui\.howIBuild\.toTop/);
   });
@@ -415,74 +397,24 @@ describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説�
 /**
  * #31 追加 Human Decision — document outline。
  *
- * 期待する形は 1 つしかない:
+ * #31 が期待した形は h1 HOW I BUILD → h2 開発の前提 → h2 判断事例 → h3 x3 で、
+ * そのうち下 2 段はこのページから外れた。残るのは 2 つで、内訳は変わっていない:
  *
  *   h1 HOW I BUILD
- *   ├─ h2 開発の前提
- *   └─ h2 判断事例
- *      ├─ h3 PR #20
- *      ├─ h3 PR #18
- *      └─ h3 PR #19 QA
+ *   └─ h2 開発の前提
  *
- * 判断事例が h2 でなければ、その下の 3 件は「開発の前提」——この site が
- * 主張していないことを述べる節——の配下として読まれる。見出しの深さが 1 段
- * ずれているだけに見えて、意味は反転する。
- *
- * 描画後の実レベルは `check:structure` の HOW_OUTLINE が dist に対して数える。
- * ここで見るのは source 側の契約である。
+ * 「開発の前提」が実 h2 であること——`<h4 aria-level="2">` ではないこと——が
+ * #31 の決定で、節が減ってもそこは動かない。描画後の実レベルは
+ * `check:structure` の HOW_OUTLINE が dist に対して数える。ここで見るのは
+ * source 側の契約である。
  */
-describe('#31 見出し階層 — 判断事例は開発の前提の配下ではない', () => {
+describe('#31 見出し階層 — 開発の前提は実 h2 である', () => {
   it('「開発の前提」が実 h2 として出る', () => {
     assert.match(METHOD_MARKUP, /<h2 aria-level=\{heading \? 3 : undefined\}>\{ui\.howIBuild\.premises\}<\/h2>/);
     // 見た目は変えない: `.premise h2` が mono 10.5px を宣言し直しているので
     // `.ad h2` の 40px display は当たらない。
     const css = src('styles/components.css');
     assert.match(css, /\.ad \.premise h2\{font-family:var\(--f-mono\);font-size:10\.5px/);
-  });
-
-  it('「判断事例」が実 h2 として出て、aria-label と二重にならない', () => {
-    assert.match(CASES_MARKUP, /<h2 class="mo" id=\{HEADING_ID\}><b>\{ui\.howIBuild\.casesLabel\}<\/b><\/h2>/);
-    assert.equal(
-      /aria-label=\{ui\.howIBuild\.casesLabel\}/.test(CASES_MARKUP),
-      false,
-      '同じ語が aria-label と heading の両方にある',
-    );
-    assert.match(CASES_MARKUP, /aria-labelledby=\{HEADING_ID\}/);
-    // rail から重複した語が外れ、件数だけが残っている
-    assert.equal(
-      /<span class="lb">\{ui\.howIBuild\.casesLabel\}<\/span>/.test(CASES_MARKUP),
-      false,
-      'rail が heading と同じ語を繰り返している',
-    );
-    assert.match(CASES_MARKUP, /<span class="lb">\{fill\(ui\.howIBuild\.casesCount/);
-  });
-
-  it('事例は h3 で、h2 の後に出る', () => {
-    // source の `<h3` は 1 つ（`cases.map` の中）で、描画されると 2 つになる。
-    // 描画後の outline は check:structure の HOW_OUTLINE が dist に対して
-    // 数えており、ここで見るのは「h3 しか使っていないこと」と「h2 より後に
-    // あること」——つまり事例がこの節の配下であること。
-    const h3s = [...CASES_MARKUP.matchAll(/<h3\b/g)];
-    assert.equal(h3s.length, 1);
-    assert.equal([...CASES_MARKUP.matchAll(/<h([1-6])\b/g)].length, 2, 'h2 1 つ + h3 1 つ');
-    assert.equal([...CASES_MARKUP.matchAll(/<h2\b/g)].length, 1);
-    const h2at = CASES_MARKUP.indexOf('<h2');
-    for (const m of h3s) assert.ok(m.index! > h2at, 'h3 が h2 より前に出ている');
-  });
-
-  it('#52 QA は自分の h2 を持ち、その配下の h3 が qa.title である', () => {
-    // 判断事例の配下ではない。ここが #52 の主眼で、レベルが 1 段深いままなら
-    // 「3 件目の事例」という読みが outline に残る。
-    assert.equal([...QA_MARKUP.matchAll(/<h2\b/g)].length, 1);
-    assert.equal([...QA_MARKUP.matchAll(/<h3\b/g)].length, 1);
-    assert.equal([...QA_MARKUP.matchAll(/<h([1-6])\b/g)].length, 2);
-    assert.ok(QA_MARKUP.indexOf('<h3') > QA_MARKUP.indexOf('<h2'));
-    // 判断事例と同じ道具で描かれている: rule の上の mono ラベル。
-    assert.match(QA_MARKUP, /<div class="shead">/);
-    assert.match(QA_MARKUP, /<h2 class="mo" id=\{HEADING_ID\}><b>\{ui\.howIBuild\.qaLabel\}<\/b><\/h2>/);
-    assert.match(QA_MARKUP, /aria-labelledby=\{HEADING_ID\}/);
-    // 語は 1 回だけ。aria-label と heading の二重読み上げを持ち込まない。
-    assert.equal(/aria-label=\{ui\.howIBuild\.qaLabel\}/.test(QA_MARKUP), false);
   });
 
   it('ページの h1 は 1 つだけで、node は追加していない', () => {
@@ -690,55 +622,64 @@ describe('#31 TOP 導線 — JavaScript が無くても動く', () => {
   });
 });
 
-describe('#31 二層構造 — 結論は折りたたみの外', () => {
-  it('問題 / 確認した事実 / 判断 / 結果 は details の外に出る', () => {
-    const detailsStart = CASES_MARKUP.indexOf('<details');
-    const detailsEnd = CASES_MARKUP.indexOf('</details>');
-    assert.ok(detailsStart > 0 && detailsEnd > detailsStart, 'details が見つからない');
-    const folded = CASES_MARKUP.slice(detailsStart, detailsEnd);
-    for (const field of ['c.problem', 'c.observed', 'c.decision', 'c.result']) {
-      assert.equal(folded.includes(field), false, `${field} が折りたたみの中にある`);
-    }
-    // 折りたたまれてよいのは検証だけ
-    assert.match(folded, /c\.verification/);
-  });
-
-  it('公開 PR へのリンクも折りたたみの外に出る', () => {
-    const detailsEnd = CASES_MARKUP.indexOf('</details>');
-    assert.ok(CASES_MARKUP.indexOf('data-decision-pr', detailsEnd) > detailsEnd);
-    assert.equal(
-      CASES_MARKUP.slice(
-        CASES_MARKUP.indexOf('<details'),
-        detailsEnd,
-      ).includes('data-decision-pr'),
-      false,
-      'PR リンクが折りたたみの中にある — 確認する手段自体を隠さない',
-    );
-  });
-
-  it('component は 3 件ぶんの目印を出す — 主事例 2 / QA 1 / PR リンク 1 本ずつ', () => {
-    // 描画後の件数は check:structure が dist に対して数える
-    // （HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS）。
-    // ここで見るのは、数える対象の目印を component が実際に書いていること。
-    //
-    // #52 — 目印は 2 つの component に分かれた。判断事例側に QA の目印が
-    // 「無い」ことが契約である: 同じ component にある限り、DOM 上で 3 件目に
-    // なる書き方がいつでもできてしまう。
-    assert.match(CASES_MARKUP, /data-decision-case=\{c\.id\}/);
-    assert.equal(
-      /data-qa-record\b/.test(CASES_MARKUP),
-      false,
-      'QA の目印が判断事例 component に戻っている — 3 件目に見える構造',
-    );
-    assert.equal([...CASES_MARKUP.matchAll(/data-decision-pr=/g)].length, 1);
-    assert.match(QA_MARKUP, /data-qa-record\b/);
-    assert.equal(/data-decision-case=/.test(QA_MARKUP), false, 'QA が事例を名乗っている');
-    assert.equal([...QA_MARKUP.matchAll(/data-decision-pr=/g)].length, 1);
-    assert.match(PAGE_MARKUP, /<HowIBuildCases \/>/);
-    assert.match(PAGE_MARKUP, /<HowIBuildQaRecord \/>/);
+/**
+ * /how-i-build/ の責務 — 「どう作るか」だけを置く。
+ *
+ * 判断事例と QA / 検証記録がこのページから外れた理由は、内容が間違っていた
+ * からではない。名指しの 2 PR について「なぜその判断か」を述べる節で、それは
+ * 3 枚のページのうち Case Study の問いだった——/work/ 何を作ったか、
+ * /how-i-build/ どう作るか、各 Case Study なぜその設計・技術判断をしたか。
+ * 2 枚目に置けば、読者は判断を当てる先の案件を手に持たないまま読むことになる。
+ *
+ * ここで見るのは 2 つ。**残すべきものが残っていること**——工程・役割・intent・
+ * 前提は 1 つも落ちていない——と、**戻っていないこと**。戻り方で現実的なのは
+ * component を消したことではなく、data が残っているので誰かが同じ節を書き直す
+ * ほうで、その番人は `check:structure` の HOW_NO_CASE_DEPTH（全公開ルートを
+ * 見る）である。こちらは source 側、つまり page が何を import しているかを見る。
+ */
+describe('/how-i-build/ の責務 — 開発プロセスだけを置く', () => {
+  it('工程・役割・intent・前提はどれも落ちていない', () => {
+    // #31 §2 / §13 が触らないと決めた 3 つと、#31 が置き換えた前提。節を
+    // 減らした側の変更で、残すと決めたほうが一緒に消えていないかを見る。
+    assert.equal(h.workflow.length, 8);
+    assert.equal(h.roles.length, 3);
+    assert.equal(h.intent.length, 3);
+    assert.equal(h.premises.length, 2);
+    assert.match(PAGE_MARKUP, /<HowIBuild heading=\{false\} \/>/);
     assert.match(PAGE_MARKUP, /<ScrollToTop \/>/);
-    // 読み順: 判断事例 → QA → Footer → TOP
-    assert.ok(PAGE_MARKUP.indexOf('<HowIBuildQaRecord') > PAGE_MARKUP.indexOf('<HowIBuildCases'));
-    assert.ok(PAGE_MARKUP.indexOf('<Footer') > PAGE_MARKUP.indexOf('<HowIBuildQaRecord'));
+    assert.ok(PAGE_MARKUP.indexOf('<Footer') > PAGE_MARKUP.indexOf('<HowIBuild '));
+  });
+
+  it('判断事例 / QA の節を page が描いていない', () => {
+    for (const tag of ['HowIBuildCases', 'HowIBuildQaRecord']) {
+      assert.equal(PAGE.includes(`<${tag} />`), false, `${tag} が page に戻っている`);
+      assert.equal(
+        new RegExp(`^import ${tag} `, 'm').test(PAGE),
+        false,
+        `${tag} を import したままになっている`,
+      );
+    }
+  });
+
+  it('component file 自体が残っていない — 描かれない component は死蔵である', () => {
+    // data と違って、component は Case Study が使うものではない。あちらは
+    // Case Study の markup で描く。`HowIBuild*` という名前の file が残って
+    // いれば、それは「いつでも戻せる状態」であって削除ではない。
+    const dir = readdirSync(new URL('../src/components/home/', import.meta.url));
+    for (const gone of ['HowIBuildCases.astro', 'HowIBuildQaRecord.astro']) {
+      assert.equal(dir.includes(gone), false, `${gone} が残っている`);
+    }
+    assert.ok(dir.includes('HowIBuild.astro'), '工程表の component まで消えている');
+  });
+
+  it('data と承認記録は消していない — Case Study 側が描く素材である', () => {
+    // 「描画していない」と「登録していない」は別の状態である（/work/ の index が
+    // 自分の rail copy について記録しているのと同じ区別）。ここを緩めると、
+    // 節を消すたびに承認済みの公開内容が一緒に落ちる運用になる。
+    assert.equal(cases.length, 2);
+    assert.ok(qa.facts.length > 0);
+    for (const key of ['casesLabel', 'casesLead', 'caseProblem', 'caseVerification', 'qaLabel'] as const) {
+      assert.ok((ui.howIBuild[key] as string).length > 0, `ui.howIBuild.${key} が消えている`);
+    }
   });
 });

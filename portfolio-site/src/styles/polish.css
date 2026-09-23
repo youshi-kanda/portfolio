@@ -707,62 +707,76 @@
     }
   }
 
-  /* ------------------------------------------- HOW I BUILD 判断事例 / QA
+  /* ================================================== /work/ — WORK INDEX
+     Two corrections, both scoped to `#register` — `/work/`'s own `<main>`, and
+     the id nothing else on the site uses (motion.css says so where it reaches
+     for the same handle). Neither rule can be seen from the homepage, from a
+     work entry or from /how-i-build/.
 
-     THE LAST SECTION'S OWN BOTTOM MOVES, AND THE FROZEN RULE STAYS PUT.
-     components.css gives `#decision-cases` a 96px bottom (64px below 768) for
-     one reason it states: every other section is spaced by the NEXT one's top
-     padding, and that one had no next. It has one now — `#qa-record`, which #52
-     split out of it — so the bottom belongs to the new last section. The frozen
-     declaration is not deleted; it is answered here, which is the difference
-     between correcting a sheet and editing it. Both breakpoints are covered by
-     the single zero, because `utilities` outranks `components` at every width. */
-  .ad #decision-cases {
-    padding-bottom: 0;
+     ---------------------------------------------------- THE GATE RULE, OFF
+
+     `.tr::before` (layout.css) is the 1px vertical line every two-track block
+     draws at 227px, between the instrument rail and the measure. It is the
+     right instrument where a rail stands beside prose — the homepage sections,
+     the Case Study spines — because both sides of it are content and the line
+     says which is which.
+
+     This page is not that. `/work/`'s second `.tr` holds ONE child, a `.bleed`
+     that spans `1 / -1`, so the register is drawn across both tracks and the
+     rule lands 227px INSIDE it: measured at 1440 it crosses the row grid 123px
+     past the start of the title column, so it runs down the page THROUGH the
+     work titles rather than beside them. It divides nothing there; it is a line
+     over the content.
+
+     WHAT SEPARATES THE COLUMNS NOW IS THE SPACE THAT ALREADY SEPARATED THEM.
+     Nothing is added to replace the rule because nothing needs to be: the
+     header keeps the 200px rail track and the 56px `column-gap` it always had
+     (256px from the count to the display at 1440, 188px at 1280), and the rows
+     keep `.reg-c`'s own 64px number track and 40px gap — 104px from `01` to the
+     title. The boundary was always drawn twice, once in whitespace and once in
+     ink; this takes back the ink.
+
+     `content: none` rather than `display: none`, so the pseudo-element is not
+     generated at all rather than generated and hidden. Scoped without a media
+     query on purpose: below 1024 `responsive.css` already suppresses the rule
+     for every page, and a `min-width` here would state the same width twice.
+
+     The HORIZONTAL rules are untouched everywhere — the 2px rule the register
+     opens on, the hairline under each row, the sweep on hover. What this page
+     was missing was never the divisions between rows. */
+  .ad #register .tr::before {
+    content: none;
   }
 
-  .ad #qa-record {
-    padding-bottom: 96px;
-  }
+  /* -------------------------------------------- THE HEADER, 20–30% SHORTER
 
-  @media (max-width: 767px) {
-    .ad #qa-record {
-      padding-bottom: 64px;
+     Measured before this rule, from the masthead's bottom edge to the top of
+     the register's 2px rule: 207px at 1440x900 and 270px at 834x1000, of which
+     the type — the count, the page name — is 88px and 124px. The rest is three
+     paddings, and two of them were written for a page that is not this one:
+     `.hero`'s 56px opener and, because `/work/`'s hero has a single `.tr`, the
+     `clamp(40px, 7svh, 72px)` floor motion.css gives `.tr:last-child` to sit
+     row TWO of a full-viewport hero on the fold. There is no row two here, so
+     that clamp is not a floor — it is 63–72px of nothing under a heading.
+
+     Both come down and nothing else moves: 56 → 40 and the clamp to roughly a
+     third of its span. Measured after: 150px at 1440x900 (-27.7%) and 208px at
+     834x1000 (-23.0%), inside the 20–30% asked for at both. The type is not
+     touched — `.dsp-s` keeps its 56px, its leading and its 20px bottom margin,
+     so the header is the same header, set closer.
+
+     DESKTOP AND TABLET ONLY. Below 768 the same two numbers are 24px and zero
+     (responsive.css, motion.css): the padding this rule takes out does not
+     exist there, so the same percentage would have to come out of the space
+     around the heading itself, which is a different edit on a header that is
+     already 152px. `min-width: 768px` leaves it exactly where it was. */
+  @media (min-width: 768px) {
+    .ad #register > .hero {
+      padding-top: 40px;
     }
-  }
 
-  /* The sentence between the 判断事例 head and the first case. Set as the
-     records below it are set: the measure of a record, the supporting colour,
-     and nothing else. It introduces the fields; it is not a claim and must not
-     read at the weight of one. */
-  .ad .dc-lead {
-    font-size: 15.5px;
-    line-height: 1.85;
-    color: var(--tx2);
-    margin: 0 0 30px;
-    max-width: 720px;
-  }
-
-  /* 30ch is the measure components.css sets; `keep-all` is what decides where
-     the line breaks inside it. Japanese line-breaking allows a break between
-     any two kana, so the default put 「…確認し、デプロ / イの方式を変更した」 on
-     the page — a break through the middle of デプロイ, which is a word. Measured
-     by sweeping the element's width at 2px steps: the bad break stood from
-     432px to 444px of measure, which is this block's own width below 768 (where
-     responsive.css releases `max-width`) on a 472–484px screen. `keep-all`
-     leaves only the breaks the punctuation gives, so the same title breaks at
-     the 読点 instead, and the sweep from 300px to 760px now produces it at no
-     width at all.
-
-     `overflow-wrap:anywhere` is the floor under it and is not optional — the
-     same pairing, for the same reason, as the display lines in base.css.
-     keep-all makes the fit conditional on the copy: it holds while every run
-     between two punctuation marks is shorter than the measure, and the next
-     approved title does not have to honour that. Alone, keep-all answers a long
-     run by putting it outside the page. Together they say what is meant: break
-     at the punctuation, and break the word only rather than the layout. */
-  .ad .dc-t {
-    word-break: keep-all;
-    overflow-wrap: anywhere;
+    .ad #register > .hero > .page > .tr {
+      padding-bottom: clamp(16px, 2.4svh, 32px);
+    }
   }
 }

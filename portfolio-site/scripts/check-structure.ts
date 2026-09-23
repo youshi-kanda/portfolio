@@ -63,11 +63,11 @@
  *                         and what #31 fixed was that these sentences had no
  *                         approval record, not that there are two of them.
  *   HOW_OUTLINE           the document outline this page ships, as levels.
- *                         `h1 → h2 開発の前提 → h2 判断事例 → h3 h3 h3` is a
- *                         decision (#31), not an accident of which component
- *                         happens to render first: a decision case that drifts
- *                         back under 開発の前提 reads as a thing this site is
- *                         not claiming, which is the opposite of what it is.
+ *                         `h1 → h2 開発の前提` is what is left of a decision
+ *                         (#31) that used to run to seven headings: five of
+ *                         them were two specific PRs' reasoning, which is the
+ *                         question a Case Study answers. A heading appearing
+ *                         here again is this page taking that back.
  *   RETIRED_PUBLIC_COPY   zero. Copy the owner has replaced may not still be on
  *                         a page. A replaced string is not caught by any other
  *                         gate here — it is valid, it was once approved, and
@@ -84,40 +84,32 @@
  *                         `site.about.profile`, so the count is content; what
  *                         is held against a literal is only the editorial
  *                         decision itself (one 業務経験 block, two disclosure
- *                         rows), for the reason HOW_DECISION_CASES states.
+ *                         rows), for the reason HOW_METHOD_SECTIONS states.
  *   ABOUT_DISCLOSURE_ROWS #32 — the compliance block, on the same terms. TWO,
  *                         inside ONE container: 掲載内容について and 公開データ
  *                         are read together, and a third row appearing here is
  *                         ABOUT drifting back toward a column of caveats.
- *   HOW_DECISION_CASES    #31 — /how-i-build/ draws exactly the two decision
- *                         cases Issue #31 fixed, and the QA record is exactly
- *                         one. These four are stated as LITERALS, which nothing
- *                         else in this file is: everywhere else a count is
- *                         derived, because the content is allowed to grow and a
- *                         literal would be a second copy of an editorial
- *                         decision. Here the count IS the editorial decision —
- *                         #31 §6 says two cases and one supplement, and PR #19
- *                         being promoted to a third case is precisely the drift
- *                         this should refuse. Deriving these from site.json
- *                         would check that the page renders what the file says
- *                         while letting the file say anything.
- *   HOW_QA_RECORDS        one, on the same terms — and #52 adds WHERE. The
- *                         record is drawn in `#qa-record`, a section of its
- *                         own, and there are zero of them inside
- *                         `#decision-cases`. Counting alone could not see the
- *                         defect #52 fixed: the QA log WAS exactly one, and it
- *                         was the third block under 判断事例's head, which is
- *                         the reading HD-J ruled out. A count says how many; a
- *                         section says which section they belong to.
- *   HOW_CASES_LEAD        #52 — the approved sentence between the 判断事例 head
- *                         and the first case, exactly once and in that order.
- *                         Held against the registry text, not a literal: the
- *                         sentence is the owner's and lives where its approval
- *                         record lives.
- *   HOW_PR_LINKS          three — one per case plus the QA record — and every
- *                         one built by `publicPrUrl` from `site.repo`. A PR URL
- *                         typed into a component would pass a count check and
- *                         fail this one.
+ *   HOW_WORKFLOW_STEPS    /how-i-build/ draws the whole method: one row per
+ *   HOW_ROLE_ROWS         workflow step, one table row per party, one item per
+ *   HOW_INTENT_ITEMS      intent. Derived from `site.howIBuild`, so the numbers
+ *                         are content. These three exist because everything
+ *                         else in the group below is an ABSENCE, and a page
+ *                         that rendered nothing at all would satisfy every one
+ *                         of them — the method is the reason the route exists
+ *                         and it is the thing that has to still be there.
+ *   HOW_NO_CASE_DEPTH     zero. The page states HOW the work is made; WHY a
+ *                         particular design or technical call was made is a
+ *                         Case Study's question, and /how-i-build/ used to
+ *                         answer it for two named PRs in 3,081px of a 6,063px
+ *                         page. The markers of that material — a decision case,
+ *                         a QA record, a cited PR, the cases lead — are counted
+ *                         across EVERY public route rather than on this page
+ *                         alone: the sections were removed from one file and
+ *                         their content was not, so the way this comes back is
+ *                         somewhere else. Sections `#decision-cases` and
+ *                         `#qa-record` are checked by id on top of the markers,
+ *                         because an empty one carries no marker and is still
+ *                         the heading growing back.
  *   HOW_TOP_LINKS         one `href="#top"` against one `id="top"`, and the
  *                         control is an `<a>`. A button calling `scrollTo` is
  *                         the regression: it looks identical in a screenshot
@@ -685,8 +677,9 @@ for (const m of aboutHtml.matchAll(/(?<![0-9A-Za-z_])(約\s*)?\d+\s*(年間|年|
   failures.push(`ABOUT_NO_TENURE: 06 ABOUT に年数表現「${m[0]}」がある（HD-C）`);
 }
 
-// ---- HOW_DECISION_CASES / HOW_QA_RECORDS / HOW_PR_LINKS / HOW_TOP_LINKS ----
-// #31. The one place in this file that asserts literals — the header says why.
+// ---- HOW_METHOD_SECTIONS / HOW_NO_CASE_DEPTH / HOW_TOP_LINKS ----
+// #31, narrowed. The one place in this file that asserts literals — the header
+// says why.
 const method = read('how-i-build/index.html');
 
 // ---- HOW_PREMISES ----
@@ -714,109 +707,71 @@ const HOW_OUTLINE = [...method.matchAll(/<h([1-6])\b([^>]*)>/g)].map(([, tag, at
   const declared = /aria-level="(\d)"/.exec(attrs ?? '');
   return Number(declared ? declared[1] : tag);
 });
-// #52 — QA / 検証記録 is the third h2 and PR #19's title is the h3 under it.
-// It was `1 2 2 3 3 3`: the QA title sat at the same depth as the two cases,
-// under 判断事例's h2, which is a document outline saying "three cases".
-expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2 2 3 3 2 3');
-// The three h2s are the ones #31 and #52 named, and they are `<h2>` elements
-// rather than a smaller tag declaring its depth. Each section is named once:
-// `aria-label` repeating a heading is the double announcement #31 ruled out.
-for (const heading of ['開発の前提', '判断事例', 'QA / 検証記録']) {
-  if (!new RegExp(`<h2\\b[^>]*>(?:<[^>]*>)*${heading}`).test(method)) {
-    failures.push(`HOW_OUTLINE: 「${heading}」が <h2> として出ていない`);
-  }
-}
-for (const heading of ['判断事例', 'QA / 検証記録']) {
-  if (new RegExp(`\\saria-label="${heading}"`).test(method)) {
-    failures.push(`HOW_OUTLINE: ${heading} が aria-label と heading の両方で読み上げられる`);
-  }
+// `1 2` — the page's own name, and the one section heading the method states.
+// It was `1 2 2 3 3 2 3`: 判断事例's h2 with two case titles under it, then QA /
+// 検証記録's h2 with PR #19's. Five of those seven headings were a specific
+// project's reasoning, which is a Case Study's question and not this page's.
+expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2');
+// The remaining h2 is a real `<h2>` element rather than a smaller tag declaring
+// its depth, and the section is named once — `aria-label` repeating a heading
+// is the double announcement #31 ruled out.
+if (!/<h2\b[^>]*>(?:<[^>]*>)*開発の前提/.test(method)) {
+  failures.push('HOW_OUTLINE: 「開発の前提」が <h2> として出ていない');
 }
 
-const HOW_DECISION_CASES = [...method.matchAll(/\sdata-decision-case="([^"]+)"/g)].map(
-  (m) => m[1] as string,
-);
-expect('HOW_DECISION_CASES', HOW_DECISION_CASES.length, 2);
+// ---- HOW_METHOD_SECTIONS ----
+// WHAT THE PAGE STILL HAS TO DRAW, and the only gate here that says so.
+//
+// Everything else in this group is an absence, and a page that rendered NOTHING
+// would satisfy every one of them. The method is the reason this route exists:
+// the eight-step workflow, one row per party in the roles table, and the intent
+// list — 課題理解 / 要件整理 / 設計 / 実装 / 検証 / 改善 as the steps name them.
+// Counted against `site.howIBuild`, so the numbers are content and a step that
+// stops rendering fails here instead of shipping a shorter workflow.
+const HOW_WORKFLOW_STEPS = [...method.matchAll(/<div class="fst(?: gate)?">/g)].length;
+expect('HOW_WORKFLOW_STEPS', HOW_WORKFLOW_STEPS, site.howIBuild.workflow.length);
+const HOW_ROLE_ROWS = [...method.matchAll(/<tr><th>/g)].length;
+expect('HOW_ROLE_ROWS', HOW_ROLE_ROWS, site.howIBuild.roles.length);
+const HOW_INTENT_ITEMS = [...method.matchAll(/<ul class="dash">([\s\S]*?)<\/ul>/g)]
+  .flatMap((m) => [...(m[1] as string).matchAll(/<li>/g)]).length;
+expect('HOW_INTENT_ITEMS', HOW_INTENT_ITEMS, site.howIBuild.intent.length);
 
-const HOW_QA_RECORDS = [...method.matchAll(/\sdata-qa-record\b/g)].length;
-expect('HOW_QA_RECORDS', HOW_QA_RECORDS, 1);
-
-// ---- #52. WHERE each of them is, which counting cannot see. ----
-// The section a block sits in is read by slicing the artifact between the two
-// `<section id=…>` openings — regex over the whole page would find the QA
-// record wherever it was and call the layout correct.
-const sectionOf = (id: string): string => {
-  const open = method.indexOf(`<section class="s-open" id="${id}"`);
-  if (open < 0) return '';
-  const next = method.indexOf('<section', open + 1);
-  return method.slice(open, next < 0 ? method.length : next);
-};
-const decisionSection = sectionOf('decision-cases');
-const qaSection = sectionOf('qa-record');
-if (!decisionSection) failures.push('HOW_QA_RECORDS: <section id="decision-cases"> が無い');
-if (!qaSection) failures.push('HOW_QA_RECORDS: <section id="qa-record"> が無い');
-expect(
-  'HOW_QA_IN_CASES',
-  [...decisionSection.matchAll(/\sdata-qa-record\b/g)].length,
-  0,
-);
-expect('HOW_QA_IN_OWN_SECTION', [...qaSection.matchAll(/\sdata-qa-record\b/g)].length, 1);
-expect(
-  'HOW_CASES_IN_CASES',
-  [...decisionSection.matchAll(/\sdata-decision-case="/g)].length,
-  2,
-);
-expect('HOW_CASES_IN_QA', [...qaSection.matchAll(/\sdata-decision-case="/g)].length, 0);
-// Named regions, both of them, and each by its own heading rather than by a
-// repeated label.
-for (const [id, section] of [
-  ['decision-cases', decisionSection],
-  ['qa-record', qaSection],
+// ---- HOW_NO_CASE_DEPTH ----
+// The per-project half of this page is off it, and stays off it.
+//
+// AN ABSENCE IS CHECKED WHERE IT COULD COME BACK, WHICH IS NOT ONLY HERE. The
+// two sections were removed from one file; the components they lived in are
+// gone and the DATA is not — `site.howIBuild.decisionCases` and `.qaRecord` are
+// still content, still under every gate, and are what the Case Studies will
+// draw. So the markers are counted across every public route rather than on
+// /how-i-build/ alone: a 判断事例 block reappearing on the homepage would pass a
+// check that only ever looked at this page, and it is the same defect.
+//
+// `/work/<slug>/` IS NOT AN EXEMPTION HERE. When a Case Study renders this
+// material it will render it as a Case Study — its own component, its own
+// markers — and not by moving these three attributes onto another route. If
+// that turns out to be the wrong call, the fix is to change this gate on
+// purpose, which is the whole point of stating it.
+for (const [marker, name] of [
+  [/\sdata-decision-case="/g, 'HOW_NO_CASE_DEPTH 判断事例'],
+  [/\sdata-qa-record\b/g, 'HOW_NO_CASE_DEPTH QA 記録'],
+  [/\sdata-decision-pr="/g, 'HOW_NO_CASE_DEPTH PR 引用'],
+  [/\bdc-lead\b/g, 'HOW_NO_CASE_DEPTH 判断事例の導入文'],
 ] as const) {
-  const labelledBy = /\saria-labelledby="([^"]+)"/.exec(section);
-  if (!labelledBy) {
-    failures.push(`HOW_QA_IN_OWN_SECTION: #${id} に aria-labelledby が無い`);
-    continue;
-  }
-  if (!new RegExp(`<h2\\b[^>]*\\sid="${labelledBy[1]}"`).test(section)) {
-    failures.push(`HOW_QA_IN_OWN_SECTION: #${id} の aria-labelledby が h2 を指していない`);
+  for (const route of PUBLIC_ROUTES) {
+    expect(`${name} ${route}`, [...read(route).matchAll(marker)].length, 0);
   }
 }
-
-// ---- HOW_CASES_LEAD ----
-// #52. The approved sentence, once, between the head and the first case. Its
-// text comes from the ui registry — a literal here would be a second copy of a
-// string whose approval record lives somewhere else.
-const HOW_CASES_LEAD = [...method.matchAll(/<p class="dc-lead">([\s\S]*?)<\/p>/g)].map((m) =>
-  (m[1] as string).replace(/<[^>]*>/g, '').trim(),
-);
-expect('HOW_CASES_LEAD', HOW_CASES_LEAD.length, 1);
-expect('HOW_CASES_LEAD_TEXT', HOW_CASES_LEAD[0] ?? '', ui.howIBuild.casesLead);
-{
-  const head = decisionSection.indexOf('</h2>');
-  const lead = decisionSection.indexOf('class="dc-lead"');
-  const first = decisionSection.indexOf('data-decision-case="');
-  if (!(head >= 0 && head < lead && lead < first)) {
-    failures.push('HOW_CASES_LEAD: 導入文が見出しと最初の事例の間に無い');
+// The sections themselves, by id. Counted separately from the markers because
+// an empty `<section id="decision-cases">` carries none of them and is still
+// this page growing the heading back.
+for (const id of ['decision-cases', 'qa-record']) {
+  if (method.includes(`id="${id}"`)) {
+    failures.push(`HOW_NO_CASE_DEPTH: <section id="${id}"> が /how-i-build/ に戻っている`);
   }
 }
-
-// The PR each block cites, read off the artifact. Checked as a SET against the
-// numbers #31 fixed, so a case pointing at the wrong PR fails here rather than
-// passing a count of three.
-const citedPrs = [...method.matchAll(/\sdata-pr="(\d+)"/g)].map((m) => Number(m[1]));
-expect('HOW_CITED_PRS', [...citedPrs].sort((a, b) => a - b).join(' '), '18 19 20');
-
-// Every PR link is the URL `publicPrUrl` builds from `site.repo`. This is what
-// makes HOW_PR_LINKS more than arithmetic: a literal `https://github.com/...`
-// typed into the component would still be three links and would not be these.
-const HOW_PR_LINKS = [...method.matchAll(/<a\b[^>]*\shref="([^"]+)"[^>]*\sdata-decision-pr="(\d+)"/g)];
-expect('HOW_PR_LINKS', HOW_PR_LINKS.length, 3);
-for (const [, href, n] of HOW_PR_LINKS) {
-  const expected = publicPrUrl(Number(n));
-  if (href !== expected) {
-    failures.push(`HOW_PR_LINKS: PR #${n} のリンクが ${href} — 期待は ${expected}`);
-  }
-}
+const HOW_NO_CASE_DEPTH =
+  [...method.matchAll(/\sdata-decision-case="|\sdata-qa-record\b|\sdata-decision-pr="/g)].length;
 
 // ---- HOW_TOP_LINKS ----
 const HOW_TOP_LINKS = [...method.matchAll(/\shref="#top"/g)].length;
@@ -1128,12 +1083,10 @@ console.log(
     `ABOUT_DISCLOSURE_ROWS = ${ABOUT_DISCLOSURE_ROWS} / ` +
     `HOW_PREMISES = ${HOW_PREMISES.length} / ` +
     `HOW_OUTLINE = ${HOW_OUTLINE.join(' ')} / ` +
-    `HOW_DECISION_CASES = ${HOW_DECISION_CASES.length} (${HOW_DECISION_CASES.join(' ')}) / ` +
-    `HOW_QA_RECORDS = ${HOW_QA_RECORDS} (in #decision-cases ${
-      [...decisionSection.matchAll(/\sdata-qa-record\b/g)].length
-    }) / ` +
-    `HOW_CASES_LEAD = ${HOW_CASES_LEAD.length} / ` +
-    `HOW_PR_LINKS = ${HOW_PR_LINKS.length} / ` +
+    `HOW_WORKFLOW_STEPS = ${HOW_WORKFLOW_STEPS} / ` +
+    `HOW_ROLE_ROWS = ${HOW_ROLE_ROWS} / ` +
+    `HOW_INTENT_ITEMS = ${HOW_INTENT_ITEMS} / ` +
+    `HOW_NO_CASE_DEPTH = ${HOW_NO_CASE_DEPTH} / ` +
     `HOW_TOP_LINKS = ${HOW_TOP_LINKS} / ` +
     `LEDGER_HEADS = ${LEDGER_HEADS_REPORT}`,
 );

@@ -7,6 +7,15 @@
  * 言えず、判断事例は見出しの次がいきなり case title で、QA の記録は 3 件目の
  * 事例として並んでいた。どれも Truth Gate は通る。
  *
+ * **そのうち 2 つは、直した節ごと /how-i-build/ から外れた。** 判断事例と
+ * QA / 検証記録は、名指しの 2 PR について「なぜその判断か」を述べる節で、それは
+ * Case Study の問いだった（/work/ 何を作ったか → /how-i-build/ どう作るか →
+ * 各 Case Study なぜそう判断したか）。#52 が直したのは読みやすさで、置き場所の
+ * ほうは別の判断である。文面と承認記録は registry に残り、Case Study 側が描く。
+ * このファイルに残っているのは、その registry 行の契約と、PPM ledger と、
+ * どの sheet に書くかの governance——**3 つのうち最後の 1 つが #52 の review が
+ * 足した条件で、節が消えても外れない**。
+ *
  * ここで固定するのは、直したあとの構造が構造として残ることである。
  * 「読める」こと自体は測るしかなく、実測は `npm run qa` の外——viewport ごとの
  * geometry は PR に記録した——なので、このファイルが見るのはその実測を成り立た
@@ -26,7 +35,7 @@
  */
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
 import { workVisual } from '../src/lib/content/derive.ts';
 import { loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
@@ -39,8 +48,6 @@ const LEDGER = src('components/case/SpineLedger.astro');
 const WALKTHROUGH = src('components/case/SpineWalkthrough.astro');
 const PIPELINE = src('components/case/SpinePipeline.astro');
 const METHOD = src('components/home/HowIBuild.astro');
-const CASES = src('components/home/HowIBuildCases.astro');
-const QA = src('components/home/HowIBuildQaRecord.astro');
 const COMPONENTS_CSS = src('styles/components.css');
 const RESPONSIVE_CSS = src('styles/responsive.css');
 const POLISH_CSS = src('styles/polish.css');
@@ -241,7 +248,7 @@ describe('#52 PPM ledger — 列の意味が画面に出ている', () => {
   });
 });
 
-describe('#52 判断事例の導入文 — 本人承認の 1 文', () => {
+describe('#52 判断事例の導入文 — 承認された 1 文は registry に残る', () => {
   const LEAD = '実装中に起きた問題を、何を確認し、どう判断し、どう検証したかで示します。';
 
   it('文面が承認されたとおりである', () => {
@@ -261,15 +268,6 @@ describe('#52 判断事例の導入文 — 本人承認の 1 文', () => {
     assert.equal(row('howIBuild.casesLead').kind, 'editorial');
   });
 
-  it('見出しの直後、最初の事例より前に 1 回だけ出る', () => {
-    assert.equal([...CASES.matchAll(/class="dc-lead"/g)].length, 1);
-    const head = CASES.indexOf('id={HEADING_ID}');
-    const lead = CASES.indexOf('class="dc-lead"');
-    const first = CASES.indexOf('cases.map(');
-    assert.ok(head < lead && lead < first, '導入文が見出しと最初の事例の間に無い');
-    assert.match(CASES, /<p class="dc-lead">\{ui\.howIBuild\.casesLead\}<\/p>/);
-  });
-
   it('何も新しく主張していない — 数量も全称も無い', () => {
     // claims.ts の W-CLAIM-SUSPECT が見ている形。presentation を名乗る文が
     // 照合できる主張を含んでいれば、根拠なしに事実が出ていることになる。
@@ -279,22 +277,30 @@ describe('#52 判断事例の導入文 — 本人承認の 1 文', () => {
     for (const field of ['確認', '判断', '検証']) assert.ok(LEAD.includes(field));
   });
 
-  it('QA 側には導入文を足していない — 既存の summary が既に説明である', () => {
-    assert.equal(QA.includes('dc-lead'), false);
-    assert.equal(QA.includes('casesLead'), false);
+  it('どのページにも描かれていない — 節ごと Case Study 側へ移した', () => {
+    // 行は残す。消すのは描画で、承認記録ではない——`provenance` の
+    // editorial/presentation 契約もこの 1 行を名指ししている。描画側の 0 件は
+    // `check:structure` の HOW_NO_CASE_DEPTH が全公開ルートに対して数える。
+    const dir = readdirSync(new URL('../src/components/', import.meta.url), { recursive: true });
+    for (const file of dir) {
+      const name = String(file);
+      if (!name.endsWith('.astro')) continue;
+      const body = src(`components/${name}`);
+      assert.equal(body.includes('dc-lead'), false, `${name} が導入文を描いている`);
+      assert.equal(body.includes('casesLead'), false, `${name} が導入文を描いている`);
+    }
   });
 });
 
-describe('#52 判断事例タイトルの文字組み', () => {
-  it('.dc-t が keep-all と overflow-wrap の対で組まれている', () => {
-    // 対であることが規則である。keep-all だけでは、句読点の無い長い run が来た
-    // 日にページの外へ出る。overflow-wrap だけでは、デプロ / イ の分割が戻る。
-    const polish = /\.ad\.dc-t\{([^}]*)\}/.exec(norm(POLISH_CSS));
-    assert.ok(polish, 'polish.css に .dc-t の補正が無い');
-    assert.match(polish[1] ?? '', /word-break:keep-all/);
-    assert.match(polish[1] ?? '', /overflow-wrap:anywhere/);
-    // measure は凍結シートのもので、こちらは触っていない——`keep-all` が
-    // 「どこで折るか」を決めるのは、この 30ch の中でである。
+describe('#52 判断事例タイトルの文字組み — 補正ごと外れた', () => {
+  it('.dc-t の折り返し補正が polish.css から外れている', () => {
+    // #52 は `.dc-t` に keep-all + overflow-wrap を足して「デプロ / イ」の
+    // 分割を止めていた。その title を描く節がページから外れたので、規則の
+    // ほうも残さない。polish.css は凍結シートと違って手書きの sheet で、
+    // 当たらない規則を置いたままにする理由がここには無い。
+    assert.equal(/\.ad\.dc-t\{/.test(norm(POLISH_CSS)), false, 'polish.css に死んだ .dc-t が残っている');
+    // 凍結シート側の measure は触っていない。使われていないことと、消して
+    // よいことは別である——下の governance describe が同じ規則を見ている。
     const frozen = /\.ad\.dc-t\{([^}]*)\}/.exec(norm(COMPONENTS_CSS));
     assert.ok(frozen, '凍結シートから .dc-t が消えている');
     assert.match(frozen[1] ?? '', /max-width:30ch/);
@@ -304,8 +310,11 @@ describe('#52 判断事例タイトルの文字組み', () => {
     // 折り返しは CSS が決める。`<br>` を 1 本入れれば見た目はその場で直るが、
     // 直っているのはその 1 幅だけで、他のすべての幅で改行が増える。NBSP と
     // zero-width は、直したことが diff にも画面にも残らないぶん更に悪い。
+    //
+    // 描かれなくなった今も見る。この data は Case Study 側が描く素材で、
+    // 埋め込まれた改行はそのとき別の幅で出てくる。
     const raw = readFileSync(new URL('../src/content/site.json', import.meta.url), 'utf8');
-    for (const bad of ['<br', ' ', '​', '⁠', '&nbsp;']) {
+    for (const bad of ['<br', '\u00a0', '\u200b', '\u2060', '&nbsp;']) {
       assert.equal(raw.includes(bad), false, `site.json に ${JSON.stringify(bad)} が埋め込まれている`);
     }
   });
@@ -363,6 +372,14 @@ describe('#52 CSS freeze governance — 補正は凍結シートの外に置く'
         false,
         `${name} の .dc-t に折り返しの補正が書き戻されている`,
       );
+      // /work/ の補正も同じ扱いである。縦罫と header の余白は凍結シートの
+      // `.tr:before` と `.hero` に 1 行書けば消せるが、それは全ページの規則で、
+      // 書いた瞬間に「元の art direction がどちらだったか」が読めなくなる。
+      assert.equal(
+        sheet.includes('#register'),
+        false,
+        `${name} に #register がある — /work/ 固有の補正は polish.css に置く`,
+      );
     }
   });
 
@@ -376,11 +393,31 @@ describe('#52 CSS freeze governance — 補正は凍結シートの外に置く'
     assert.match(body, /\.ad\.dc-qa\.mo\{display:block;margin-bottom:10px\}/);
   });
 
-  it('polish.css がその bottom を打ち消して QA へ渡している', () => {
+  it('polish.css 側は節と一緒に外れている — 当たらない override を残さない', () => {
+    // #52 は `#decision-cases` の bottom を 0 にして `#qa-record` へ渡していた。
+    // どちらの節も無くなったので、打ち消しも渡し先も要らない。凍結シートの
+    // 96px は残り（上の it）、当たる markup が無いだけになる。
     const body = norm(POLISH_CSS);
-    assert.match(body, /\.ad#decision-cases\{padding-bottom:0/);
-    assert.match(body, /\.ad#qa-record\{padding-bottom:96px/);
-    assert.match(body, /@media\(max-width:767px\)\{\.ad#qa-record\{padding-bottom:64px/);
+    for (const dead of ['.ad#decision-cases{', '.ad#qa-record{', '.ad.dc-lead{', '.ad.dc-t{']) {
+      assert.equal(body.includes(dead), false, `polish.css に死んだ規則 ${dead} が残っている`);
+    }
+  });
+
+  it('/work/ の補正が polish.css にあり、#register の外へ出ていない', () => {
+    // 縦罫の削除と header の圧縮は `/work/` だけの決定である。`.tr::before` は
+    // site 全体の道具で、`.hero` の padding も全ページが使う。scope を外した
+    // 1 行は、この 2 ページを直しながら homepage と Case Study を黙って動かす。
+    const body = norm(POLISH_CSS);
+    assert.match(body, /\.ad#register\.tr::before\{content:none;?\}/);
+    assert.match(body, /\.ad#register>\.hero\{padding-top:40px;?\}/);
+    assert.match(body, /\.ad#register>\.hero>\.page>\.tr\{padding-bottom:clamp\(16px,2\.4svh,32px\);?\}/);
+    for (const rule of [...cssBody(POLISH_CSS).matchAll(/([^{}]*(?:\.tr::before|\.hero\s*\{))/g)]) {
+      assert.match(
+        rule[1] ?? '',
+        /#register/,
+        `#register の外で .tr::before / .hero を触っている: ${(rule[1] ?? '').trim()}`,
+      );
+    }
   });
 
   it('polish.css は utilities layer の 1 ブロックのままである', () => {
