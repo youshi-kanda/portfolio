@@ -2947,6 +2947,26 @@
     }
   },
   {
+    "id": "ui.howIBuild.casesLead",
+    "path": "howIBuild.casesLead",
+    "text": "実装中に起きた問題を、何を確認し、どう判断し、どう検証したかで示します。",
+    "kind": "editorial",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 判断事例",
+    "slot": "見出し直下の導入文",
+    "purpose": "下に並ぶ 5 欄（問題 / 確認した事実 / 判断 / 結果 / 検証）が何の順序かを、最初の事例より前に述べる。見出しの次がいきなり長い case title だったため、「何のための事例か」が 2 件読み終えるまで分からなかった。新しい実績主張ではない——本人が Issue #52 comment 5791022793 で「既存の読み方を説明する UI 文」と位置づけている。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
+    }
+  },
+  {
     "id": "ui.howIBuild.caseProblem",
     "path": "howIBuild.caseProblem",
     "text": "問題",
@@ -3439,6 +3459,106 @@
       ],
       "approvedBy": null,
       "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.caseStudy.ledgerHeaders.step",
+    "path": "caseStudy.ledgerHeaders.step",
+    "text": "STEP",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / ledger",
+    "slot": "列見出し 1",
+    "purpose": "各行の連番。`caseStudy.flow[].key` の列。 `ledger` 変種（PPM）だけが描く。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
+    }
+  },
+  {
+    "id": "ui.caseStudy.ledgerHeaders.name",
+    "path": "caseStudy.ledgerHeaders.name",
+    "text": "処理",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / ledger",
+    "slot": "列見出し 2",
+    "purpose": "その段が何をするかの名前。`caseStudy.flow[].name` の列。 `ledger` 変種（PPM）だけが描く。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
+    }
+  },
+  {
+    "id": "ui.caseStudy.ledgerHeaders.owner",
+    "path": "caseStudy.ledgerHeaders.owner",
+    "text": "実行主体",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / ledger",
+    "slot": "列見出し 3",
+    "purpose": "その段を実行するのが誰か。`caseStudy.flow[].owner` の列で、`SYSTEM` が何を述べた値かを言うのがこの語である。 `ledger` 変種（PPM）だけが描く。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
+    }
+  },
+  {
+    "id": "ui.caseStudy.ledgerHeaders.what",
+    "path": "caseStudy.ledgerHeaders.what",
+    "text": "内容",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / ledger",
+    "slot": "列見出し 4",
+    "purpose": "その段の処理内容。`caseStudy.flow[].what` の列。 `ledger` 変種（PPM）だけが描く。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
+    }
+  },
+  {
+    "id": "ui.caseStudy.ledgerHeaders.gate",
+    "path": "caseStudy.ledgerHeaders.gate",
+    "text": "ゲート",
+    "kind": "ui-system",
+    "route": "/work/{slug}/",
+    "section": "CASE STUDY / ledger",
+    "slot": "列見出し 5",
+    "purpose": "その段が拒否する条件。`caseStudy.flow[].gate` の列で、`200ms fail-fast` / `書き込み前に拒否` が何を述べた値かを言う。 `ledger` 変種（PPM）だけが描く。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Issue #52 comment 5791022793（2026-09-23T07:42:28Z）— 本人が判断事例の導入文と PPM ledger の列見出しを承認 https://github.com/youshi-kanda/portfolio/issues/52#issuecomment-5791022793"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-23T07:42:28Z"
     }
   }
 ]

@@ -26,13 +26,22 @@
  * wants it is a reader who has already decided to check, and they can. The PR
  * link sits OUTSIDE the fold for the same reason: the way to verify this page
  * must not itself be hidden.
+ *
+ * #52 — THE QA RECORD IS NOT IN THIS FILE ANY MORE.
+ *
+ * It used to be the last block inside this section: a third `.dc` under the
+ * same head, after two cases, which is exactly the reading HD-J ruled out. The
+ * component said so in a comment and the DOM said the opposite. It is now its
+ * own section in `HowIBuildQaRecord.astro`, and the boundary is a file rather
+ * than a comment — this component renders `site.howIBuild.decisionCases` and
+ * has no way to render anything else, so the count it draws is the count the
+ * data states.
  */
 import { publicPrUrl } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
 import { fill, ui } from '../../lib/content/ui.ts';
 
 const cases = site.howIBuild.decisionCases;
-const qa = site.howIBuild.qaRecord;
 
 /**
  * The id the section's `aria-labelledby` points at, written once.
@@ -82,6 +91,21 @@ const fields = [
         <div class="shead">
           <h2 class="mo" id={HEADING_ID}><b>{ui.howIBuild.casesLabel}</b></h2>
         </div>
+        {/*
+          #52 — ONE SENTENCE BEFORE THE FIRST CASE.
+
+          The head was followed immediately by a case title, so the first thing
+          a reader was given was the conclusion of a specific incident, and the
+          question the section answers — what IS a 判断事例 here — was only
+          answerable by finishing both of them. This sentence answers it first.
+
+          It is not a claim and it is not a summary of the cases. It names the
+          five fields below in the order they appear, which is the only thing
+          this section promises. The wording is the owner's, approved in
+          Issue #52 comment 5791022793, and it is read from the registry like
+          every other shipping string.
+        */}
+        <p class="dc-lead">{ui.howIBuild.casesLead}</p>
         {
           cases.map((c) => (
             <article class="dc" data-decision-case={c.id} data-pr={c.prNumber}>
@@ -110,24 +134,6 @@ const fields = [
             </article>
           ))
         }
-
-        {/*
-          PR #19 — HD-J. Not a third case, and shaped so it cannot become one:
-          no 問題, no 判断, because the record has neither. What it has is a
-          range that was checked and a range that was not, and the second half
-          is the reason it is on this page at all.
-        */}
-        <aside class="dc dc-qa" data-qa-record data-pr={qa.prNumber}>
-          <span class="mo"><b>{ui.howIBuild.qaLabel}</b></span>
-          <h3 class="dc-t">{qa.title}</h3>
-          <p class="dc-c">{qa.summary}</p>
-          <ul class="dc-f">{qa.facts.map((f) => <li>{f}</li>)}</ul>
-          <p class="dc-l m0">
-            <a class="lk" href={publicPrUrl(qa.prNumber)} data-decision-pr={qa.prNumber}>
-              {ui.howIBuild.openPr}<span class="ar">→</span>
-            </a>
-          </p>
-        </aside>
       </div>
     </div>
   </div>

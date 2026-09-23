@@ -18,15 +18,18 @@
  * public PRs. The homepage is untouched — HD-K put the depth here rather than
  * back on the front page it was moved off.
  *
- * THREE COMPONENTS, NOT ONE. The method, the cases and the way back up are
- * separate files because they answer to different things: `HowIBuild` is
- * shared with the homepage's own section history, `HowIBuildCases` is bound to
- * the PR records, and `ScrollToTop` is route furniture that exists because this
- * page in particular got long.
+ * FOUR COMPONENTS, NOT ONE. The method, the cases, the QA record and the way
+ * back up are separate files because they answer to different things:
+ * `HowIBuild` is shared with the homepage's own section history,
+ * `HowIBuildCases` is bound to the two PR-transcribed cases,
+ * `HowIBuildQaRecord` is PR #19's log — explicitly NOT a third case (#31 HD-J)
+ * — and `ScrollToTop` is route furniture that exists because this page in
+ * particular got long.
  */
 import { getCollection } from 'astro:content';
 import HowIBuild from '../components/home/HowIBuild.astro';
 import HowIBuildCases from '../components/home/HowIBuildCases.astro';
+import HowIBuildQaRecord from '../components/home/HowIBuildQaRecord.astro';
 import Footer from '../components/layout/Footer.astro';
 import Rail from '../components/layout/Rail.astro';
 import SyntheticBar from '../components/layout/SyntheticBar.astro';
@@ -68,6 +71,12 @@ const h = site.howIBuild;
     </section>
     <HowIBuild heading={false} />
     <HowIBuildCases />
+    {/* #52 — the QA record is a section, not the third block of the one above.
+        It was drawn inside `HowIBuildCases` as a third `.dc` under 判断事例's
+        head, which is the reading HD-J ruled out and the page still showed.
+        Splitting the component splits the document: 判断事例 holds the two
+        cases the data states, and this holds PR #19's record beside them. */}
+    <HowIBuildQaRecord />
     <Footer />
     {/* Last in the DOM, so the tab order reaches it after the page rather than
         beside it. It is fixed in the corner visually; nothing about the reading
