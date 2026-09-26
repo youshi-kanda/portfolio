@@ -2239,21 +2239,21 @@
   {
     "id": "ui.caseStudy.technicalCta",
     "path": "caseStudy.technicalCta",
-    "text": "技術詳細のページへ",
+    "text": "設計・実装の詳細を見る",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "CTA ラベル",
-    "purpose": "Technical ページへの導線ラベル。",
+    "purpose": "Technical ページで設計・実装の詳細を読めることを、遷移前に伝える。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:237"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Case Study CTA"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
@@ -2299,21 +2299,21 @@
   {
     "id": "ui.technical.sectionsLabel",
     "path": "technical.sectionsLabel",
-    "text": "Sections",
+    "text": "このページの内容",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "索引レール見出し",
-    "purpose": "節の索引であることを示す。",
+    "purpose": "ページ内の各節へ移動できる目次であることを示す。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:379"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified index label"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
@@ -2339,181 +2339,181 @@
   {
     "id": "ui.technical.sections.architecture",
     "path": "technical.sections.architecture",
-    "text": "Architecture",
+    "text": "全体構成",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-1）",
-    "purpose": "T-1 Architectureの節見出し。CS-15 T-1 と同一。",
+    "purpose": "T-1でシステム全体の構成を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:381"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.why",
     "path": "technical.sections.why",
-    "text": "Why this architecture",
+    "text": "この構成を選んだ理由",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-2）",
-    "purpose": "T-2 Why this architectureの節見出し。CS-15 T-2 と同一。",
+    "purpose": "T-2で全体構成を選んだ理由を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:381"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.failureModes",
     "path": "technical.sections.failureModes",
-    "text": "Failure modes",
+    "text": "起こりうる問題",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-3）",
-    "purpose": "T-3 Failure modesの節見出し。CS-15 T-3 と同一。",
+    "purpose": "T-3で運用時に起こりうる問題を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.tradeOffs",
     "path": "technical.sections.tradeOffs",
-    "text": "Trade-offs",
+    "text": "この設計で残る制約",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-4）",
-    "purpose": "T-4 Trade-offsの節見出し。CS-15 T-4 と同一。",
+    "purpose": "T-4で採用した設計に伴って残る制約を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.tests",
     "path": "technical.sections.tests",
-    "text": "Tests",
+    "text": "確認方法とテスト",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-5）",
-    "purpose": "T-5 Testsの節見出し。CS-15 T-5 と同一。",
+    "purpose": "T-5で実装内容の確認方法とテストを示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:382"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.security",
     "path": "technical.sections.security",
-    "text": "Security / Data handling",
+    "text": "権限・安全性・データの扱い",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-6）",
-    "purpose": "T-6 Security / Data handlingの節見出し。CS-15 T-6 と同一。",
+    "purpose": "T-6で権限、安全性、データの扱いを示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:422"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.limitations",
     "path": "technical.sections.limitations",
-    "text": "Limitations",
+    "text": "できること・含めていないこと",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-7）",
-    "purpose": "T-7 Limitationsの節見出し。CS-15 T-7 と同一。",
+    "purpose": "T-7で実装済みの範囲と含めていない範囲を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:383"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.scale",
     "path": "technical.sections.scale",
-    "text": "Scale",
+    "text": "規模の目安",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（Scale）",
-    "purpose": "規模の節見出し。CS-13 の実測値をエンジニア向けに再掲する。",
+    "purpose": "実測値と取得方法から実装規模の目安を示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:433"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "ui.technical.sections.links",
     "path": "technical.sections.links",
-    "text": "Links",
+    "text": "コードと設計資料",
     "kind": "ui-system",
     "route": "/work/{slug}/technical/",
     "section": "TECHNICAL",
     "slot": "節見出し（T-8）",
-    "purpose": "T-8 Linksの節見出し。CS-15 T-8 と同一。",
+    "purpose": "T-8で公開コードと設計資料へのリンクを示す節見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/final/frender.py:383"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Technical heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {

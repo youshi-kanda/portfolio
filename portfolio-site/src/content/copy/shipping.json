@@ -515,43 +515,227 @@
     }
   },
   {
-    "id": "method.premise.01",
-    "text": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
+    "id": "method.rail.subtitle",
+    "text": "AIを活用した開発プロセス",
     "route": "/how-i-build/",
-    "section": "HOW I BUILD / 開発の前提",
-    "slot": "「開発の前提」1 文目 — 実際の開発体制",
-    "purpose": "誰が何を持っているかを述べる。ラベルではなく事実で、本人の実際の進め方が違えば誤りになるため、承認者と根拠を持つ側に置く。同じページの工程表・役割表・判断事例が述べていることを 1 文にしたもので、新しい主張を足していない。",
+    "section": "HOW I BUILD",
+    "slot": "rail 2 行目",
+    "purpose": "HOW I BUILD が説明する内容を、日本語で短く示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified rail label"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.title",
+    "text": "AIを活用した開発の進め方",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD",
+    "slot": "h1",
+    "purpose": "専門用語を前提にせず、このページがAIを使った開発工程の説明であることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified page title"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.lede",
+    "text": "AIを設計・実装の支援に使い、要件整理・重要な判断・最終確認は自分で行います。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD",
+    "slot": "h1 下のリード",
+    "purpose": "AIに任せる範囲と本人が担う判断・確認の境界を、冒頭で具体的に示す。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "claimType": "fact",
       "sourceRefs": [
-        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
-        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表（同ページに掲載）",
-        "site.howIBuild.decisionCases — PR #20 / PR #18 の公開記録。調査・計測・採否・検証を Human が行っている"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified opening copy",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-20T05:37:32Z"
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.workflow.decisionTag",
+    "text": "人が判断",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Workflow",
+    "slot": "Human Decision step tag",
+    "purpose": "内部用語 decision gate を、誰が何をする段階か分かる表示へ置き換える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified reader-facing tag"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.human",
+    "text": "要件整理 / 内容理解 / 採否判断",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "Human duty",
+    "purpose": "開発工程で本人が担う範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Human duty",
+        "site.howIBuild.workflow — Human が担当する Requirement / Specification / Human Decision"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.chatgpt",
+    "text": "計画 / レビュー / 論点整理",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "ChatGPT duty",
+    "purpose": "開発工程でChatGPTに担わせる範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified ChatGPT duty",
+        "site.howIBuild.workflow — ChatGPT が担当する Planning / Review と Independent Review"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.claudeCode",
+    "text": "実装 / テスト",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "Claude Code duty",
+    "purpose": "開発工程でClaude Codeに担わせる範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Claude Code duty",
+        "site.howIBuild.workflow — Claude Code が担当する Coding Agent / Tests / CI / Evidence"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.01",
+    "text": "AIに実装を任せる場合も、内容を理解したうえで採否を判断します。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 1 行目",
+    "purpose": "AIが実装する場合も、内容理解と採否判断を本人が担う方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — reader-facing rewrite of the existing Intent",
+        "site.howIBuild.workflow / roles"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.02",
+    "text": "理解が浅い技術や重要な設計判断では、人が確認する範囲を広げます。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 2 行目",
+    "purpose": "理解度と判断の重要性に応じて、人が確認する範囲を変える方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Intent copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.03",
+    "text": "定型作業は自動化し、判断が必要な箇所に確認を集中します。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 3 行目",
+    "purpose": "自動化の対象と、人が確認する対象を分ける方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Intent copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.premise.01",
+    "text": "要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」1 文目 — 実際の開発体制",
+    "purpose": "誰が何を担うかを、一般読者にも分かる日本語で述べる。要件整理・判断・検証を本人が持ち、AIを設計・実装の支援に使う既存の事実境界は変えない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified reader-facing premise rewrite",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表（同ページに掲載）",
+        "Issue #31 comment 5747908981 — 置換前の承認文と、維持する事実境界"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {
     "id": "method.premise.02",
-    "text": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
+    "text": "現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。",
     "route": "/how-i-build/",
     "section": "HOW I BUILD / 開発の前提",
     "slot": "「開発の前提」2 文目 — 公開内容の対象範囲",
-    "purpose": "誇張防止の境界線。旧 notClaimed が名指ししていた 2 つ（完全自動の Multi-Agent 開発 / 構築済み Harness の運用）を、否定形の宣言ではなく公開内容の対象範囲として述べる。境界そのものは削除していない。",
+    "purpose": "誇張防止の境界線。旧文が対象外としていた完全自動のMulti-Agent開発と構築済みHarnessの運用を、一般読者向けに「複数のAIがすべて自動で開発する仕組み」「専用の自動化基盤」と言い換える。境界そのものは削除しない。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "claimType": "fact",
       "sourceRefs": [
-        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
-        "Issue #31 comment 5747908981「実装上の意味」— 誇張防止の境界線は削除せず、否定形だけを前面に出す構成から「実際の開発体制 + 対象範囲」の説明へ置き換える",
-        "site.howIBuild.intent — 定型的・低学習価値の作業は将来的に Selective Harness Engineering へ移行できる（＝現時点では構築済みではない）"
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user instruction to keep the factual boundary and make it understandable to general readers",
+        "Issue #31 comment 5747908981 — 置換前の承認文と、維持する誇張防止の境界"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-20T05:37:32Z"
+      "approvedAt": "2026-09-26T15:25:44Z"
     }
   },
   {

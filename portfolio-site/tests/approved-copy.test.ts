@@ -32,8 +32,8 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all thirty-four approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 34);
+  it('covers all forty-four approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 44);
 
     const [
       homepage,
@@ -50,6 +50,7 @@ describe('approved copy gate', () => {
       aboutDisclosure,
       heroCopy,
       readerCopy,
+      readableTechnicalCopy,
     ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
@@ -65,9 +66,10 @@ describe('approved copy gate', () => {
         about &&
         aboutDisclosure &&
         heroCopy &&
-        readerCopy,
+        readerCopy &&
+        readableTechnicalCopy,
     );
-    assert.equal(APPROVAL_BATCHES.length, 14);
+    assert.equal(APPROVAL_BATCHES.length, 15);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -162,22 +164,11 @@ describe('approved copy gate', () => {
     assert.match(withheld.task, /Issue #30 comment 5746615341/);
     assert.notEqual(withheld.at, guidance.at);
 
-    // #31 追加 Human Decision — 「開発の前提」。REWORD ではなく REPLACEMENT で
-    // ある: 置き換わった 2 文は site.json の節内容として出ていて、どの承認
-    // バッチにも APPROVED_TEXT にも無かった。だから旧バッチから移動した id は
-    // 無く、registry の外にあった文が承認を持って中へ入っている。
-    //
-    // 見出しの行 `ui.howIBuild.premises` が同じバッチにいるのは、同じ
-    // コメントで同じ人が同時に指定した語だからである。ui.json の行なので
-    // APPROVED_TEXT には入らない——下の「スナップショットより広い」節と、
-    // 両 registry を跨ぐテストがその差を受け持っている。
+    // #31 の見出しは変更していない。本文2件は今回の読者向け改稿で新しい
+    // batchへ移り、このoccasionには「開発の前提」という見出しだけが残る。
     assert.deepEqual(
       [premises.by, premises.at, [...premises.ids]],
-      [
-        'user',
-        '2026-09-20T05:37:32Z',
-        ['method.premise.01', 'method.premise.02', 'ui.howIBuild.premises'],
-      ],
+      ['user', '2026-09-20T05:37:32Z', ['ui.howIBuild.premises']],
     );
     assert.match(premises.task, /Issue #31 comment 5747908981/);
     assert.notEqual(premises.at, withheld.at);
@@ -265,6 +256,40 @@ describe('approved copy gate', () => {
     );
     assert.match(readerCopy.task, /IMPROVE-HOME-WORK-COPY/);
 
+    assert.deepEqual(
+      [readableTechnicalCopy.by, readableTechnicalCopy.at, [...readableTechnicalCopy.ids]],
+      [
+        'user',
+        '2026-09-26T15:25:44Z',
+        [
+          'method.rail.subtitle',
+          'method.title',
+          'method.lede',
+          'method.workflow.decisionTag',
+          'method.roles.human',
+          'method.roles.chatgpt',
+          'method.roles.claudeCode',
+          'method.intent.01',
+          'method.intent.02',
+          'method.intent.03',
+          'method.premise.01',
+          'method.premise.02',
+          'ui.caseStudy.technicalCta',
+          'ui.technical.sectionsLabel',
+          'ui.technical.sections.architecture',
+          'ui.technical.sections.why',
+          'ui.technical.sections.failureModes',
+          'ui.technical.sections.tradeOffs',
+          'ui.technical.sections.tests',
+          'ui.technical.sections.security',
+          'ui.technical.sections.limitations',
+          'ui.technical.sections.scale',
+          'ui.technical.sections.links',
+        ],
+      ],
+    );
+    assert.match(readableTechnicalCopy.task, /HOW-I-BUILD-TECHNICAL-COPY/);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -294,6 +319,7 @@ describe('approved copy gate', () => {
       'ui.about.disclosureLabel',
       'ui.about.experienceLabel',
       'ui.caseStudy.repositoryAuthNote',
+      'ui.caseStudy.technicalCta',
       'ui.contact.channels',
       'ui.contact.emailCta',
       'ui.contact.githubCta',
@@ -302,6 +328,16 @@ describe('approved copy gate', () => {
       'ui.howIBuild.premises',
       'ui.register.homeAllWorksCta',
       'ui.register.pageTitle',
+      'ui.technical.sections.architecture',
+      'ui.technical.sections.failureModes',
+      'ui.technical.sections.limitations',
+      'ui.technical.sections.links',
+      'ui.technical.sections.scale',
+      'ui.technical.sections.security',
+      'ui.technical.sections.tests',
+      'ui.technical.sections.tradeOffs',
+      'ui.technical.sections.why',
+      'ui.technical.sectionsLabel',
       'ui.work.role',
       'ui.work.selectedTech',
     ]);
@@ -347,11 +383,12 @@ describe('approved copy gate', () => {
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
     // 28 before #31; the two 開発の前提 sentences are the 29th and 30th, and
-    // #32's three ABOUT bodies were the 31st to 33rd; the archive lede is 34th.
-    assert.equal(approved.length, 34);
+    // Reader-facing HOW I BUILD copy adds ten registered strings; the two
+    // premise rows were already registered and move to the new approval event.
+    assert.equal(approved.length, 44);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      34,
+      44,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.

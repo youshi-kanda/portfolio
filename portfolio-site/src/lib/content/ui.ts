@@ -444,7 +444,7 @@ export const ui = {
     deliveryHeaders: ['区分', '内容'],
     scopeHeaders: ['Implemented', 'Not Included', 'Why'],
     scaleHeaders: ['項目', '実測値', '取得方法'],
-    technicalCta: '技術詳細のページへ',
+    technicalCta: '設計・実装の詳細を見る',
     evidenceLabel: 'Evidence',
     /*
      * #8 §15. A GitHub Actions run page is not always readable to a signed-out
@@ -531,22 +531,22 @@ export const ui = {
    */
   technical: {
     railLabels: ['TECHNICAL'],
-    sectionsLabel: 'Sections',
+    sectionsLabel: 'このページの内容',
     // No `railEntry` template here, and no "back to Case Study" label. Both
     // would have been strings written for this site, and neither exists in any
     // frozen source — so the rail carries the work's own title, and the return
     // link reuses `work.caseStudyCta`, which is transcribed and registered.
     sections: {
       about: 'このページについて',
-      architecture: 'Architecture',
-      why: 'Why this architecture',
-      failureModes: 'Failure modes',
-      tradeOffs: 'Trade-offs',
-      tests: 'Tests',
-      security: 'Security / Data handling',
-      limitations: 'Limitations',
-      scale: 'Scale',
-      links: 'Links',
+      architecture: '全体構成',
+      why: 'この構成を選んだ理由',
+      failureModes: '起こりうる問題',
+      tradeOffs: 'この設計で残る制約',
+      tests: '確認方法とテスト',
+      security: '権限・安全性・データの扱い',
+      limitations: 'できること・含めていないこと',
+      scale: '規模の目安',
+      links: 'コードと設計資料',
     },
     aboutFields: {
       target: '対象',
