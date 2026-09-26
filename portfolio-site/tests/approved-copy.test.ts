@@ -51,6 +51,7 @@ describe('approved copy gate', () => {
       heroCopy,
       readerCopy,
       readableTechnicalCopy,
+      readableCaseStudyCopy,
     ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
@@ -67,9 +68,10 @@ describe('approved copy gate', () => {
         aboutDisclosure &&
         heroCopy &&
         readerCopy &&
-        readableTechnicalCopy,
+        readableTechnicalCopy &&
+        readableCaseStudyCopy,
     );
-    assert.equal(APPROVAL_BATCHES.length, 15);
+    assert.equal(APPROVAL_BATCHES.length, 16);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -290,6 +292,23 @@ describe('approved copy gate', () => {
     );
     assert.match(readableTechnicalCopy.task, /HOW-I-BUILD-TECHNICAL-COPY/);
 
+    assert.deepEqual(
+      [readableCaseStudyCopy.by, readableCaseStudyCopy.at, [...readableCaseStudyCopy.ids]],
+      [
+        'user',
+        '2026-09-26T15:51:06Z',
+        [
+          'ui.caseStudy.sections.problem',
+          'ui.caseStudy.sections.highlights',
+          'ui.caseStudy.sections.quality',
+          'ui.caseStudy.scopeHeaders.1',
+          'ui.caseStudy.scopeHeaders.2',
+          'ui.caseStudy.scopeHeaders.3',
+        ],
+      ],
+    );
+    assert.match(readableCaseStudyCopy.task, /CASE-STUDY-COPY/);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -319,6 +338,12 @@ describe('approved copy gate', () => {
       'ui.about.disclosureLabel',
       'ui.about.experienceLabel',
       'ui.caseStudy.repositoryAuthNote',
+      'ui.caseStudy.scopeHeaders.1',
+      'ui.caseStudy.scopeHeaders.2',
+      'ui.caseStudy.scopeHeaders.3',
+      'ui.caseStudy.sections.highlights',
+      'ui.caseStudy.sections.problem',
+      'ui.caseStudy.sections.quality',
       'ui.caseStudy.technicalCta',
       'ui.contact.channels',
       'ui.contact.emailCta',
