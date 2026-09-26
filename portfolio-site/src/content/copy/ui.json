@@ -562,41 +562,41 @@
   {
     "id": "ui.work.role",
     "path": "work.role",
-    "text": "Role",
+    "text": "担当範囲",
     "kind": "ui-system",
-    "route": "/",
-    "section": "01 FEATURED WORK",
+    "route": "/ · /work/",
+    "section": "01 FEATURED WORK · 開発実績一覧",
     "slot": "項目ラベル",
-    "purpose": "Featured ブロックの Role 行のラベル。",
+    "purpose": "Featured ブロックと開発実績一覧で、各作品における担当範囲を示すラベル。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §5.0（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §3・§5 — user-specified visible label"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
     "id": "ui.work.selectedTech",
     "path": "work.selectedTech",
-    "text": "Selected technology",
+    "text": "使用技術",
     "kind": "ui-system",
     "route": "/",
     "section": "01 FEATURED WORK",
     "slot": "項目ラベル",
-    "purpose": "Featured ブロックの技術行のラベル。技術一覧ではなく「選んだもの」であることを示す。",
+    "purpose": "Featured ブロックで、作品に使用した技術を示すラベル。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §5.0（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §5 — user-specified visible label"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -1178,6 +1178,26 @@
     }
   },
   {
+    "id": "ui.register.pageTitle",
+    "path": "register.pageTitle",
+    "text": "開発実績",
+    "kind": "ui-system",
+    "route": "/work/ · /work/{slug}/ · /work/{slug}/technical/",
+    "section": "開発実績",
+    "slot": "h1・site navigation・breadcrumb",
+    "purpose": "WORK INDEX をデザインラベルとして残しつつ、読者向けのページ名を日本語で統一する。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve Home / Work copy for readers” §1 — user-specified page name"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
+    }
+  },
+  {
     "id": "ui.register.railNote",
     "path": "register.railNote",
     "text": "0 → 20 works",
@@ -1503,7 +1523,7 @@
     "route": "/",
     "section": "02 MORE PROJECTS",
     "slot": "アーカイブ導線ラベル",
-    "purpose": "/work/ アーカイブへの導線ラベル。「すべての」と言わないのは、全称は照合できる主張であってラベルではないため（W-CLAIM-SUSPECT）。",
+    "purpose": "/work/ アーカイブへの導線ラベル。secondary page からの既存導線で使用する。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "source-derived",
@@ -1513,6 +1533,27 @@
       ],
       "approvedBy": null,
       "approvedAt": null
+    }
+  },
+  {
+    "id": "ui.register.homeAllWorksCta",
+    "path": "register.homeAllWorksCta",
+    "text": "開発実績をすべて見る",
+    "kind": "ui-system",
+    "route": "/",
+    "section": "02 MORE PROJECTS",
+    "slot": "アーカイブ導線ラベル",
+    "purpose": "/work/ に掲載している開発実績全体への導線であることを、遷移前に伝える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve Home / Work copy for readers” §6 — user-specified CTA",
+        "portfolio-site/src/pages/work/index.astro + src/lib/content/derive.ts shippingWorks — /work/ renders every shipping work"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -2769,27 +2810,6 @@
       "sourceType": "source-derived",
       "claimType": "presentation",
       "sourceRefs": [
-        "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
-      ],
-      "approvedBy": null,
-      "approvedAt": null
-    }
-  },
-  {
-    "id": "ui.work.featuredPrimary",
-    "path": "work.featuredPrimary",
-    "text": "代表作",
-    "kind": "ui-system",
-    "route": "/",
-    "section": "01 FEATURED WORK",
-    "slot": "代表作に付く表示ラベル",
-    "purpose": "homepage 上で先に深く読んでほしい 2 件を示す編集上のラベル。技術力・品質の順位ではない。補助作品の側に対になる評価語は置かない。",
-    "publication": {
-      "reviewStatus": "approved",
-      "sourceType": "source-derived",
-      "claimType": "presentation",
-      "sourceRefs": [
-        "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人が HD-G を確定：代表作は ins-ai / crm",
         "Issue #30 comment 5746621497（2026-09-20T01:12:31Z）— #30 実装仕様。この語を公開ラベルとして使うことを本人が指示"
       ],
       "approvedBy": null,

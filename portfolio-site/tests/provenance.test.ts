@@ -277,7 +277,7 @@ describe('provenance matrix', () => {
     // 導入文を fact にする道もあったが、それは「この節はこう読める」を
     // 照合可能な主張として出すことになり、照合先が無い。
     assert.equal(presentation.length, 162);
-    assert.equal(fact.length, 47);
+    assert.equal(fact.length, 49);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first
@@ -299,13 +299,14 @@ describe('provenance matrix', () => {
       assert.equal(row.publication.approvedBy, 'user');
       assert.ok(row.text.length > 0);
     }
-    // ui-system is the registry's own word for label / heading / button, which
-    // is what presentation means on this axis. A label asserts nothing, so this
-    // direction is unconditional.
+    // UI-system usually means presentation. The archive CTA is the explicit
+    // exception: 「すべて」 makes a checkable claim about coverage, so it keeps
+    // the UI kind while carrying fact provenance and a resolvable basis.
     const systemFacts = uiCopy.filter(
       (c) => c.kind === 'ui-system' && c.publication.claimType !== 'presentation',
     );
-    assert.deepEqual(systemFacts.map((c) => c.id), []);
+    assert.deepEqual(systemFacts.map((c) => c.id), ['ui.register.homeAllWorksCta']);
+    assert.ok(systemFacts[0]!.publication.sourceRefs.some((ref) => ref.includes('shippingWorks')));
 
     // The other direction is NOT the same rule, and #52 is where the two came
     // apart. An `editorial` row is a SENTENCE, and a sentence is held as a fact

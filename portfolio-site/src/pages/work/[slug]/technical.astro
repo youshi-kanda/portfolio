@@ -109,7 +109,7 @@ const claimSource = repoPath ? `${repoPath}README.md` : null;
  * on what the page happens to contain — see the note where the Links section's
  * CTA used to be.
  */
-const archiveLabel = ui.register.railLabels[0] as string;
+const archiveLabel = ui.register.pageTitle;
 const parentHref = workHref(work.slug, false);
 const crumbs = workCrumbs(archiveLabel, work.title, work.slug, ui.technical.railLabels[0] as string);
 

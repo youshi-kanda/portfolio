@@ -32,8 +32,8 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all thirty-three approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 33);
+  it('covers all thirty-four approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 34);
 
     const [
       homepage,
@@ -49,6 +49,7 @@ describe('approved copy gate', () => {
       about,
       aboutDisclosure,
       heroCopy,
+      readerCopy,
     ] = APPROVAL_BATCHES;
     assert.ok(
       homepage &&
@@ -63,16 +64,17 @@ describe('approved copy gate', () => {
         premises &&
         about &&
         aboutDisclosure &&
-        heroCopy,
+        heroCopy &&
+        readerCopy,
     );
-    assert.equal(APPROVAL_BATCHES.length, 13);
+    assert.equal(APPROVAL_BATCHES.length, 14);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
       // 「リポジトリから確認できることだけ。」 and that sentence is no longer on
       // the site — one batch per id, the same move the display lines made.
       [homepage.by, homepage.at, homepage.ids.length],
-      ['user', '2026-08-28T21:20:25Z', 5],
+      ['user', '2026-08-28T21:20:25Z', 4],
     );
     assert.deepEqual(
       [notFound.by, notFound.at, notFound.ids.length],
@@ -84,13 +86,11 @@ describe('approved copy gate', () => {
       // the #6 batch that approved their current text — one batch per id.
       ['user', '2026-09-07T22:24:15Z', 6],
     );
-    // 6 before #44. The two display lines and the lede were REWORDED there and
-    // moved to the #44 batch with their new sentences; what stays is the three
-    // strings this occasion approved that are still on the page — role.02 and
-    // the two CTAs.
+    // The display lines and lede moved to #44; the two CTAs moved again in the
+    // reader-copy task. Only role.02 still ships with this wording.
     assert.deepEqual(
       [issue6.by, issue6.at, issue6.ids.length],
-      ['user', '2026-09-13T00:13:13Z', 3],
+      ['user', '2026-09-13T00:13:13Z', 1],
     );
     assert.deepEqual(
       [workLede.by, workLede.at, [...workLede.ids]],
@@ -105,6 +105,9 @@ describe('approved copy gate', () => {
     assert.equal(heroCopy.ids.includes('home.hero.lede'), true);
     assert.equal(homepage.ids.includes('home.about.h2'), false);
     assert.equal(issue8.ids.includes('home.about.h2'), true);
+    assert.equal(homepage.ids.includes('home.works.h2'), false);
+    assert.equal(issue6.ids.includes('home.hero.cta.primary'), false);
+    assert.equal(issue6.ids.includes('home.hero.cta.secondary'), false);
 
     // #8 — approved on PR #17, and the timestamp is that comment's, not the
     // issue's created_at and not a commit time. An earlier draft used the
@@ -243,6 +246,25 @@ describe('approved copy gate', () => {
       );
     }
 
+    assert.deepEqual(
+      [readerCopy.by, readerCopy.at, [...readerCopy.ids]],
+      [
+        'user',
+        '2026-09-26T14:37:12Z',
+        [
+          'home.hero.cta.primary',
+          'home.hero.cta.secondary',
+          'home.works.h2',
+          'work.archive.lede',
+          'ui.work.role',
+          'ui.work.selectedTech',
+          'ui.register.pageTitle',
+          'ui.register.homeAllWorksCta',
+        ],
+      ],
+    );
+    assert.match(readerCopy.task, /IMPROVE-HOME-WORK-COPY/);
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -278,6 +300,10 @@ describe('approved copy gate', () => {
       // #31 — 「開発の前提」の見出し。本人が本文 2 文と同じコメントで指定した
       // 語で、ui.json の行なのでここに来る。
       'ui.howIBuild.premises',
+      'ui.register.homeAllWorksCta',
+      'ui.register.pageTitle',
+      'ui.work.role',
+      'ui.work.selectedTech',
     ]);
     assert.equal(uiOnly.every((id) => id.startsWith('ui.')), true);
   });
@@ -321,11 +347,11 @@ describe('approved copy gate', () => {
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
     // 28 before #31; the two 開発の前提 sentences are the 29th and 30th, and
-    // #32's three ABOUT bodies are the 31st to 33rd.
-    assert.equal(approved.length, 33);
+    // #32's three ABOUT bodies were the 31st to 33rd; the archive lede is 34th.
+    assert.equal(approved.length, 34);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      33,
+      34,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.
@@ -446,8 +472,8 @@ describe('approved copy gate', () => {
       'Webシステム・AI・業務自動化を、要件整理から設計・実装まで。',
     );
     assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');
-    assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '実績を見る');
-    assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '相談する');
+    assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '主な開発実績を見る');
+    assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '開発について相談する');
 
     // The claim stays fitness rather than track record. #6 §4.1 refused
     // 「実際に使われる」 because it implies works in live use, which this site

@@ -415,8 +415,8 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
     );
     assert.equal(APPROVED_TEXT['home.hero.role.01'], 'ソフトウェアエンジニア');
     assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');
-    assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '実績を見る');
-    assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '相談する');
+    assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '主な開発実績を見る');
+    assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '開発について相談する');
     assert.equal(
       site.hero.stackLine,
       'Python / Django · TypeScript / React · Google Apps Script · Node.js',
