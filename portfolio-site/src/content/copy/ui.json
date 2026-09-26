@@ -1699,21 +1699,21 @@
   {
     "id": "ui.caseStudy.sections.problem",
     "path": "caseStudy.sections.problem",
-    "text": "想定業務課題",
+    "text": "解決したい業務上の課題",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "節見出し（CS-2）",
-    "purpose": "CS-2 想定業務課題の節見出し。CASE_TOC の CS-2 と同一。",
+    "purpose": "CS-2で、開発によって解決したい業務上の課題を示す節見出し。目次と本文で共用する。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/content.py:433"
+        "Task “Improve Case Study copy for readers” — user-specified section heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
@@ -1799,21 +1799,21 @@
   {
     "id": "ui.caseStudy.sections.highlights",
     "path": "caseStudy.sections.highlights",
-    "text": "見どころ",
+    "text": "実装で確認できること",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "節見出し（CS-7）",
-    "purpose": "CS-7 見どころの節見出し。CASE_TOC の CS-7 と同一。",
+    "purpose": "CS-7で、実装から具体的に確認できる内容を示す節見出し。目次と本文で共用する。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/content.py:438"
+        "Task “Improve Case Study copy for readers” — user-specified section heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
@@ -1839,21 +1839,21 @@
   {
     "id": "ui.caseStudy.sections.quality",
     "path": "caseStudy.sections.quality",
-    "text": "品質の担保方法",
+    "text": "確認・テスト方法",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "節見出し（CS-9）",
-    "purpose": "CS-9 品質の担保方法の節見出し。CASE_TOC の CS-9 と同一。",
+    "purpose": "CS-9で、実装内容をどう確認・テストしたかを示す節見出し。目次と本文で共用する。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/content.py:440"
+        "Task “Improve Case Study copy for readers” — user-specified section heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
@@ -2119,47 +2119,47 @@
   {
     "id": "ui.caseStudy.scopeHeaders.1",
     "path": "caseStudy.scopeHeaders.1",
-    "text": "Implemented",
+    "text": "実装済み",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "表ヘッダ",
-    "purpose": "CS-12 の実装済み列。",
+    "purpose": "CS-12で実装済みの内容を示す列見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/portfolio-case-study-specification.md:122"
+        "Task “Improve Case Study copy for readers” — user-specified scope table heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
     "id": "ui.caseStudy.scopeHeaders.2",
     "path": "caseStudy.scopeHeaders.2",
-    "text": "Not Included",
+    "text": "含めていないもの",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
     "slot": "表ヘッダ",
-    "purpose": "CS-12 の含めていない列。",
+    "purpose": "CS-12で実装範囲に含めていない内容を示す列見出し。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/portfolio-case-study-specification.md:150"
+        "Task “Improve Case Study copy for readers” — user-specified scope table heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
     "id": "ui.caseStudy.scopeHeaders.3",
     "path": "caseStudy.scopeHeaders.3",
-    "text": "Why",
+    "text": "理由",
     "kind": "ui-system",
     "route": "/work/{slug}/",
     "section": "CASE STUDY",
@@ -2167,13 +2167,13 @@
     "purpose": "CS-12 の理由列。境界に理由を必ず添える。",
     "publication": {
       "reviewStatus": "approved",
-      "sourceType": "source-derived",
+      "sourceType": "authored",
       "claimType": "presentation",
       "sourceRefs": [
-        "portfolio-planning/scratchpad/visual-prototype/content.py:405"
+        "Task “Improve Case Study copy for readers” — user-specified scope table heading"
       ],
-      "approvedBy": null,
-      "approvedAt": null
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:51:06Z"
     }
   },
   {
