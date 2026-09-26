@@ -438,11 +438,11 @@ describe('#32 ABOUT — 注意書き 3 行から、業務背景と公開境界�
 
     assert.equal(
       APPROVED_TEXT['method.premise.01'],
-      'Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。',
+      '要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。',
     );
     assert.equal(
       APPROVED_TEXT['method.premise.02'],
-      '現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。',
+      '現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。',
     );
     assert.deepEqual([...site.howIBuild.premises], ['method.premise.01', 'method.premise.02']);
   });

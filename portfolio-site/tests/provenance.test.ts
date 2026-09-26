@@ -276,8 +276,12 @@ describe('provenance matrix', () => {
     // どれも authored presentation なので基礎は求められないが、承認者は持つ。
     // 導入文を fact にする道もあったが、それは「この節はこう読める」を
     // 照合可能な主張として出すことになり、照合先が無い。
-    assert.equal(presentation.length, 162);
-    assert.equal(fact.length, 49);
+    // Reader-facing HOW I BUILD copy adds three presentation strings
+    // (title, rail subtitle, decision tag) and seven factual descriptions
+    // (lede, role duties, intent). Rewording the two existing premise rows and
+    // eleven existing Technical UI rows does not change either row count.
+    assert.equal(presentation.length, 165);
+    assert.equal(fact.length, 56);
 
     // U-01 added three: the email row label and its CTA present, and the
     // address itself asserts. The address is also the registry's first

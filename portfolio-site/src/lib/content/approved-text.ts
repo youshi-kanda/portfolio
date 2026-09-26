@@ -264,11 +264,7 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     task: 'ISSUE-31-DEV-PREMISES (Issue #31 comment 5747908981)',
     by: 'user',
     at: '2026-09-20T05:37:32Z',
-    ids: Object.freeze([
-      'method.premise.01',
-      'method.premise.02',
-      'ui.howIBuild.premises',
-    ]),
+    ids: Object.freeze(['ui.howIBuild.premises']),
   }),
   /**
    * Issue #32 Phase 9-4 — ABOUT の業務経験と公開境界。
@@ -413,6 +409,42 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.register.homeAllWorksCta',
     ]),
   }),
+  /**
+   * HOW I BUILD / Technical reader copy. The user supplied the visible
+   * wording in this task. The two premise ids move here because their current
+   * Japanese was re-approved as a reader-facing rewrite; the unchanged
+   * 「開発の前提」heading remains in the earlier #31 batch.
+   */
+  Object.freeze({
+    task: 'TASK-IMPROVE-HOW-I-BUILD-TECHNICAL-COPY-FOR-READERS',
+    by: 'user',
+    at: '2026-09-26T15:25:44Z',
+    ids: Object.freeze([
+      'method.rail.subtitle',
+      'method.title',
+      'method.lede',
+      'method.workflow.decisionTag',
+      'method.roles.human',
+      'method.roles.chatgpt',
+      'method.roles.claudeCode',
+      'method.intent.01',
+      'method.intent.02',
+      'method.intent.03',
+      'method.premise.01',
+      'method.premise.02',
+      'ui.caseStudy.technicalCta',
+      'ui.technical.sectionsLabel',
+      'ui.technical.sections.architecture',
+      'ui.technical.sections.why',
+      'ui.technical.sections.failureModes',
+      'ui.technical.sections.tradeOffs',
+      'ui.technical.sections.tests',
+      'ui.technical.sections.security',
+      'ui.technical.sections.limitations',
+      'ui.technical.sections.scale',
+      'ui.technical.sections.links',
+    ]),
+  }),
 ]);
 
 /**
@@ -503,8 +535,18 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // 実際の開発体制を述べ、2 文目がその公開内容の対象範囲を区切る。2 文目は
   // 旧 `notClaimed` が名指ししていた 2 つ（完全自動の Multi-Agent 開発 /
   // 構築済み Harness）をそのまま対象外に保っている。
-  "method.premise.01": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
-  "method.premise.02": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
+  "method.rail.subtitle": "AIを活用した開発プロセス",
+  "method.title": "AIを活用した開発の進め方",
+  "method.lede": "AIを設計・実装の支援に使い、要件整理・重要な判断・最終確認は自分で行います。",
+  "method.workflow.decisionTag": "人が判断",
+  "method.roles.human": "要件整理 / 内容理解 / 採否判断",
+  "method.roles.chatgpt": "計画 / レビュー / 論点整理",
+  "method.roles.claudeCode": "実装 / テスト",
+  "method.intent.01": "AIに実装を任せる場合も、内容を理解したうえで採否を判断します。",
+  "method.intent.02": "理解が浅い技術や重要な設計判断では、人が確認する範囲を広げます。",
+  "method.intent.03": "定型作業は自動化し、判断が必要な箇所に確認を集中します。",
+  "method.premise.01": "要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。",
+  "method.premise.02": "現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。",
 
   "home.works.h2": "何を作り、どこまで実装したのか。",
   "home.works.lede": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",
