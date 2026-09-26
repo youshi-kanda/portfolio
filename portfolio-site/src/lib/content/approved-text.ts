@@ -114,15 +114,22 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * The timestamp is PR #15's actual merge time as GitHub records it, not a
    * rounded stand-in. An approval record with a tidy 00:00:00 in it is a
    * record nobody checked against anything.
+   *
+   * 6 件で始まり、3 件になった。`home.hero.display.01` / `.02` / `home.hero.lede`
+   * は #44 で書き直され、下の ISSUE-44-HERO-COPY へ移っている——この batch が
+   * 承認した 2 行 display とその lede はもうサイトに無い。移動であって取り消し
+   * ではない: この batch は 2026-09-13T00:13:13Z に実際に起きた承認であり続け、
+   * その日に読まれた文が今も出ている 3 件——role.02 と CTA 2 件——を承認している。
+   *
+   * 上の 2 段落は当時の判断の記録としてそのまま残す。「業務で使える」を選んだ
+   * 理由も、「実際に使われる」を採らなかった理由も、その occasion に実際に
+   * 効いた判断であり、後の改稿がそれを無かったことにするわけではない。
    */
   Object.freeze({
     task: 'ISSUE-6-HOME-IA-CONTENT-SPEC',
     by: 'user',
     at: '2026-09-13T00:13:13Z',
     ids: Object.freeze([
-      'home.hero.display.01',
-      'home.hero.display.02',
-      'home.hero.lede',
       'home.hero.role.02',
       'home.hero.cta.primary',
       'home.hero.cta.secondary',
@@ -188,6 +195,205 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.contact.emailCta',
     ]),
   }),
+  /**
+   * Issue #34 — CONTACT の問い合わせ補助文。
+   *
+   * 1 文だけの独立したバッチである。U-01 のバッチ（2026-09-13）が承認したのは
+   * 住所とそのラベルであって、「何を書いて送ればよいか」を案内する文ではない。
+   * 後から書かれた文を既存のバッチに足せば、その日には読まれていない文を
+   * 承認済みとして記録することになる。
+   *
+   * 承認記録は Issue #34 comment 5741442820。本人が確定文を引用したうえで
+   * 「この文言を公開コピーとして使用することを承認します」と述べており、
+   * 同じ文は Issue #34 §5.1 にも確定文言として記載されている。`at` は
+   * その承認コメントの時刻である。
+   */
+  Object.freeze({
+    task: 'ISSUE-34-CONTACT-GUIDANCE (Issue #34 comment 5741442820 / §5.1)',
+    by: 'user',
+    at: '2026-09-19T11:26:31Z',
+    ids: Object.freeze(['home.contact.helper']),
+  }),
+  /**
+   * Issue #30 HD-I — 公開コードリンクを掲載しない作品の説明文。
+   *
+   * 独立したバッチである。#34 のバッチ（2026-09-19）が承認したのは CONTACT の
+   * 問い合わせ補助文であって、FEATURED WORK でコードリンクが無い理由を述べる
+   * 文ではない。既存バッチに足せば、その日には読まれていない文を承認済みとして
+   * 記録することになる。
+   *
+   * `at` は承認コメント Issue #30 comment 5746615341 の作成時刻。本人が HD-G と
+   * 並べてこの文を引用し、「この文言を公開コピーとして使用することを承認します」
+   * と述べている。同じ文は Issue #30 §8.1 にも確定文言として記載されている。
+   *
+   * この 1 文が承認を要するのは、ラベルではなく事実を述べているからである
+   * ——「掲載していない」も「公開可能な情報に限定して記載している」も、本人の
+   * 公開方針が違えば誤りになる。だから presentation の免除ではなく、根拠と
+   * 承認者を持つ側に置かれている。
+   */
+  Object.freeze({
+    task: 'ISSUE-30-SOURCE-WITHHELD (Issue #30 comment 5746615341 / §8.1)',
+    by: 'user',
+    at: '2026-09-20T01:11:07Z',
+    ids: Object.freeze(['home.works.sourceWithheld']),
+  }),
+  /**
+   * Issue #31 追加 Human Decision — HOW I BUILD の「開発の前提」。
+   *
+   * これは REWORD ではなく REPLACEMENT である。置き換わったのは
+   * `site.howIBuild.notClaimed` の 2 文——「完全自動の Multi-Agent 開発を
+   * しているとは主張しない。」「Harness を構築済みであるとは主張しない。」——で、
+   * どちらも承認バッチにも APPROVED_TEXT にも無かった。site.json の節内容として
+   * 出ていた文であり、registry の外にいたからである（`W-SITE-UNMANAGED` が
+   * 数えていた backlog のうちの 2 件）。なので「id が旧バッチから移動する」
+   * 話ではなく、**registry の外にあった文が、承認を持って registry の中へ入る**
+   * のがこのバッチである。
+   *
+   * 否定の境界線は消えていない。2 文目が同じ 2 つの主張——完全自動の
+   * Multi-Agent 開発と、構築済み Harness の運用——を名指しで対象外にしている。
+   * 変わったのは順序で、「何を主張しないか」を先に読ませる構成から、
+   * 「実際にどうやっているか」を述べてからその範囲を区切る構成になった。
+   *
+   * `at` は承認コメント Issue #31 comment 5747908981 の作成時刻。本人が
+   * 公開見出しと公開本文 2 文を確定文として記載している。
+   *
+   * 見出し `開発の前提` も同じバッチにある。本人がこのコメントで指定した語で、
+   * ui.json 側の行として出るため APPROVED_TEXT には入らない——この snapshot が
+   * 守っているのは `approvedCopyGate` が読む shipping registry であり、
+   * ui 行の一致は approved-copy.test.ts が両 registry を跨いで見ている。
+   */
+  Object.freeze({
+    task: 'ISSUE-31-DEV-PREMISES (Issue #31 comment 5747908981)',
+    by: 'user',
+    at: '2026-09-20T05:37:32Z',
+    ids: Object.freeze([
+      'method.premise.01',
+      'method.premise.02',
+      'ui.howIBuild.premises',
+    ]),
+  }),
+  /**
+   * Issue #32 Phase 9-4 — ABOUT の業務経験と公開境界。
+   *
+   * 別の occasion である。#31 のバッチ（05:37:32Z）が承認したのは
+   * /how-i-build/ の「開発の前提」2 文で、ABOUT の文ではない。同じ日の 1 時間
+   * 後に、本人が別のコメントで ABOUT 3 ブロックを確定している。`at` はその
+   * 承認コメント Issue #32 comment 5748161578 の作成時刻で、issue の
+   * created_at でも commit 時刻でもない。
+   *
+   * 本人はこのコメントで見出し 3 語と本文 3 件をまとめて確定文として記載して
+   * いる。ラベル 3 件は ui.json の行なので APPROVED_TEXT には入らない——
+   * `ui.howIBuild.premises` と同じで、両 registry を跨ぐ一致は
+   * approved-copy.test.ts が見ている。
+   *
+   * 6 件で始まり、5 件になった。`home.about.disclosure` はこのバッチを離れて
+   * 下の ISSUE-32-ABOUT-DISCLOSURE へ移っている——同じ PR のレビュー中に本人が
+   * 文を短くしたからで、このバッチが承認した 2 文構成はもうサイトに無い。
+   * 移動であって取り消しではない: このバッチは 06:35:42Z に実際に起きた
+   * 承認であり続け、その日に読まれた文が今も出ている 5 件を承認している。
+   *
+   * REWORD ではなく RETIREMENT + NEW である。置き換わった 3 行——
+   * 実装形態 / 公開範囲 / データ——は site.json の節内容として出ていた文で、
+   * どの承認バッチにも APPROVED_TEXT にも無かった（`W-SITE-UNMANAGED` が
+   * 数えていた backlog の 3 件）。だから旧バッチから移動する id は無く、
+   * 旧文言は退役文字列として `check:structure` の RETIRED_PUBLIC_COPY が
+   * 公開面から締め出す側に置いた。旧文を新しいバッチに書き写せば、本人が
+   * 読んでいない文を今日の承認として記録することになる。
+   *
+   * 退役の理由は文体ではなく事実である。旧 `実装形態` 行は Portfolio 全体を
+   * 「個人開発」と言っていて、#29 が共同プロジェクトの公開用再構成を
+   * 本人確認済みの事実として記録した時点で成り立たない。公開境界そのものは
+   * 消えていない——合成データの表明は `home.about.syntheticData` が、
+   * 公開範囲の説明は `home.about.disclosure` が引き継いでいる。
+   */
+  Object.freeze({
+    task: 'ISSUE-32-ABOUT-PROFILE (Issue #32 comment 5748161578)',
+    by: 'user',
+    at: '2026-09-20T06:35:42Z',
+    ids: Object.freeze([
+      'home.about.experience',
+      'home.about.syntheticData',
+      'ui.about.experienceLabel',
+      'ui.about.disclosureLabel',
+      'ui.about.dataLabel',
+    ]),
+  }),
+  /**
+   * Issue #32 — 「掲載内容について」の訂正。A REWORD, AND THE ID MOVED.
+   *
+   * これはこのファイルの冒頭が述べている規則がそのまま起きた例である:
+   * 文が書き直されて再承認されたら、id は新しいバッチへ移り、両方には載らない。
+   * スナップショットは 1 id につき 1 本文しか持たないので、2 つのバッチに
+   * いる id は「どちらの機会がいま出ている文を承認したのか」を言えなくなる。
+   *
+   * 何が落ちたか。旧文の 2 文目は
+   * 「担当範囲と到達状態は作品ごとに記載しています。」で、この PR の
+   * レビューでその半分が公開面で成り立たないことが分かった——担当範囲は
+   * Featured Work の Role / 開発背景 として各作品に出ているが、**到達状態
+   * （`portfolioProfile.implementationStatus`）はどの公開ページにも出ていない**。
+   * 作品レコードには 10 件すべてに入っている。つまり読み手に「作品ごとに
+   * 書いてある」と言いながら、探しても半分は見つからない文だった。
+   *
+   * 直し方が 2 つあり、本人が選んだのは後者である（Issue #32 comment
+   * 5749023659）。(a) 到達状態を公開 UI に足して文を真にする。(b) 文を、
+   * 現在の公開面で確認できる範囲まで狭める。(a) は ABOUT の 1 文のために
+   * Featured Work の情報設計を動かすことになり、#32 の対象ではない。
+   * `implementationStatus` は #29 が確定した内部メタデータとして残る——
+   * 消したのは主張であって、事実ではない。
+   *
+   * 旧バッチ（06:35:42Z）は falsify されていない。あの日あのコメントで本人が
+   * 読んだのは 2 文の版で、それは実際に起きた承認である。ただしその文は
+   * もうサイトに無いので、`home.about.disclosure` はここに居る。旧文は
+   * `check:structure` の RETIRED_PUBLIC_COPY 側へ回り、公開面のどこにも
+   * 残らないことが検査される。
+   */
+  Object.freeze({
+    task: 'ISSUE-32-ABOUT-DISCLOSURE (Issue #32 comment 5749023659)',
+    by: 'user',
+    at: '2026-09-20T09:43:50Z',
+    ids: Object.freeze(['home.about.disclosure']),
+  }),
+  /**
+   * Issue #44 — HERO の display 2 行と lede。A REWORD, AND THE IDS MOVED.
+   *
+   * このファイルの冒頭の規則がそのまま起きている: 3 件とも #6 のバッチ
+   * （2026-09-13T00:13:13Z）で承認された文を持っていたが、書き直されたので
+   * id は新しいバッチへ移り、両方には載らない。#6 のバッチには role.02 と
+   * CTA 2 件が残る——あの日読まれたまま今も出ている 3 件である。
+   *
+   * `at` は承認コメント Issue #44 comment 5751276538 の作成時刻で、issue の
+   * created_at でも commit 時刻でもない。本人がそのコメントで 3 文を id ごとに
+   * 引用したうえで「上記 3 文を公開コピーとして使用することを承認します」と
+   * 述べている。誰でも開いて、何が・誰に・いつ承認されたかを読める記録である。
+   *
+   * 何が変わったか。#6 の display は「業務課題を、／業務で使える Web・AI
+   * システムへ。」で、読者が持ち込むもの（課題）を主語に置いていた。新しい
+   * display は「業務を理解し、／現場で使える仕組みをつくる。」で、主語が
+   * 書き手の仕事の順序——まず業務を理解し、そのうえで作る——に変わっている。
+   *
+   * 主張の強さは上がっていない。#6 §4.1 が「実際に使われる」を退けた理由は
+   * 稼働実績を含意するからで、その境界は「現場で使える」でも守られている:
+   * 業務要件への適合の主張であって、運用されているという主張ではない。
+   * 稼働状況・利用者数・商用実績は、このサイトのどこにも無いままである。
+   *
+   * lede は長い 1 文から、領域と工程を簡潔に示す 1 文へ書き直され、工程名
+   * （要件整理 / 設計 / 実装）と領域名（Web システム / AI / 業務自動化）だけを
+   * 述べる。文の数は変わっていない——旧 lede
+   * 「業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、
+   * 実際に運用できる仕組みとして設計・実装します。」も 1 文である。
+   * 件数はここにも無い——`heroLede` の導出が V4 で消えて以来この行が守って
+   * いる性質で、approved-copy.test.ts の「no count anywhere」がそれを見ている。
+   */
+  Object.freeze({
+    task: 'ISSUE-44-HERO-COPY (Issue #44 comment 5751276538)',
+    by: 'user',
+    at: '2026-09-20T17:03:02Z',
+    ids: Object.freeze([
+      'home.hero.display.01',
+      'home.hero.display.02',
+      'home.hero.lede',
+    ]),
+  }),
 ]);
 
 /**
@@ -214,9 +420,9 @@ export const PENDING_APPROVAL: readonly { id: string; text: string; registry: st
 export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.role.01": "ソフトウェアエンジニア",
   "home.hero.role.02": "業務システム / AI 活用 / 業務自動化",
-  "home.hero.display.01": "業務課題を、",
-  "home.hero.display.02": "業務で使える Web・AI システムへ。",
-  "home.hero.lede": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+  "home.hero.display.01": "業務を理解し、",
+  "home.hero.display.02": "現場で使える仕組みをつくる。",
+  "home.hero.lede": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
   "home.hero.cta.primary": "実績を見る",
   "home.hero.cta.secondary": "相談する",
 
@@ -227,10 +433,34 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // way to send anyone a message (U-01).
   "home.about.h2": "業務要件を整理し、設計から実装・運用まで形にする。",
 
+  // Issue #32 — ABOUT の 3 ブロック。読み順が内容である: 現在の開発姿勢
+  // (`about.now`) → 業務経験 → 掲載内容の公開境界。旧 3 行は「これは本物では
+  // ない」が 3 本並ぶ構造で、業務背景はサイトのどこにも無かった。
+  //
+  // 年数は入っていない。HD-C の決定で、「製造業で約 12 年間」のような年数表現は
+  // ABOUT に出さず、出すのは現場から営業までの業務フロー理解と、それが現在の
+  // 要件整理・システム化へ接続していることだけである。勤務先名・顧客名・
+  // 発注元名・取引先名も無い。
+  //
+  // 2 件目が使う分類語——共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ
+  // / 自主開発 / PoC——は #29 の本人確認済み metadata の語で、ABOUT のために
+  // 新しい軸を作っていない。掲載作品が何であるかだけを述べ、どこに何が
+  // 書いてあるかは述べない: 2 文目にあった「担当範囲と到達状態は作品ごとに
+  // 記載しています。」は、到達状態が公開面に出ていないため削除された
+  // （Issue #32 comment 5749023659）。
+  "home.about.experience": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
+  "home.about.disclosure": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。",
+  "home.about.syntheticData": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
+
   // U-01 — PR #17 comment 5651971896. The address and the label that says what
   // it is for. The CTA that uses them is ui chrome and lives in ui.json.
   "home.contact.emailKey": "開発のご相談",
   "home.contact.email": "kanda02.1203@gmail.com",
+
+  // Issue #34 — 送る前に書くことを案内する 1 文。約束はしていない:
+  // 見積り・返信期限・対応可能時期はここに無く、本人が承認したのは
+  // 「何を書けばよいか」と「まずはメールで」の 2 点だけである。
+  "home.contact.helper": "現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。",
 
   // The capability rail — TASK-PORTFOLIO-V4-COPY-APPROVE-01. Three axes, each
   // a name and the line under it, registered as six strings for the same
@@ -243,6 +473,19 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.capability.02.value": "AI・自動処理と、人が判断する範囲を分ける",
   "home.hero.capability.03.key": "確認できる形で作る",
   "home.hero.capability.03.value": "テスト・実行記録・人手確認で確かめる",
+
+  // Issue #30 HD-I — 公開コードリンクを出さない Featured Work の説明。
+  // private repository と public-repo + withheld を公開面で区別せず、公開面で
+  // 確実に言えることだけを述べる: コードが存在しないとも、非公開 repository が
+  // あるとも言っていない。
+  "home.works.sourceWithheld": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
+
+  // Issue #31 — /how-i-build/ の「開発の前提」。順序が内容である: 1 文目が
+  // 実際の開発体制を述べ、2 文目がその公開内容の対象範囲を区切る。2 文目は
+  // 旧 `notClaimed` が名指ししていた 2 つ（完全自動の Multi-Agent 開発 /
+  // 構築済み Harness）をそのまま対象外に保っている。
+  "method.premise.01": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
+  "method.premise.02": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
 
   "home.works.h2": "何のためのサービスを、どこまで実装したのか。",
   "home.works.lede": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",

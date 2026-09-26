@@ -2,7 +2,8 @@
  * Approved copy is immutable.
  *
  * The user approved a first set of homepage sentences on 2026-08-28, the five
- * 404 strings on 2026-08-29, and the V4 hero and work copy on 2026-09-07. An
+ * 404 strings on 2026-08-29, the V4 hero and work copy on 2026-09-07, and the
+ * CONTACT helper line on 2026-09-19 (#34). An
  * approval covers the sentence that was read, not the slot it sat in — so
  * rewording an approved string has to fail the build rather than ship under an
  * approval record that no longer describes it.
@@ -31,12 +32,40 @@ describe('approved copy gate', () => {
     assert.deepEqual(approvedCopyGate(loadCopy(), asApproved), []);
   });
 
-  it('covers all twenty-six approved strings, each in exactly one batch', () => {
-    assert.equal(Object.keys(APPROVED_TEXT).length, 26);
+  it('covers all thirty-three approved strings, each in exactly one batch', () => {
+    assert.equal(Object.keys(APPROVED_TEXT).length, 33);
 
-    const [homepage, notFound, v4, workLede, issue6, issue8, email] = APPROVAL_BATCHES;
-    assert.ok(homepage && notFound && v4 && workLede && issue6 && issue8 && email);
-    assert.equal(APPROVAL_BATCHES.length, 7);
+    const [
+      homepage,
+      notFound,
+      v4,
+      workLede,
+      issue6,
+      issue8,
+      email,
+      guidance,
+      withheld,
+      premises,
+      about,
+      aboutDisclosure,
+      heroCopy,
+    ] = APPROVAL_BATCHES;
+    assert.ok(
+      homepage &&
+        notFound &&
+        v4 &&
+        workLede &&
+        issue6 &&
+        issue8 &&
+        email &&
+        guidance &&
+        withheld &&
+        premises &&
+        about &&
+        aboutDisclosure &&
+        heroCopy,
+    );
+    assert.equal(APPROVAL_BATCHES.length, 13);
     assert.deepEqual(
       // 6 before #8. `home.about.h2` was REWORDED there and moved to the #8
       // batch with its new sentence, because this batch approved
@@ -55,9 +84,13 @@ describe('approved copy gate', () => {
       // the #6 batch that approved their current text — one batch per id.
       ['user', '2026-09-07T22:24:15Z', 6],
     );
+    // 6 before #44. The two display lines and the lede were REWORDED there and
+    // moved to the #44 batch with their new sentences; what stays is the three
+    // strings this occasion approved that are still on the page — role.02 and
+    // the two CTAs.
     assert.deepEqual(
       [issue6.by, issue6.at, issue6.ids.length],
-      ['user', '2026-09-13T00:13:13Z', 6],
+      ['user', '2026-09-13T00:13:13Z', 3],
     );
     assert.deepEqual(
       [workLede.by, workLede.at, [...workLede.ids]],
@@ -68,7 +101,8 @@ describe('approved copy gate', () => {
     // sentence that ships, and `A-BATCH` fails the build for exactly that.
     assert.equal(homepage.ids.includes('home.hero.lede'), false);
     assert.equal(v4.ids.includes('home.hero.lede'), false);
-    assert.equal(issue6.ids.includes('home.hero.lede'), true);
+    assert.equal(issue6.ids.includes('home.hero.lede'), false);
+    assert.equal(heroCopy.ids.includes('home.hero.lede'), true);
     assert.equal(homepage.ids.includes('home.about.h2'), false);
     assert.equal(issue8.ids.includes('home.about.h2'), true);
 
@@ -105,6 +139,110 @@ describe('approved copy gate', () => {
     assert.match(email.task, /PR #17 comment 5651971896/);
     assert.notEqual(email.at, issue8.at);
 
+    // #34 — 補助文。住所を承認した機会（2026-09-13）とは別の occasion で、
+    // 別の文である。前のバッチに足せば、その日には存在しなかった文を
+    // その日に承認されたものとして記録することになる。`at` は他のバッチと
+    // 同じく承認記録の時刻——Issue #34 comment 5741442820 の時刻である。
+    assert.deepEqual(
+      [guidance.by, guidance.at, [...guidance.ids]],
+      ['user', '2026-09-19T11:26:31Z', ['home.contact.helper']],
+    );
+    assert.match(guidance.task, /Issue #34/);
+    assert.notEqual(guidance.at, email.at);
+
+    // #30 HD-I — コードリンクを掲載しない作品の説明文。#34 のバッチが承認したの
+    // は CONTACT の補助文で、この文ではない。別の occasion、別の文、別のバッチ。
+    assert.deepEqual(
+      [withheld.by, withheld.at, [...withheld.ids]],
+      ['user', '2026-09-20T01:11:07Z', ['home.works.sourceWithheld']],
+    );
+    assert.match(withheld.task, /Issue #30 comment 5746615341/);
+    assert.notEqual(withheld.at, guidance.at);
+
+    // #31 追加 Human Decision — 「開発の前提」。REWORD ではなく REPLACEMENT で
+    // ある: 置き換わった 2 文は site.json の節内容として出ていて、どの承認
+    // バッチにも APPROVED_TEXT にも無かった。だから旧バッチから移動した id は
+    // 無く、registry の外にあった文が承認を持って中へ入っている。
+    //
+    // 見出しの行 `ui.howIBuild.premises` が同じバッチにいるのは、同じ
+    // コメントで同じ人が同時に指定した語だからである。ui.json の行なので
+    // APPROVED_TEXT には入らない——下の「スナップショットより広い」節と、
+    // 両 registry を跨ぐテストがその差を受け持っている。
+    assert.deepEqual(
+      [premises.by, premises.at, [...premises.ids]],
+      [
+        'user',
+        '2026-09-20T05:37:32Z',
+        ['method.premise.01', 'method.premise.02', 'ui.howIBuild.premises'],
+      ],
+    );
+    assert.match(premises.task, /Issue #31 comment 5747908981/);
+    assert.notEqual(premises.at, withheld.at);
+
+    // #32 Phase 9-4 — ABOUT の業務経験と公開境界。同じ日の別の occasion である:
+    // #31 のバッチは 05:37:32Z に /how-i-build/ の 2 文を承認していて、ABOUT の
+    // 文は含まない。本人が 06:35:42Z の別コメントで見出し 3 語と本文 3 件を
+    // まとめて確定しているので、6 件が 1 バッチに入る。
+    //
+    // REWORD ではない。置き換わった 3 行は site.json の節内容として出ていた文で、
+    // どのバッチにも APPROVED_TEXT にも無かった——だから旧バッチから移動する id
+    // は無く、旧文言は退役文字列として check:structure が公開面から締め出す。
+    assert.deepEqual(
+      [about.by, about.at, [...about.ids]],
+      [
+        'user',
+        '2026-09-20T06:35:42Z',
+        [
+          'home.about.experience',
+          'home.about.syntheticData',
+          'ui.about.experienceLabel',
+          'ui.about.disclosureLabel',
+          'ui.about.dataLabel',
+        ],
+      ],
+    );
+    assert.match(about.task, /Issue #32 comment 5748161578/);
+    assert.notEqual(about.at, premises.at);
+
+    // #32 訂正 — 「掲載内容について」。REWORD なので id は移動し、両方には
+    // 載らない。旧バッチが承認した 2 文目「担当範囲と到達状態は作品ごとに
+    // 記載しています。」は、到達状態がどの公開ページにも出ていないことが
+    // レビューで分かって落ちた。旧バッチは falsify されていない——あの日
+    // 読まれた文は実在し、いまサイトに無いだけである。
+    assert.deepEqual(
+      [aboutDisclosure.by, aboutDisclosure.at, [...aboutDisclosure.ids]],
+      ['user', '2026-09-20T09:43:50Z', ['home.about.disclosure']],
+    );
+    assert.match(aboutDisclosure.task, /Issue #32 comment 5749023659/);
+    assert.notEqual(aboutDisclosure.at, about.at);
+    assert.equal(
+      about.ids.includes('home.about.disclosure'),
+      false,
+      '書き直された id が旧バッチにも残っている',
+    );
+
+    // #44 — HERO の display 2 行と lede。REWORD なので 3 件とも #6 のバッチを
+    // 離れてここに居る。別の occasion であり、`at` は承認コメント
+    // Issue #44 comment 5751276538 の作成時刻で、issue の created_at でも
+    // commit 時刻でもない。
+    assert.deepEqual(
+      [heroCopy.by, heroCopy.at, [...heroCopy.ids]],
+      [
+        'user',
+        '2026-09-20T17:03:02Z',
+        ['home.hero.display.01', 'home.hero.display.02', 'home.hero.lede'],
+      ],
+    );
+    assert.match(heroCopy.task, /Issue #44 comment 5751276538/);
+    assert.notEqual(heroCopy.at, aboutDisclosure.at);
+    for (const id of heroCopy.ids) {
+      assert.equal(
+        issue6.ids.includes(id),
+        false,
+        `書き直された ${id} が #6 のバッチにも残っている`,
+      );
+    }
+
     const ids = APPROVAL_BATCHES.flatMap((b) => [...b.ids]);
     assert.equal(new Set(ids).size, ids.length);
 
@@ -128,10 +266,18 @@ describe('approved copy gate', () => {
     }
     const uiOnly = ids.filter((id) => !(id in APPROVED_TEXT));
     assert.deepEqual(uiOnly.sort(), [
+      // #32 — ABOUT の 3 ラベル。本人が本文 3 件と同じコメントで指定した語で、
+      // ui.json の行なのでここに来る。
+      'ui.about.dataLabel',
+      'ui.about.disclosureLabel',
+      'ui.about.experienceLabel',
       'ui.caseStudy.repositoryAuthNote',
       'ui.contact.channels',
       'ui.contact.emailCta',
       'ui.contact.githubCta',
+      // #31 — 「開発の前提」の見出し。本人が本文 2 文と同じコメントで指定した
+      // 語で、ui.json の行なのでここに来る。
+      'ui.howIBuild.premises',
     ]);
     assert.equal(uiOnly.every((id) => id.startsWith('ui.')), true);
   });
@@ -174,10 +320,12 @@ describe('approved copy gate', () => {
     // counted off the filter rather than off the file length.
     const rows = loadCopy();
     const approved = rows.filter((r) => r.publication.reviewStatus === 'approved');
-    assert.equal(approved.length, 26);
+    // 28 before #31; the two 開発の前提 sentences are the 29th and 30th, and
+    // #32's three ABOUT bodies are the 31st to 33rd.
+    assert.equal(approved.length, 33);
     assert.equal(
       approved.filter((r) => r.publication.approvedBy && r.publication.approvedAt).length,
-      26,
+      33,
     );
     // Nothing is half-set: no row is waiting, and none claims approval without
     // naming who and when.
@@ -287,25 +435,38 @@ describe('approved copy gate', () => {
     assert.match(findings[0]!.message, /home\.works\.h2/);
   });
 
-  it('ships the hero copy the user approved in #6, verbatim', () => {
-    // Two lines, not three, and the claim is fitness rather than track record:
-    // 「実際に使われる」 would say these works are in live use, which is a
-    // claim this site makes nowhere else (#6 spec §4.1).
-    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務課題を、');
-    assert.equal(APPROVED_TEXT['home.hero.display.02'], '業務で使える Web・AI システムへ。');
+  it('ships the hero copy the user approved, verbatim', () => {
+    // The display and the lede come from #44; role.02 and the two CTAs are
+    // still the strings #6 approved. Two lines, not three.
+    assert.equal(APPROVED_TEXT['home.hero.display.01'], '業務を理解し、');
+    assert.equal(APPROVED_TEXT['home.hero.display.02'], '現場で使える仕組みをつくる。');
     assert.equal(APPROVED_TEXT['home.hero.display.03'], undefined);
+    assert.equal(
+      APPROVED_TEXT['home.hero.lede'],
+      'Webシステム・AI・業務自動化を、要件整理から設計・実装まで。',
+    );
     assert.equal(APPROVED_TEXT['home.hero.role.02'], '業務システム / AI 活用 / 業務自動化');
     assert.equal(APPROVED_TEXT['home.hero.cta.primary'], '実績を見る');
     assert.equal(APPROVED_TEXT['home.hero.cta.secondary'], '相談する');
 
+    // The claim stays fitness rather than track record. #6 §4.1 refused
+    // 「実際に使われる」 because it implies works in live use, which this site
+    // claims nowhere else; 「現場で使える」 keeps that boundary, and the words
+    // that would cross it are absent from the display and the lede.
+    for (const id of ['home.hero.display.01', 'home.hero.display.02', 'home.hero.lede']) {
+      assert.doesNotMatch(APPROVED_TEXT[id]!, /実際に使われ|稼働|導入実績|利用者数/);
+    }
+
     // No count anywhere in the V4 hero and work copy. That is the property
     // that let `heroLede` and `capabilityVerify` be deleted rather than turned
     // into literals — a static string with a "3" in it is the defect those
-    // derivations existed to prevent.
+    // derivations existed to prevent. The #44 batch is held to it too: the
+    // lede was rewritten, and a rewrite is exactly when a count gets typed in.
     for (const id of [
       ...APPROVAL_BATCHES[2]!.ids,
       ...APPROVAL_BATCHES[3]!.ids,
       ...APPROVAL_BATCHES[4]!.ids,
+      ...APPROVAL_BATCHES[12]!.ids,
     ]) {
       assert.doesNotMatch(APPROVED_TEXT[id]!, /\d+\s*(作品|つの動くデモ|tests|passed)/);
     }
@@ -390,5 +551,62 @@ describe('approved copy gate', () => {
     }
     assert.equal(text.get('ui.contact.emailCta'), 'メールで相談する');
     assert.equal(text.get('home.contact.emailKey'), '開発のご相談');
+  });
+
+  /*
+   * #34 — 問い合わせ補助文。本人が承認したのは「何を書けばよいか」と
+   * 「まずはメールで」の 2 点だけで、この文が言えることはそこで尽きている。
+   */
+  it('ships the #34 contact helper as the owner approved it', () => {
+    assert.equal(
+      APPROVED_TEXT['home.contact.helper'],
+      '現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。',
+    );
+
+    const row = loadCopy().find((c) => c.id === 'home.contact.helper');
+    assert.ok(row, 'home.contact.helper が copy registry に無い');
+    assert.equal(row.text, APPROVED_TEXT['home.contact.helper']);
+    assert.equal(row.section, '05 CONTACT');
+    assert.equal(row.route, '/');
+    assert.equal(row.publication.reviewStatus, 'approved');
+    assert.equal(row.publication.approvedBy, 'user');
+    // 公開承認記録（Issue #34 comment 5741442820）の時刻。registry と承認表は
+    // 同じ記録の同じ時刻を指す。
+    assert.equal(row.publication.approvedAt, '2026-09-19T11:26:31Z');
+    const batch = APPROVAL_BATCHES.find((b) => b.ids.includes('home.contact.helper'));
+    assert.ok(batch, 'home.contact.helper を含む承認バッチが無い');
+    assert.equal(row.publication.approvedAt, batch.at);
+    assert.equal(row.publication.approvedBy, batch.by);
+
+    // 参照先は公開承認記録を指す。誰でも開いて読める承認コメントと、同じ
+    // 確定文を載せた Issue #34 §5.1 の両方を挙げる。
+    const refs = row.publication.sourceRefs;
+    assert.equal(
+      refs.some((r) => r.includes('Issue #34 comment 5741442820')),
+      true,
+      '公開承認記録が sourceRefs に無い',
+    );
+    assert.equal(
+      refs.some((r) => r.includes('2026-09-19T11:26:31Z')),
+      true,
+      '承認記録の時刻が sourceRefs に無い',
+    );
+    assert.equal(
+      refs.some((r) => r.includes('Issue #34 §5.1')),
+      true,
+      '確定文を記載した Issue #34 §5.1 が sourceRefs に無い',
+    );
+
+    // 約束していないことは言わない。見積り・返信期限・対応可能時期は本人が
+    // 承認した 2 点に含まれておらず、この 1 文に紛れ込めば、サイトが本人に
+    // 代わって条件を出したことになる。
+    for (const word of ['見積', '無料', '営業日', '以内に', '即日', '返信', '対応可能']) {
+      assert.equal(row.text.includes(word), false, `補助文が約束していない内容 ${word} を含む`);
+    }
+
+    // Email＝問い合わせ / GitHub＝実装確認 の分離（#8 §1）はこの文でも保たれる。
+    // 補助文が送る先として名指すのはメールだけである。
+    assert.match(row.text, /メール/);
+    assert.doesNotMatch(row.text, /GitHub|リポジトリ/);
   });
 });

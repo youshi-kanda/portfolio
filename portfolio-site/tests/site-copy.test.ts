@@ -25,7 +25,7 @@ describe('site.json copy coverage', () => {
       'howIBuild.workflow.1.name',
       'stack.languages.1.responsibility',
       'principles.spineBody',
-      'about.known.1.value',
+      'about.now.1',
     ]) {
       assert.ok(paths.includes(expected), `${expected} が対象に入っていない`);
     }
@@ -41,7 +41,44 @@ describe('site.json copy coverage', () => {
     assert.equal(paths.has('howIBuild.sourceRefs.1'), false);
     assert.equal(paths.has('stack.languages.1.work'), false);
     assert.equal(paths.has('hero.index'), false);
+    // #31 — 開発の前提 holds copy registry ids, not sentences
+    assert.equal(paths.has('howIBuild.premises.1'), false);
+    // #32 — ABOUT の各ブロックも同じ。ラベルと本文は registry にあり、
+    // site.json が持つのは参照と出所である。
+    assert.equal(paths.has('about.profile.1.labelId'), false);
+    assert.equal(paths.has('about.profile.1.copyId'), false);
+    assert.equal(paths.has('about.disclosure.1.copyId'), false);
+    assert.equal(paths.has('about.disclosure.1.sourceRefs.1'), false);
     for (const e of SITE_NON_SHIPPING) assert.ok(e.why.length > 0);
+  });
+
+  it('stops exempting a premise reference once it stops being an id', () => {
+    // #31. `premises` is exempt because it holds copy registry ids. A SENTENCE
+    // there is the defect the move to the registry fixed — copy sitting where
+    // no approval record can reach it — so the exemption lifts and the walk
+    // reports it as an unregistered shipping string.
+    assert.deepEqual(siteStrings({ howIBuild: { premises: ['method.premise.01'] } }), []);
+    assert.deepEqual(siteStrings({ howIBuild: { premises: ['前提です。'] } }), [
+      { path: 'howIBuild.premises.1', text: '前提です。' },
+    ]);
+  });
+
+  it('stops exempting an ABOUT block reference once it stops being an id', () => {
+    // #32. Same rule as `premises`, on the two leaves ABOUT added. The defect
+    // being guarded is the body coming back to site.json — where no approval
+    // record reaches it — under a field name that reads like a reference.
+    assert.deepEqual(
+      siteStrings({ about: { profile: [{ copyId: 'home.about.experience' }] } }),
+      [],
+    );
+    assert.deepEqual(
+      siteStrings({ about: { profile: [{ copyId: '製造現場から営業までの業務経験。' }] } }),
+      [{ path: 'about.profile.1.copyId', text: '製造現場から営業までの業務経験。' }],
+    );
+    assert.deepEqual(
+      siteStrings({ about: { disclosure: [{ labelId: '業務経験' }] } }),
+      [{ path: 'about.disclosure.1.labelId', text: '業務経験' }],
+    );
   });
 
   it('stops exempting a section index once it stops being a number', () => {
@@ -62,11 +99,11 @@ describe('site.json copy coverage', () => {
     const { copy, uiCopy } = loadAll();
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
-    assert.equal(managed.length, 2);
-    // 120 before #7, 183 after it, 167 after #8. The jump was 02 MORE
-    // PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and lede:
-    // all of it copy the user approved in #6, entered where the section content
-    // it belongs to already lives.
+    assert.equal(managed.length, 1);
+    // 120 before #7, 183 after it, 167 after #8, 191 after #31. The jump was 02
+    // MORE PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and
+    // lede: all of it copy the user approved in #6, entered where the section
+    // content it belongs to already lives.
     //
     // #8 took 16 off the count and NONE of them by registering a string. They
     // were capability `examples` (work slugs) and category `key` (ordinals) —
@@ -75,7 +112,35 @@ describe('site.json copy coverage', () => {
     // the backlog is real and stays reported: registering a string means
     // recording an approval event for it, and #8 may not sign one on the
     // owner's behalf before the PR review that is supposed to be it.
-    assert.equal(unmanaged.length, 167);
+    //
+    // #31 PUT 26 BACK ON, and on purpose. They are the decision cases and the
+    // QA record — source-derived transcriptions of PR #18 / #19 / #20, each
+    // carrying the PR sections it came from in its own `sourceRefs`. The gate
+    // measures registry coverage, so a transcription that is checked against a
+    // public PR instead of against a registry row is exactly what it reports;
+    // this number going UP is the backlog being honest, not a regression. What
+    // would be a regression is registering them here by writing an approval
+    // event nobody signed — the reason the count has only ever moved by
+    // exempting non-copy or by the owner approving a string.
+    //
+    // AND THE OTHER DIRECTION HAPPENED IN THE SAME ISSUE. #31's follow-up took
+    // 2 OFF by the legitimate route: `notClaimed`'s two sentences left
+    // site.json for the copy registry with a real approval event behind them
+    // (Issue #31 comment 5747908981), and `premises` now holds their ids —
+    // which are references, exempt for the same reason a work slug is. 193
+    // after the decision cases landed, 191 after the premises moved out.
+    //
+    // #32 TOOK 5 MORE OFF BY THE SAME ROUTE, and MANAGED went 2 → 1 in the same
+    // move. ABOUT's three closing rows left site.json: the three sentences were
+    // unmanaged and are now registered with a real approval event behind them
+    // (Issue #32 comment 5748161578), and their three labels went with them.
+    // Two of those labels — 公開範囲 and データ — were unmanaged too; the third,
+    // 実装形態, was one of the two MANAGED strings, matched by text against
+    // `ui.technical.aboutFields.role`, which is a different label on a different
+    // page that happens to read the same. So 191 − 5 = 186 unmanaged and 2 − 1
+    // = 1 managed, and the section content that replaced them adds nothing to
+    // either count: ids and locators, exempt for the reasons stated above.
+    assert.equal(unmanaged.length, 186);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -83,8 +148,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /167 件/);
-    // one finding, not 167 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /186 件/);
+    // one finding, not 186 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

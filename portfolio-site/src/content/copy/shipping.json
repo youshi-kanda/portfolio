@@ -35,53 +35,53 @@
   },
   {
     "id": "home.hero.display.01",
-    "text": "業務課題を、",
+    "text": "業務を理解し、",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 1 行目",
-    "purpose": "課題 → 実装 → 動く仕組み の順序を display で宣言する（1/3）。",
+    "purpose": "業務理解 → 現場で使える仕組み の順序を display で宣言する（1/2）。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.display.02",
-    "text": "業務で使える Web・AI システムへ。",
+    "text": "現場で使える仕組みをつくる。",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 2 行目",
-    "purpose": "同上（2/3）。作れるものを、抽象語ではなく実装の単位で言う。",
+    "purpose": "同上（2/2）。作るものを、動くことではなく現場で使えることで言う。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.lede",
-    "text": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+    "text": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
     "route": "/",
     "section": "00 HERO",
     "slot": "answer 行の下のリード",
-    "purpose": "どういう設計をするエンジニアかを 2 文で言う。件数も、全作品共通の検証手段名も置かない。",
+    "purpose": "扱う領域と、関与する工程の範囲を 1 文で言う。件数も、全作品共通の検証手段名も置かない。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
@@ -443,6 +443,24 @@
     }
   },
   {
+    "id": "home.contact.helper",
+    "text": "現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "lede の下 — 問い合わせ補助文",
+    "purpose": "問い合わせ時に何を書けばよいかを短く示し、相談開始時の負担を下げる。Email＝問い合わせ / GitHub＝実装確認の役割分離は変更しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "Issue #34 comment 5741442820（2026-09-19T11:26:31Z）— 本人がこの文言を公開コピーとして使用することを承認",
+        "Issue #34 §5.1 — 本人確認のうえ確定した公開文言として、この文がそのまま記載されている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-19T11:26:31Z"
+    }
+  },
+  {
     "id": "home.hero.cta.secondary",
     "text": "相談する",
     "route": "/",
@@ -457,6 +475,129 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-13T00:13:13Z"
+    }
+  },
+  {
+    "id": "home.works.sourceWithheld",
+    "text": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "「確認できるもの」欄 — 公開コードリンクを出さない作品",
+    "purpose": "公開コードへのリンクが無いことを、読み手が不信として読まないための説明。private repository と public-repo + withheld を公開面で区別せず、公開面で確実に言える「掲載していない」という事実だけを述べる。顧客名・発注元名・非公開リポジトリ名につながる情報は出さない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人がこの文言を公開コピーとして使用することを承認（HD-I）",
+        "Issue #30 §8.1 — HD-I の公開文言として、この文がそのまま記載されている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T01:11:07Z"
+    }
+  },
+  {
+    "id": "method.premise.01",
+    "text": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」1 文目 — 実際の開発体制",
+    "purpose": "誰が何を持っているかを述べる。ラベルではなく事実で、本人の実際の進め方が違えば誤りになるため、承認者と根拠を持つ側に置く。同じページの工程表・役割表・判断事例が述べていることを 1 文にしたもので、新しい主張を足していない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表（同ページに掲載）",
+        "site.howIBuild.decisionCases — PR #20 / PR #18 の公開記録。調査・計測・採否・検証を Human が行っている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
+    }
+  },
+  {
+    "id": "method.premise.02",
+    "text": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」2 文目 — 公開内容の対象範囲",
+    "purpose": "誇張防止の境界線。旧 notClaimed が名指ししていた 2 つ（完全自動の Multi-Agent 開発 / 構築済み Harness の運用）を、否定形の宣言ではなく公開内容の対象範囲として述べる。境界そのものは削除していない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #31 comment 5747908981（2026-09-20T05:37:32Z）— 本人が公開見出しと公開本文 2 文を確定文として記載",
+        "Issue #31 comment 5747908981「実装上の意味」— 誇張防止の境界線は削除せず、否定形だけを前面に出す構成から「実際の開発体制 + 対象範囲」の説明へ置き換える",
+        "site.howIBuild.intent — 定型的・低学習価値の作業は将来的に Selective Harness Engineering へ移行できる（＝現時点では構築済みではない）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T05:37:32Z"
+    }
+  },
+  {
+    "id": "home.about.experience",
+    "text": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
+    "route": "/",
+    "section": "06 ABOUT / 業務経験",
+    "slot": "「業務経験」1 文 — 業務背景と現在の開発のつながり",
+    "purpose": "この engineer の業務背景を述べる。ABOUT には業務経験の記述が 1 行も無く、読み手からは注意書き 3 行しか見えていなかった。年数・勤務先・職務の列挙は出さない（HD-C）: 出すのは「現場から営業までの業務フローを理解していること」と「現在の要件整理・システム化へ接続していること」だけで、それ以上は職務経歴書側の仕事である。本人しか Authority を持たない経歴なので user-fact。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "user-fact",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #32 comment 5748116465（2026-09-20T06:25:47Z）— HD-C 確定。年数表現を使わず、この文を業務経験の基準文とする",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "home.about.disclosure",
+    "text": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。",
+    "route": "/",
+    "section": "06 ABOUT / 掲載内容について",
+    "slot": "「掲載内容について」1 文 — 掲載作品がどういう成り立ちのものか",
+    "purpose": "掲載作品がどういう成り立ちのものかを述べる。旧 `実装形態` 行は Portfolio 全体を「個人開発」と言っていて、#29 が共同プロジェクトの公開用再構成を本人確認済みの事実として記録した時点で成り立たなくなった。ここで使う分類語は #29 の metadata と同じもので、新しい軸を作っていない。マージ前レビューで 2 文目「担当範囲と到達状態は作品ごとに記載しています。」を削除した（Issue #32 comment 5749023659）: 担当範囲は Featured Work の Role / 開発背景 として出ているが、到達状態は作品レコードにあるだけで公開面に出ていない。公開UIを足して文に合わせるのではなく、文を現在の公開面で確認できる範囲へ狭めている。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #32 comment 5749023659（2026-09-20T09:43:50Z）— 本人が 2 文目を削除した現在の文面を確定文として記載",
+        "Issue #29 comment 5742687087（2026-09-19）— 本人確認済み作品メタデータ。共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ / 自主開発 / PoC の分類と、作品ごとの担当範囲・到達状態",
+        "work/agri",
+        "work/crm",
+        "work/ops",
+        "src/content/work/*.json portfolioProfile — agri が collaborative / public-reconstruction、crm が personal / technical-demo、ops が personal / poc。文が挙げる 3 種がそれぞれ実在する",
+        "ui.work.profileLabels — enum を読者向けの語にする唯一の対応表。この文が使う語はそこから来ている",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 旧承認。削除前の 2 文構成を承認したもので、現在の文の承認ではない（履歴）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T09:43:50Z"
+    }
+  },
+  {
+    "id": "home.about.syntheticData",
+    "text": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
+    "route": "/",
+    "section": "06 ABOUT / 公開データ",
+    "slot": "「公開データ」1 文 — 掲載画面のデータが何であるか",
+    "purpose": "掲載画面が合成データであることを述べる。旧 `データ` 行を圧縮したもので、表明そのものは削っていない: 実顧客情報を公開しないという理由と、合成データを使っているという事実の 2 つが残っている。「実顧客・実案件・本番運用の記録ではない」という否定形の列挙をやめたのは、同じ内容が理由の側から言えるからである。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "各作品の README ／ PUBLISH-MAP.md — 旧 about.known `データ` 行が根拠にしていた合成データの記録。圧縮しても根拠は引き継ぐ",
+        "site.synthetic — 作品ページ・Case Study・/how-i-build/ に出ている合成データの表明",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
     }
   }
 ]

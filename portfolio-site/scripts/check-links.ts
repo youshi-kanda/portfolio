@@ -196,6 +196,35 @@ for (const page of pages) {
     previous = level;
   }
 
+  // ---- aria-current names THIS page, and at most once ----
+  //
+  // The defect this replaces was invisible to every other check on this
+  // repository: `/work/`, `/work/<slug>/` and `/work/<slug>/technical/` each
+  // emitted `aria-current="page"` on a link to `/#work` — seven pages telling a
+  // screen reader they were an eighth. Nothing was broken, nothing was dead,
+  // and the statement was simply false.
+  //
+  // Two rules, and they are different rules. A page has one current position,
+  // so more than one marker is a contradiction whatever the markers point at;
+  // and a marker ON A LINK is a claim about that link's href, so the href has
+  // to be this page. A marker on a non-link (the breadcrumb's last crumb, which
+  // is a span precisely because it is not a link to anywhere) makes no claim
+  // about a destination and is checked only by the count.
+  //
+  // Being under something is not being it: an ancestor entry in the masthead
+  // takes `data-section`, which draws the same underline and asserts nothing.
+  const current = [...html.matchAll(/<(\w+)\b([^>]*\baria-current="page"[^>]*)>/g)];
+  if (current.length > 1) {
+    fail(page, `aria-current="page" が ${current.length} 個（現在地は 1 つであること）`);
+  }
+  for (const [, tag, tagAttrs] of current) {
+    if (tag !== 'a') continue;
+    const href = /\shref="([^"]*)"/.exec(tagAttrs ?? '')?.[1];
+    if (href !== here) {
+      fail(page, `aria-current="page" が ${href} を指している — このページは ${here}`);
+    }
+  }
+
   // landmarks
   if (!/<main\b/.test(html)) fail(page, 'main ランドマークが無い');
   if (!/<nav\b|class="nav"/.test(html)) fail(page, 'nav ランドマークが無い');

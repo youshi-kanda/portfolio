@@ -29,8 +29,32 @@
  */
 
 export const ui = {
+  /*
+   * `mobileIndex` STAYS, and it is no longer a dead label.
+   *
+   * The wayfinding work removed it, correctly, for what it then was: a
+   * `<span class="mob">Index</span>` with no handler and no tab stop — below
+   * 768px the only thing in the chrome that looked like navigation, and a dead
+   * label is worse than an empty corner, because the empty corner promises
+   * nothing. What that reasoning refuses is a label without a control, not the
+   * word. The mobile index is now a real disclosure: a `<button>` owning
+   * `aria-expanded` over the panel it names (Nav.astro), and this is the string
+   * on its face. So the row stays in ui.json too — it is rendered, which is
+   * precisely what U-ORPHAN asks of a registry row.
+   */
   nav: {
+    /**
+     * The mobile index disclosure's label, on the `<button>` in the masthead
+     * that opens the section list below 768px.
+     */
     mobileIndex: 'Index',
+    /**
+     * The breadcrumb landmark's accessible name. Never drawn — it is what a
+     * screen reader announces before reading the trail, so that a bare
+     * `WORK INDEX / …` is introduced as a position rather than as a second
+     * list of links next to the masthead's.
+     */
+    breadcrumbLabel: 'パンくずリスト',
   },
 
   /** The Evidence component's own labels. art-direction §4–6: these do not vary. */
@@ -76,7 +100,58 @@ export const ui = {
     role: 'Role',
     selectedTech: 'Selected technology',
     caseStudyCta: 'Case Study を読む',
+    /*
+     * #30 — Featured ブロックが Role / Selected technology の前に置く 1 行の
+     * ラベル。作品が「どういう成り立ちで、Portfolio 上どういう形で出ているか」
+     * （#29 の portfolioProfile）を読む前に、それが何の欄なのかを言う。
+     */
+    background: '開発背景',
+    /*
+     * #30 — 証拠導線の見出し。「Evidence」でも「Links」でもないのは、この欄が
+     * 答えているのが「読み手が自分で何を確認しに行けるか」だからである。
+     * 確認しに行ける先が無い作品では、同じ欄が「なぜ出していないか」を言う。
+     */
+    evidenceHead: '確認できるもの',
+    /** #30 — 公開されている作品コードへ直接送る CTA。 */
+    sourceCta: '公開コードを見る',
+    /*
+     * #30 HD-G — 代表作に付く小さな表示ラベル。編集上の強弱であって、技術力の
+     * 評価でも品質の順位でもない。補助作品の側に対になる語を置かないのは、
+     * 「代表作ではない」を名乗るラベルが必ず評価語として読まれるからである。
+     */
+    featuredPrimary: '代表作',
+    /*
+     * #30 — `portfolioProfile` の enum を読者向けの語にする対応表。
+     *
+     * JSON 側へ日本語を二重に持たせない。作品レコードが持つのは enum だけで、
+     * 表示語はここにしか無い——両方に置けば、片方だけ直した日に作品が別のことを
+     * 言い出す。語は #29 が schema.ts に書いた各 enum 値の定義からの転記で、
+     * 新しい判断を足していない。
+     */
+    profileLabels: {
+      personal: '個人開発',
+      collaborative: '共同プロジェクト',
+      'public-reconstruction': '公開用再構成',
+      'technical-demo': '技術デモ',
+    },
     fieldsTableLabel: 'extracted fields ({count})',
+    /*
+     * The two return labels, and the reason they are not `allWorksCta`.
+     *
+     * `register.allWorksCta`（作品一覧へ）is a FORWARD move: it sits in 02 MORE
+     * PROJECTS and offers a reader who is browsing the homepage the longer
+     * list. These two are the opposite gesture — you are inside something and
+     * going back out of it — and a return band that said 「作品一覧へ」 would
+     * name the destination while saying nothing about the direction.
+     *
+     * Both were written by the requester, not here. They are `authored`
+     * `presentation`: a label makes no claim about the world, so the matrix
+     * asks no basis of them, but it does ask that a person approved the
+     * wording — and the person who approved it is the one who wrote it.
+     */
+    backToIndex: '作品一覧に戻る',
+    /** `fill(backToWork, { title })`. The work names itself in the link. */
+    backToWork: '{title} に戻る',
   },
 
   howIBuild: {
@@ -86,8 +161,82 @@ export const ui = {
     rolesHead: 'ROLES',
     rolesSub: '誰が何を持つか',
     intentLabel: 'Intent',
-    notClaimed: '主張しないこと',
+    /*
+     * #31 追加 Human Decision — 「主張しないこと」に代わる見出し。
+     *
+     * 旧見出しは、その下に並ぶ 2 文がどちらも「…とは主張しない。」で始まる
+     * 否定の宣言だったことの言い換えでしかなかった。本人の決定で、節は
+     * 「実際にどうやっているか」を述べてからその公開範囲を区切る形になり、
+     * 見出しもその内容を指す語になった。誇張防止の境界線は消えていない——
+     * 完全自動の Multi-Agent 開発も構築済み Harness も、2 文目が名指しで
+     * 対象外にしている。
+     *
+     * 本人がこのコメントで指定した語なので authored、そして承認者を記録する。
+     * 語そのものは何も主張しないので presentation のままである。
+     */
+    premises: '開発の前提',
     sourceLabel: 'Source',
+    /*
+     * #31 — /how-i-build/ の判断事例ブロック。
+     *
+     * 下の 9 語 — 判断事例 / 問題 / 確認した事実 / 判断 / 結果 / 検証 /
+     * 公開PRで確認する / QA / 検証記録 / ページ上部へ戻る — は
+     * **本人が Issue #31 comment 5747573639 §8 で列挙した公開ラベル**であり、
+     * こちらで語を選んでいない。選ばないことに意味がある: この欄の見出しは
+     * 「何を書く欄か」を決めてしまうからで、「工夫」「こだわり」のような語を
+     * 置けば、公開 PR が記録していない性質の話を書ける欄になる。
+     * 問題 / 確認した事実 / 判断 / 結果 / 検証 は、書ける内容を PR が
+     * 記録している範囲に閉じる。
+     *
+     * `casesCount` はその 9 語に含まれない。本人指定の公開ラベルではなく、
+     * `stack.count` / `principles.count` と同じ**導出 UI の書式**で、
+     * 数えた結果を `fill` が埋める場所である。件数を literal で書かないための
+     * 既存パターンをもう 1 箇所に適用しただけなので、根拠もそのパターン側に
+     * 置いてある（本人の語の一覧を根拠にすると、列挙されていない語を
+     * 列挙されたことにしてしまう）。
+     *
+     * `AI案` という語がここに無いのは意図である。PR #18 / #20 の本文は、
+     * 最初にあった設計を誰が出したかを述べていない。述べていないことを
+     * ラベルにすれば、それは転記ではなく Portfolio 側が足した主張になる。
+     * この欄が示すのは、調査・計測・採否・検証を誰が持っているかであって、
+     * 最初の案の出どころではない。
+     */
+    casesLabel: '判断事例',
+    /** 導出値の書式。本人指定の 9 語ではなく、既存の count UI と同じもの。 */
+    casesCount: '{count} 件',
+    /*
+     * #52 — 見出しの直後に置く 1 文。本人が Issue #52 comment 5791022793 で
+     * 承認した文言そのままで、こちらで書いていない。
+     *
+     * 何を足しているかというと、足していない。下の 5 欄——問題 / 確認した事実 /
+     * 判断 / 結果 / 検証——が何の順序なのかを述べているだけで、事例が言って
+     * いないことは 1 つも言わない。見出しの次がいきなり長い case title だった
+     * ので、読者は「何のための事例か」を 2 件読み終えるまで知らされなかった。
+     *
+     * 実績の主張ではない（本人が comment でそう述べている）。だから
+     * claimType は presentation のままで、FACT provenance の対象ではない——
+     * 代わりに出荷の条件である reviewStatus と承認者を持つ。
+     */
+    casesLead: '実装中に起きた問題を、何を確認し、どう判断し、どう検証したかで示します。',
+    caseProblem: '問題',
+    caseObserved: '確認した事実',
+    caseDecision: '判断',
+    caseResult: '結果',
+    /** 折りたたみの summary。中身は実測値・test・検証条件。 */
+    caseVerification: '検証',
+    /** 公開 PR へ送る CTA。URL は `publicPrUrl` が `site.repo` から組み立てる。 */
+    openPr: '公開PRで確認する',
+    /** #31 HD-J — PR #19 は 3 件目の事例ではなく、この補足記録として出る。 */
+    qaLabel: 'QA / 検証記録',
+    /*
+     * #31 — /how-i-build/ 右下の固定リンクのアクセシブル名。
+     *
+     * 見えている面は矢印 1 つで、この語は `aria-label` として出る。語そのものを
+     * 44px の操作面に並べると幅 130px 前後の帯になり、最下部までスクロールした
+     * とき Footer のリンクの上に常時居座る。読み上げには語が要り、画面には
+     * Footer が要る——両方を満たす置き方がこれである。
+     */
+    toTop: 'ページ上部へ戻る',
   },
 
   stack: {
@@ -121,6 +270,36 @@ export const ui = {
    * The removal is a deletion only. No replacement sentence was written, which
    * is what keeps PROFILE_INVENTED = NO true through the change.
    */
+
+  /**
+   * #32 — 06 ABOUT の 3 つのラベル.
+   *
+   * THE FIRST STRINGS ABOUT HAS EVER HAD IN THIS FILE, and they arrive under
+   * the rule the block above states rather than around it. The 未記入 labels
+   * were removed because a slot with a name and no value is a site listing what
+   * it does not have; these three name values that exist, are approved, and are
+   * the owner's own words (Issue #32 comment 5748161578).
+   *
+   * 業務経験 IS NOT A DISCLAIMER LABEL, and the ordering of this object says
+   * so: it comes first, above the two that bound what the page publishes. What
+   * ABOUT used to end with — 実装形態 / 公開範囲 / データ — was three labels for
+   * the same statement, and a reader met all three before meeting the person.
+   *
+   * 掲載内容について rather than 注意 or 免責: the block says what the published
+   * work IS (a collaborative project rebuilt for publication, personal technical
+   * demos, a self-directed PoC), and a label promising a disclaimer would make a
+   * reader read a fact as a hedge. Same for 公開データ against the old bare
+   * データ — the old label named a column, this one names the question.
+   *
+   * `presentation`, `authored`, with an approver. A label asserts nothing about
+   * the world so the matrix asks it for no basis; it does ask that a person
+   * chose the wording, and the person who chose it is the one who approved it.
+   */
+  about: {
+    experienceLabel: '業務経験',
+    disclosureLabel: '掲載内容について',
+    dataLabel: '公開データ',
+  },
   /*
    * #8 — CONTACT stopped ending on a disclaimer and started ending on a way in.
    *
@@ -155,6 +334,15 @@ export const ui = {
     channels: '実装例・公開コード・リポジトリは GitHub で確認できます。',
     emailCta: 'メールで相談する',
     githubCta: 'GitHub で実装を見る',
+    /*
+     * #30 — 作品別の公開コード一覧の見出し。
+     *
+     * `channels` は「GitHub で読める」と言うだけで、どの作品のコードが読めるの
+     * かは言っていなかった。この欄はその不足だけを埋める。一覧そのものは固定
+     * 配列ではなく、出荷中の作品のうち source が linkable なものから導出する
+     * ——ここに作品名を書けば、リンクを出す / 出さないの判断が 2 か所になる。
+     */
+    publicCode: '公開コード',
   },
 
   mobileBar: {
@@ -212,6 +400,24 @@ export const ui = {
    * the page contains as the prose under it.
    */
   caseStudy: {
+    /*
+     * THE RAIL INDEX IS A LETTER, NOT `00`.
+     *
+     * It was `00`, which is the homepage HERO's index — the same glyph in the
+     * same slot on two pages that are not the same page. And it was a NUMBER
+     * on a page that is not a band of anything, while the two other subpage
+     * types already named themselves with letters: `/how-i-build/` draws `M`
+     * and `/work/<slug>/technical/` draws `T`.
+     *
+     * So the rule is stated rather than half-kept: a DIGIT is a section's
+     * position inside the homepage's running order, and a LETTER is the type of
+     * a page below it. `C` completes `C / T / M`.
+     *
+     * `/work/`'s index stays the work COUNT and `/404`'s stays `404`. Neither
+     * is a section number and neither is ambiguous — the archive's h1 already
+     * says WORK INDEX, and a count is a readout the page is for.
+     */
+    railIndex: 'C',
     railLabels: ['CASE STUDY'],
     contents: '目次',
     contentsLabel: 'Contents',
@@ -251,6 +457,73 @@ export const ui = {
      */
     repositoryAuthNote:
       'CI 実行ログは GitHub Actions で確認できます。閲覧には GitHub へのサインインが必要な場合があります。',
+    /*
+     * #33 — 3分概要のラベル。HD-O（Issue #33 comment 5749344650）で本人が
+     * 列挙した語で、こちらで選んでいない。
+     *
+     * 選ばないことに意味がある。この欄の名前は「何を書く欄か」を決めてしまう
+     * ——「こだわり」「工夫」のような語を置けば、既存の正本が持っていない性質の
+     * 話を書ける欄になる。課題 / 利用者 / 担当 / 実装状況 / 対象外 は、書ける
+     * 内容を Work と Case Study が既に記録している範囲に閉じる。
+     *
+     * ここに無い 2 語は、既に他所にあるので再利用している:
+     *   開発背景      `ui.work.background`（#30）
+     *   確認できるもの `ui.work.evidenceHead`（#30）
+     * 同じ語を 2 つの path に置けば、片方だけ直した日に同じ欄が 2 つの名前で
+     * 呼ばれる。CTA も同じ理由で `ui.work.sourceCta` を使う。
+     */
+    quick: {
+      head: '3分概要',
+      problem: '解決する課題',
+      targetUser: '想定利用者',
+      role: '担当範囲',
+      status: '実装状況',
+      built: '実装したもの',
+      source: '公開コード',
+      limitations: '未実装・対象外',
+      details: '詳しく見る',
+    },
+    /*
+     * #33 — `implementationStatus` の公開表示語。
+     *
+     * ラベルではなく VALUE である。`ui.work.profileLabels` と同じ立場で、
+     * 作品がどこまで到達しているかを述べる——本人確認の結果が違えば誤りになる
+     * ので、registry では presentation の免除ではなく fact 側に置いてある。
+     *
+     * 内部 enum は公開しない。`public-demo` が読者の前に出るのは、この対応表を
+     * 通らずに描画されたときだけで、`implementationStatusLabel` は未知の値に
+     * fallback を返さず throw する——raw enum を出して通るより、build が
+     * 止まるほうがよい。
+     */
+    statusLabels: {
+      'public-demo': '公開デモとして動作',
+      implemented: '実装済み',
+      poc: 'PoC',
+    },
+    /*
+     * #52 — `ledger` 変種の列見出し。PPM の Case Study だけが使う。
+     *
+     * 値は列見出しが無いまま出ていた。`SYSTEM` / `200MS FAIL-FAST` /
+     * `書き込み前に拒否` は、どれも「何を述べた値か」を画面上のどこも
+     * 言っていない——工程表を読み慣れた人なら推測できる、という状態で、
+     * 推測が要るなら見出しが無いのと同じである。
+     *
+     * 語は本人が Issue #52 comment 5791022793 で列挙した 5 つで、こちらで
+     * 選んでいない。選ばないことに意味があるのは #31 / #33 と同じ理由で、
+     * 列の名前は「その列に何を書いてよいか」を決めてしまうからである。
+     * STEP / 処理 / 実行主体 / 内容 / ゲート は、既に `caseStudy.flow` が
+     * 持っている 5 つのフィールドをそのまま指す。
+     *
+     * `walkthrough` と `pipeline` には出ない。列見出しは 5 列のときだけ
+     * 意味を持つ語で、他の 2 変種は別の形をしている。
+     */
+    ledgerHeaders: {
+      step: 'STEP',
+      name: '処理',
+      owner: '実行主体',
+      what: '内容',
+      gate: 'ゲート',
+    },
   },
 
   /**
@@ -287,6 +560,31 @@ export const ui = {
     designDocsHead: '設計文書の読む順',
   },
 } as const;
+
+/**
+ * A UI chrome string looked up by its REGISTRY ID — the `ui.` counterpart of
+ * `copyText`.
+ *
+ * #32 needed it because ABOUT's labels are named by `site.json` rather than
+ * reached through a component's own `ui.about.experienceLabel` expression: the
+ * section content states which block appears and what its label is, and a
+ * component that then hard-coded the property access would be deciding the
+ * second half of that pairing for itself.
+ *
+ * Accepts the id with its `ui.` prefix, which is how `ui.json` writes it, and
+ * resolves against the same walk the coverage gate uses — so an id that reaches
+ * here is by construction one that gate can see. A missing path THROWS rather
+ * than rendering an empty label, for the reason `copyText` does: a silently
+ * blank label is how a registry drifts out of use with nobody noticing.
+ */
+export function uiText(id: string): string {
+  const path = id.startsWith('ui.') ? id.slice('ui.'.length) : id;
+  const found = uiStrings().find((s) => s.path === path);
+  if (found === undefined) {
+    throw new Error(`ui inventory に ${id} が無い（src/content/copy/ui.json / lib/content/ui.ts）`);
+  }
+  return found.text;
+}
 
 /** `fill('{count} 件', { count: 3 })` → `'3 件'` */
 export function fill(template: string, values: Record<string, string | number>): string {

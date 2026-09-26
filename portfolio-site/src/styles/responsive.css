@@ -89,8 +89,33 @@
 .ad .nav .page{height:58px;gap:0;justify-content:space-between}
 /* the nav is 59px here (58 + its rule); same 5px of rounding clearance */
 .ad section[id]{scroll-margin-top:64px}
+/* The route list is dropped below 768px — the masthead alone is ~254px of a
+   350px measure, so three routes cannot be drawn beside it. Two things take
+   over, and they are not alternatives: the breadcrumb below states where the
+   reader is, and `.nav .mob` reveals the disclosure that lists where they can
+   go. Revealing it used to produce something that looked pressable and was
+   not; it is a `<button>` over a real panel now, so it is revealed again. */
 .ad .nav ol{display:none}
 .ad .nav .mob{display:block}
+/* breadcrumb: the trail WRAPS rather than scrolling sideways — a horizontal
+   scroller hides the crumb a reader most needs, which is the one furthest left
+   — and every crumb is a 44px tap target. The band carries no padding of its
+   own: all of the vertical space belongs to the links, so a one-row trail is
+   44px of chrome and a two-row trail is 88px, with none of it spent on gaps a
+   thumb cannot hit. */
+.ad .crumb ol{padding:0;gap:0 8px}
+.ad .crumb li{display:flex;align-items:center}
+.ad .crumb a,.ad .crumb [aria-current]{display:flex;align-items:center;min-height:44px}
+/* return band: three links do NOT share a row at this measure. They stack, one
+   per row, each 44px tall with the `.lk` rule reading as the row's own hairline
+   — a list rather than a line of buttons squeezed to fit. A long work title
+   wraps inside its row and the row grows; nothing is truncated and nothing is
+   pushed off-screen. */
+.ad .ret{margin-top:64px}
+.ad .ret .page{flex-direction:column;flex-wrap:nowrap;gap:0;
+               padding-top:8px;padding-bottom:8px}
+.ad .ret .lk{display:flex;align-items:center;width:100%;min-height:44px;
+             padding-top:0;padding-bottom:0}
 .ad .syn .page{display:block}
 .ad .syn b{display:block;margin-bottom:2px}
 .ad .fr-stage{padding:18px}
@@ -162,6 +187,14 @@
 .ad .hero .tr:first-child > .fld{order:-1}
 .ad .hero .ins{display:block;border-top:2px solid var(--rule);padding-top:12px;margin-top:26px}
 .ad .hero .ins .ix{display:inline-block;font-size:20px;margin:0 14px 0 0}
+/* `display:block` above overrides the flex row at :79, which silently takes its
+   `gap` with it while `.lb{display:inline}` stays in force — so the hero's two
+   rail labels butted together and rendered `CASE STUDYAI CRM DEMO`. On a work
+   page that run-together string was the only place the work's name appeared.
+   The gap is restored as a margin, which does not depend on the parent being a
+   flex container. */
+.ad .hero .ins .lb + .lb{margin-left:14px}
+.ad .hero .msr .ovh{font-size:18px;margin:0 0 12px}
 .ad .ins .role{display:inline;margin-top:0}
 .ad .spx .r,.ad .spx.wide .r{grid-template-columns:minmax(0,1fr);row-gap:2px;padding:12px 0}
 .ad .spx .k,.ad .spx .v{padding:0}
@@ -339,9 +372,36 @@
 /* The floor the spec sets for a mobile figure: ≥200px, taken by cropping the
    sides rather than by scaling the whole picture down to fit. A reconstructed
    interface that has been shrunk until nothing in it can be read is not
-   evidence of anything. */
-.ad .fw-f .crop img{aspect-ratio:auto;height:236px;min-height:200px;object-fit:cover}
+   evidence of anything.
+
+   BOTH WIDTHS, ONE RULE. `[data-width="narrow"]` carries the desktop height at
+   a higher specificity than this selector had, so between 390 and 767px the
+   narrow blocks kept 262px while the others dropped to 236 — a figure that was
+   LARGER on the quieter tier. Harmless while width was an alternating rhythm;
+   with #30 it is the hierarchy, drawn upside down. The narrow selector is named
+   here so the mobile height wins for both, exactly as the 320 block below
+   already did. */
+.ad .fw-f .crop img,
+.ad .fw[data-width="narrow"] .fw-f .crop img{aspect-ratio:auto;height:236px;min-height:200px;
+                                             object-fit:cover}
+/* One step down, still above the floor: at one column the tier has no width to
+   express itself in, so the figure is where the difference goes. */
+.ad .fw[data-featured-tier="supporting"] .fw-f .crop img{height:212px}
 .ad .fw-m{margin-top:20px}
+/* #30 — at one column the two tiers stop being widths and become rhythm only.
+   The supporting block keeps every item; what it gives up is the space around
+   them, which is the only thing there is left to give up at 375px. */
+.ad .fw[data-featured-tier="supporting"]{padding-top:30px}
+.ad .fw[data-featured-tier="supporting"] .fw-t{font-size:19px}
+.ad .fw[data-featured-tier="supporting"] .fw-c{font-size:15px}
+.ad .fw-tier{margin-bottom:8px}
+.ad .fw-e{margin-top:16px;padding-top:12px}
+/* The two CTAs stack rather than sharing a line: side by side at 360px the
+   second wrapped onto the first's underline. Each keeps a 44px row so the
+   touch targets do not abut. */
+.ad .fw-e .fw-l{display:block;margin:0 0 6px;min-height:44px;padding-top:11px}
+.ad .fw-e .fw-l:last-child{margin-bottom:0}
+.ad .fw-w{font-size:13.5px;max-width:none}
 
 /* Two tracks, not one: the number keeps its own narrow column so the row does
    not spend a whole line on it. */
@@ -367,6 +427,12 @@
 .ad .contact{margin-top:112px}
 .ad .contact .in{padding:56px 0 64px}
 .ad .ct-d{grid-template-columns:110px minmax(0,1fr)}
+/* The work titles are sentences, not host names: at 110px of term track a
+   two-column row leaves them ~200px, which breaks a title mid-word. The
+   public-code row goes to one column at every mobile width. */
+.ad .ct-src{grid-template-columns:1fr}
+.ad .ct-src dt{border-bottom:0;padding-bottom:2px}
+.ad .ct-sl a{min-height:44px;display:flex;align-items:center}
 .ad .foot .in{padding:32px 0 40px}
 }
 /* 320: the narrowest supported width. The figure floor drops to 180px and the
@@ -375,6 +441,33 @@
 @media (max-width:389px){
 .ad .fw-f .crop img,
 .ad .fw[data-width="narrow"] .fw-f .crop img{height:196px;min-height:180px}
+/* 180 is the floor itself here, so supporting sits ON it rather than below. */
+.ad .fw[data-featured-tier="supporting"] .fw-f .crop img{height:180px}
 .ad .ct-d{grid-template-columns:1fr}
 .ad .ct-d dt{border-bottom:0;padding-bottom:2px}
+}
+
+/* ------------------------------------ #31 判断事例 / ページ上部へ戻る
+   Below 768 the two-track grid is already one column (§ above), so the record's
+   own term column goes with it: 132px of label beside a 340px measure leaves a
+   sentence about 20 characters wide. Label over value, same order, same rules
+   drawn between the same pairs — the DOM order is unchanged and nothing here
+   moves a field past another one. */
+@media (max-width:767px){
+.ad #decision-cases{padding-bottom:64px}
+.ad .dc-s{grid-template-columns:minmax(0,1fr)}
+.ad .dc-s dt{padding:14px 0 4px;border-top:1px solid var(--hair)}
+.ad .dc-s dt:first-of-type{padding-top:0;border-top:0}
+.ad .dc-s dd{padding:0 0 16px;border-top:0;font-size:15px}
+.ad .dc-s dd:first-of-type{padding-top:0}
+.ad .dc-t{max-width:none}
+/* The summary and the PR link are the two controls in this block; both get the
+   44px floor a finger needs, taken from padding rather than from type size. */
+.ad .dc-v summary{min-height:44px;padding:12px 0}
+.ad .dc-l .lk{min-height:44px;display:inline-flex;align-items:center}
+/* The corner comes in slightly at the narrow widths — 12px of inset plus the
+   safe area, so the control clears the screen edge on a rounded display
+   without eating more of a 360px measure than it has to. */
+.ad .totop{right:calc(12px + env(safe-area-inset-right));
+           bottom:calc(12px + env(safe-area-inset-bottom))}
 }

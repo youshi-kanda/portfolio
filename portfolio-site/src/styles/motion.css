@@ -485,13 +485,24 @@
      V3 adds 03 / 04 / 05 / 06 to this list and to nothing else: the folio is
      the page's own numbering, so a page that numbers 00–02 and then stops is
      the composition running out halfway. The string still comes from
-     `site.<section>.index` via `data-mx-n`, so no numeral is typed anywhere. */
-  .ad #work::before,
+     `site.<section>.index` via `data-mx-n`, so no numeral is typed anywhere.
+
+     #46 A' TOOK `#work` AND `#about` OFF THIS LIST, and the reason is that the
+     list had become the problem it was written to fix. Of the five homepage
+     chapters only those two were on it; `#more`, `#capabilities` and
+     `#contact` fell through to the base rule above and drew a 17px numeral in
+     the corner. The homepage numbered two of its five sections at folio size.
+     SectionMarker now opens all five with the same number and the same
+     section name, and section-marker.css takes `content` off `::before` for
+     all five so neither numeral is drawn twice. What is left here is the folio
+     on the sections that are NOT homepage chapters: `#build` on
+     /how-i-build/, and `#stack` / `#principles` / `#evidence`, which hold
+     their content but are not rendered. `.hero::before` is untouched — 00 is
+     the poster's back layer, not a chapter mark. */
   .ad #build::before,
   .ad #stack::before,
   .ad #principles::before,
-  .ad #evidence::before,
-  .ad #about::before {
+  .ad #evidence::before {
     top: 92px;
     font-size: clamp(110px, 15.5vw, 226px);
   }
@@ -528,12 +539,10 @@
       bottom: auto;
       top: 8px;
     }
-    .ad #work::before,
     .ad #build::before,
     .ad #stack::before,
     .ad #principles::before,
-    .ad #evidence::before,
-    .ad #about::before {
+    .ad #evidence::before {
       top: 46px;
       font-size: clamp(96px, 24vw, 160px);
     }

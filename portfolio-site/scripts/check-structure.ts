@@ -23,6 +23,28 @@
  *                         overruled.
  *   MORE_ROWS             02 MORE PROJECTS draws one row per `more` work, on the
  *                         same terms.
+ *   FEATURED_TIERS        #30 — every FEATURED block carries the tier its record
+ *                         declares, and the two sets are the ones the owner
+ *                         decided (HD-G). Read off `data-featured-tier` rather
+ *                         than off the content, so a component that stopped
+ *                         emitting the attribute fails here instead of shipping
+ *                         five blocks with no hierarchy in them.
+ *   FEATURED_ORDER        the running order of the blocks, as the artifact has
+ *                         them. `featuredOrder` is one number per file and
+ *                         nothing in a single record can see the sequence.
+ *   FEATURED_SOURCE_LINKS one public-code CTA per linkable FEATURED work, and
+ *                         no more. The count is derived from the source model,
+ *                         so the day a `linkPolicy` flips this check moves with
+ *                         it rather than having to be remembered.
+ *   SOURCE_WITHHELD       the works with no source link carry the owner's
+ *                         approved explanation — exactly once each. A block
+ *                         that ends in silence is what HD-I exists to prevent.
+ *   PUBLIC_CODE_LINKS     CONTACT names every shipping work whose source is
+ *                         linkable, and only those.
+ *   WITHHELD_URLS         no URL of a withheld or private source is anywhere in
+ *                         the artifact. The scan is the other half of #7 C-8:
+ *                         `linkPolicy` decides, and this proves the decision
+ *                         survived rendering.
  *   HERO_DISPLAY_LINES    the display is cut into lines by hand, and each
  *                         line is an element carrying `data-hero-line`. V3
  *                         counted `<br>`, which measures the authoring and not
@@ -34,6 +56,99 @@
  *                         longer fits wraps inside its own box where a viewport
  *                         check finds it, instead of disappearing into the
  *                         line after it.
+ *   HOW_PREMISES          #31 — 開発の前提 draws one item per id the section
+ *                         content lists, and every one of them is the APPROVED
+ *                         sentence that id names. Counted against site.json
+ *                         rather than against a literal: the count is content,
+ *                         and what #31 fixed was that these sentences had no
+ *                         approval record, not that there are two of them.
+ *   HOW_OUTLINE           the document outline this page ships, as levels.
+ *                         `h1 → h2 開発の前提` is what is left of a decision
+ *                         (#31) that used to run to seven headings: five of
+ *                         them were two specific PRs' reasoning, which is the
+ *                         question a Case Study answers. A heading appearing
+ *                         here again is this page taking that back.
+ *   RETIRED_PUBLIC_COPY   zero. Copy the owner has replaced may not still be on
+ *                         a page. A replaced string is not caught by any other
+ *                         gate here — it is valid, it was once approved, and
+ *                         every count still adds up with it present.
+ *   ABOUT_RETIRED_COPY    the #32 half of the same list, counted on its own so
+ *                         the contract Issue #32 asked for has a name: the
+ *                         three sentences ABOUT used to end on may not be
+ *                         anywhere on a public page — plus the one sentence
+ *                         this branch approved and then narrowed, which is the
+ *                         only retired string here that never shipped.
+ *   ABOUT_EXPERIENCE      #32 — 06 ABOUT draws one profile-fact block per entry
+ *                         the section content declares, each carrying the
+ *                         APPROVED label and body its ids name. Derived from
+ *                         `site.about.profile`, so the count is content; what
+ *                         is held against a literal is only the editorial
+ *                         decision itself (one 業務経験 block, two disclosure
+ *                         rows), for the reason HOW_METHOD_SECTIONS states.
+ *   ABOUT_DISCLOSURE_ROWS #32 — the compliance block, on the same terms. TWO,
+ *                         inside ONE container: 掲載内容について and 公開データ
+ *                         are read together, and a third row appearing here is
+ *                         ABOUT drifting back toward a column of caveats.
+ *   HOW_WORKFLOW_STEPS    /how-i-build/ draws the whole method: one row per
+ *   HOW_ROLE_ROWS         workflow step, one table row per party, one item per
+ *   HOW_INTENT_ITEMS      intent. Derived from `site.howIBuild`, so the numbers
+ *                         are content. These three exist because everything
+ *                         else in the group below is an ABSENCE, and a page
+ *                         that rendered nothing at all would satisfy every one
+ *                         of them — the method is the reason the route exists
+ *                         and it is the thing that has to still be there.
+ *   HOW_NO_CASE_DEPTH     zero. The page states HOW the work is made; WHY a
+ *                         particular design or technical call was made is a
+ *                         Case Study's question, and /how-i-build/ used to
+ *                         answer it for two named PRs in 3,081px of a 6,063px
+ *                         page. The markers of that material — a decision case,
+ *                         a QA record, a cited PR, the cases lead — are counted
+ *                         across EVERY public route rather than on this page
+ *                         alone: the sections were removed from one file and
+ *                         their content was not, so the way this comes back is
+ *                         somewhere else. Sections `#decision-cases` and
+ *                         `#qa-record` are checked by id on top of the markers,
+ *                         because an empty one carries no marker and is still
+ *                         the heading growing back.
+ *   HOW_TOP_LINKS         one `href="#top"` against one `id="top"`, and the
+ *                         control is an `<a>`. A button calling `scrollTo` is
+ *                         the regression: it looks identical in a screenshot
+ *                         and stops existing when the script does not run.
+ *   LEDGER_HEADS          #52 — the PPM register states its five columns, in the
+ *                         row order the rows print, with the labels the ui
+ *                         registry holds. Read off the artifact because the
+ *                         component looks right either way: heads that render
+ *                         in a different order from the cells below them is a
+ *                         table that lies, and it lies identically in source.
+ *   LEDGER_VARIANT        the variant class is on PPM's register and on no
+ *                         other page. `.flow` is shared with HOW I BUILD's
+ *                         workflow and AI CRM's walkthrough, and the whole
+ *                         point of #52's variant is that neither moved.
+ *   CASE_QUICK_SUMMARIES  #33 — every published Case Study opens with the 3分概要
+ *                         block, and the expected number is the number of
+ *                         published Case Studies, computed from the work
+ *                         records. A ledger saying "three" would be the same
+ *                         editorial fact written twice.
+ *   CASE_QUICK_ITEMS      the item keys and their visible labels, in artifact
+ *                         order, IDENTICAL across the three. The whole promise
+ *                         of the block is that a reader can compare works, and
+ *                         a component that grew one slug-shaped branch would
+ *                         still render, still count right, and quietly stop
+ *                         being comparable.
+ *   CASE_QUICK_INTERNAL_STATUS
+ *                         zero. `public-demo` / `implemented` / `poc` are
+ *                         internal enum members; a reader sees the display word
+ *                         or the build stops. This is PUBLIC_INTERNAL's rule
+ *                         aimed at the one field #33 newly publishes.
+ *   CASE_QUICK_DEAD_ANCHORS
+ *                         zero. Every in-page href the block emits resolves to
+ *                         an id in the same document. The 詳しく見る rows are
+ *                         built from `caseSections`, so a dead one means the
+ *                         section list and the page disagree.
+ *   CASE_QUICK_ORDER      DFE's `leadDisclosure` appears before the summary.
+ *                         Order is the whole content of that rule: 「この作品は
+ *                         OCR を実行していない」 after 実装したもの is a
+ *                         correction arriving after the belief it corrects.
  *   LEAD_ENTRIES          zero. The Lead was retired in #7; a residual one would
  *                         mean a work introduced twice on one page.
  *   ARCHIVE_ROWS          /work/ lists every shipping work. It is the archive,
@@ -52,9 +167,18 @@
  * produced it.
  */
 import { readFileSync } from 'node:fs';
-import { shippingWorks } from '../src/lib/content/derive.ts';
-import { loadWorks } from '../src/lib/content/load.ts';
+import {
+  featuredHomepageWorks,
+  linkableSourceWorks,
+  publicPrUrl,
+  sectionNumber,
+  shippingWorks,
+  workPublicSourceUrl,
+} from '../src/lib/content/derive.ts';
+import { workSourceIsLinkable } from '../src/lib/content/compat.ts';
+import { loadCaseStudies, loadCopy, loadUiCopy, loadWorks } from '../src/lib/content/load.ts';
 import { site } from '../src/lib/content/site.ts';
+import { ui } from '../src/lib/content/ui.ts';
 
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const read = (route: string): string => readFileSync(`${DIST}${route}`, 'utf8');
@@ -67,6 +191,17 @@ const expect = (label: string, actual: unknown, wanted: unknown): void => {
 };
 
 const home = read('index.html');
+
+/**
+ * The CONTACT band's own HTML. A function rather than a constant because two
+ * checks now slice it and they are written far apart in this file; computing it
+ * twice with two hand-written indexOf pairs is how they would come to disagree
+ * about where the section ends.
+ */
+const contactSection = (): string => {
+  const at = home.indexOf('id="contact"');
+  return at < 0 ? '' : home.slice(at, home.indexOf('</section>', at));
+};
 
 // ---- CAPABILITY_CATEGORIES ----
 const CAPABILITY_CATEGORIES = [...home.matchAll(/<div class="cap-i">/g)].length;
@@ -102,6 +237,81 @@ const moreAt = home.indexOf('id="more"');
 const moreHtml = moreAt < 0 ? '' : home.slice(moreAt, home.indexOf('</section>', moreAt));
 const MORE_ROWS = [...moreHtml.matchAll(/class="r[^"]*"[^>]*\sdata-w="/g)].length;
 expect('MORE_ROWS', MORE_ROWS, works.filter((w) => w.homepage === 'more').length);
+
+// ---- FEATURED_TIERS / FEATURED_ORDER ----
+// #30 HD-G. The blocks are matched in ONE pass so that the order the artifact
+// has them in is the order the tiers are read off — two separate scans could
+// each pass while disagreeing about which block is which.
+const featuredBlocks = [
+  ...home.matchAll(/<article class="fw"[^>]*\sdata-w="([^"]+)"[^>]*\sdata-featured-tier="([^"]+)"/g),
+].map((m) => ({ slug: m[1] as string, tier: m[2] as string }));
+
+const featuredContent = featuredHomepageWorks(works);
+expect('FEATURED_TIERED', featuredBlocks.length, featuredContent.length);
+expect(
+  'FEATURED_ORDER',
+  featuredBlocks.map((b) => b.slug).join(' → '),
+  featuredContent.map((w) => w.slug).join(' → '),
+);
+for (const block of featuredBlocks) {
+  const declared = featuredContent.find((w) => w.slug === block.slug)?.featuredTier;
+  if (declared !== block.tier) {
+    failures.push(
+      `FEATURED_TIERS: ${block.slug} は data-featured-tier="${block.tier}" だが ` +
+        `record は ${declared ?? '(なし)'}`,
+    );
+  }
+}
+const tierOf = (tier: string): string =>
+  featuredBlocks.filter((b) => b.tier === tier).map((b) => b.slug).sort().join(' ');
+expect(
+  'FEATURED_PRIMARY',
+  tierOf('primary'),
+  featuredContent.filter((w) => w.featuredTier === 'primary').map((w) => w.slug).sort().join(' '),
+);
+expect(
+  'FEATURED_SUPPORTING',
+  tierOf('supporting'),
+  featuredContent.filter((w) => w.featuredTier === 'supporting').map((w) => w.slug).sort().join(' '),
+);
+
+// ---- FEATURED_SOURCE_LINKS / SOURCE_WITHHELD ----
+// The CTA count is derived from the source model, never from a literal: it is
+// 1 today because `crm` is the only linkable FEATURED work, and it becomes 2
+// on its own the day HD-D resolves.
+const FEATURED_SOURCE_LINKS = [...home.matchAll(/\sdata-featured-source-link="([^"]+)"/g)].map(
+  (m) => m[1] as string,
+);
+const linkableFeatured = featuredContent.filter((w) => workSourceIsLinkable(w)).map((w) => w.slug);
+expect('FEATURED_SOURCE_LINKS', FEATURED_SOURCE_LINKS.join(' '), linkableFeatured.join(' '));
+
+// HD-I. Every FEATURED work with no source link explains why, once. Counted
+// against the blocks rather than against a number, and the sentence is read
+// from the registry — copying it here would leave the approved text and the
+// gate's copy of it to be kept in step by hand.
+const withheldText = loadCopy().find((c) => c.id === 'home.works.sourceWithheld')?.text ?? '';
+if (withheldText === '') {
+  failures.push('SOURCE_WITHHELD: copy registry に home.works.sourceWithheld が無い');
+}
+const SOURCE_WITHHELD = withheldText === '' ? 0 : home.split(withheldText).length - 1;
+expect(
+  'SOURCE_WITHHELD',
+  SOURCE_WITHHELD,
+  featuredContent.length - linkableFeatured.length,
+);
+
+// ---- PUBLIC_CODE_LINKS ----
+// CONTACT names the works a reader can actually read the code of. Derived from
+// every SHIPPING work, not from the FEATURED five: `ppm` and `dfe` are not on
+// that tier and their code is just as public.
+const PUBLIC_CODE_LINKS = [...contactSection().matchAll(/\sdata-public-code-link="([^"]+)"/g)].map(
+  (m) => m[1] as string,
+);
+expect(
+  'PUBLIC_CODE_LINKS',
+  PUBLIC_CODE_LINKS.join(' '),
+  linkableSourceWorks(works).map((w) => w.slug).join(' '),
+);
 
 // ---- ARCHIVE_ROWS ----
 const archive = read('work/index.html');
@@ -172,13 +382,166 @@ for (const route of PUBLIC_ROUTES) {
   }
 }
 
+// ---- RETIRED_PUBLIC_COPY ----
+// Public copy the owner has REPLACED. Held as literals because that is what
+// they are — the exact sentences that were on the page before the decision
+// that removed them — and because nothing else here would notice: a retired
+// string is well-formed, was approved once, and leaves every count correct.
+//
+// #31 replaced the 「主張しないこと」 block. The heading and its two refusals
+// were the whole of it, and the boundary they drew is not gone — it is stated
+// by `method.premise.02` instead. What may not survive is the old wording
+// sitting somewhere this pass did not look.
+//
+// #32 retired ABOUT's three closing rows. Only the SENTENCES are listed, not
+// their labels: 実装形態 is also `ui.technical.aboutFields.role` and still ships
+// on every Technical page, and 「データ」 is a substring of half the synthetic
+// data copy on the site — a literal that matches a string which is still
+// correct somewhere else does not check retirement, it just fails.
+//
+// The boundary those three drew is not gone either. `home.about.disclosure`
+// states the publication scope and `home.about.syntheticData` states the
+// synthetic data; what is retired is the wording, including the claim that the
+// whole portfolio is 個人開発, which #29 established it is not.
+// #44 retired the HERO display's second line and the lede. Only TWO of the
+// three reworded strings are listed, and the omission is the point.
+//
+// 旧 `home.hero.display.01` は「業務課題を、」——6 文字で、述語も無い。これを
+// `includes` に入れると、当たるかどうかがこの 6 文字の並びだけで決まる断片検査に
+// なる。同じ語はいま公開面に別の意味で実在していて（`想定業務課題` の節見出し、
+// CONTACT の「業務課題の整理から、」）、どちらも退役とは無関係に正しい文である。
+// 今日は「業務課題を、」という並びには当たらないが、当たらない理由が読点の位置
+// だけというのは検査ではなく偶然である。
+//
+// 代わりに display の相方で見る。この 2 行は 1 つの display として一緒に出ていた
+// ものなので、旧 display が戻ってくれば 2 行目が必ず一緒に戻る。長くて一意な側で
+// 組を検出できるなら、短い側を断片で見る理由は無い。
+//
+// なお 3 件とも id は registry に残っていて、`approvedCopyGate` の `A-CHANGED`
+// が snapshot との不一致を先に捕まえる。ここが足すのはその外側——snapshot ごと
+// 巻き戻された場合と、承認registryを経由せずに文字列が公開面へ現れた場合だけで
+// ある。#31 / #32 の行が site.json の節内容（registry の外）だったのとは違い、
+// これは二重化であって唯一の防波堤ではない。
+const RETIRED_PUBLIC_COPY: readonly {
+  text: string;
+  why: string;
+  issue: '#31' | '#32' | '#44';
+}[] = [
+  { text: '主張しないこと', why: '#31 — 見出しは 開発の前提 に置き換わった', issue: '#31' },
+  {
+    text: '完全自動の Multi-Agent 開発をしているとは主張しない。',
+    why: '#31 — method.premise.02 が同じ境界を述べている',
+    issue: '#31',
+  },
+  {
+    text: 'Harness を構築済みであるとは主張しない。',
+    why: '#31 — 同上',
+    issue: '#31',
+  },
+  {
+    text: '個人開発。AI CRM Demo は画面・API・データベース・AI 呼び出し・権限・テストまで 1 人で実装している。',
+    why: '#32 — Portfolio 全体を個人開発と言う行。#29 が共同プロジェクトを記録した時点で成り立たない',
+    issue: '#32',
+  },
+  {
+    text: '私的に開発中のプロダクトから公開可能な範囲を切り出したもの。外部配信・代理店管理・本番インフラは含めていない。',
+    why: '#32 — home.about.disclosure が公開範囲を述べている',
+    issue: '#32',
+  },
+  {
+    text: '掲載している画面はすべて合成データ。実顧客・実案件・本番運用の記録ではない。',
+    why: '#32 — home.about.syntheticData が同じ表明を持っている',
+    issue: '#32',
+  },
+  /*
+   * この 1 件だけ性格が違う: この BRANCH が承認して書いた文で、同じ PR の
+   * レビュー中に本人が短くしたものである（Issue #32 comment 5749023659）。
+   * 落ちたのは 2 文目「担当範囲と到達状態は作品ごとに記載しています。」で、
+   * 到達状態はどの公開ページにも出ていなかった。
+   *
+   * 現在の文は旧文の PREFIX なので、`includes` は正しい向きにしか当たらない
+   * ——新しい文だけが出ていれば旧文は含まれず、旧文が戻ってくれば当たる。
+   */
+  {
+    text: '担当範囲と到達状態は作品ごとに記載しています。',
+    why: '#32 — 到達状態は公開面に出ていない。Issue #32 comment 5749023659 で削除',
+    issue: '#32',
+  },
+  /*
+   * #44 の 2 件。退役の理由が #31 / #32 とは違う——これらは事実として誤りに
+   * なったのではなく、書き直されただけである。#6 §4.1 が「業務で使える」を
+   * 選んだ判断（稼働実績ではなく適合の主張に留める）は今も有効で、新しい
+   * 「現場で使える仕組みをつくる。」も同じ境界の内側にいる。
+   *
+   * それでも公開面から締め出すのは、旧文と新文が同時に出ている状態が
+   * 「どちらが現在の HERO か」を読者に対して曖昧にするからである。
+   */
+  {
+    text: '業務で使える Web・AI システムへ。',
+    why: '#44 — 旧 display 2 行目。home.hero.display.02 が 現場で使える仕組みをつくる。 に置き換わった',
+    issue: '#44',
+  },
+  {
+    text: '業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。',
+    why: '#44 — 旧 lede。home.hero.lede が Webシステム・AI・業務自動化を、要件整理から設計・実装まで。 に置き換わった',
+    issue: '#44',
+  },
+];
+let RETIRED_COPY_HITS = 0;
+let ABOUT_RETIRED_COPY = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const retired of RETIRED_PUBLIC_COPY) {
+    if (html.includes(retired.text)) {
+      RETIRED_COPY_HITS += 1;
+      if (retired.issue === '#32') ABOUT_RETIRED_COPY += 1;
+      failures.push(
+        `RETIRED_PUBLIC_COPY: /${route.replace(/index\.html$/, '')} に「${retired.text}」が残っている — ${retired.why}`,
+      );
+    }
+  }
+}
+
+// ---- WITHHELD_URLS ----
+// #7 C-8, checked on the artifact rather than in the component that decided it.
+//
+// STATED AS A WHITELIST, WHICH IS THE ONLY WAY IT CAN BE STATED. A blacklist
+// would have to name the URL a withheld work WOULD have, and that string is
+// precisely what the record refuses to hold: `sourceSchema` forbids a path on
+// anything not linkable, so there is nothing to search for. So the check runs
+// the other way — every `/tree/main/…` the site emits must be one
+// `workPublicSourceUrl` built for a work the source model calls linkable, and
+// any other is a URL nobody derived and therefore nobody checked.
+//
+// That catches the real failure mode: a component reading `access` directly
+// would emit a tree URL for `hire`, which is genuinely `public-repo`, and no
+// blacklist could have been written for it in advance.
+const allowedTreeUrls = new Set(
+  shipping.flatMap((w) => {
+    const url = workPublicSourceUrl(w);
+    return url ? [url] : [];
+  }),
+);
+let WITHHELD_URLS = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const m of html.matchAll(/href="(https:\/\/github\.com\/[^"]*\/tree\/[^"]*)"/g)) {
+    const url = m[1] as string;
+    if (allowedTreeUrls.has(url)) continue;
+    WITHHELD_URLS += 1;
+    failures.push(
+      `WITHHELD_URLS: /${route.replace(/index\.html$/, '')} の ${url} は ` +
+        `linkable な作品の source ではない`,
+    );
+  }
+}
+
 // ---- CONTACT_EMAIL ----
 // U-01. The address ships on one approval covering one email, so the rendered
 // section must carry exactly that: one visible address, reachable, once. Two
 // would mean a second channel nobody approved; zero would mean the conversion
 // point regressed to "read the code" while the copy still promises a reply.
-const contactAt = home.indexOf('id="contact"');
-const contactHtml = contactAt < 0 ? '' : home.slice(contactAt, home.indexOf('</section>', contactAt));
+const contactHtml = contactSection();
 const visibleEmails = [...contactHtml.matchAll(/>([^<>@\s]+@[a-z0-9.-]+\.[a-z]{2,})</gi)].map(
   (m) => m[1] as string,
 );
@@ -195,10 +558,485 @@ for (const to of MAILTO_LINKS) {
     failures.push(`CONTACT_EMAIL: mailto:${to} が画面に出ている住所と違う`);
   }
 }
+// ---- CONTACT_HELPER ----
+// #34. 補助文は 1 回だけ出る。0 なら「何を書けばよいか」の案内が落ちており、
+// 2 回以上なら同じ案内を二度読ませている。文字列は registry から取る——ここに
+// 書き写せば、承認済みの文と gate の中の文の 2 か所を合わせ続けることになる。
+const helperText = loadCopy().find((c) => c.id === 'home.contact.helper')?.text ?? '';
+if (helperText === '') {
+  failures.push('CONTACT_HELPER: copy registry に home.contact.helper が無い');
+}
+const CONTACT_HELPER = helperText === '' ? 0 : contactHtml.split(helperText).length - 1;
+expect('CONTACT_HELPER', CONTACT_HELPER, 1);
+
 // The GitHub route must survive alongside it. The two channels have different
 // jobs (#8 §1) and collapsing either into the other is the regression.
 if (!/href="https:\/\/github\.com\/youshi-kanda"/.test(contactHtml)) {
   failures.push('CONTACT_EMAIL: GitHub 導線が CONTACT から消えている');
+}
+
+// ---- ABOUT_EXPERIENCE / ABOUT_DISCLOSURE_ROWS ----
+// #32. 06 ABOUT reads 現在の開発姿勢 → 業務経験 → 公開境界, and each block is
+// drawn from registry ids rather than from a sentence in the section content.
+// So there are two ways this can break that no count alone would see: a block
+// could render the right NUMBER of rows from text nobody approved, and the
+// visual order could disagree with the DOM order. The first is checked by
+// holding every rendered label and body against the registry row its id names;
+// the second cannot be checked here at all and is a viewport check — what IS
+// checked is that the DOM has label before body, and 業務経験 before the
+// disclosure block.
+const aboutAt = home.indexOf('id="about"');
+const aboutHtml = aboutAt < 0 ? '' : home.slice(aboutAt, home.indexOf('</section>', aboutAt));
+if (aboutHtml === '') failures.push('ABOUT: 06 ABOUT の section が artifact に無い');
+
+const strip = (html: string): string => html.replace(/<[^>]*>/g, '').trim();
+
+/** The rows one ABOUT block rendered, in artifact order, label and body apart. */
+const aboutRows = (attr: string): { id: string; label: string; body: string }[] =>
+  [
+    ...aboutHtml.matchAll(
+      new RegExp(`<div class="r"[^>]*\\s${attr}="([^"]+)"[^>]*>([\\s\\S]*?)</div>`, 'g'),
+    ),
+  ].map((m) => {
+    const inner = m[2] as string;
+    return {
+      id: m[1] as string,
+      label: strip(/<span class="k">([\s\S]*?)<\/span>/.exec(inner)?.[1] ?? ''),
+      body: strip(/<span class="v">([\s\S]*?)<\/span>/.exec(inner)?.[1] ?? ''),
+    };
+  });
+
+const aboutCopy = loadCopy();
+const aboutUiCopy = loadUiCopy();
+/** What the section content says a block must render — resolved the same way. */
+const aboutExpected = (
+  blocks: readonly { id: string; labelId: string; copyId: string }[],
+): { id: string; label: string; body: string }[] =>
+  blocks.map((b) => ({
+    id: b.id,
+    label: aboutUiCopy.find((r) => r.id === b.labelId)?.text ?? `(ui registry に ${b.labelId} が無い)`,
+    body: aboutCopy.find((r) => r.id === b.copyId)?.text ?? `(registry に ${b.copyId} が無い)`,
+  }));
+
+const renderedFacts = aboutRows('data-about-fact');
+const renderedDisclosure = aboutRows('data-about-disclosure');
+const ABOUT_EXPERIENCE = renderedFacts.length;
+const ABOUT_DISCLOSURE_ROWS = renderedDisclosure.length;
+
+expect('ABOUT_EXPERIENCE', ABOUT_EXPERIENCE, site.about.profile.length);
+expect('ABOUT_DISCLOSURE_ROWS', ABOUT_DISCLOSURE_ROWS, site.about.disclosure.length);
+expect(
+  'ABOUT_EXPERIENCE_TEXT',
+  JSON.stringify(renderedFacts),
+  JSON.stringify(aboutExpected(site.about.profile)),
+);
+expect(
+  'ABOUT_DISCLOSURE_TEXT',
+  JSON.stringify(renderedDisclosure),
+  JSON.stringify(aboutExpected(site.about.disclosure)),
+);
+
+// THE ONE LITERAL PAIR HERE, and it is the editorial decision rather than a
+// count. Issue #32 §6 fixes the shape: ONE 業務経験 block, and TWO rows inside
+// ONE compact disclosure container. The checks above prove the page renders
+// what the content declares; these prove the content still declares what was
+// decided — without them the file could say "four disclosure rows" and every
+// assertion above would pass on a section that had drifted back into a column
+// of caveats.
+expect('ABOUT_PROFILE_DECLARED', site.about.profile.length, 1);
+expect('ABOUT_DISCLOSURE_DECLARED', site.about.disclosure.length, 2);
+
+// One container, not two. The disclosure rows are read together, so a second
+// `.ab-disc` block would be the compression #32 asked for coming undone.
+expect('ABOUT_DISCLOSURE_BLOCKS', [...aboutHtml.matchAll(/class="spx wide ab-disc"/g)].length, 1);
+
+// Reading order, as the DOM has it: the profile fact comes before the
+// disclosure block, and inside every row the label comes before the body. The
+// visual order is not reordered in CSS — `.spx.wide .r` is a single-column grid
+// in source order at every width — so DOM order is reading order.
+if (aboutHtml.indexOf('data-about-fact') > aboutHtml.indexOf('data-about-disclosure')) {
+  failures.push('ABOUT_ORDER: 業務経験 が公開境界ブロックより後に出ている');
+}
+if (aboutHtml.indexOf('class="ab-now"') > aboutHtml.indexOf('data-about-fact')) {
+  failures.push('ABOUT_ORDER: about.now が業務経験より後に出ている');
+}
+
+// #32 — 業務経験 is a profile fact and is not drawn as a warning. `--stop` is
+// the site's alert pigment; ABOUT may not reach for it, and a large card or
+// banner class appearing in this section is the same regression in another
+// spelling.
+for (const forbidden of ['--stop', 'var(--stop)', 'class="alert', 'class="banner']) {
+  if (aboutHtml.includes(forbidden)) {
+    failures.push(`ABOUT_TONE: 06 ABOUT に ${forbidden} がある — 業務経験は警告ではない`);
+  }
+}
+
+// 年数表現。HD-C の決定は「ABOUT に年数を出さない」であって、書き方を変えれば
+// 通るものではない。数字 + 年 / ヶ月 の形を節ごと見る。
+for (const m of aboutHtml.matchAll(/(?<![0-9A-Za-z_])(約\s*)?\d+\s*(年間|年|ヶ月|か月)/g)) {
+  failures.push(`ABOUT_NO_TENURE: 06 ABOUT に年数表現「${m[0]}」がある（HD-C）`);
+}
+
+// ---- HOW_METHOD_SECTIONS / HOW_NO_CASE_DEPTH / HOW_TOP_LINKS ----
+// #31, narrowed. The one place in this file that asserts literals — the header
+// says why.
+const method = read('how-i-build/index.html');
+
+// ---- HOW_PREMISES ----
+// 開発の前提. Derived from the content, and then each rendered item is held
+// against the APPROVED sentence its id names — a block that rendered the right
+// NUMBER of premises from somewhere other than the approval registry is the
+// failure #31 exists to prevent.
+const HOW_PREMISES = [...method.matchAll(/<li data-premise>([\s\S]*?)<\/li>/g)].map(
+  (m) => (m[1] as string).replace(/<[^>]*>/g, '').trim(),
+);
+const premiseCopy = loadCopy();
+const premiseText = site.howIBuild.premises.map(
+  (id) => premiseCopy.find((c) => c.id === id)?.text ?? `(registry に ${id} が無い)`,
+);
+expect('HOW_PREMISES', HOW_PREMISES.length, site.howIBuild.premises.length);
+expect('HOW_PREMISES_TEXT', HOW_PREMISES.join(' | '), premiseText.join(' | '));
+
+// ---- HOW_OUTLINE ----
+// `aria-level` wins over the tag, exactly as check-links reads it: what is
+// under contract is the outline a screen reader is given, not the spelling of
+// the element. Both are true here — every heading below is its own tag — and
+// reading it this way keeps the two checks from disagreeing about what h-level
+// means.
+const HOW_OUTLINE = [...method.matchAll(/<h([1-6])\b([^>]*)>/g)].map(([, tag, attrs]) => {
+  const declared = /aria-level="(\d)"/.exec(attrs ?? '');
+  return Number(declared ? declared[1] : tag);
+});
+// `1 2` — the page's own name, and the one section heading the method states.
+// It was `1 2 2 3 3 2 3`: 判断事例's h2 with two case titles under it, then QA /
+// 検証記録's h2 with PR #19's. Five of those seven headings were a specific
+// project's reasoning, which is a Case Study's question and not this page's.
+expect('HOW_OUTLINE', HOW_OUTLINE.join(' '), '1 2');
+// The remaining h2 is a real `<h2>` element rather than a smaller tag declaring
+// its depth, and the section is named once — `aria-label` repeating a heading
+// is the double announcement #31 ruled out.
+if (!/<h2\b[^>]*>(?:<[^>]*>)*開発の前提/.test(method)) {
+  failures.push('HOW_OUTLINE: 「開発の前提」が <h2> として出ていない');
+}
+
+// ---- HOW_METHOD_SECTIONS ----
+// WHAT THE PAGE STILL HAS TO DRAW, and the only gate here that says so.
+//
+// Everything else in this group is an absence, and a page that rendered NOTHING
+// would satisfy every one of them. The method is the reason this route exists:
+// the eight-step workflow, one row per party in the roles table, and the intent
+// list — 課題理解 / 要件整理 / 設計 / 実装 / 検証 / 改善 as the steps name them.
+// Counted against `site.howIBuild`, so the numbers are content and a step that
+// stops rendering fails here instead of shipping a shorter workflow.
+const HOW_WORKFLOW_STEPS = [...method.matchAll(/<div class="fst(?: gate)?">/g)].length;
+expect('HOW_WORKFLOW_STEPS', HOW_WORKFLOW_STEPS, site.howIBuild.workflow.length);
+const HOW_ROLE_ROWS = [...method.matchAll(/<tr><th>/g)].length;
+expect('HOW_ROLE_ROWS', HOW_ROLE_ROWS, site.howIBuild.roles.length);
+const HOW_INTENT_ITEMS = [...method.matchAll(/<ul class="dash">([\s\S]*?)<\/ul>/g)]
+  .flatMap((m) => [...(m[1] as string).matchAll(/<li>/g)]).length;
+expect('HOW_INTENT_ITEMS', HOW_INTENT_ITEMS, site.howIBuild.intent.length);
+
+// ---- HOW_NO_CASE_DEPTH ----
+// The per-project half of this page is off it, and stays off it.
+//
+// AN ABSENCE IS CHECKED WHERE IT COULD COME BACK, WHICH IS NOT ONLY HERE. The
+// two sections were removed from one file; the components they lived in are
+// gone and the DATA is not — `site.howIBuild.decisionCases` and `.qaRecord` are
+// still content, still under every gate, and are what the Case Studies will
+// draw. So the markers are counted across every public route rather than on
+// /how-i-build/ alone: a 判断事例 block reappearing on the homepage would pass a
+// check that only ever looked at this page, and it is the same defect.
+//
+// `/work/<slug>/` IS NOT AN EXEMPTION HERE. When a Case Study renders this
+// material it will render it as a Case Study — its own component, its own
+// markers — and not by moving these three attributes onto another route. If
+// that turns out to be the wrong call, the fix is to change this gate on
+// purpose, which is the whole point of stating it.
+for (const [marker, name] of [
+  [/\sdata-decision-case="/g, 'HOW_NO_CASE_DEPTH 判断事例'],
+  [/\sdata-qa-record\b/g, 'HOW_NO_CASE_DEPTH QA 記録'],
+  [/\sdata-decision-pr="/g, 'HOW_NO_CASE_DEPTH PR 引用'],
+  [/\bdc-lead\b/g, 'HOW_NO_CASE_DEPTH 判断事例の導入文'],
+] as const) {
+  for (const route of PUBLIC_ROUTES) {
+    expect(`${name} ${route}`, [...read(route).matchAll(marker)].length, 0);
+  }
+}
+// The sections themselves, by id. Counted separately from the markers because
+// an empty `<section id="decision-cases">` carries none of them and is still
+// this page growing the heading back.
+for (const id of ['decision-cases', 'qa-record']) {
+  if (method.includes(`id="${id}"`)) {
+    failures.push(`HOW_NO_CASE_DEPTH: <section id="${id}"> が /how-i-build/ に戻っている`);
+  }
+}
+const HOW_NO_CASE_DEPTH =
+  [...method.matchAll(/\sdata-decision-case="|\sdata-qa-record\b|\sdata-decision-pr="/g)].length;
+
+// ---- HOW_TOP_LINKS ----
+const HOW_TOP_LINKS = [...method.matchAll(/\shref="#top"/g)].length;
+expect('HOW_TOP_LINKS', HOW_TOP_LINKS, 1);
+expect('HOW_TOP_ANCHORS', [...method.matchAll(/\sid="top"/g)].length, 1);
+// It is an anchor. The whole point of #31 §9 is that the control works with no
+// script, and a `<button>` here would look the same and do nothing.
+if (!/<a\b[^>]*\shref="#top"/.test(method)) {
+  failures.push('HOW_TOP_LINKS: #top へ送る要素が <a> ではない — JS 無しで動かない');
+}
+// The existing landmark id is not renamed by the addition.
+if (!/<main\b[^>]*\sid="how-i-build"/.test(method)) {
+  failures.push('HOW_TOP_LINKS: <main id="how-i-build"> が無い');
+}
+
+// ---- LEDGER_HEADS / LEDGER_VARIANT ----
+// #52. PPM's register states its columns. Read off the artifact and not off the
+// component, because the component looks correct either way: what has to hold
+// is that the heads come out in the SAME order the cells below them come out
+// in, and a head row that drifted one position renders, counts right, and
+// mislabels every row on the page.
+let LEDGER_HEADS_REPORT = '(none)';
+{
+  const ppm = read('work/ppm/index.html');
+  const open = ppm.indexOf('<div class="flow flow-ledger">');
+  if (open < 0) {
+    failures.push('LEDGER_VARIANT: PPM の register が flow-ledger を名乗っていない');
+  } else {
+    // From the opening tag to the end of the document. Everything read below is
+    // the FIRST match after that point — the head row and the first data row —
+    // so a closing boundary would be precision this does not use.
+    const ledger = ppm.slice(open);
+    const headOpen = ledger.indexOf('<div class="fhd">');
+    const head = ledger.slice(headOpen, ledger.indexOf('</div>', headOpen));
+    const LEDGER_HEADS = [...head.matchAll(/<span class="([a-z]+)">([^<]*)<\/span>/g)].map((m) => [
+      m[1],
+      m[2],
+    ]);
+    const heads = ui.caseStudy.ledgerHeaders;
+    expect(
+      'LEDGER_HEADS',
+      LEDGER_HEADS.map(([c, t]) => `${c}:${t}`).join(' '),
+      `k:${heads.step} n:${heads.name} o:${heads.owner} d:${heads.what} g:${heads.gate}`,
+    );
+    // The first row's cells, in the order they are emitted. Same sequence as
+    // the heads, which is the only thing that makes the heads mean anything.
+    const firstRow = ledger.slice(ledger.indexOf('<div class="fst'));
+    const cells = [...firstRow.slice(0, firstRow.indexOf('</div>')).matchAll(/<span class="([a-z]+)"/g)]
+      .map((m) => m[1])
+      .slice(0, 4);
+    expect('LEDGER_ROW_ORDER', cells.join(' '), 'k n o d');
+    LEDGER_HEADS_REPORT = LEDGER_HEADS.map(([, t]) => t).join(' ');
+  }
+}
+// The variant is PPM's alone. `.flow` is shared with HOW I BUILD's workflow and
+// AI CRM's walkthrough, and #52's whole shape is that neither of them moved.
+for (const [route, wanted] of [
+  ['work/ppm/index.html', 1],
+  ['work/crm/index.html', 0],
+  ['work/dfe/index.html', 0],
+  ['how-i-build/index.html', 0],
+  ['index.html', 0],
+] as const) {
+  expect(`LEDGER_VARIANT ${route}`, [...read(route).matchAll(/\bflow-ledger\b/g)].length, wanted);
+}
+
+// ---- CASE_QUICK_SUMMARIES / CASE_QUICK_ITEMS / CASE_QUICK_INTERNAL_STATUS ----
+// #33. The 3分概要 block, checked on the artifact because every one of these
+// properties looks correct in the component that produced it: one component
+// renders all three, so "does it render" is answered once and says nothing
+// about whether the three pages ended up comparable.
+const caseRoutes = shipping
+  .filter((w) => w.caseStudyPublished)
+  .map((w) => ({ slug: w.slug, route: `work/${w.slug}/index.html` }));
+
+/** The quick-summary block of one Case Study, or '' when the page has none. */
+const quickBlock = (html: string): string => {
+  const at = html.indexOf('id="cs-quick"');
+  if (at < 0) return '';
+  const from = html.lastIndexOf('<section', at);
+  return html.slice(from, html.indexOf('</section>', at));
+};
+
+const stripTags = (html: string): string => html.replace(/<[^>]*>/g, '').trim();
+
+let CASE_QUICK_SUMMARIES = 0;
+let CASE_QUICK_INTERNAL_STATUS = 0;
+let CASE_QUICK_DEAD_ANCHORS = 0;
+const quickItemLists: { slug: string; items: string }[] = [];
+
+for (const { slug, route } of caseRoutes) {
+  const html = read(route);
+  const block = quickBlock(html);
+  if (block === '') {
+    failures.push(`CASE_QUICK_SUMMARIES: /work/${slug}/ に 3分概要 が無い`);
+    continue;
+  }
+  CASE_QUICK_SUMMARIES += 1;
+
+  // The block names itself with a real h2, and the section points at it.
+  if (!/<h2\b[^>]*\sid="cs-quick-h"/.test(block)) {
+    failures.push(`CASE_QUICK_ITEMS: /work/${slug}/ の 3分概要 が <h2 id="cs-quick-h"> を持たない`);
+  }
+  if (!/\saria-labelledby="cs-quick-h"/.test(block)) {
+    failures.push(`CASE_QUICK_ITEMS: /work/${slug}/ の 3分概要 section が h2 を参照していない`);
+  }
+
+  // Item keys AND their visible labels, in artifact order. Reading both in one
+  // pass is what keeps a page from having the right keys under the wrong names.
+  const items = [
+    ...block.matchAll(/<div class="r"\s+data-quick-item="([^"]+)">([\s\S]*?)<div class="v">/g),
+  ].map((m) => `${m[1]}=${stripTags(m[2] as string)}`);
+  quickItemLists.push({ slug, items: items.join(' | ') });
+
+  // Internal enum members, inside this block only. The scope table elsewhere on
+  // the page legitimately prints the column head `Implemented`, which is not
+  // this — so the scan is the block, and the match is the enum spelling.
+  for (const member of ['public-demo', 'implemented', 'poc']) {
+    const hit = new RegExp(`(?<![A-Za-z0-9-])${member}(?![A-Za-z0-9-])`).test(stripTags(block));
+    if (hit) {
+      CASE_QUICK_INTERNAL_STATUS += 1;
+      failures.push(
+        `CASE_QUICK_INTERNAL_STATUS: /work/${slug}/ の 3分概要に内部 enum ${member} が出ている`,
+      );
+    }
+  }
+
+  // Every in-page link the block emits lands on an id this document has.
+  for (const m of block.matchAll(/href="#([^"]+)"/g)) {
+    const id = m[1] as string;
+    if (!new RegExp(`\\sid="${id}"`).test(html)) {
+      CASE_QUICK_DEAD_ANCHORS += 1;
+      failures.push(`CASE_QUICK_DEAD_ANCHORS: /work/${slug}/ の 3分概要 が #${id} を指すが無い`);
+    }
+  }
+}
+
+expect('CASE_QUICK_SUMMARIES', CASE_QUICK_SUMMARIES, caseRoutes.length);
+
+// SAME ITEMS, SAME ORDER, SAME LABELS — the comparability contract. Compared
+// against each other rather than against a literal list: the item set is an
+// editorial decision recorded in the component, and a list here would be that
+// decision written a second time, in the file least likely to be reread.
+const distinctItemLists = new Set(quickItemLists.map((q) => q.items));
+if (distinctItemLists.size > 1) {
+  failures.push(
+    `CASE_QUICK_ITEMS: 3分概要の項目が Case Study 間で揃っていない\n` +
+      quickItemLists.map((q) => `      ${q.slug}: ${q.items}`).join('\n'),
+  );
+}
+
+// ---- CASE_QUICK_ORDER ----
+// The disclosure comes first where there is one. Derived from the content, so
+// the check follows `leadDisclosure` rather than naming the work that has one.
+const caseStudyBySlug = new Map(loadCaseStudies().map((c) => [c.slug, c]));
+for (const { slug, route } of caseRoutes) {
+  const disclosure = caseStudyBySlug.get(slug)?.leadDisclosure;
+  if (!disclosure) continue;
+  const html = read(route);
+  const at = html.indexOf(disclosure);
+  const quickAt = html.indexOf('id="cs-quick"');
+  if (at < 0) {
+    failures.push(`CASE_QUICK_ORDER: /work/${slug}/ に leadDisclosure が出ていない`);
+    continue;
+  }
+  if (quickAt >= 0 && at > quickAt) {
+    failures.push(
+      `CASE_QUICK_ORDER: /work/${slug}/ の leadDisclosure が 3分概要より後にある — ` +
+        `訂正は誤解のあとに届いても遅い`,
+    );
+  }
+}
+
+// ---- SECTION_MARKERS ----
+// #46 A' — the five chapter openings, and the fact that they are decoration
+// carrying nothing of their own.
+//
+// PR #47's five SVG motifs were rejected in staging review; this is what
+// replaced them, and the contract moved with it rather than being deleted. The
+// count is still the least interesting property:
+//
+//   one per section, five in all. The layer's whole job is to make a boundary
+//   legible, so a section that lost its marker is a boundary that stopped
+//   being one — and a section that gained a second is two folios in one place.
+//   `aria-hidden` on every one. A background graphic that reaches the
+//   accessibility tree is a page reading its own chapter number twice: the
+//   rail beside it already says 03 and CAPABILITIES at full contrast.
+//   THE TWO STRINGS ARE THE PAGE'S OWN. The number has to be what
+//   `sectionNumber()` derives from the running order, and the word has to be
+//   the `site.sections` label the nav prints. This is the rule that matters,
+//   because it is the one that decides whether this layer carries public copy:
+//   if the marker can say something the rail and the nav do not, then it is
+//   text, it needs approval, and it stops being deletable.
+//   NOTHING ELSE INSIDE. Whatever is left after those two spans is removed has
+//   to be empty. A marker that grew a third word grew it unapproved.
+//
+// Homepage only. The five are the homepage's own chapters; a marker on a work
+// page would be this layer leaking into a composition that never asked for it.
+const MARKER_SECTIONS = ['work', 'more', 'capabilities', 'about', 'contact'] as const;
+const markers = [
+  ...home.matchAll(/<div class="smk" data-section-marker="([a-z]+)"([^>]*)>([\s\S]*?)<\/div>/g),
+];
+const SECTION_MARKERS = markers.length;
+expect('SECTION_MARKERS', SECTION_MARKERS, MARKER_SECTIONS.length);
+for (const section of MARKER_SECTIONS) {
+  const n = markers.filter((m) => m[1] === section).length;
+  if (n !== 1) failures.push(`SECTION_MARKERS: #${section} の章標が ${n} 個 — 各セクション 1 個`);
+}
+for (const [, name = '', attrs = '', body = ''] of markers) {
+  if (!attrs.includes('aria-hidden="true"')) {
+    failures.push(`SECTION_MARKERS: ${name} の章標に aria-hidden が無い — 章番号が 2 回読み上げられる`);
+  }
+  const label = body.match(/<span class="smk-l">([^<]*)<\/span>/)?.[1] ?? '';
+  const index = body.match(/<span class="smk-n">([^<]*)<\/span>/)?.[1] ?? '';
+  const declaredLabel = site.sections.find((x) => x.id === name)?.label ?? null;
+  if (declaredLabel === null) {
+    failures.push(`SECTION_MARKERS: ${name} は site.sections に label を持たない節 — 章標を置けない`);
+  } else if (label !== declaredLabel) {
+    failures.push(
+      `SECTION_MARKERS: ${name} の章標が "${label}" — site.sections の label は "${declaredLabel}"`,
+    );
+  }
+  const declaredIndex = sectionNumber(name);
+  if (index !== declaredIndex) {
+    failures.push(`SECTION_MARKERS: ${name} の章標が ${index} — sectionNumber は ${declaredIndex}`);
+  }
+  const rest = body
+    .replace(/<span class="smk-[ln]">[^<]*<\/span>/g, '')
+    .replace(/<[^>]*>/g, '')
+    .replace(/\s+/g, '');
+  if (rest !== '') {
+    failures.push(
+      `SECTION_MARKERS: ${name} の章標が番号と label 以外の文字を持っている（${rest.slice(0, 40)}）` +
+        ` — 装飾に承認を通っていない文章を載せない`,
+    );
+  }
+}
+let MARKERS_OFF_HOME = 0;
+for (const route of PUBLIC_ROUTES.filter((r) => r !== 'index.html')) {
+  const n = [...read(route).matchAll(/<div class="smk"/g)].length;
+  if (n > 0) {
+    MARKERS_OFF_HOME += n;
+    failures.push(`SECTION_MARKERS: /${route.replace(/index\.html$/, '')} に章標が ${n} 個 — HOME 専用の層`);
+  }
+}
+
+// ---- RETIRED_SECTION_MOTIFS ----
+// Zero, on every public page. The SVG layer PR #47 shipped is deleted, not
+// hidden: no `.smo` wrapper, no `data-smo`, and no stylesheet left behind for
+// one to be re-mounted against. Checked against the artifact rather than the
+// source, because "the component is gone" and "the drawing is not served" are
+// different claims and this file exists to make the second one.
+let RETIRED_SECTION_MOTIFS = 0;
+for (const route of PUBLIC_ROUTES) {
+  const html = read(route);
+  for (const dead of ['class="smo"', 'data-smo', 'smo-svg', 'smo-fig']) {
+    const n = html.split(dead).length - 1;
+    if (n > 0) {
+      RETIRED_SECTION_MOTIFS += n;
+      failures.push(
+        `RETIRED_SECTION_MOTIFS: /${route.replace(/index\.html$/, '')} に ${dead} が ${n} 箇所 —` +
+          ` PR #47 の SVG モチーフは撤去済みのはず`,
+      );
+    }
+  }
 }
 
 // ---- CASE_SPEC_IDS ----
@@ -226,7 +1064,31 @@ console.log(
     `BAND_RESIDUE = ${BAND_RESIDUE} / LEAD_ENTRIES = ${LEAD_ENTRIES} / ` +
     `WORK_ENTRIES = ${WORK_ENTRIES} / PUBLIC_INTERNAL = ${PUBLIC_INTERNAL} / ` +
     `CASE_SPEC_IDS = ${CASE_SPEC_IDS} (routes ${PUBLIC_ROUTES.length}) / ` +
-    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length})`,
+    `SECTION_MARKERS = ${SECTION_MARKERS} (off-home ${MARKERS_OFF_HOME}) / ` +
+    `RETIRED_SECTION_MOTIFS = ${RETIRED_SECTION_MOTIFS} / ` +
+    `CASE_QUICK_SUMMARIES = ${CASE_QUICK_SUMMARIES} / ` +
+    `CASE_QUICK_INTERNAL_STATUS = ${CASE_QUICK_INTERNAL_STATUS} / ` +
+    `CASE_QUICK_DEAD_ANCHORS = ${CASE_QUICK_DEAD_ANCHORS} / ` +
+    `CASE_QUICK_ITEMS = ${distinctItemLists.size} 種 / ` +
+    `CONTACT_EMAIL = ${CONTACT_EMAIL} (mailto ${MAILTO_LINKS.length}) / ` +
+    `CONTACT_HELPER = ${CONTACT_HELPER} / ` +
+    `FEATURED_TIERS = ${featuredBlocks.map((b) => `${b.slug}:${b.tier}`).join(' ')} / ` +
+    `FEATURED_SOURCE_LINKS = ${FEATURED_SOURCE_LINKS.length} / ` +
+    `SOURCE_WITHHELD = ${SOURCE_WITHHELD} / ` +
+    `PUBLIC_CODE_LINKS = ${PUBLIC_CODE_LINKS.length} / ` +
+    `WITHHELD_URLS = ${WITHHELD_URLS} / ` +
+    `RETIRED_PUBLIC_COPY = ${RETIRED_COPY_HITS} / ` +
+    `ABOUT_RETIRED_COPY = ${ABOUT_RETIRED_COPY} / ` +
+    `ABOUT_EXPERIENCE = ${ABOUT_EXPERIENCE} / ` +
+    `ABOUT_DISCLOSURE_ROWS = ${ABOUT_DISCLOSURE_ROWS} / ` +
+    `HOW_PREMISES = ${HOW_PREMISES.length} / ` +
+    `HOW_OUTLINE = ${HOW_OUTLINE.join(' ')} / ` +
+    `HOW_WORKFLOW_STEPS = ${HOW_WORKFLOW_STEPS} / ` +
+    `HOW_ROLE_ROWS = ${HOW_ROLE_ROWS} / ` +
+    `HOW_INTENT_ITEMS = ${HOW_INTENT_ITEMS} / ` +
+    `HOW_NO_CASE_DEPTH = ${HOW_NO_CASE_DEPTH} / ` +
+    `HOW_TOP_LINKS = ${HOW_TOP_LINKS} / ` +
+    `LEDGER_HEADS = ${LEDGER_HEADS_REPORT}`,
 );
 
 if (failures.length > 0) {

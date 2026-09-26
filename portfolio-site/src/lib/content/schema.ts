@@ -228,6 +228,134 @@ export const HOMEPAGE_ROLES = ['lead'] as const;
 /** #7 — the two homepage tiers. Absent means the work is archive-only. */
 export const HOMEPAGE_PLACEMENTS = ['featured', 'more'] as const;
 
+/**
+ * #30 Phase 9-2 — homepage 上の編集上の強弱。それ以上の意味を持たない。
+ *
+ * 技術力の評価でも、品質の順位でも、到達状態でもない。01 FEATURED WORK で
+ * 「先に深く読んでほしい作品」と「技術・業務の幅を示す作品」を分けるための
+ * presentation metadata で、権威は本人の編集判断（HD-G）にある。
+ *
+ *   primary     代表作。figure / measure / spacing を強く出す
+ *   supporting  補助作品。同じ情報項目を保ったまま一段コンパクトにする
+ *
+ * `portfolioProfile` と混ぜない。あちらは作品の成立背景という事実の記録で、
+ * 誰がどう並べるかとは無関係に真偽がある。こちらは並べ方の決定そのもので、
+ * 同じ作品が明日 supporting になっても、作品について嘘になる事実は 1 つも無い。
+ * 1 つのフィールドに畳めば、並び替えるたびに事実が書き換わることになる。
+ *
+ * `homepage === 'featured'` の作品だけが持つ。Featured に出ない作品にこの値を
+ * 置くと、どこにも描かれない強弱が記録に残り、次に homepage tier を動かす人が
+ * それを既定値として読むことになる（下の refinement が拒む）。
+ */
+export const FEATURED_TIERS = ['primary', 'supporting'] as const;
+
+/**
+ * #29 Phase 9-1 — 作品の成立背景・公開形態・到達状態・リリース境界。
+ *
+ * `role` と混ぜない。`role` は技術担当領域（Frontend / Backend / Auth …）の列挙で、
+ * 「何を書いたか」を言う。ここで定義するのは「その作品がどういう成り立ちで、
+ * Portfolio 上どういう形で出ていて、どこまで到達していて、リリースについて
+ * 何を主張してよいか」で、別の軸の事実。1 つのフィールドに 2 つの意味を持たせると、
+ * 片方だけ変えたい日に必ず嘘が入る。
+ *
+ * ここに入るのはすべて本人確認済みの事実だけ。未確認は推測で埋めず、
+ * 専用の enum 値（`releaseStatus = 'unknown'`）で「未確認である」と記録する。
+ */
+
+/**
+ * 誰と進めたか。
+ *
+ *   personal       本人が単独で進めた（自主開発・個人開発）
+ *   collaborative  共同プロジェクトとして進めた
+ *
+ * 有償 / 無償、受託 / 自社は、この軸では言わない。#29 §5.0 の方針どおり、
+ * 金銭条件は作品分類に使わない。
+ */
+export const DEVELOPMENT_CONTEXTS = ['personal', 'collaborative'] as const;
+
+/**
+ * Portfolio 上にどういう形で載っているか。
+ *
+ *   public-reconstruction  元の実装を、公開用に匿名化・合成データで再構成したもの
+ *   technical-demo         公開されることを前提に作った技術デモ
+ *
+ * 「合成データを使っている」こと自体は公開のためのデータ差し替えであって、
+ * 作品の成立背景ではない（#29 §5.2）。両者を混同しないためにこの軸を分けている。
+ */
+export const PORTFOLIO_FORMS = ['public-reconstruction', 'technical-demo'] as const;
+
+/**
+ * 本人が関与した範囲で、どこまで到達したか。
+ *
+ *   implemented  実装済み
+ *   public-demo  公開デモとして動作する
+ *   poc          PoC（検証目的の実装で、製品として完成させていない）
+ */
+export const IMPLEMENTATION_STATUSES = ['implemented', 'public-demo', 'poc'] as const;
+
+/**
+ * 本番リリース・本番運用について、Portfolio 上で何を言ってよいか。
+ *
+ * 4 つの値はすべて別の事実であって、程度の差ではない。特に `unknown` と
+ * `not-released` を 1 つにまとめない ——「確認していない」と「無いと確認した」は
+ * 違う事実で、まとめた瞬間にどちらかが嘘になる。
+ *
+ *   unknown       本人確認上、本番リリース状態を確定していない。
+ *                 未確認なので、公開面に事実として出さない。
+ *   not-released  本番リリースなしを本人確認済み。
+ *   project-use   一般向け本番サービスとしてのリリースではないが、
+ *                 実プロジェクト内で実際に利用した。
+ *   not-claimed   公開デモや開発中作品で、
+ *                 本番リリース・本番運用を Portfolio 上で主張しない。
+ */
+export const RELEASE_STATUSES = ['unknown', 'not-released', 'project-use', 'not-claimed'] as const;
+
+/** `originProject` の開発体制。自社プロジェクトを表せる点が本体の軸との差。 */
+export const ORIGIN_PROJECT_CONTEXTS = ['internal-project', 'personal', 'collaborative'] as const;
+
+/** `originProject` の到達状態。継続中を表せる点が本体の軸との差。 */
+export const ORIGIN_PROJECT_STATUSES = ['in-development', 'implemented', 'poc', 'unknown'] as const;
+
+/**
+ * この作品が「何かの一部を公開用に取り出したもの」であるとき、その元にあたる開発。
+ *
+ * 作品レコードとは別に持つ。元の開発と、公開している作品は、到達状態も担当範囲も
+ * 一致しないのが普通で（元は開発中・公開分は動作する、など）、1 つのレコードに
+ * 畳むとどちらの事実も言えなくなる。
+ *
+ * `label` は公開される文字列なので、顧客名・発注元名・非公開リポジトリ名を入れない。
+ * 入れてよいのは、その開発が何であるかを一般名詞で言った呼称だけ。
+ */
+export const originProjectSchema = z.object({
+  label: z.string().min(1),
+  context: z.enum(ORIGIN_PROJECT_CONTEXTS),
+  status: z.enum(ORIGIN_PROJECT_STATUSES),
+  /** 元の開発における本人の担当範囲。工程（要件定義 等）と技術領域の両方を書ける。 */
+  responsibilityScope: z.array(z.string().min(1)).min(1),
+});
+
+/**
+ * 全 Work が持つ、同一基準のメタデータ（#29 §5.1）。
+ *
+ * `responsibilityNotes` と `originProject` に default を置いていないのは意図的。
+ * default があると、書き忘れた作品が「補足なし」「元となる開発なし」として
+ * 静かに通る。どちらも「無い」と言い切る記録なので、`[]` / `null` を
+ * 明示的に書かせる。
+ */
+export const portfolioProfileSchema = z.object({
+  developmentContext: z.enum(DEVELOPMENT_CONTEXTS),
+  portfolioForm: z.enum(PORTFOLIO_FORMS),
+  implementationStatus: z.enum(IMPLEMENTATION_STATUSES),
+  releaseStatus: z.enum(RELEASE_STATUSES),
+  /**
+   * 上の 4 つの enum では言えない、本人確認済みの補足。
+   * 推測・評価・成果数値は書かない。確認済みの事実だけ。
+   */
+  responsibilityNotes: z.array(z.string().min(1)),
+  /** 元となる開発が無い作品は `null`。省略は許さない。 */
+  originProject: originProjectSchema.nullable(),
+});
+
 const imageSchema = z.object({
   src: z.string().min(1),
   width: z.number().int().positive(),
@@ -274,6 +402,18 @@ const workBase = z.object({
   role: z.array(z.string().min(1)).default([]),
   /** The 4–6 the homepage shows. Falls back to `languages` when empty. */
   selectedTech: z.array(z.string().min(1)).default([]),
+
+  /**
+   * #29 — 作品の成立背景・公開形態・到達状態・リリース境界。全 Work に必須。
+   *
+   * default を持たない。default は「まだ決めていない作品」と「そう決めた作品」を
+   * 同じ形にしてしまい、この記録が答えるはずの「未確認かどうか」をちょうど
+   * 見えなくする。未確認であることは `releaseStatus = 'unknown'` のように
+   * 値として書く。
+   *
+   * 上の `role` とは別軸（`portfolioProfileSchema` の説明を参照）。
+   */
+  portfolioProfile: portfolioProfileSchema,
 
   // what it is written in
   languages: z.array(z.string().min(1)).min(1),
@@ -345,6 +485,15 @@ const workBase = z.object({
    *   absent      archive only; reachable from /work/ and from nowhere else
    */
   homepage: z.enum(HOMEPAGE_PLACEMENTS).optional(),
+
+  /**
+   * #30 — Featured の中での強弱。`homepage === 'featured'` のときだけ持つ。
+   *
+   * optional なのは、Featured でない作品が持たないことを表すため。持つ / 持たない
+   * の対応は下の refinement が両方向で要求するので、「featured なのに未設定」も
+   * 「featured でないのに設定されている」も通らない。
+   */
+  featuredTier: z.enum(FEATURED_TIERS).optional(),
 
   /**
    * V4 — `repoPath`, `publicDemoScope` and `tests` restated as one record.
@@ -443,6 +592,29 @@ export const workSchema = workBase.superRefine((w, ctx) => {
       message:
         `featured = ${w.featured} と homepage = ${w.homepage ?? '(なし)'} が食い違っている。` +
         'FEATURED WORK に出る作品は featured = true かつ homepage = "featured"。',
+    });
+  }
+
+  // #30 — featuredTier は Featured の中でだけ意味を持つ。両方向で要求するのは、
+  // 片方向だけだと「Featured から外したのに tier が残っている」記録が静かに
+  // 生き延びるため。描かれない強弱は、次に順序を触る人が既定値として読む。
+  const onFeatured = w.homepage === 'featured';
+  if (onFeatured && w.featuredTier === undefined) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['featuredTier'],
+      message:
+        'homepage = "featured" の作品には featuredTier が要る。' +
+        'FEATURED WORK は代表作と補助作品で強弱を付けて描くので、どちらかを記録すること。',
+    });
+  }
+  if (!onFeatured && w.featuredTier !== undefined) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['featuredTier'],
+      message:
+        `homepage = ${w.homepage ?? '(なし)'} の作品に featuredTier = ${w.featuredTier} を置かない。` +
+        'FEATURED WORK に出ない作品に homepage 上の強弱は無い。',
     });
   }
 
@@ -744,6 +916,13 @@ export const uiCopySchema = copySchema.extend({
 });
 
 export type Work = z.infer<typeof workSchema>;
+export type PortfolioProfile = z.infer<typeof portfolioProfileSchema>;
+export type FeaturedTier = (typeof FEATURED_TIERS)[number];
+export type OriginProject = z.infer<typeof originProjectSchema>;
+export type DevelopmentContext = (typeof DEVELOPMENT_CONTEXTS)[number];
+export type PortfolioForm = (typeof PORTFOLIO_FORMS)[number];
+export type ImplementationStatus = (typeof IMPLEMENTATION_STATUSES)[number];
+export type ReleaseStatus = (typeof RELEASE_STATUSES)[number];
 export type Showcase = z.infer<typeof showcaseSchema>;
 export type WorkSource = z.infer<typeof sourceSchema>;
 export type Tests = z.infer<typeof testsSchema>;

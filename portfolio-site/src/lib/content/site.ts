@@ -24,6 +24,29 @@ const railed = {
   railLabels: z.array(z.string().min(1)),
 };
 
+/**
+ * #32 — one ABOUT block: a visible label, a body, and where both came from.
+ *
+ * `labelId` / `copyId` are REGISTRY IDS. The two strings a reader sees are
+ * approved copy (Issue #32 comment 5748161578) and live in the registries that
+ * hold their approval records; what this file holds is which block appears,
+ * in what order, and on what sourcing. Writing either string here would put an
+ * approved sentence where `approvedCopyGate` cannot see it, which is the defect
+ * #31 fixed for 開発の前提 and the one #32 would otherwise reintroduce.
+ *
+ * `.strict()`, so a `value` or a `text` field added back is an error rather
+ * than a second home for the body.
+ */
+const aboutBlock = z
+  .object({
+    /** Stable within the section. Not rendered; it names the block in a diff. */
+    id: z.string().min(1),
+    labelId: z.string().min(1),
+    copyId: z.string().min(1),
+    sourceRefs: z.array(z.string().min(1)).min(1),
+  })
+  .strict();
+
 const siteSchema = z.object({
   handle: z.string().min(1),
   kicker: z.string().min(1),
@@ -110,7 +133,97 @@ const siteSchema = z.object({
     ),
     roles: z.array(z.object({ role: z.string().min(1), duty: z.string().min(1) })),
     intent: z.array(z.string().min(1)),
-    notClaimed: z.array(z.string().min(1)),
+    /**
+     * #31 追加 Human Decision — 「開発の前提」。
+     *
+     * THIS FIELD HOLDS COPY REGISTRY IDS, NOT SENTENCES, and the change of
+     * shape is the point of the rename. `notClaimed` held two sentences, both
+     * written as refusals（「…とは主張しない。」）and both sitting in site.json
+     * where no approval record can reach them. The owner replaced the framing:
+     * the section now says how the work is actually done and then bounds what
+     * the published content covers, and the two sentences are APPROVED copy
+     * (`method.premise.01` / `.02`, Issue #31 comment 5747908981).
+     *
+     * Renaming the field and leaving an array of 否定文 in it would have been
+     * the worse half of the change — a section called 開発の前提 whose data
+     * model still said "things not claimed". What the section content owns now
+     * is the ORDER: which premises this page states, and in which sequence. The
+     * sentences themselves live where their approval lives.
+     *
+     * The ids are resolved by `copyText` at render time, which throws on an id
+     * the registry does not hold — so a premise pointing at nothing fails the
+     * build rather than rendering an empty bullet.
+     */
+    premises: z.array(z.string().min(1)).min(1),
+    /**
+     * #31 — the decision cases, transcribed from public pull requests.
+     *
+     * WHY THE BODY IS DATA AND NOT MARKUP. Every sentence below is a
+     * source-derived fact: it says what was measured, what was rejected and
+     * what was verified, and each one has to stay checkable against the PR it
+     * came from. A paragraph typed into an `.astro` file is outside every gate
+     * this repository has — `siteStrings` does not walk components, so a claim
+     * written there ships with no locator and no way to tell, later, which
+     * sentence rests on which section of which PR.
+     *
+     * `sourceRefs` is required and is the point of the record. It names the
+     * SECTIONS of the PR that support the case, not just the PR: "PR #20" as a
+     * whole is 200 lines, and a reader checking one sentence needs to be sent
+     * to the part that states it.
+     *
+     * `prNumber` is a number rather than a URL, and the URL is built by
+     * `publicPrUrl` from `site.repo` — see derive.ts for why the address is
+     * not stored here.
+     *
+     * WHAT THESE RECORDS DELIBERATELY DO NOT HAVE: a field for whose idea the
+     * initial plan was. The site's claim is that the AUTHOR investigated,
+     * decided and verified — which the PRs do document — and neither PR says
+     * who proposed the design it starts from. A schema with an `aiProposal`
+     * field would be an invitation to fill it in from the site's own narrative,
+     * so the field does not exist; the initial state is stated inside
+     * `problem`, as what was there, with no origin attached to it.
+     */
+    decisionCases: z
+      .array(
+        z
+          .object({
+            id: z.string().min(1),
+            prNumber: z.number().int().positive(),
+            title: z.string().min(1),
+            /** What was happening, including the plan it started from. */
+            problem: z.string().min(1),
+            /** What investigation or measurement established. */
+            observed: z.string().min(1),
+            /** What was chosen, and what was dropped. */
+            decision: z.string().min(1),
+            /** What it became. */
+            result: z.string().min(1),
+            /** The engineer's layer: measurements, tests, conditions. */
+            verification: z.array(z.string().min(1)).min(1),
+            sourceRefs: z.array(z.string().min(1)).min(1),
+          })
+          .strict(),
+      )
+      .min(1),
+    /**
+     * #31 HD-J — the QA record, which is NOT a third case.
+     *
+     * Its own shape, because it makes a different kind of statement. A decision
+     * case says "this was wrong, this was found, this was chosen"; this one
+     * says how far the checking reached and where it stopped. Giving it the
+     * case shape would have meant inventing a `problem` and a `decision` for a
+     * record that has neither, which is how a QA pass gets written up as a
+     * dramatic fix it never was.
+     */
+    qaRecord: z
+      .object({
+        prNumber: z.number().int().positive(),
+        title: z.string().min(1),
+        summary: z.string().min(1),
+        facts: z.array(z.string().min(1)).min(1),
+        sourceRefs: z.array(z.string().min(1)).min(1),
+      })
+      .strict(),
     sourceRefs: z.array(z.string().min(1)).min(1),
   }),
   stack: z.object({
@@ -167,26 +280,65 @@ const siteSchema = z.object({
    * has to be a decision someone takes on purpose rather than a field someone
    * fills in.
    *
-   * `known` carries `sourceRef` per row and that stays required: a profile fact
-   * without a locator is the thing this whole section exists to prevent.
+   * EVERY ABOUT BLOCK CARRIES ITS OWN LOCATORS AND THAT STAYS REQUIRED: a
+   * profile fact without one is the thing this whole section exists to prevent.
+   * What changed in #32 is where the SENTENCE lives, not whether the record has
+   * to say where it came from.
    */
   about: z
     .object({
       ...railed,
       /**
        * #7 — the short statement of how this engineer works, which ABOUT did
-       * not have. `known` stays exactly as it was and moves below it: the
-       * premises were never the introduction, they were the fine print under
-       * one.
+       * not have. It opens the section: the rest of ABOUT is read after it, not
+       * as the fine print above it.
        */
       now: z.array(z.string().min(1)).min(1),
-      known: z.array(
-        z.object({
-          key: z.string().min(1),
-          value: z.string().min(1),
-          sourceRef: z.string().min(1),
-        }),
-      ),
+      /**
+       * #32 — 業務経験. A PROFILE FACT, not a disclaimer, and that distinction
+       * is the reason it is its own field rather than a row in the list below.
+       *
+       * ABOUT used to end on three rows — 実装形態 / 公開範囲 / データ — which
+       * were all the same kind of statement: what this site is NOT claiming.
+       * A reader met the caveats and never met the person, and there was no
+       * line about the owner's working background anywhere on the site. The
+       * owner decided what that line says (HD-C, Issue #32 comment 5748116465)
+       * and approved its wording (comment 5748161578); giving it a field of its
+       * own is what keeps it from being drawn, coloured and read as a fourth
+       * caveat.
+       *
+       * HOLDS IDS, NOT SENTENCES — the shape `premises` took in #31, for the
+       * same reason. `copyId` names the approved body in the shipping registry
+       * and `labelId` names its visible label in the ui registry, so the
+       * sentence sits where its approval record sits and this file owns the
+       * order and the sourcing. `copyText` throws on an id the registry does
+       * not hold, so a block pointing at nothing fails the build rather than
+       * rendering an empty row.
+       *
+       * `sourceRefs` is required and non-empty per block. It is the half of the
+       * old `known` contract that had nothing to do with where the sentence was
+       * stored: a fact on this page says where it came from, whether the words
+       * are here or in a registry.
+       */
+      profile: z.array(aboutBlock).min(1),
+      /**
+       * #32 — 掲載内容について / 公開データ. The compliance half, compressed
+       * into ONE block instead of three rows standing on their own.
+       *
+       * Nothing was dropped to compress it. 合成データ is still stated here, and
+       * the scope sentence now says what #29 established — that the published
+       * work includes a collaborative project rebuilt for publication, personal
+       * technical demos and a self-directed PoC — where the old 実装形態 row
+       * said 個人開発 of the whole portfolio, which stopped being true when #29
+       * recorded the collaborative half.
+       *
+       * Separate from `profile` because the two are drawn differently and the
+       * count of each is a rendering contract (`ABOUT_DISCLOSURE_ROWS`). One
+       * list with a `kind` discriminator would put the editorial decision —
+       * this is a fact about me, that is a boundary about the page — inside a
+       * field a renderer has to branch on.
+       */
+      disclosure: z.array(aboutBlock).min(2),
     })
     .strict(),
   contact: z
@@ -256,6 +408,52 @@ export const SITE_NON_SHIPPING: readonly SiteStringExemption[] = [
       'capability category の序数。`index` と同じ理由で免除し、同じ条件を付ける — ' +
       '数字でなくなった瞬間に、それは構造ではなく読ませる語なので免除が外れる。',
     valuePattern: /^\d+$/,
+  },
+  /*
+   * #31 — 「開発の前提」が出す文の id。
+   *
+   * `work` / `example` / `featured` と同じ理由で免除する。読者が見るのは copy
+   * registry が持つ承認済みの文で、ここにあるのはどれをどの順で出すかという
+   * 参照である。文そのものをここに置けば、承認記録の無い場所に承認を要する
+   * 文が座ることになり、この Issue が直したのはまさにそれだった。
+   *
+   * `index` / `key` と同じく条件付きである。id の形（小文字のドット区切り）を
+   * していない値が入った瞬間、それは参照ではなく読ませる文なので免除が外れ、
+   * 未登録の出荷文字列として報告される。
+   */
+  {
+    leaf: 'premise',
+    why:
+      'copy registry の id。承認済みの文は shipping.json にあり、ここにあるのは ' +
+      '「どの文をどの順で出すか」という参照 — id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
+  },
+  /*
+   * #32 — ABOUT の各ブロックが指す registry id。
+   *
+   * `premise` と同じ理由・同じ条件で免除する。読者が読むのは registry が持つ
+   * 承認済みの文とラベルで、ここにあるのは「どれをどの順で出すか」という参照
+   * である。`labelId` / `copyId` という名前で `label` / `copy` ではないのは、
+   * `sections.label` が nav に出る本物の出荷文字列だからで、`label` を免除すれば
+   * 節名が黙って gate の外へ出る。
+   *
+   * 条件付きである。id の形（小文字のドット区切り）をしていない値が入った瞬間、
+   * それは参照ではなく読ませる文なので免除が外れ、未登録の出荷文字列として
+   * 報告される — ABOUT の本文が site.json へ戻ってきたら、それがここで出る。
+   */
+  {
+    leaf: 'labelId',
+    why:
+      'ui registry の id。ABOUT のラベルは ui.json にあり、ここにあるのは参照 — ' +
+      'id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
+  },
+  {
+    leaf: 'copyId',
+    why:
+      'copy registry の id。ABOUT の本文は shipping.json にあり、ここにあるのは ' +
+      '参照 — id の形をしている間だけ免除する。',
+    valuePattern: /^[a-z][a-zA-Z0-9]*(\.[a-zA-Z0-9]+)+$/,
   },
 ];
 

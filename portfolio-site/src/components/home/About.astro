@@ -1,58 +1,123 @@
 ---
 /**
- * 06 ABOUT — only what the repositories can confirm.
+ * 06 ABOUT — the working background, then what the published work is.
  *
- * Every row here carries the locator it came from, rendered next to it. There
- * is no second list. The prototype ended this section with a 未提供 block that
- * named 経歴 / 稼働条件 / 料金 and set each of them to 未記入; that block is gone
+ * Every block here carries the locators it came from, and none of them prints
+ * one. The prototype ended this section with a 未提供 block that named
+ * 経歴 / 稼働条件 / 料金 and set each of them to 未記入; that block is gone
  * (IMPLEMENT-03 §5) and nothing replaced it.
  *
  * The reason is not that the gap is embarrassing. It is that a public page and
  * a prototype have different readers. In the prototype 未記入 was a note to the
  * people building it — a slot with a name and no value yet. To a visitor the
  * same three rows read as a statement the site is making about itself, and it
- * is a statement no source backs. Facts that arrive later get rows here with
- * `sourceRef` filled in, which is the only way anything gets one.
+ * is a statement no source backs. Facts that arrive later get blocks here with
+ * their sources filled in, which is the only way anything gets one.
  *
- * PROFILE_INVENTED = NO. Removing the rows was the whole change; no sentence
- * was written to stand in for them.
+ * PROFILE_INVENTED = NO, still. #32 added the first profile fact this section
+ * has ever carried and it is not invented: the owner decided what it says
+ * (HD-C, Issue #32 comment 5748116465) and approved its wording (comment
+ * 5748161578), and it is registered as a `user-fact` — the classification that
+ * refuses a plausible-looking placeholder.
+ *
+ * WHAT #32 CHANGED IS THE READING ORDER. ABOUT used to be `now` followed by
+ * three rows — 実装形態 / 公開範囲 / データ — and all three said the same kind
+ * of thing: what this site is NOT claiming. A reader met three caveats in a row
+ * and never met the person, because there was no line about the owner's working
+ * background anywhere on the site. It now reads:
+ *
+ *   h2 → 現在の開発姿勢 (`now`) → 業務経験 → 掲載内容の公開境界
+ *
+ * The boundary is not softened, only moved and compressed: 合成データ is still
+ * stated, and 掲載内容について now says what #29 established — a collaborative
+ * project rebuilt for publication, personal technical demos, a self-directed
+ * PoC — where 実装形態 called the whole portfolio 個人開発, which stopped being
+ * true the moment #29 recorded the collaborative half.
+ *
+ * NO SENTENCE IS WRITTEN HERE. `site.about` holds ids and sourcing; the three
+ * bodies live in the shipping registry and the three labels in the ui registry,
+ * where their approval records are. That is the shape `site.howIBuild.premises`
+ * took in #31, for the same reason — an approved string sitting in a component
+ * is one `approvedCopyGate` cannot see, and both resolvers throw on an id their
+ * registry does not hold, so a block pointing at nothing fails the build
+ * instead of rendering an empty row.
  */
 import { copyText } from '../../lib/content/copy.ts';
 import { sectionNumber } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
+import { uiText } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
+import SectionMarker from './SectionMarker.astro';
 
 const a = site.about;
 const index = sectionNumber('about');
 const h2 = await copyText('home.about.h2');
+
+/** One block, resolved: the label from ui, the body from the copy registry. */
+const resolve = async (block: { id: string; labelId: string; copyId: string }) => ({
+  id: block.id,
+  label: uiText(block.labelId),
+  body: await copyText(block.copyId),
+});
+
+const profile = await Promise.all(a.profile.map(resolve));
+const disclosure = await Promise.all(a.disclosure.map(resolve));
 ---
 
 {/* `data-mx-n` — see Hero.astro. The index is `site.about`'s own. */}
 <section class="s-open" id="about" data-mx-n={index}>
+  {/* #46 — the chapter opening. The section's own number and name at
+      folio size; decorative, `aria-hidden`, and bounded to the head of
+      the section by section-marker.css. */}
+  <SectionMarker section="about" />
   <div class="page">
     <div class="tr">
       <Rail index={index} labels={a.railLabels} />
       <div class="fld">
         <h2 class="ab-h">{h2}</h2>
-        {/* #7 — how this engineer works, before the premises. ABOUT used to
+        {/* #7 — how this engineer works, before anything else. ABOUT used to
             open with its own fine print, which told a reader who had just
             finished the work what the site was NOT claiming before telling
             them anything about the person. */}
         <div class="ab-now">
           {a.now.map((line) => <p>{line}</p>)}
         </div>
+        {/* #32 — 業務経験. THE SAME `.spx` SHAPE AS EVERY OTHER FACT ON THIS
+            SITE, deliberately: it is a profile fact, so it is drawn like one.
+            A block of its own with a warning tone would make the one line about
+            the person read as a fourth caveat, which is the structure this
+            change exists to undo. Below 1024px — and, per motion.css, on
+            desktop too — `.spx.wide .r` puts the mono label above the sentence,
+            so the reading order is label then body at every width and the DOM
+            order is that order. */}
         <div class="spx wide" style="margin-top:30px">
           {
-            a.known.map((k) => (
-              <div class="r">
-                <span class="k">{k.key}</span>
-                {/* #7 — the locator is NOT rendered. `spec CS-8` is an
-                    internal citation: it tells a maintainer where the sentence
-                    came from and tells a visitor nothing they can act on.
-                    `sourceRef` stays required on the record and stays under the
-                    Truth Gate — the fact still has to have a source, the page
-                    just stops printing its filing reference (spec §20). */}
-                <span class="v">{k.value}</span>
+            profile.map((block) => (
+              <div class="r" data-about-fact={block.id}>
+                <span class="k">{block.label}</span>
+                {/* #7 — the locator is NOT rendered. `sourceRefs` stays
+                    required on the record and stays under the Truth Gate — the
+                    fact still has to say where it came from, the page just
+                    stops printing its filing reference (spec §20). */}
+                <span class="v">{block.body}</span>
+              </div>
+            ))
+          }
+        </div>
+        {/* #32 — 掲載内容について / 公開データ, in ONE container.
+            The two are the compliance half and they are read together, so they
+            share a block instead of standing as separate rows among the facts.
+            `.ab-disc` is the whole of the difference: a hairline instead of the
+            2px rule, and the supporting text colour at the supporting size. No
+            alert, no banner, no `--stop` — these state what the published work
+            IS, and colouring a fact as a warning is how a reader learns to
+            discount it. */}
+        <div class="spx wide ab-disc">
+          {
+            disclosure.map((block) => (
+              <div class="r" data-about-disclosure={block.id}>
+                <span class="k">{block.label}</span>
+                <span class="v">{block.body}</span>
               </div>
             ))
           }

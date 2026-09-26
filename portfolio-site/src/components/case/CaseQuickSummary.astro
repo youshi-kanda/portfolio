@@ -1,0 +1,271 @@
+---
+/**
+ * 3分概要 — the whole Case Study, answered once, before the detail starts.
+ *
+ * #33. The page below this is written for someone who reads code: design
+ * decisions with the option that was rejected, a test count next to the run it
+ * came from, a scope table with a reason per row. That is the right page for an
+ * engineer and the wrong first screen for the person who decides whether an
+ * engineer gets read at all — a recruiter or someone weighing a commission, who
+ * needs 課題 / 利用者 / 担当 / 到達状態 / 証拠 / 対象外 and needs them before
+ * deciding to keep reading. HD-O names that reader, one reader, for both roles
+ * (Issue #33 comment 5749344650): there is no second copy of this block written
+ * for a different audience, because two descriptions of one work are two things
+ * that can disagree.
+ *
+ * NOT ONE NEW SENTENCE IS WRITTEN HERE, AND THAT IS THE DESIGN. Every value
+ * below is READ from the record that already owns it — `work.problem`,
+ * `work.targetUser`, `work.role`, `work.implementationScope`,
+ * `work.limitations`, `caseStudy.repository`. The obvious way to build a
+ * summary is to write one into each Case Study as `quickSummary`, and that
+ * would make three files the 正本 of the same facts: the work record, the Case
+ * Study body, and the summary. They agree on the day they are written and
+ * drift on every day after, and the summary is the copy nobody rereads. So the
+ * summary is an INDEX, not a précis — it points at facts that live elsewhere,
+ * and it is wrong only if they are.
+ *
+ * NO SLUG APPEARS IN THIS FILE. The three published Case Studies render the
+ * same items in the same order from the same component; the only thing that
+ * differs is what is true of each. A `work.slug === 'dfe'` branch here would be
+ * the start of three templates wearing one component's name, and it is exactly
+ * what makes a comparison between works impossible for the reader the block is
+ * for.
+ *
+ * WHAT THIS BLOCK MUST NOT BECOME. It is not a warning panel. 未実装・対象外 is
+ * a fact about scope, drawn like every other row — painting the block in
+ * `--stop` would tell a reader to discount the work before reading it. And it
+ * is not collapsible: a summary behind a toggle is a summary for someone who
+ * already knows they care.
+ *
+ * ON DFE, ORDER IS MEANING. `leadDisclosure`（「この作品は OCR を実行して
+ * いない」）stays in `CaseHead`, above this block. A reader who meets 実装した
+ * もの first has already formed the belief the disclosure exists to prevent,
+ * and a correction that arrives after the belief has already failed.
+ */
+import { workVerification } from '../../lib/content/compat.ts';
+import {
+  caseSections,
+  developmentBackground,
+  implementationStatusLabel,
+  workPublicSourceUrl,
+} from '../../lib/content/derive.ts';
+import type { CaseStudy, Work } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
+
+interface Props {
+  work: Work;
+  caseStudy: CaseStudy;
+}
+
+const { work, caseStudy } = Astro.props;
+const Q = ui.caseStudy.quick;
+
+const tests = workVerification(work);
+const sourceUrl = workPublicSourceUrl(work);
+
+/**
+ * The evidence list, minus the row the 公開コード line already is.
+ *
+ * COMPARED BY URL, NOT BY POSITION. The repository list happens to open with
+ * the tree URL on all three works today, so `slice(1)` would produce the right
+ * output and would be checking the wrong thing: it encodes "the first entry is
+ * the repository" as a rule nobody wrote down, and the day a Case Study lists
+ * its README first, the tree URL is shown twice and the README disappears.
+ * Trailing slashes are normalised because one link ending in `/` and one not
+ * are the same destination, and a reader clicking both learns that twice.
+ */
+const canonical = (href: string): string => href.replace(/\/+$/, '');
+const evidenceLinks = caseStudy.repository.filter(
+  (r) => sourceUrl === null || canonical(r.href) !== canonical(sourceUrl),
+);
+
+/**
+ * The GitHub Actions caveat, on the same terms CaseBody states it: rendered
+ * only when one of the links ACTUALLY points at a run page, matched on the URL
+ * rather than on a flag someone has to remember to set.
+ */
+const needsGitHubAuth = evidenceLinks.some((r) =>
+  /github\.com\/.+\/actions\/runs\//.test(r.href),
+);
+
+/**
+ * 詳しく見る — three existing sections, and no heading text written twice.
+ *
+ * `caseSections` already decides which sections this page renders and what each
+ * is called; both the title and the anchor come back from it. Writing 「なぜこの
+ * 設計にしたか」 here would be the same string in two files, and the anchor is
+ * the half that fails silently — a `#cs6` typed into this component keeps
+ * working right up until the section it names stops rendering, and then it is a
+ * link to nowhere that no test notices.
+ *
+ * So a row appears only if the section it points at is on the page.
+ */
+const DETAIL_SECTIONS = ['cs6', 'cs9', 'cs12'] as const;
+const rendered = caseSections(work, caseStudy);
+const details = DETAIL_SECTIONS.flatMap((id) => {
+  const section = rendered.find((s) => s.id === id);
+  return section ? [section] : [];
+});
+---
+
+<section class="s-tight csq" id="cs-quick" aria-labelledby="cs-quick-h">
+  <div class="page">
+    <div class="tr">
+      <div class="ins">
+        <span class="lb">{Q.head}</span>
+      </div>
+      <div class="fld">
+        <h2 id="cs-quick-h">{Q.head}</h2>
+        {/*
+          `.spx wide` — the site's own label/value table, not a new shape. The
+          mono label sits in the left column on the measure and above its value
+          below 768px, so the reading order is label then value at every width
+          and the DOM order IS that order.
+
+          `.k` / `.v` are DIVs here rather than the SPANs the other `.spx`
+          tables use, because these values contain lists. Every rule that draws
+          this table selects on the class, not the tag, so nothing about the
+          drawing changes — what changes is that a `<ul>` inside a `<span>`
+          stops being markup no parser is obliged to keep.
+
+          Every row carries `data-quick-item`, which is what lets
+          `check:structure` hold the three published Case Studies to the same
+          items in the same order without a hand-maintained list of what those
+          items are.
+        */}
+        <div class="spx wide" data-quick-summary>
+          <div class="r" data-quick-item="problem">
+            <div class="k">{Q.problem}</div>
+            <div class="v"><ul class="dash">{work.problem.map((t) => <li>{t}</li>)}</ul></div>
+          </div>
+
+          <div class="r" data-quick-item="targetUser">
+            <div class="k">{Q.targetUser}</div>
+            <div class="v">{work.targetUser}</div>
+          </div>
+
+          {/* #30's wording, reused rather than restated — see ui.ts. */}
+          <div class="r" data-quick-item="background">
+            <div class="k">{ui.work.background}</div>
+            <div class="v">{developmentBackground(work.portfolioProfile)}</div>
+          </div>
+
+          {/*
+            `work.role` — the technical areas #29 confirmed, not a sentence.
+            `caseStudy.role` is a paragraph further down the page, and
+            summarising it here would be this component writing new prose about
+            the author's own scope, which is the one thing it has no authority
+            to do.
+          */}
+          <div class="r" data-quick-item="role">
+            <div class="k">{Q.role}</div>
+            <div class="v">{work.role.join(' / ')}</div>
+          </div>
+
+          <div class="r" data-quick-item="status">
+            <div class="k">{Q.status}</div>
+            <div class="v">{implementationStatusLabel(work.portfolioProfile)}</div>
+          </div>
+
+          {/*
+            `work.implementationScope` — the 正本 of what was actually built,
+            and NOT `caseStudy.built`.
+
+            The two look interchangeable and are not. `caseStudy.built` is the
+            detail body's ledger of what a reader meets when they open the
+            work, so it legitimately carries rows for things that are NOT
+            implemented — PPM lists 「まだ作っていない画面」 because the sheet
+            really does show an 「実装予定」 placeholder, and DFE lists a review
+            screen whose `what` begins 「含めていません」. Printed under a
+            heading that reads 実装したもの with nothing but a dash between the
+            name and its explanation, those rows say the opposite of what they
+            mean: the summary is read in seconds, and the seconds go to the
+            names. `work.implementationScope` is the record that answers
+            「実装した範囲」 and only that, which is the question this row asks.
+
+            So the two stay split by role — 3分概要 reads the scope, 作ったもの
+            further down reads the ledger — rather than being reconciled into
+            one field, because the detail body genuinely needs to name the
+            unbuilt screen and this row genuinely must not.
+          */}
+          <div class="r" data-quick-item="built">
+            <div class="k">{Q.built}</div>
+            <div class="v">
+              <ul class="dash">
+                {work.implementationScope.map((item) => <li>{item}</li>)}
+              </ul>
+            </div>
+          </div>
+
+          {sourceUrl && (
+            <div class="r" data-quick-item="source">
+              <div class="k">{Q.source}</div>
+              <div class="v">
+                <a class="lk csq-l" href={sourceUrl} data-quick-source>
+                  {ui.work.sourceCta}<span class="ar">→</span>
+                </a>
+              </div>
+            </div>
+          )}
+
+          {evidenceLinks.length > 0 && (
+            <div class="r" data-quick-item="evidence">
+              <div class="k">{ui.work.evidenceHead}</div>
+              <div class="v">
+                <ul class="dash">
+                  {evidenceLinks.map((r) => (
+                    <li>
+                      <a class="lk csq-l" href={r.href} data-quick-evidence>
+                        {r.label}<span class="ar">→</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+                {/*
+                  The test summary is READ from the work's verification record
+                  — the same string 品質の担保方法 prints next to the run it
+                  came from. A number typed here would be a second place for a
+                  count to be wrong, and the run URL stays the one the Case
+                  Study's own repository list already carries.
+                */}
+                {tests && (
+                  <p class="meta csq-m"><span class="st pass">{tests.summary}</span></p>
+                )}
+                {needsGitHubAuth && (
+                  <p class="note csq-n">{ui.caseStudy.repositoryAuthNote}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/*
+            `work.limitations` — the short boundary, not the whole scope table.
+            できること・含めていないこと stays where it is, with a reason per
+            row, and the 詳しく見る row below sends the reader to it.
+          */}
+          <div class="r" data-quick-item="limitations">
+            <div class="k">{Q.limitations}</div>
+            <div class="v"><ul class="dash">{work.limitations.map((t) => <li>{t}</li>)}</ul></div>
+          </div>
+
+          {details.length > 0 && (
+            <div class="r" data-quick-item="details">
+              <div class="k">{Q.details}</div>
+              <div class="v">
+                <ul class="dash">
+                  {details.map((d) => (
+                    <li>
+                      <a class="lk csq-l" href={`#${d.id}`} data-quick-detail={d.id}>
+                        {d.title}<span class="ar">→</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

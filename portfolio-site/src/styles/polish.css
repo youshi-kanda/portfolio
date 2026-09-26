@@ -434,4 +434,349 @@
       display: none;
     }
   }
+  /* NAV: which section the reader is in, said once and in the instrument's own
+     vocabulary. #46.
+
+     The masthead already tracks the current section — `Nav.astro`'s observer
+     writes `aria-current="location"` onto exactly one link — and already draws
+     it twice over: the label goes to `--tx` and the 2px signal underline is
+     brought to `scaleX(1)`. What it lacked was a mark you find without reading,
+     which is the job the rest of this site gives a 7px signal square. This adds
+     that one square and nothing else. The label colour, the underline and the
+     mono index are all left exactly as the frozen sheet authored them.
+
+     NO DOM, AND NOTHING FOR THE ACCESSIBILITY TREE. `components.css:41` carries
+     a `.ad .nav ol a .sq` rule, but the desktop masthead has never printed a
+     `.sq` element — its links are `<a><i>01</i>WORK</a>` — so that rule is dead
+     and a square drawn through it would mean adding markup. A `::before` says
+     the same thing to the eye and says nothing at all to a screen reader, which
+     is correct: `aria-current="location"` is already the whole claim, and a
+     second announcement of it would be noise.
+
+     THE SELECTOR IS GATED TWICE, AND BOTH GATES ARE LOAD-BEARING.
+
+       [data-home-nav]           the attribute is written only when `onHomepage`
+                                 (Nav.astro), so `/work/`, `/work/<slug>/`,
+                                 `/work/<slug>/technical/` and `/how-i-build/`
+                                 cannot match however they are marked.
+       [aria-current='location'] the value the scroll spy writes. The masthead's
+                                 other states are `aria-current="page"` (this
+                                 link IS the current URL) and `data-section`
+                                 (the page lives under it) — both are claims
+                                 about a route, and a square that meant "the
+                                 section you are scrolling through" would be
+                                 saying something untrue on a page that is not
+                                 scrolling through anything.
+
+     `.page ol` is the third gate and the one that keeps this off the phone: the
+     mobile index lives in `.mob-panel`, a SIBLING of `.page`, and its links are
+     deliberately given no `aria-current` at all (Nav.astro). Below 768px the
+     `<ol>` here is `display:none` (responsive.css) and the square goes with it.
+
+     GEOMETRY — the square is drawn INSIDE the padding the link already has, so
+     it costs the layout nothing: no flex item, no width, no reflow when the
+     current section changes. `a` is `position:relative` in the frozen sheet, so
+     the containing block is already there. 7px and `--sig` are what
+     `components.css:41` specifies for this square; neither is invented here.
+
+     `left:4px` against an 18px padding leaves 7px to the link's own index and
+     14px+ back to the previous link's label, so the square reads as belonging
+     to the item on its right. Below 1024px that padding is 12px
+     (responsive.css), which would leave 1px — too tight to read as a separate
+     mark — so the inset is re-centred there rather than the square being
+     shrunk: 7px is the size this mark is everywhere else on the site.
+
+     `top` is a `calc` rather than a `translate` because `transform` on this
+     pseudo now belongs to the state change below, and a centring offset baked
+     into the same property would be something the transition had to carry.
+
+     THE SQUARE AND THE UNDERLINE CHANGE TOGETHER. The first version of this
+     drew the square only on the current link, which made its arrival instant
+     while the underline beside it took .18s to travel — and staging's scroll
+     video caught the gap: for that moment the square names the section you are
+     entering and the underline is still leaving the one behind it. Two marks
+     for one fact, disagreeing about which fact it is.
+
+     The fix is to give the square the underline's timing, not to take the
+     underline's timing away: .18s is the frozen sheet's decision about how this
+     masthead moves, and making the underline instant to match a new mark would
+     be the new mark editing the old one. So the square is drawn on EVERY
+     homepage link, collapsed at `scaleX(0)`, and the current link opens it to
+     `scaleX(1)` — which is exactly the mechanism `components.css:42-52` already
+     uses for the underline, with the same duration, the same easing and the
+     same `transform-origin`. Both marks now leave the old section and arrive at
+     the new one on the same curve.
+
+     A collapsed square is not a drawn one: `scaleX(0)` paints nothing, takes no
+     space (the pseudo is absolute either way) and reaches no accessibility
+     tree. `[data-home-nav]` still gates the base rule, so off the homepage the
+     pseudo is never generated at all — `aria-current="page"` and `data-section`
+     have nothing to collapse or open.
+
+     REDUCED MOTION needs no rule here, and deliberately gets none. The frozen
+     sheet ends its motion section with
+
+       @media (prefers-reduced-motion: reduce){
+         .ad *,.ad *:before,.ad *:after{animation:none !important;
+                                        transition-duration:.01ms !important}
+       }
+
+     which already reaches this pseudo — `!important` reverses layer order, so
+     that declaration in `components` wins over this one in `utilities`. The
+     square and the underline are shortened by the same rule to the same
+     duration, which is the outcome that matters: under `reduce` they are still
+     in step, both effectively instant. Wrapping the transition below in
+     `no-preference` would arrive at the same look by a second mechanism, and
+     the two marks would then be quiet for different reasons. */
+  .ad .nav[data-home-nav] .page ol a::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: calc(50% - 3.5px);
+    width: 7px;
+    height: 7px;
+    background: var(--sig);
+    transform: scaleX(0);
+    transform-origin: 0 50%;
+    transition: transform 0.18s cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .ad .nav[data-home-nav] .page ol a[aria-current='location']::before {
+    transform: scaleX(1);
+  }
+
+  @media (max-width: 1023px) {
+    .ad .nav[data-home-nav] .page ol a::before {
+      left: 2.5px;
+    }
+  }
+
+  /* ABOUT -> CONTACT: the approach to the last section was reading as a pause
+     rather than a break. #46.
+
+     `components.css:862` sets `.contact{margin-top:120px}` — the widest gap
+     between two adjacent homepage sections, and one the scroll video spent
+     noticeably longer crossing than any other seam. 88px is not a new number
+     chosen to feel better: it is `.s-tight` (`layout.css:31`), the rhythm this
+     composition already uses for a close join, so the seam moves from the
+     open step to the tight one without inventing a step between them.
+
+     DESKTOP AND TABLET ONLY. Below 768px `responsive.css:427` sets 112px, and
+     that is a different composition — one column, no facing whitespace, and a
+     seam the video review did not look at. `min-width:768px` leaves it exactly
+     where it was rather than assuming the same edit applies there.
+
+     The section's own box is untouched: `.contact .in` keeps its padding and
+     the 2px rule keeps its place. What moves is only the distance from the end
+     of ABOUT to that rule. */
+  @media (min-width: 768px) {
+    .ad .contact {
+      margin-top: 88px;
+    }
+  }
+
+  /* ==================================================== #52 SECONDARY PAGES
+     Two corrections and one addition, all of them here rather than in the
+     frozen sheets. components.css and responsive.css say at the top what they
+     are — re-emitted rule bodies from the frozen prototype, "Do not restyle
+     here" — and that is the whole value of keeping them: a reader can hold
+     either file against the art-direction source and have the diff be empty.
+     A correction written into them is a correction that can never be told from
+     the original decision again. So this sheet takes them, which is what
+     BaseLayout imports it for.
+
+     `utilities` outranks `components`, so nothing below needs specificity it
+     would not otherwise have, and the frozen declarations stay readable as the
+     thing being corrected. What that DOES mean is that source order inside this
+     block is the whole cascade: the 1279 stack sits after the desktop tracks
+     for that reason, not by accident.
+
+     ---------------------------------------------- PPM ledger (Case Study)
+
+     `.flow` is the generic ruled instrument list and three places draw with it:
+     HOW I BUILD's eight-step workflow, AI CRM's walkthrough, and PPM's
+     register. Only the last one needs column heads and only the last one has
+     PPM's proportions, so this is a variant rather than a change to the
+     instrument all three share. Nothing below can reach `.flow` without
+     `.flow-ledger`.
+
+     WHAT WAS WRONG WITH THE GENERIC TRACKS HERE. `232px` of 処理 and `148px`
+     of 実行主体 against PPM's content: the widest 処理 is 循環検出 at 60px and
+     every 実行主体 on this page is the same 40px word, so 280px of the row was
+     blank while 内容 — sentences of up to 38 units — took whatever was left.
+     Measured on the shipped page that was 365px at 1440, 205px at 1280, 65px at
+     1024 and 29px at 768, where the longest stage wrapped to twenty-two lines.
+     These tracks give the two short columns what they actually need and hand
+     the rest to the sentence.
+
+     THE GATE COLUMN IS SIZED FROM ITS TEXT, NOT FROM WHAT IS LEFT OVER. The two
+     gates measure 100.8px and 95.8px at the 10.5px instrument size, so the
+     track is 156px: both sit on one line at their own size, with room for a
+     longer refusal than either. Shrinking the type to fit was the other way to
+     make the column work and it is the wrong one — the gate is the thing this
+     register exists to show, and it may not be the smallest thing on the row. */
+  .ad .flow-ledger .fhd,
+  .ad .flow-ledger .fst {
+    grid-template-columns: 52px minmax(0, 112px) 108px minmax(0, 1fr) minmax(0, 156px);
+  }
+
+  /* The head is a row of the same grid, drawn as the lane key above the
+     workflow is drawn (components.css `.lanes`): mono at instrument size,
+     tertiary, on a rule. It names the axis; it is not a heading and must not
+     read as one. */
+  .ad .flow-ledger .fhd {
+    display: grid;
+    column-gap: 24px;
+    align-items: baseline;
+    border-bottom: 1px solid var(--hair2);
+    padding: 13px 0;
+  }
+
+  .ad .flow-ledger .fhd span {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--tx3);
+    font-weight: 700;
+  }
+
+  .ad .flow-ledger .fhd .g {
+    text-align: right;
+  }
+
+  /* The floor under the track width, for the refusal this register does not
+     hold yet: one longer than the column breaks rather than leaving the page.
+     Same pairing the display lines use (base.css) and the same reason. */
+  .ad .flow-ledger .g {
+    overflow-wrap: anywhere;
+  }
+
+  /* THE REGISTER LIES DOWN EARLIER THAN THE GENERIC FLOW DOES, at 1280 rather
+     than at 768. That is not a preference; it is where the five columns stop
+     fitting. The field this register is drawn in measures 1,025px at 1440 and
+     865px at 1280 — both hold the four named tracks and still leave 501px and
+     341px for 内容, where no stage runs past two lines — but 725px at 1024 and
+     689px at 768, where the same tracks leave 201px and 165px. Measured at
+     those two widths the rows run to three and four lines against a measure of
+     14 and 11 characters. Keeping five columns there would be keeping the SHAPE
+     of a table by destroying the thing a table is for. Stacked, every row's
+     sentence is back on one line (649px and 613px of measure).
+
+     Nothing is reordered and nothing is dropped. `.k` takes the left track for
+     the whole row and 処理 / 実行主体 / 内容 / ゲート stack in the right one, in
+     the order they are written in the DOM, which is the order the head names.
+     It is the shape the generic `.flow` already takes below 768
+     (responsive.css), applied to this variant at the width its own content
+     asks for.
+
+     THE HEAD STAYS, AS A KEY RATHER THAN AS COLUMNS. Five heads over one column
+     would be five labels pointing at nothing, and `display:none` would take the
+     column names out of the accessibility tree along with the columns — the
+     reader who most needs to be told what `SYSTEM` is would be the one who
+     loses the answer. So it becomes one wrapped mono line: the fields each row
+     states, in the order each row states them. */
+  @media (max-width: 1279px) {
+    .ad .flow-ledger .fst {
+      grid-template-columns: 52px minmax(0, 1fr);
+      row-gap: 4px;
+      padding: 14px 0;
+    }
+
+    .ad .flow-ledger .fst .k {
+      grid-row: 1 / span 4;
+    }
+
+    .ad .flow-ledger .fst .o,
+    .ad .flow-ledger .fst .d,
+    .ad .flow-ledger .fst .g {
+      grid-column: 2;
+      text-align: left;
+    }
+
+    .ad .flow-ledger .fhd {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 16px;
+      row-gap: 4px;
+      padding: 12px 0;
+    }
+
+    .ad .flow-ledger .fhd .g {
+      text-align: left;
+    }
+  }
+
+  /* ================================================== /work/ — WORK INDEX
+     Two corrections, both scoped to `#register` — `/work/`'s own `<main>`, and
+     the id nothing else on the site uses (motion.css says so where it reaches
+     for the same handle). Neither rule can be seen from the homepage, from a
+     work entry or from /how-i-build/.
+
+     ---------------------------------------------------- THE GATE RULE, OFF
+
+     `.tr::before` (layout.css) is the 1px vertical line every two-track block
+     draws at 227px, between the instrument rail and the measure. It is the
+     right instrument where a rail stands beside prose — the homepage sections,
+     the Case Study spines — because both sides of it are content and the line
+     says which is which.
+
+     This page is not that. `/work/`'s second `.tr` holds ONE child, a `.bleed`
+     that spans `1 / -1`, so the register is drawn across both tracks and the
+     rule lands 227px INSIDE it: measured at 1440 it crosses the row grid 123px
+     past the start of the title column, so it runs down the page THROUGH the
+     work titles rather than beside them. It divides nothing there; it is a line
+     over the content.
+
+     WHAT SEPARATES THE COLUMNS NOW IS THE SPACE THAT ALREADY SEPARATED THEM.
+     Nothing is added to replace the rule because nothing needs to be: the
+     header keeps the 200px rail track and the 56px `column-gap` it always had
+     (256px from the count to the display at 1440, 188px at 1280), and the rows
+     keep `.reg-c`'s own 64px number track and 40px gap — 104px from `01` to the
+     title. The boundary was always drawn twice, once in whitespace and once in
+     ink; this takes back the ink.
+
+     `content: none` rather than `display: none`, so the pseudo-element is not
+     generated at all rather than generated and hidden. Scoped without a media
+     query on purpose: below 1024 `responsive.css` already suppresses the rule
+     for every page, and a `min-width` here would state the same width twice.
+
+     The HORIZONTAL rules are untouched everywhere — the 2px rule the register
+     opens on, the hairline under each row, the sweep on hover. What this page
+     was missing was never the divisions between rows. */
+  .ad #register .tr::before {
+    content: none;
+  }
+
+  /* -------------------------------------------- THE HEADER, 20–30% SHORTER
+
+     Measured before this rule, from the masthead's bottom edge to the top of
+     the register's 2px rule: 207px at 1440x900 and 270px at 834x1000, of which
+     the type — the count, the page name — is 88px and 124px. The rest is three
+     paddings, and two of them were written for a page that is not this one:
+     `.hero`'s 56px opener and, because `/work/`'s hero has a single `.tr`, the
+     `clamp(40px, 7svh, 72px)` floor motion.css gives `.tr:last-child` to sit
+     row TWO of a full-viewport hero on the fold. There is no row two here, so
+     that clamp is not a floor — it is 63–72px of nothing under a heading.
+
+     Both come down and nothing else moves: 56 → 40 and the clamp to roughly a
+     third of its span. Measured after: 150px at 1440x900 (-27.7%) and 208px at
+     834x1000 (-23.0%), inside the 20–30% asked for at both. The type is not
+     touched — `.dsp-s` keeps its 56px, its leading and its 20px bottom margin,
+     so the header is the same header, set closer.
+
+     DESKTOP AND TABLET ONLY. Below 768 the same two numbers are 24px and zero
+     (responsive.css, motion.css): the padding this rule takes out does not
+     exist there, so the same percentage would have to come out of the space
+     around the heading itself, which is a different edit on a header that is
+     already 152px. `min-width: 768px` leaves it exactly where it was. */
+  @media (min-width: 768px) {
+    .ad #register > .hero {
+      padding-top: 40px;
+    }
+
+    .ad #register > .hero > .page > .tr {
+      padding-bottom: clamp(16px, 2.4svh, 32px);
+    }
+  }
 }

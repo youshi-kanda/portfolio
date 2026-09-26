@@ -43,13 +43,54 @@
                     background:var(--sig);transform:scaleX(0);transform-origin:0 50%;
                     transition:transform .18s cubic-bezier(.2,0,0,1)}
 .ad .nav ol a:hover{color:var(--tx)}
-.ad .nav ol a:hover:after,.ad .nav ol a[aria-current]:after{transform:scaleX(1)}
-.ad .nav ol a[aria-current]{color:var(--tx)}
+/* `[data-section]` is the page-lives-under-this state and draws exactly what
+   `[aria-current]` draws. They are two attributes because they are two claims:
+   one says this link IS the current URL, the other says it is an ancestor of
+   it, and collapsing them is how /work/<slug>/ came to tell a screen reader it
+   was /#work. Appearance is shared; the accessibility tree is not. */
+.ad .nav ol a:hover:after,.ad .nav ol a[aria-current]:after,
+.ad .nav ol a[data-section]:after{transform:scaleX(1)}
+.ad .nav ol a[aria-current],.ad .nav ol a[data-section]{color:var(--tx)}
+/* `.nav .mob` is the mobile index disclosure. It was deleted here for being a
+   bordered box that no handler listened to and no tab stop reached; it is a
+   `<button>` now, with a panel it opens, so the rule is back — and it has to
+   be, because polish.css states outright that this sheet still owns the mono
+   type, the hairline box and the padding, and resets only what the UA button
+   stylesheet would otherwise impose on top of them. The breadcrumb below is
+   not a replacement for this: it says where you are, this says where you can
+   go. */
 .ad .nav .mob{display:none;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
               text-transform:uppercase;color:var(--tx);border:1px solid var(--hair2);padding:7px 12px}
 /* scroll progress — 1px, no colour ramp */
 .ad .nav .prg{position:absolute;left:0;bottom:-1px;height:2px;background:var(--sig);
               width:var(--p,0%)}
+/* ---- breadcrumb ----------------------------------------------------------
+   The same instrument strip as `.syn` below it: `.page` measure, mono 11px,
+   one hairline. It reports a position; it is not a heading and carries no
+   heading tag, so it cannot enter the document outline. NOT sticky — see
+   Breadcrumb.astro on why a second pinned band would move three sticky rails. */
+.ad .crumb{background:var(--paper);border-bottom:1px solid var(--hair)}
+.ad .crumb ol{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 9px;
+              list-style:none;margin:0;padding:11px 0;font-family:var(--f-mono);
+              font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+              line-height:1.6}
+/* The separator is drawn, not written: a literal "/" in the markup would be
+   read aloud between every crumb. */
+.ad .crumb li + li:before{content:"/";margin-right:9px;color:var(--tx3)}
+.ad .crumb a{color:var(--tx2);border-bottom:1px solid var(--tx3)}
+.ad .crumb a:hover{color:var(--tx);border-bottom-color:var(--sig)}
+.ad .crumb [aria-current]{color:var(--tx)}
+
+/* ---- return band ---------------------------------------------------------
+   Full width, between the last section and the footer, so that it reads as a
+   property of the PAGE rather than of whatever section happens to end above
+   it. `.ar.bk` is the same arrow glyph leading instead of trailing — a return
+   that trails its arrow points the wrong way. */
+.ad .ret{border-top:1px solid var(--hair2);margin-top:100px}
+.ad .ret .page{display:flex;flex-wrap:wrap;gap:22px 44px;
+               padding-top:32px;padding-bottom:32px}
+.ad .lk .ar.bk{margin-left:0;margin-right:9px}
+
 /* the synthetic-data notice is required on every page (SITE-07).
    It is set as an instrument strip, not a banner. */
 .ad .syn{background:var(--flag-bg);border-bottom:1px solid var(--hair)}
@@ -340,6 +381,12 @@
                           text-transform:none;color:var(--tx2)}
 .ad h3{margin-top:0}
 .ad .msr h3{font-size:34px;line-height:1.32;letter-spacing:-.026em;margin:0 0 16px}
+/* The Case Study's opening question, demoted out of the h1 slot. It is a real
+   h2 in the outline, sized as the subtitle it is: the bare `.ad h2` is 40px,
+   which under a 56px display line would read as a second title competing with
+   the work's name rather than as the heading of the lede under it. */
+.ad .hero .msr .ovh{font-size:22px;line-height:1.5;font-weight:600;letter-spacing:-.012em;
+                    color:var(--tx2);margin:0 0 14px;border:0;padding:0}
 .ad ul li h3{font-size:22px;margin:34px 0 8px}
 /* ---- authoring state. A pending string is marked on the machine side and
    with a hairline, never with a badge that competes with the type. */
@@ -435,6 +482,33 @@
 .ad .notclaim li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
                         background:var(--stop)}
 .ad .notclaim h4{color:var(--stop)}
+/* ------------------------------------- #31 開発の前提 (/how-i-build/ only)
+   `.notclaim` STAYS AND IS NOT RENAMED. It is still the right component in the
+   two places that still refuse something — the Case Study lead disclosure and
+   the technical page's scope boundary — and both draw the `--stop` accent
+   because both are telling a reader what is NOT here. HOW I BUILD stopped
+   being one of those (#31): its block now states how the work is done and then
+   bounds what the published content covers, so it gets its own class rather
+   than a red mark on a sentence that is not a refusal.
+
+   EVERY METRIC IS `.notclaim`'s. Same 30px lead, same hairline, same 18px
+   above the label, same 10.5px mono head, same 14.5px list, same 18px indent
+   and 9px tick. What changed is the accent: the head takes the supporting text
+   colour and the tick takes `--sig`, which is the tick the `intent` list
+   directly above it already draws. The two lists read as one thought instead
+   of as a statement followed by a warning.
+
+   `line-height:normal` is stated because the element is an `<h2>` now and
+   `.ad h2` would otherwise hand it 1.42. The `<h4>` it replaced inherited the
+   browser default, and this is that default, written down. */
+.ad .premise{margin-top:30px;border-top:1px solid var(--hair2);padding-top:18px}
+.ad .premise h2{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.16em;
+                text-transform:uppercase;font-weight:700;line-height:normal;
+                color:var(--tx2);margin:0 0 14px}
+.ad .premise ul{list-style:none;margin:0;padding:0;font-size:14.5px;line-height:1.8}
+.ad .premise li{padding:0 0 8px 18px;position:relative;color:var(--tx2)}
+.ad .premise li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                       background:var(--sig)}
 /* ---- 03 stack: language → responsibility → work → framework */
 .ad .stk{border-top:2px solid var(--rule)}
 .ad .stk .srow{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:32px;
@@ -587,8 +661,12 @@
 .ad .cta-ghost:hover,.ad .cta-ghost:focus-visible{border-color:var(--tx)}
 
 /* ---------------------------------------------------- 01 FEATURED WORK
-   One block per work. The rhythm is broad / narrow by position: `data-width`
-   is on the article, so the two widths are one rule and not two components. */
+   One block per work. `data-width` is on the article, so the two widths stay
+   one rule and not two components — #30 only changed what DECIDES it. It was
+   position (broad / narrow / broad …, an alternating beat that was explicitly
+   not a ranking); it is now `featuredTier`, which is one. Nothing below is a
+   second card style: supporting is this block with a shorter figure, a smaller
+   title and tighter spacing, on the same paper, rails and rules. */
 .ad .fw{padding:56px 0 0;position:relative}
 .ad .fw:first-of-type{padding-top:10px}
 .ad .fw-t{font-size:clamp(26px,2.5vw,36px);line-height:1.2;letter-spacing:-.025em;
@@ -617,6 +695,37 @@
 .ad .fw-m .fx p{margin:0;font-size:14.5px;line-height:1.65;color:var(--tx2)}
 .ad .fw[data-width="narrow"] .fw-f .crop img{height:262px}
 .ad .fw-l{margin-top:6px}
+/* #30 — 代表作. A state chip, the same instrument the register uses, above the
+   title rather than beside it: set on the title's line it competed with a
+   36px display for the first fixation, which is the one thing the title needs
+   to keep. `.st` gives it its own border and mono face, so it reads as a mark
+   on the block and not as a word of the heading. */
+.ad .fw-tier{margin:0 0 10px}
+/* #30 — 確認できるもの. The block every FEATURED work ends on: the label, then
+   whichever routes exist, then — when there are none — the owner's sentence
+   saying so. Ruled off the facts above it because it answers a different
+   question: those say what the work IS, this says what a reader can go and
+   check. */
+.ad .fw-e{margin:18px 0 0;padding-top:14px;border-top:1px solid var(--hair)}
+.ad .fw-e .mo{display:block;margin-bottom:8px}
+/* Two CTAs sit side by side on one line and wrap as a pair, never overlapping:
+   `.lk` is inline-block with its own 1px rule, and the row gap keeps the two
+   rules from touching when they stack. */
+.ad .fw-e .fw-l{margin:0 26px 0 0}
+.ad .fw-e .fw-l:last-child{margin-right:0}
+/* The explanation is prose, not a control. Held to the measure so it reads as
+   one sentence rather than as a banner across the field. */
+.ad .fw-w{max-width:58ch;font-size:13.5px;line-height:1.75;color:var(--tx3)}
+
+/* THE TIER, AS SPACING. Same order, same items, same type ramp — one step
+   quieter. The figure is already shorter through `data-width`; these take the
+   block's own rhythm down with it so a supporting work reads as the same kind
+   of thing at a smaller scale, rather than as a different component. */
+.ad .fw[data-featured-tier="supporting"]{padding-top:44px}
+.ad .fw[data-featured-tier="supporting"] .fw-t{font-size:clamp(22px,1.9vw,27px)}
+.ad .fw[data-featured-tier="supporting"] .fw-c{font-size:15.5px;max-width:58ch}
+.ad .fw[data-featured-tier="supporting"] .fw-f{margin-top:18px}
+.ad .fw[data-featured-tier="supporting"] .fw-e{margin-top:14px;padding-top:12px}
 /* the work's pigment as an edge on the rail, the same device the register uses */
 .ad .fw .ins .ix:before{content:"";display:block;width:9px;height:9px;
                         background:var(--sig);margin-bottom:10px}
@@ -704,6 +813,48 @@
 .ad .ab-now{max-width:62ch;margin-top:26px}
 .ad .ab-now p{font-size:17px;line-height:1.95;color:var(--tx);margin:0 0 14px}
 .ad .ab-now p:last-child{margin-bottom:0}
+/* #32 — the compliance block, one step quieter than the profile fact above it.
+   It is the SAME `.spx` table, so every responsive and desktop rule ABOUT
+   already has for `.spx.wide .r` applies unchanged — the label sits above the
+   sentence at every width, and the reading order is the DOM order.
+   What this modifier changes is emphasis and nothing else: a hairline where the
+   section rule is 2px, and the supporting text colour at the supporting size.
+   `--tx2`, not `--tx3`: the contrast contract holds --tx2 above AA on paper and
+   the type hierarchy test holds it stronger than --tx3, so "quieter" here costs
+   no legibility. No warning colour — `--stop` would tell a reader to discount a
+   statement about what the published work actually is. */
+.ad .spx.ab-disc{border-top:1px solid var(--hair2);margin-top:30px}
+.ad .spx.ab-disc .v{font-size:14.5px;color:var(--tx2)}
+
+/* ---- #33 3分概要: the Case Study's opening index.
+   It is the site's own `.spx` table and the site's own `ul.dash`, put one
+   inside the other for the first time — so the only rules here are the ones
+   that stop two hairline systems from drawing the same line twice.
+   `ul.dash` rules each row top and bottom; inside a `.spx` cell the outer row
+   already has a bottom rule, so the list drops its own first-child top rule
+   and its last-child bottom rule and keeps the separators BETWEEN items, which
+   is the job it is doing here.
+   Nothing about emphasis changes: no `--stop`, no panel, no fill. 未実装・対象外
+   is a fact about scope and is drawn like every other row in the table. */
+.ad .csq .spx{margin-bottom:0}
+.ad .csq .spx .v > ul.dash{margin:-13px 0}
+.ad .csq .spx .v > ul.dash > li:first-child{border-top:0}
+.ad .csq .spx .v > ul.dash > li:last-child{border-bottom:0}
+.ad .csq .spx .v > ul.dash > li{font-size:15px}
+.ad .csq .csq-m{margin:14px 0 0}
+.ad .csq .csq-n{margin:12px 0 0;font-size:13px}
+/* The block's links are its only controls, and the 44px floor they take is NOT
+   a phone rule. It lived in `responsive.css` under `max-width:767px`, which is
+   where a tap target usually belongs and is wrong for this one: measured at
+   1440px the links came back 30.2px, and a touch laptop, a stylus and an
+   imprecise trackpad all meet the same link at that width. So the floor is a
+   normal rule here and the breakpoint copy is gone — one declaration, every
+   width.
+   Scoped to `.csq`, because the site's other `.lk` links are drawn as an
+   inline-block rule under a line of type and are not controls in a stacked
+   list; the height comes from the box, not from the type size, so nothing
+   about how the link READS changes. */
+.ad .csq .lk{min-height:44px;display:inline-flex;align-items:center}
 
 /* -------------------------------------------------------------- CONTACT
    The band inverts, as the old contact footer did: it gives the scroll a
@@ -715,7 +866,14 @@
    does — `word-break:keep-all` then holds compounds together. */
 .ad .ct-h{font-size:clamp(26px,2.6vw,34px);line-height:1.45;letter-spacing:-.02em;
           margin:0 0 16px;max-width:32ch;word-break:keep-all;overflow-wrap:anywhere}
-.ad .ct-l{margin-bottom:34px}
+/* #34 — lede と補助文は 1 つの塊として読ませる。lede の下を詰め、補助文の下で
+   従来どおり 34px 取る: 連絡先の表までの間隔は変わらず、間に入った 1 文が
+   宙に浮かない。 */
+.ad .ct-l{margin-bottom:14px}
+/* 測りは 2 文が 1 文ずつ折り返す幅。`.ct-ch` と同じ 56ch では
+   「まずはメール / でご相談ください。」と語の途中で折れ、日本語には
+   そこで切れない理由がどこにも書かれていない。 */
+.ad .ct-hp{margin:0 0 34px;max-width:46ch}
 .ad .ct-d{display:grid;grid-template-columns:150px minmax(0,1fr);gap:0;margin:0;
           border-top:1px solid var(--hair);max-width:720px}
 .ad .ct-d dt,.ad .ct-d dd{padding:13px 0;border-bottom:1px solid var(--hair);margin:0}
@@ -738,6 +896,17 @@
    address would otherwise push the page into a horizontal scroll. */
 .ad .ct-mail{margin-bottom:0}
 .ad .ct-d dd a{overflow-wrap:anywhere}
+/* #30 — 公開コード. One more row on the same list, so the work titles read as
+   part of the channel table rather than as a new block: the question it
+   answers ("which of these can I actually read?") belongs to the GitHub rows
+   directly above it. The titles are prose in a mono column, so they get the
+   UI face and a little more room than a host name needs. */
+.ad .ct-src{margin-top:0;border-top:0}
+.ad .ct-sl{list-style:none;margin:0;padding:0}
+.ad .ct-sl li{margin:0 0 7px}
+.ad .ct-sl li:last-child{margin-bottom:0}
+.ad .ct-sl a{font-family:var(--f-ui);font-size:13.5px;line-height:1.6;
+             display:inline-block;overflow-wrap:anywhere}
 /* The GitHub CTA is the quieter of the two. Same component, less weight —
    the section has one primary action and this is not it. */
 .ad .ct-cta .lk-q{font-weight:400;opacity:.82}
@@ -752,3 +921,103 @@
 .ad .ft-m a{color:var(--tx2);text-decoration:none;border-bottom:1px solid var(--hair)}
 .ad .ft-m a:hover,.ad .ft-m a:focus-visible{color:var(--tx);border-color:var(--sig)}
 .ad .ft-m .sep{color:var(--tx3)}
+
+/* ------------------------------------ #31 判断事例 (/how-i-build/ only)
+   Two cases and one QA note, set as records rather than as cards. No box, no
+   radius, no shadow: each case is separated from the next by the hairline the
+   rest of the site divides with, and its internal structure is the same term /
+   value pairing the Evidence provenance list and the CONTACT channels use.
+   Nothing new was introduced to draw this — `.mo`, `.lk`, the hairlines and
+   the measure are the whole vocabulary. */
+/* The last section before the footer, so it states its own bottom: every other
+   section is spaced by the NEXT one's top padding, and this one has no next. */
+.ad #decision-cases{padding-bottom:96px}
+.ad .dc{padding:34px 0 0;border-top:1px solid var(--hair);max-width:720px}
+/* The first case opens directly under the section head, so it draws neither
+   the lead nor the rule: `.shead` has already put a 2px rule and 34px above it.
+   Written as an adjacent sibling rather than `:first-of-type` — the QA record
+   is an `<aside>` and would be the first of ITS type, which would have taken
+   the rule off the one block that needs it to read as separate. */
+.ad .shead + .dc{padding-top:0;border-top:0}
+.ad .dc + .dc{margin-top:34px}
+.ad .dc-t{font-size:clamp(21px,1.8vw,26px);line-height:1.45;letter-spacing:-.016em;
+          margin:0 0 20px;max-width:30ch}
+/* The four always-open fields. A 132px label column on the wide measure — the
+   same width the provenance list gives its terms, so the two read as one
+   instrument — collapsing to stacked label-over-value below 768 (responsive). */
+.ad .dc-s{display:grid;grid-template-columns:132px minmax(0,1fr);gap:0 20px;margin:0}
+.ad .dc-s dt{padding:14px 0 0;border-top:1px solid var(--hair)}
+.ad .dc-s dt:first-of-type{padding-top:0;border-top:0}
+.ad .dc-s dd{margin:0;padding:14px 0 16px;border-top:1px solid var(--hair);
+             font-size:15.5px;line-height:1.85;color:var(--tx2)}
+.ad .dc-s dd:first-of-type{padding-top:0;border-top:0}
+/* 判断 is the sentence the case exists for, so it is the one value set in the
+   text colour rather than the supporting one. It is weight, not a new colour. */
+.ad .dc-s dd:nth-of-type(3){color:var(--tx)}
+/* The engineer's layer. A disclosure, never holding a conclusion — the four
+   fields above are the case and they are not in here. */
+.ad .dc-v{border-top:1px solid var(--hair);margin-top:4px}
+.ad .dc-v summary{padding:13px 0;font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;
+                  text-transform:uppercase;color:var(--tx2);cursor:pointer;list-style:none;
+                  display:flex;gap:10px;align-items:center}
+.ad .dc-v summary::-webkit-details-marker{display:none}
+.ad .dc-v summary:before{content:"";width:9px;height:1px;background:var(--sig);flex:0 0 9px}
+.ad .dc-v[open] summary{color:var(--tx)}
+.ad .dc-v ul{list-style:none;margin:0;padding:0 0 18px;font-size:14px;line-height:1.8}
+.ad .dc-v li{padding:0 0 10px 18px;position:relative;color:var(--tx2)}
+.ad .dc-v li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                    background:currentColor;opacity:.55}
+/* The PR link is OUTSIDE the disclosure on purpose — see HowIBuildCases.astro.
+   The way to check this page may not be the part that is folded away. */
+.ad .dc-l{padding-top:4px}
+/* PR #19 — the supplement. Same record, one step quieter: it opens with its own
+   mono label instead of a rule, so it reads as a note on the two above it
+   rather than as a third case. */
+.ad .dc-qa{display:block}
+.ad .dc-qa .mo{display:block;margin-bottom:10px}
+.ad .dc-qa .dc-t{font-size:clamp(18px,1.4vw,21px);margin-bottom:14px}
+.ad .dc-c{font-size:15.5px;line-height:1.85;color:var(--tx2);margin:0 0 16px}
+.ad .dc-f{list-style:none;margin:0 0 18px;padding:0;font-size:14px;line-height:1.8}
+.ad .dc-f li{padding:0 0 10px 18px;position:relative;color:var(--tx2)}
+.ad .dc-f li:before{content:"";position:absolute;left:0;top:12px;width:9px;height:1px;
+                    background:currentColor;opacity:.55}
+
+/* ------------------------- #31 ページ上部へ戻る (/how-i-build/ only)
+   One arrow in the bottom-right corner. 48px square — above the 44px floor
+   with the border inside it — and inset by the safe area on both axes so it
+   does not land under a rounded corner or a home indicator.
+
+   `.is-managed` is added by the script and NOTHING here hides the link without
+   it: with no JavaScript the anchor is simply always there, which is the
+   behaviour this control is designed around. `visibility` rather than opacity
+   alone, so the hidden state is also out of the tab order — a focus ring on an
+   invisible control is worse than a visible control. */
+.ad .totop{position:fixed;z-index:36;
+           right:calc(16px + env(safe-area-inset-right));
+           bottom:calc(16px + env(safe-area-inset-bottom));
+           display:inline-flex;align-items:center;justify-content:center;
+           min-width:48px;min-height:48px;
+           background:var(--paper);border:1px solid var(--hair2);color:var(--tx);
+           font-family:var(--f-mono);font-size:15px;line-height:1}
+.ad .totop:hover{border-color:var(--tx)}
+/* `#top` は節の名前ではなく「文書の先頭」である（site.ts が sections の anchor
+   についてそう書いている）。上の `section[id]{scroll-margin-top:80px}` は、
+   sticky nav の下へ見出しが潜らないための余白で、途中の節には正しい。だが
+   最初の節に当たると nav + synthetic bar のぶん（/how-i-build/ で実測 117px）
+   だけ下で止まり、「ページ上部へ戻る」が上部へ戻らない——masthead と
+   synthetic bar は先頭の一部であって、めくり残してよい chrome ではない。
+   余白を viewport 1 枚ぶんにすると、算出位置が必ず負になり 0 へ clamp される。
+   数値ではなく「この節より上は全部見せる」を書いている。 */
+.ad .hero#top{scroll-margin-top:100vh}
+.ad .totop .totop-g{display:block;transform:translateY(-1px)}
+.ad .totop.is-managed{opacity:0;visibility:hidden;
+                      transition:opacity .18s cubic-bezier(.2,0,0,1),visibility .18s}
+.ad .totop.is-managed.is-away{opacity:1;visibility:visible}
+/* Stated here as well as in the blanket rule above, because this is the one
+   transition #31 added and the preference should be answered where it is
+   written rather than only by a sheet-wide override. No `scroll-behavior` is
+   set anywhere: the anchor keeps the browser's own jump, which is already what
+   a reduced-motion reader asked for. */
+@media (prefers-reduced-motion: reduce){
+  .ad .totop.is-managed{transition:none}
+}
