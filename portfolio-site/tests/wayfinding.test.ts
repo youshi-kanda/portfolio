@@ -56,7 +56,7 @@ describe('site-level navigation', () => {
   it('writes no label of its own — every one is already approved elsewhere', () => {
     const labels = siteNavItems(null).map((i) => i.label);
     assert.deepEqual(labels, [
-      ui.register.railLabels[0],
+      ui.register.pageTitle,
       site.howIBuild.railLabels[0],
       site.sections.find((s) => s.id === 'contact')?.label,
     ]);
@@ -125,7 +125,7 @@ describe('site-level navigation', () => {
 });
 
 describe('breadcrumb', () => {
-  const ARCHIVE = ui.register.railLabels[0] as string;
+  const ARCHIVE = ui.register.pageTitle;
   const TECH = ui.technical.railLabels[0] as string;
 
   it('roots at the archive and ends on the work', () => {
@@ -200,7 +200,7 @@ describe('return navigation does not depend on page content', () => {
   });
 
   it('labels the way out as a return, not as the homepage CTA', () => {
-    // `register.allWorksCta`（作品一覧へ）is a FORWARD move from the homepage.
+    // `register.allWorksCta` is a FORWARD move from the homepage.
     assert.notEqual(ui.work.backToIndex, ui.register.allWorksCta);
   });
 

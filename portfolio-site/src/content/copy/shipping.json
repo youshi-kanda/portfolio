@@ -198,7 +198,7 @@
   },
   {
     "id": "home.works.h2",
-    "text": "何のためのサービスを、どこまで実装したのか。",
+    "text": "何を作り、どこまで実装したのか。",
     "route": "/",
     "section": "01 SELECTED WORK",
     "slot": "見出し",
@@ -207,11 +207,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "TASK-PORTFOLIO-CONTENT-LOCK-01 §Selected Work h2 candidate",
-        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+        "Task “Improve Home / Work copy for readers” §4 — user-specified heading"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-08-28T21:20:25Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -231,6 +230,25 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-09T10:05:34Z"
+    }
+  },
+  {
+    "id": "work.archive.lede",
+    "text": "業務Webアプリ、AI活用、業務自動化を中心に、これまでの開発実績をまとめています。各実績では、目的・担当範囲・使用技術を掲載しています。",
+    "route": "/work/",
+    "section": "開発実績",
+    "slot": "ページ導入文",
+    "purpose": "初見の読者に掲載領域と、各実績で確認できる情報を短く伝える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve Home / Work copy for readers” §2 — user-specified introduction",
+        "portfolio-site/src/content/work/ — shipping work records and their purpose, role, selectedTech fields"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -392,7 +410,7 @@
   },
   {
     "id": "home.hero.cta.primary",
-    "text": "実績を見る",
+    "text": "主な開発実績を見る",
     "route": "/",
     "section": "00 HERO",
     "slot": "first viewport の primary CTA",
@@ -401,10 +419,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §6 — user-specified primary CTA"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -462,7 +480,7 @@
   },
   {
     "id": "home.hero.cta.secondary",
-    "text": "相談する",
+    "text": "開発について相談する",
     "route": "/",
     "section": "00 HERO",
     "slot": "first viewport の secondary CTA",
@@ -471,10 +489,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §6 — user-specified secondary CTA"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {

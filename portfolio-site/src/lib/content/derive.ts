@@ -476,8 +476,8 @@ export function siteNavItems(pathname: string | null = null): SiteNavItem[] {
   const here = pathname === null ? null : slashed(pathname);
 
   const rows: { key: SiteNavKey; label: string; href: string; route: boolean }[] = [
-    // The archive's own name, as its h1 and its rail already print it.
-    { key: 'work', label: ui.register.railLabels[0] as string, href: ARCHIVE_HREF, route: true },
+    // The archive's reader-facing name, shared by its h1 and breadcrumbs.
+    { key: 'work', label: ui.register.pageTitle, href: ARCHIVE_HREF, route: true },
     // The method page's own rail label.
     { key: 'method', label: site.howIBuild.railLabels[0] as string, href: METHOD_HREF, route: true },
     // Still a band of the homepage, and still says so. An anchor is never a

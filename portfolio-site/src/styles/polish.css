@@ -748,6 +748,40 @@
     content: none;
   }
 
+  /* The archive-only Register variant adds the existing work.role value.
+     Scoped to #register so Home MORE PROJECTS keeps its compact row height and
+     information density. */
+  .ad #register .reg-c .r .reg-role {
+    display: block;
+    margin: 8px 0 7px;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--tx2);
+  }
+
+  .ad #register .reg-c .r .reg-role .mo {
+    display: block;
+    margin-bottom: 1px;
+  }
+
+  /* The one-line purpose clamp belongs to the compact Home tier. The archive
+     has room for the full purpose and must not cut the sentence before the
+     newly added role and technology fields. */
+  .ad #register .reg-c .r .cl {
+    display: block;
+    overflow: visible;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: initial;
+  }
+
+  @media (max-width: 767px) {
+    .ad #register .reg-c .r .reg-role {
+      margin: 5px 0;
+      font-size: 12.5px;
+      line-height: 1.55;
+    }
+  }
+
   /* -------------------------------------------- THE HEADER, 20–30% SHORTER
 
      Measured before this rule, from the masthead's bottom edge to the top of
