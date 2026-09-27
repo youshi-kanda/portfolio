@@ -8,6 +8,7 @@
  * enables it.
  */
 import '../../styles/welcome.css';
+import ykMarkSvg from '../../assets/brand/yk-mark.svg?raw';
 ---
 
 <script is:inline>
@@ -26,10 +27,7 @@ import '../../styles/welcome.css';
 <div class="welcome-intro" hidden aria-hidden="true">
   <div class="wi-rail">
     <span class="wi-index">00</span>
-    <span class="wi-mark" aria-hidden="true">
-      <i class="wi-y-a"></i><i class="wi-y-b"></i><i class="wi-y-c"></i>
-      <i class="wi-k-a"></i><i class="wi-k-b"></i><i class="wi-k-c"></i>
-    </span>
+    <span class="wi-mark" aria-hidden="true" set:html={ykMarkSvg}></span>
   </div>
   <div class="wi-field">
     <span class="wi-kicker">ENGINEERING PORTFOLIO</span>
