@@ -775,6 +775,21 @@
   }
 
   @media (max-width: 767px) {
+    /* Case Study scope tables stack into cards at this width. Keep the three
+       registry-owned column names attached to their values after the shared
+       responsive table header is hidden. */
+    .ad .scope-table tbody th::before,
+    .ad .scope-table tbody td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 3px;
+      color: var(--tx3);
+      font-family: var(--f-mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+    }
+
     .ad #register .reg-c .r .reg-role {
       margin: 5px 0;
       font-size: 12.5px;

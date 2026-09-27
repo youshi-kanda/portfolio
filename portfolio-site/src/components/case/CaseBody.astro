@@ -171,16 +171,16 @@ const cited = (ids: readonly string[]): Evidence[] =>
 
 {/* Scope — the boundary, with its reason in the same row. */}
 <CaseSection index={ix('cs12')} title={S.scope} id="cs12" when={has('cs12')}>
-  <div class="tw">
+  <div class="tw scope-table">
     <table>
       <thead><tr>{L.scopeHeaders.map((h) => <th>{h}</th>)}</tr></thead>
       <tbody>
         {
           c.scope.map((s) => (
             <tr>
-              <th>{s.implemented}</th>
-              <td>{s.notIncluded}</td>
-              <td>{s.why}</td>
+              <th data-label={L.scopeHeaders[0]}>{s.implemented}</th>
+              <td data-label={L.scopeHeaders[1]}>{s.notIncluded}</td>
+              <td data-label={L.scopeHeaders[2]}>{s.why}</td>
             </tr>
           ))
         }

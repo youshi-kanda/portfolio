@@ -445,6 +445,25 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'ui.technical.sections.links',
     ]),
   }),
+  /**
+   * Case Study reader copy. The user supplied the three section headings and
+   * three scope-table headers in this task. All six are presentation strings
+   * in ui.json; the technical facts and table values remain in their existing
+   * Case Study records.
+   */
+  Object.freeze({
+    task: 'TASK-IMPROVE-CASE-STUDY-COPY-FOR-READERS',
+    by: 'user',
+    at: '2026-09-26T15:51:06Z',
+    ids: Object.freeze([
+      'ui.caseStudy.sections.problem',
+      'ui.caseStudy.sections.highlights',
+      'ui.caseStudy.sections.quality',
+      'ui.caseStudy.scopeHeaders.1',
+      'ui.caseStudy.scopeHeaders.2',
+      'ui.caseStudy.scopeHeaders.3',
+    ]),
+  }),
 ]);
 
 /**
