@@ -272,10 +272,9 @@ describe('Featured の証拠導線', () => {
     );
   });
 
-  it('代表作ラベルは registry 管理で、補助作品に対になる語が無い', () => {
-    assert.equal(ui.work.featuredPrimary, '代表作');
+  it('primary / supporting の tier は可視の評価ラベルを持たない', () => {
     const uiText = JSON.stringify(ui);
-    for (const grade of ['二軍', '低優先', 'サブ作品', '準代表']) {
+    for (const grade of ['代表作', '二軍', '低優先', 'サブ作品', '準代表']) {
       assert.equal(uiText.includes(grade), false, `${grade} が ui にある`);
     }
   });
@@ -285,13 +284,12 @@ describe('Featured の証拠導線', () => {
       ui.work.background,
       ui.work.evidenceHead,
       ui.work.sourceCta,
-      ui.work.featuredPrimary,
       ui.contact.publicCode,
     ]) {
       assert.ok(label.length > 0);
     }
-    assert.equal(ui.work.role, 'Role');
-    assert.equal(ui.work.selectedTech, 'Selected technology');
+    assert.equal(ui.work.role, '担当範囲');
+    assert.equal(ui.work.selectedTech, '使用技術');
     assert.equal(ui.work.caseStudyCta, 'Case Study を読む');
   });
 });

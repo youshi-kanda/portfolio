@@ -96,12 +96,12 @@ export const ui = {
       original: '元プロダクト側にある範囲',
     },
     keyDecision: 'Key engineering decision',
-    /** #7 — the two labelled facts a FEATURED block ends with. */
-    role: 'Role',
-    selectedTech: 'Selected technology',
+    /** Home FEATURED WORK and the /work/ archive use the same field names. */
+    role: '担当範囲',
+    selectedTech: '使用技術',
     caseStudyCta: 'Case Study を読む',
     /*
-     * #30 — Featured ブロックが Role / Selected technology の前に置く 1 行の
+     * #30 — Featured ブロックが担当範囲 / 使用技術の前に置く 1 行の
      * ラベル。作品が「どういう成り立ちで、Portfolio 上どういう形で出ているか」
      * （#29 の portfolioProfile）を読む前に、それが何の欄なのかを言う。
      */
@@ -114,12 +114,6 @@ export const ui = {
     evidenceHead: '確認できるもの',
     /** #30 — 公開されている作品コードへ直接送る CTA。 */
     sourceCta: '公開コードを見る',
-    /*
-     * #30 HD-G — 代表作に付く小さな表示ラベル。編集上の強弱であって、技術力の
-     * 評価でも品質の順位でもない。補助作品の側に対になる語を置かないのは、
-     * 「代表作ではない」を名乗るラベルが必ず評価語として読まれるからである。
-     */
-    featuredPrimary: '代表作',
     /*
      * #30 — `portfolioProfile` の enum を読者向けの語にする対応表。
      *
@@ -358,6 +352,8 @@ export const ui = {
 
   register: {
     railLabels: ['WORK INDEX', 'Register'],
+    /** Reader-facing page name used by h1, site navigation and breadcrumbs. */
+    pageTitle: '開発実績',
     railNote: '0 → 20 works',
     h1: '{count} 件。同じ規則で 20 件まで伸びる。',
     // The spaces between sentences are the frozen screen's own: the source set
@@ -368,8 +364,10 @@ export const ui = {
       'ビルドが拒否するのは、変種の種類が足りずに一様な格子へ退化することであって、 ' +
       '隣り合う 2 件が同じ変種を取ること自体ではありません。 ' +
       '行に出るのは製品種別と言語で、主張ではありません。',
-    /** #7 — 02 MORE PROJECTS' route into the full archive. */
+    /** Existing secondary-page route into the archive. */
     allWorksCta: '作品一覧へ',
+    /** Home 02 MORE PROJECTS' reader-facing route into the full archive. */
+    homeAllWorksCta: '開発実績をすべて見る',
     emptySlot: '{index} — 未登録',
     // ADAPTED — reference target only (was: positioning.WORKS に 1 要素を足すだけ)
     emptySlotHint: ' · 追加は src/content/work/ に 1 ファイルを足すだけ',
@@ -423,14 +421,14 @@ export const ui = {
     contentsLabel: 'Contents',
     sections: {
       overview: 'このシステムは何をするか',
-      problem: '想定業務課題',
+      problem: '解決したい業務上の課題',
       currentPractice: '使う人と、いまのやり方',
       requirements: '満たすべきこと',
       built: '作ったもの',
       decisions: 'なぜこの設計にしたか',
-      highlights: '見どころ',
+      highlights: '実装で確認できること',
       role: '実装範囲',
-      quality: '品質の担保方法',
+      quality: '確認・テスト方法',
       safety: '安全性とデータの扱い',
       delivery: '運用と納品物',
       scope: 'できること・含めていないこと',
@@ -444,9 +442,9 @@ export const ui = {
     rejected: '却下した案',
     tradeoff: '代償',
     deliveryHeaders: ['区分', '内容'],
-    scopeHeaders: ['Implemented', 'Not Included', 'Why'],
+    scopeHeaders: ['実装済み', '含めていないもの', '理由'],
     scaleHeaders: ['項目', '実測値', '取得方法'],
-    technicalCta: '技術詳細のページへ',
+    technicalCta: '設計・実装の詳細を見る',
     evidenceLabel: 'Evidence',
     /*
      * #8 §15. A GitHub Actions run page is not always readable to a signed-out
@@ -533,22 +531,22 @@ export const ui = {
    */
   technical: {
     railLabels: ['TECHNICAL'],
-    sectionsLabel: 'Sections',
+    sectionsLabel: 'このページの内容',
     // No `railEntry` template here, and no "back to Case Study" label. Both
     // would have been strings written for this site, and neither exists in any
     // frozen source — so the rail carries the work's own title, and the return
     // link reuses `work.caseStudyCta`, which is transcribed and registered.
     sections: {
       about: 'このページについて',
-      architecture: 'Architecture',
-      why: 'Why this architecture',
-      failureModes: 'Failure modes',
-      tradeOffs: 'Trade-offs',
-      tests: 'Tests',
-      security: 'Security / Data handling',
-      limitations: 'Limitations',
-      scale: 'Scale',
-      links: 'Links',
+      architecture: '全体構成',
+      why: 'この構成を選んだ理由',
+      failureModes: '起こりうる問題',
+      tradeOffs: 'この設計で残る制約',
+      tests: '確認方法とテスト',
+      security: '権限・安全性・データの扱い',
+      limitations: 'できること・含めていないこと',
+      scale: '規模の目安',
+      links: 'コードと設計資料',
     },
     aboutFields: {
       target: '対象',

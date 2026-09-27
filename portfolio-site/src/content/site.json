@@ -65,10 +65,10 @@
   "howIBuild": {
     "railLabels": [
       "HOW I BUILD",
-      "AI Development Methodology"
+      "AIを活用した開発プロセス"
     ],
-    "title": "Human-Orchestrated / Spec-Driven / Agentic Development",
-    "lede": "AI へ実装を委譲しても、理解まで委譲しない。",
+    "title": "AIを活用した開発の進め方",
+    "lede": "AIを設計・実装の支援に使い、要件整理・重要な判断・最終確認は自分で行います。",
     "workflow": [
       {
         "index": "01",
@@ -124,27 +124,27 @@
         "name": "Human Decision",
         "owner": "Human",
         "what": "採否を判断する",
-        "tag": "decision gate"
+        "tag": "人が判断"
       }
     ],
     "roles": [
       {
         "role": "Human",
-        "duty": "Requirement / Learning / Decision Gate"
+        "duty": "要件整理 / 内容理解 / 採否判断"
       },
       {
         "role": "ChatGPT",
-        "duty": "Planner / Reviewer / Critic"
+        "duty": "計画 / レビュー / 論点整理"
       },
       {
         "role": "Claude Code",
-        "duty": "Executor / Coder / Tester"
+        "duty": "実装 / テスト"
       }
     ],
     "intent": [
-      "AI へ実装を委譲しても、理解まで委譲しない。",
-      "学習中の言語・Framework・Architecture、仕様逸脱、重要判断については、Human involvement を厚くする。",
-      "定型的・低学習価値の作業は、将来的に Selective Harness Engineering へ移行できる。"
+      "AIに実装を任せる場合も、内容を理解したうえで採否を判断します。",
+      "理解が浅い技術や重要な設計判断では、人が確認する範囲を広げます。",
+      "定型作業は自動化し、判断が必要な箇所に確認を集中します。"
     ],
     "premises": [
       "method.premise.01",

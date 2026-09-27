@@ -292,13 +292,14 @@ describe('#31 AI と Human の境界 — 出所を推測しない', () => {
  * 一字一句そのままであること、そして 2 文目が旧 2 文の境界——完全自動の
  * Multi-Agent 開発と構築済み Harness——を今も対象外にしていること。
  */
-describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説明へ', () => {
+describe('開発の前提 — 体制と範囲を一般読者向けに示す', () => {
   const PREMISE_IDS = ['method.premise.01', 'method.premise.02'];
-  const APPROVED_AT = '2026-09-20T05:37:32Z';
-  /** 本人承認コメントの文言そのまま（Issue #31 comment 5747908981）。 */
+  const APPROVED_AT = '2026-09-26T15:25:44Z';
+  const HEADING_APPROVED_AT = '2026-09-20T05:37:32Z';
+  /** このtaskで本人が承認した、一般読者向けの現在文言。 */
   const PREMISE_TEXT = [
-    'Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。',
-    '現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。',
+    '要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。',
+    '現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。',
   ];
   /** 置き換えられた公開文言。どれも公開面に残っていてはならない。 */
   const RETIRED = [
@@ -346,13 +347,14 @@ describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説�
     }
   });
 
-  it('承認バッチが 3 件をこの 1 回の機会として記録している', () => {
+  it('承認バッチが読者向けcopyの更新をこの1回の機会として記録している', () => {
     const batch = APPROVAL_BATCHES.find((b) => b.ids.includes('method.premise.01'));
     assert.ok(batch);
     assert.equal(batch.by, 'user');
     assert.equal(batch.at, APPROVED_AT);
-    assert.deepEqual([...batch.ids], [...PREMISE_IDS, 'ui.howIBuild.premises']);
-    assert.match(batch.task, /Issue #31 comment 5747908981/);
+    for (const id of PREMISE_IDS) assert.ok(batch.ids.includes(id));
+    assert.equal(batch.ids.includes('ui.howIBuild.premises'), false);
+    assert.match(batch.task, /HOW-I-BUILD-TECHNICAL-COPY/);
   });
 
   it('公開見出しが「開発の前提」である', () => {
@@ -362,7 +364,7 @@ describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説�
     assert.ok(row);
     assert.equal(row.text, '開発の前提');
     assert.equal(row.publication.approvedBy, 'user');
-    assert.equal(row.publication.approvedAt, APPROVED_AT);
+    assert.equal(row.publication.approvedAt, HEADING_APPROVED_AT);
   });
 
   it('置き換えられた公開文言が、出荷文字列のどこにも残っていない', () => {
@@ -376,9 +378,9 @@ describe('#31 開発の前提 — 否定の宣言から、体制と範囲の説�
     // 見出しを変えたぶん、境界が一緒に落ちていないかを見る。#31 の決定は
     // 「否定形だけを前面に出す構成から置き換える」であって、削除ではない。
     const bound = PREMISE_TEXT[1]!;
-    assert.match(bound, /完全自動の Multi-Agent 開発/);
-    assert.match(bound, /Harness/);
-    assert.match(bound, /前提としたものではありません。/);
+    assert.match(bound, /複数のAIがすべて自動で開発する仕組み/);
+    assert.match(bound, /専用の自動化基盤を構築・運用した実績/);
+    assert.match(bound, /示すものではありません。/);
   });
 
   it('component は本文を直書きせず、id を registry で解決する', () => {

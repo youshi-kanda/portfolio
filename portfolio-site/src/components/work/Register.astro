@@ -45,6 +45,8 @@ interface Props {
   minSlots?: number;
   /** Where row numbering starts, so MORE PROJECTS can number from 01. */
   startIndex?: number;
+  /** The archive shows role; compact homepage rows deliberately do not. */
+  showRole?: boolean;
 }
 
 const {
@@ -52,6 +54,7 @@ const {
   evidence = [],
   minSlots = site.registerMinSlots,
   startIndex = 1,
+  showRole = false,
 } = Astro.props;
 
 const slots: number[] = [];
@@ -88,6 +91,12 @@ const rows = works.map((w, i) => ({
           <span class="rc">
             <h3 aria-level="2">{w.title}</h3>
             <p class="cl">{w.purpose}</p>
+            {showRole && w.role.length > 0 && (
+              <span class="reg-role">
+                <span class="mo">{ui.work.role}</span>
+                <span>{w.role.join(' / ')}</span>
+              </span>
+            )}
             {/* Category and technologies share one line. Stacked, they made a
                 four-line row where the tier's whole point is that it is short. */}
             <span class="meta">

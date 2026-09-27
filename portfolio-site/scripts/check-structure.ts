@@ -887,7 +887,7 @@ for (const { slug, route } of caseRoutes) {
   quickItemLists.push({ slug, items: items.join(' | ') });
 
   // Internal enum members, inside this block only. The scope table elsewhere on
-  // the page legitimately prints the column head `Implemented`, which is not
+  // the page legitimately prints the column head `実装済み`, which is not
   // this — so the scan is the block, and the match is the enum spelling.
   for (const member of ['public-demo', 'implemented', 'poc']) {
     const hit = new RegExp(`(?<![A-Za-z0-9-])${member}(?![A-Za-z0-9-])`).test(stripTags(block));

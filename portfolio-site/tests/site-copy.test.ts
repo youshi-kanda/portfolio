@@ -99,7 +99,7 @@ describe('site.json copy coverage', () => {
     const { copy, uiCopy } = loadAll();
     const { managed, unmanaged } = siteCopyCoverage(copy, uiCopy);
     assert.equal(managed.length + unmanaged.length, siteStrings().length);
-    assert.equal(managed.length, 1);
+    assert.equal(managed.length, 11);
     // 120 before #7, 183 after it, 167 after #8, 191 after #31. The jump was 02
     // MORE PROJECTS, 03 CAPABILITIES, ABOUT's `now` and CONTACT's heading and
     // lede: all of it copy the user approved in #6, entered where the section
@@ -140,7 +140,9 @@ describe('site.json copy coverage', () => {
     // page that happens to read the same. So 191 − 5 = 186 unmanaged and 2 − 1
     // = 1 managed, and the section content that replaced them adds nothing to
     // either count: ids and locators, exempt for the reasons stated above.
-    assert.equal(unmanaged.length, 186);
+    // The reader-copy task registers the ten HOW I BUILD strings it rewrites
+    // in site.json, so they move from the measured backlog into managed copy.
+    assert.equal(unmanaged.length, 176);
   });
 
   it('reports once, warns only, and never fails a build', () => {
@@ -148,8 +150,8 @@ describe('site.json copy coverage', () => {
     const findings = siteCopyGate(copy, uiCopy);
     assert.deepEqual(codes(findings), ['W-SITE-UNMANAGED']);
     assert.equal(findings[0]?.level, 'WARN');
-    assert.match(findings[0]!.message, /186 件/);
-    // one finding, not 186 — a build log nobody reads is not a gate
+    assert.match(findings[0]!.message, /176 件/);
+    // one finding, not 176 — a build log nobody reads is not a gate
     assert.equal(findings.length, 1);
   });
 

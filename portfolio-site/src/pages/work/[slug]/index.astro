@@ -84,7 +84,7 @@ const sections = caseStudy ? caseSections(work, caseStudy) : [];
  * Study does (see technical.astro's getStaticPaths). So it is asked once, here,
  * rather than again in the markup.
  */
-const archiveLabel = ui.register.railLabels[0] as string;
+const archiveLabel = ui.register.pageTitle;
 const crumbs = workCrumbs(archiveLabel, work.title, work.slug);
 const deeper = caseStudy ? technicalHref(work.slug) : null;
 

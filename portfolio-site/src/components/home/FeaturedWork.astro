@@ -35,10 +35,9 @@
  * and it loses no information: background, Role, Selected technology and the
  * evidence block are rendered identically on all five.
  *
- * NO WORD FOR THE OTHER HALF. `代表作` is printed on the two; nothing is
- * printed on the three. Any label that named the supporting tier would be read
- * as a grade, and the tier is an editorial weighting on one page — not a
- * judgement about the work.
+ * NO VISIBLE TIER LABEL. Primary / supporting remains the layout hierarchy,
+ * but neither tier prints a grade. The distinction is editorial weighting on
+ * one page, not a judgement about the work.
  *
  * WHAT EACH BLOCK ANSWERS. #30 §2: what the work is for (purpose), how it came
  * about (開発背景, derived from #29's portfolioProfile), what this engineer did
@@ -73,7 +72,6 @@
  */
 import {
   developmentBackground,
-  isPrimaryFeatured,
   pad2,
   workFeaturedTier,
   workFigure,
@@ -112,7 +110,6 @@ const blocks = works.map((work, i) => {
     work,
     n: pad2(i + 1),
     tier,
-    primary: isPrimaryFeatured(work),
     /** #30 — width IS the tier now. It was position; see the note above. */
     broad: tier === 'primary',
     showsCaseStudy: workShowsCaseStudyCta(work),
@@ -170,7 +167,7 @@ const blocks = works.map((work, i) => {
 
   {
     blocks.map(
-      ({ work: w, n, tier, primary, broad, showsCaseStudy, sourceUrl, background, figure, eager }) => (
+      ({ work: w, n, tier, broad, showsCaseStudy, sourceUrl, background, figure, eager }) => (
       <article
         class="fw"
         data-w={w.slug}
@@ -182,9 +179,6 @@ const blocks = works.map((work, i) => {
           <div class="tr">
             <Rail index={n} labels={[w.productType]} />
             <div class="msr">
-              {/* The two the owner chose, named. Nothing is printed on the
-                  other three — see NO WORD FOR THE OTHER HALF above. */}
-              {primary && <p class="fw-tier"><span class="st">{ui.work.featuredPrimary}</span></p>}
               <h3 class="fw-t">{w.title}</h3>
             </div>
           </div>

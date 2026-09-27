@@ -47,7 +47,6 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-08-28T21:20:25Z',
     ids: Object.freeze([
       'home.hero.role.01',
-      'home.works.h2',
       'home.stack.h2',
       'home.stack.lede',
       'home.stack.note',
@@ -115,11 +114,12 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    * rounded stand-in. An approval record with a tidy 00:00:00 in it is a
    * record nobody checked against anything.
    *
-   * 6 件で始まり、3 件になった。`home.hero.display.01` / `.02` / `home.hero.lede`
+   * 6 件で始まり、1 件になった。`home.hero.display.01` / `.02` / `home.hero.lede`
    * は #44 で書き直され、下の ISSUE-44-HERO-COPY へ移っている——この batch が
    * 承認した 2 行 display とその lede はもうサイトに無い。移動であって取り消し
    * ではない: この batch は 2026-09-13T00:13:13Z に実際に起きた承認であり続け、
-   * その日に読まれた文が今も出ている 3 件——role.02 と CTA 2 件——を承認している。
+   * CTA 2 件は reader-copy task で書き直され、現在この batch に残るのは
+   * その日に読まれたまま出ている role.02 である。
    *
    * 上の 2 段落は当時の判断の記録としてそのまま残す。「業務で使える」を選んだ
    * 理由も、「実際に使われる」を採らなかった理由も、その occasion に実際に
@@ -131,8 +131,6 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     at: '2026-09-13T00:13:13Z',
     ids: Object.freeze([
       'home.hero.role.02',
-      'home.hero.cta.primary',
-      'home.hero.cta.secondary',
     ]),
   }),
   /**
@@ -266,11 +264,7 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
     task: 'ISSUE-31-DEV-PREMISES (Issue #31 comment 5747908981)',
     by: 'user',
     at: '2026-09-20T05:37:32Z',
-    ids: Object.freeze([
-      'method.premise.01',
-      'method.premise.02',
-      'ui.howIBuild.premises',
-    ]),
+    ids: Object.freeze(['ui.howIBuild.premises']),
   }),
   /**
    * Issue #32 Phase 9-4 — ABOUT の業務経験と公開境界。
@@ -358,8 +352,8 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
    *
    * このファイルの冒頭の規則がそのまま起きている: 3 件とも #6 のバッチ
    * （2026-09-13T00:13:13Z）で承認された文を持っていたが、書き直されたので
-   * id は新しいバッチへ移り、両方には載らない。#6 のバッチには role.02 と
-   * CTA 2 件が残る——あの日読まれたまま今も出ている 3 件である。
+   * id は新しいバッチへ移り、両方には載らない。#6 のバッチに残る role.02 は
+   * あの日読まれたまま今も出ている。CTA 2 件は後の reader-copy task へ移った。
    *
    * `at` は承認コメント Issue #44 comment 5751276538 の作成時刻で、issue の
    * created_at でも commit 時刻でもない。本人がそのコメントで 3 文を id ごとに
@@ -394,6 +388,82 @@ export const APPROVAL_BATCHES: readonly ApprovalBatch[] = Object.freeze([
       'home.hero.lede',
     ]),
   }),
+  /**
+   * Home / Work reader copy. The user supplied the final visible wording in
+   * this task, including the Japanese archive title, field labels and CTAs.
+   * Reworded ids move here from their earlier approval batches; the archive
+   * lede and page title are new registered strings.
+   */
+  Object.freeze({
+    task: 'TASK-IMPROVE-HOME-WORK-COPY-FOR-READERS',
+    by: 'user',
+    at: '2026-09-26T14:37:12Z',
+    ids: Object.freeze([
+      'home.hero.cta.primary',
+      'home.hero.cta.secondary',
+      'home.works.h2',
+      'work.archive.lede',
+      'ui.work.role',
+      'ui.work.selectedTech',
+      'ui.register.pageTitle',
+      'ui.register.homeAllWorksCta',
+    ]),
+  }),
+  /**
+   * HOW I BUILD / Technical reader copy. The user supplied the visible
+   * wording in this task. The two premise ids move here because their current
+   * Japanese was re-approved as a reader-facing rewrite; the unchanged
+   * 「開発の前提」heading remains in the earlier #31 batch.
+   */
+  Object.freeze({
+    task: 'TASK-IMPROVE-HOW-I-BUILD-TECHNICAL-COPY-FOR-READERS',
+    by: 'user',
+    at: '2026-09-26T15:25:44Z',
+    ids: Object.freeze([
+      'method.rail.subtitle',
+      'method.title',
+      'method.lede',
+      'method.workflow.decisionTag',
+      'method.roles.human',
+      'method.roles.chatgpt',
+      'method.roles.claudeCode',
+      'method.intent.01',
+      'method.intent.02',
+      'method.intent.03',
+      'method.premise.01',
+      'method.premise.02',
+      'ui.caseStudy.technicalCta',
+      'ui.technical.sectionsLabel',
+      'ui.technical.sections.architecture',
+      'ui.technical.sections.why',
+      'ui.technical.sections.failureModes',
+      'ui.technical.sections.tradeOffs',
+      'ui.technical.sections.tests',
+      'ui.technical.sections.security',
+      'ui.technical.sections.limitations',
+      'ui.technical.sections.scale',
+      'ui.technical.sections.links',
+    ]),
+  }),
+  /**
+   * Case Study reader copy. The user supplied the three section headings and
+   * three scope-table headers in this task. All six are presentation strings
+   * in ui.json; the technical facts and table values remain in their existing
+   * Case Study records.
+   */
+  Object.freeze({
+    task: 'TASK-IMPROVE-CASE-STUDY-COPY-FOR-READERS',
+    by: 'user',
+    at: '2026-09-26T15:51:06Z',
+    ids: Object.freeze([
+      'ui.caseStudy.sections.problem',
+      'ui.caseStudy.sections.highlights',
+      'ui.caseStudy.sections.quality',
+      'ui.caseStudy.scopeHeaders.1',
+      'ui.caseStudy.scopeHeaders.2',
+      'ui.caseStudy.scopeHeaders.3',
+    ]),
+  }),
 ]);
 
 /**
@@ -423,8 +493,8 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   "home.hero.display.01": "業務を理解し、",
   "home.hero.display.02": "現場で使える仕組みをつくる。",
   "home.hero.lede": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
-  "home.hero.cta.primary": "実績を見る",
-  "home.hero.cta.secondary": "相談する",
+  "home.hero.cta.primary": "主な開発実績を見る",
+  "home.hero.cta.secondary": "開発について相談する",
 
   // Issue #8 — PR #17 comment 5651891248. 04 ABOUT's heading, CONTACT's two
   // strings and the Case Study's CI note. The CTA names what the reader will
@@ -484,11 +554,22 @@ export const APPROVED_TEXT: Readonly<Record<string, string>> = Object.freeze({
   // 実際の開発体制を述べ、2 文目がその公開内容の対象範囲を区切る。2 文目は
   // 旧 `notClaimed` が名指ししていた 2 つ（完全自動の Multi-Agent 開発 /
   // 構築済み Harness）をそのまま対象外に保っている。
-  "method.premise.01": "Human が調査・判断・検証を担当し、AI を設計・実装の支援に利用しています。",
-  "method.premise.02": "現在の公開内容は、完全自動の Multi-Agent 開発や専用 Harness の構築済み運用を前提としたものではありません。",
+  "method.rail.subtitle": "AIを活用した開発プロセス",
+  "method.title": "AIを活用した開発の進め方",
+  "method.lede": "AIを設計・実装の支援に使い、要件整理・重要な判断・最終確認は自分で行います。",
+  "method.workflow.decisionTag": "人が判断",
+  "method.roles.human": "要件整理 / 内容理解 / 採否判断",
+  "method.roles.chatgpt": "計画 / レビュー / 論点整理",
+  "method.roles.claudeCode": "実装 / テスト",
+  "method.intent.01": "AIに実装を任せる場合も、内容を理解したうえで採否を判断します。",
+  "method.intent.02": "理解が浅い技術や重要な設計判断では、人が確認する範囲を広げます。",
+  "method.intent.03": "定型作業は自動化し、判断が必要な箇所に確認を集中します。",
+  "method.premise.01": "要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。",
+  "method.premise.02": "現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。",
 
-  "home.works.h2": "何のためのサービスを、どこまで実装したのか。",
+  "home.works.h2": "何を作り、どこまで実装したのか。",
   "home.works.lede": "各作品で、実装範囲・検証方法・公開範囲を分けて示します。",
+  "work.archive.lede": "業務Webアプリ、AI活用、業務自動化を中心に、これまでの開発実績をまとめています。各実績では、目的・担当範囲・使用技術を掲載しています。",
   "home.stack.h2": "どの技術で何を担当し、それがどの作品に入っているか。",
   "home.stack.lede": "ロゴは並べていません。1 行が「技術 → その技術で担当した責務 → その責務を持つ作品」の対応です。",
   "home.stack.note": "この表に無い技術は、公開しているデモでは使っていません。",
