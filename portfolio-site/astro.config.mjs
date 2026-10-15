@@ -40,7 +40,7 @@ export default defineConfig({
   // is no second place that can disagree with it. Moving the site is a
   // one-line change here, and `check-links` fails the build if any emitted
   // absolute URL is on a different origin.
-  site: 'https://portfolio.neppepe.net',
+  site: 'https://youshi-portfolio-site.pages.dev',
 
   // Static output. There is no server runtime to operate, and nothing on this
   // site is per-request: the content is a fixed set of works and the pages are
