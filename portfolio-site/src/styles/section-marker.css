@@ -1,0 +1,238 @@
+/**
+ * #46 A' — SECTION MARKER. The chapter opening for the five top-level
+ * homepage sections, and the whole of its geometry.
+ *
+ * This sheet is NOT one of the six frozen stylesheets and restyles none of
+ * them. It introduces its own `.smk*` names and its own custom properties, and
+ * the only thing it reaches outside itself is the folio it replaces (below).
+ *
+ * ------------------------------------------------- what replaced what
+ *
+ * PR #47's five SVG motifs are gone — the component, this sheet's predecessor
+ * and its contract. Nothing here is one of those drawings resized or faded:
+ * there is no `<svg>`, no `path`, no `fill`, no shape of any kind in the
+ * marker. What is drawn is type, and the type is the two strings the section
+ * already prints.
+ *
+ * ------------------------------------------------------------ the folio
+ *
+ * motion.css §A gives `[data-mx-n]` sections a background numeral, sized up on
+ * `#work` / `#about` and left at 17px everywhere else. The marker IS that
+ * numeral now, so `content` comes off all five homepage sections here rather
+ * than the two of them being made to agree with the other three. Written as
+ * five id selectors, not `:has()`: these five ids exist on the homepage and
+ * nowhere else in the site, and a `:has()` that an engine does not understand
+ * would leave the old numeral and the new marker both on the page — the one
+ * outcome this is for. `.hero::before` is deliberately NOT in the list: 00's
+ * numeral is the poster's back layer, not a chapter mark, and `#build` keeps
+ * its own on /how-i-build/.
+ *
+ * ------------------------------------------------------------- the zone
+ *
+ * THE MARKER IS NOT LAID OVER THE SECTION. `z-index:-1` puts it under the
+ * text, and that is not the guarantee — a reader sees grey letterforms through
+ * a paragraph whether they are behind it or not. The guarantee is that the
+ * drawing does not reach the paragraph at all: `.smk` is a box of stated
+ * HEIGHT at the head of the section with `overflow:hidden`, so the marker
+ * stops where the chapter opening stops, and `clip-path` cuts its left edge at
+ * the measure's own right line, so it never enters the column the text is set
+ * in. Both are properties of this stylesheet; neither depends on how long a
+ * heading happens to be.
+ *
+ * `--smk-zone-h` IS MEASURED, NOT CHOSEN. It is the smallest distance, across
+ * the five sections at 1440, between a section's top edge and the first thing
+ * in it that a reader is meant to read — 02 MORE, whose first register row is
+ * a link whose box begins 238px in and carries the `Case Study を読む →` CTA
+ * at its right. 232px is that number with the slack left over. One value for
+ * all five: the grammar is the same at every chapter, and the tightest section
+ * is what a shared grammar has to fit.
+ *
+ * That cap is why the numeral is 142px and not the 236px of the mock this
+ * came from. The mock put 02 behind the MORE CTA; production does not.
+ *
+ * ----------------------------------------------------------- the crop
+ *
+ * The numeral runs past `.page`'s right margin by `--smk-bleed` and is cut by
+ * the section's right edge. That is the composition, not an accident: one
+ * element breaks the margin and everything else — the label, the label's last
+ * letter, the zone — lands on it. The cut happens inside `.smk`'s own
+ * `overflow`, so the bleed can never widen the document: no horizontal scroll
+ * at any width, by construction rather than by measurement.
+ *
+ * ---------------------------------------------------------- the weight
+ *
+ * Existing tokens only. Both the numeral and the label are `--tx` at an alpha
+ * low enough that neither is read as text — the reference point is the folio,
+ * which motion.css §A sets at 6%. The numeral is the anchor and the label is
+ * the smaller of the two in size by a factor of eight, so the hierarchy is
+ * held by size rather than by contrast. No colour is introduced, no image is
+ * fetched, no filter is applied, and `--tx` inverts by itself inside `.inv`,
+ * which is how 05 CONTACT is drawn on ink rather than on paper.
+ *
+ * ----------------------------------------------------------- no motion
+ *
+ * No `position:sticky`, no `position:fixed`, no animation, no scroll timeline,
+ * no script. The marker is a still drawing at the head of its section and
+ * scrolls with the page like any other ink on it. Whether the boundary needs
+ * more than that is a question for staging review, not for this change.
+ */
+
+@layer utilities {
+  /* ---------------------------------------------------------- the folio
+     replaced, not doubled. See the head of this file for why these are id
+     selectors. */
+  .ad #work::before,
+  .ad #more::before,
+  .ad #capabilities::before,
+  .ad #about::before,
+  .ad #contact::before {
+    content: none;
+  }
+
+  .ad .smk {
+    /* Mirrors `.page{--mg}` at each breakpoint. `--mg` is declared ON `.page`,
+       and custom properties inherit downward only — a section is `.page`'s
+       parent, so this layer cannot read it and needs its own copy, in the same
+       breakpoint order as layout.css / responsive.css. */
+    --smk-mg: 72px;
+    /* The page's right content line, measured from the section's right edge.
+       Same expression motion.css §A uses for the folio, so the marker lands on
+       the same margin at every width, including past 1440 where `.page` stops
+       growing and centres itself. `100%` is the section's width here because
+       `.smk` is as wide as the section — this is why the box is full width and
+       the left bound is a clip rather than a `left`. */
+    --smk-edge: calc((100% - min(100%, 1440px)) / 2 + var(--smk-mg));
+    /* How far left of that line the marker may draw. 320px at 1440 puts the
+       left bound on the measure's own right line (72 + 200 rail + 56 gap +
+       720 measure = 1048). */
+    --smk-zone-w: 320px;
+    /* The chapter opening. See the head of this file: measured off 02 MORE. */
+    --smk-zone-h: 232px;
+
+    /* The label clears the nav on its own. `section[id]{scroll-margin-top:80px}`
+       (components.css, #10) means an anchor lands with the section's top edge
+       just below the 75px nav, so any of these values would be clear at the
+       position a nav click produces. They are set so the label is ALSO clear
+       when the reader has simply scrolled the section's top edge to y=0, which
+       no scroll-margin applies to: the label's first ink lands 11px below the
+       nav's rule at that worst position rather than at the convenient one. */
+    --smk-l-top: 82px;
+    --smk-l-size: 22px;
+    /* THESE TWO ARE SOLVED, NOT PICKED, and the thing they are solved against
+       is where the digits' INK falls — which is not where the box falls. At
+       `line-height:0.72` the line box is 0.72em and the font's own ascent and
+       descent add to 1.45em, so the glyphs sit well outside their box: the
+       digits' ink runs from top + 0.066em to top + 0.806em (measured, and the
+       second number is the one that matters — digits have no descender, so
+       their ink ends at the baseline). 108 + 0.806 * 142 = 222.5, which leaves
+       ten pixels between the foot of the numeral and the foot of the zone.
+       Sized this way rather than to the box, because a numeral sized to its
+       box is a numeral whose bottom curve the zone quietly cuts off.
+
+       The slack is also the platform margin. These are the metrics of the
+       mono face this stack resolves to here; another engine's fallback can sit
+       a few points differently, and the clip — not the arithmetic — is what
+       keeps the marker out of the text when it does. A numeral trimmed by a
+       pixel on an unusual stack is the right failure; a numeral over the CTA
+       is not.
+
+       It is 142px and not the 236px of the mock this came from. The mock's
+       lockup reached 295px into the section and put 02 behind MORE's
+       `Case Study を読む →`; 232px is what the page actually has. */
+    --smk-n-top: 108px;
+    --smk-n-size: 142px;
+    /* how far the numeral runs past the right margin = the depth of the crop */
+    --smk-bleed: 104px;
+
+    --smk-l-ink: 20%;
+    --smk-n-ink: 7.5%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: var(--smk-zone-h);
+    /* The two bounds. `overflow` cuts the bleed at the section's right edge and
+       the drawing at the zone's foot; `clip-path` keeps it out of the measure.
+       `inset()`'s percentages resolve against this box, which is the section's
+       width, so the left bound is stated against the same grid as the rest. */
+    overflow: hidden;
+    clip-path: inset(0 0 0 calc(100% - var(--smk-edge) - var(--smk-zone-w)));
+    z-index: -1;
+    pointer-events: none;
+    color: var(--tx);
+  }
+
+  /* The label. Right-aligned to the page's margin and stopping there — the
+     negative margin gives back the trailing letter-space, so the last glyph's
+     right edge is on the line and not a quarter of an em inside it. */
+  .ad .smk-l {
+    position: absolute;
+    top: var(--smk-l-top);
+    right: var(--smk-edge);
+    margin-right: -0.24em;
+    font-family: var(--f-mono);
+    font-weight: 500;
+    font-size: var(--smk-l-size);
+    line-height: 1;
+    letter-spacing: 0.24em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--tx) var(--smk-l-ink), transparent);
+  }
+
+  /* The numeral. The one element allowed past the margin. */
+  .ad .smk-n {
+    position: absolute;
+    top: var(--smk-n-top);
+    right: calc(var(--smk-edge) - var(--smk-bleed));
+    font-family: var(--f-mono);
+    font-weight: 500;
+    font-size: var(--smk-n-size);
+    line-height: 0.72;
+    letter-spacing: -0.06em;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--tx) var(--smk-n-ink), transparent);
+  }
+
+  /* 05 CONTACT is drawn on ink. `--tx` inverts by itself inside `.inv`, so the
+     expressions above follow with no second rule — but white on black reads
+     heavier than black on white at the same alpha, so both weights come down. */
+  .ad .contact .smk {
+    --smk-l-ink: 15%;
+    --smk-n-ink: 5.5%;
+  }
+
+  /* ---------------------------------------------------------- 1024 – 1279
+     The grid narrows (--mg 72 → 48, rail 200 → 148, gap 56 → 40, measure 720 →
+     660). The marker follows it down rather than keeping a size the page no
+     longer has room for; the zone height does not change, because what sets it
+     is 02's first row and that lands at the same 238px here. */
+  @media (max-width: 1279px) {
+    .ad .smk {
+      --smk-mg: 48px;
+      --smk-zone-w: 300px;
+      --smk-l-size: 19px;
+      --smk-n-top: 108px;
+      --smk-n-size: 122px;
+      --smk-bleed: 84px;
+    }
+  }
+
+  /* ------------------------------------------------------------- < 1024
+     THE MARKER IS NOT DRAWN. Below 1024 the rail lies down and the page is one
+     column: the text runs the full width of `.page`, so there is no right
+     margin for a folio to sit in and the only place left for it is behind the
+     paragraph. Measured at 1024, 768, 414, 390 and 360 before this rule was
+     written — at 768 the numeral cleared the headings that happen to be short
+     and nothing else, which is incidental clearance and not a rule.
+     #46 §13/§14's escalation ends here: shrink, crop harder, narrow the zone,
+     and then do not draw it.
+     Nothing is lost. Every width still numbers and names its sections in the
+     instrument rail, which below 1024 lies down above the heading where it is
+     the first thing read. The marker was always the decorative half. */
+  @media (max-width: 1023px) {
+    .ad .smk {
+      display: none;
+    }
+  }
+}

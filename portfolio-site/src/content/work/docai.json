@@ -45,6 +45,14 @@
     "PostgreSQL",
     "WebSocket"
   ],
+  "portfolioProfile": {
+    "developmentContext": "collaborative",
+    "portfolioForm": "public-reconstruction",
+    "implementationStatus": "implemented",
+    "releaseStatus": "unknown",
+    "responsibilityNotes": [],
+    "originProject": null
+  },
   "keyDecision": [
     {
       "decision": "抽出に 2 つの LLM を併用した。",
@@ -79,7 +87,8 @@
     "sourceType": "source-derived",
     "sourceRefs": [
       "title / productType / purpose / role / selectedTech — portfolio-site/docs/design/home-ia-content-spec.md §6.1 More 03（#6 / PR #15 merged）",
-      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §5 More Projects `-OCR-LLM_System`（#5 / PR #14 merged）"
+      "targetUser / problem / implementationScope / keyDecision / role / languages — portfolio-site/docs/research/project-inventory.md §5 More Projects `-OCR-LLM_System`（#5 / PR #14 merged）",
+      "portfolioProfile — #29 本人確認記録（2026-09-19） https://github.com/youshi-kanda/portfolio/issues/29#issuecomment-5742687087"
     ],
     "approvedBy": null,
     "approvedAt": null

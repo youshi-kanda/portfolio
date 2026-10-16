@@ -1,0 +1,78 @@
+---
+/**
+ * #46 A' — the chapter marker. One per top-level homepage section.
+ *
+ * WHAT THIS IS. The section's own number and the section's own name, set once
+ * more at folio size in the page's right margin. It is not a background
+ * graphic added to the section: it is the two strings the page already prints
+ * — the rail's index and the nav's label — promoted to the size a chapter
+ * opening is set at. PR #47's five SVG drawings were the other answer and were
+ * rejected in staging review; nothing of them survives here, not resized and
+ * not faded. There is no illustration, no icon and no shape in this component.
+ *
+ * WHY IT REPLACES THE FOLIO RATHER THAN JOINING IT. motion.css §A already
+ * draws an oversized numeral, but only on `#work` and `#about` — `#more`,
+ * `#capabilities` and `#contact` fall through to the base rule and get a 17px
+ * numeral in the corner. Five sections, two of them with a chapter opening:
+ * the boundary was weak partly because the page stopped numbering itself
+ * halfway. So this does not add a second numeral anywhere. section-marker.css
+ * takes `content` off `::before` for all five, and the marker is the only
+ * large number on the page's chapters. 00 HERO is untouched — its numeral is
+ * the poster's back layer (motion.css §A) and is not a chapter mark.
+ *
+ * NOTHING IS TYPED HERE. The number is `sectionNumber()`, which derives it
+ * from the position in `site.sections`; the label is that same entry's own
+ * `label`, which is the string the nav prints. Reordering `site.sections`
+ * renumbers the nav, the rail and this marker in one edit, and there is no
+ * public copy in this component to approve — both strings are already on the
+ * screen, at full contrast, in the rail and the nav.
+ *
+ * THE LABEL IS THE NAV'S, NOT THE HEADING'S, and that is deliberate. A section
+ * heading is a sentence written for a reader ("何を任せられるか。"); the nav
+ * label is a token for the same section ("CAPABILITIES"). A marker is a token,
+ * so it takes the token.
+ *
+ * IT CARRIES NOTHING. `aria-hidden`, no pointer events, no script, no link.
+ * The rail beside it says the same number and the same word to a screen
+ * reader, so announcing this one would read the page's chapter twice. Delete
+ * this component and its stylesheet and the homepage loses no sentence, no
+ * link and no control.
+ *
+ * WHERE IT IS ALLOWED TO BE. section-marker.css bounds the drawing to a zone
+ * at the head of the section and clips it there — see that file. This
+ * component states no geometry.
+ */
+import { sectionNumber } from '../../lib/content/derive.ts';
+import { site } from '../../lib/content/site.ts';
+
+interface Props {
+  /** the `site.sections` id of the section this marker opens */
+  section: string;
+}
+
+const { section } = Astro.props;
+
+const entry = site.sections.find((s) => s.id === section);
+if (!entry) {
+  throw new Error(
+    `SectionMarker: site.sections に節 ${section} が無い。` +
+      `番号も名前もその配列から導くので、載っていない節には章標を置けない。`,
+  );
+}
+if (!entry.label) {
+  throw new Error(
+    `SectionMarker: 節 ${section} に label が無い。` +
+      `章標は nav が印字している label をそのまま使う（新しい語は書かない）。`,
+  );
+}
+
+/** the rail's own index, derived from the running order — never typed */
+const index = sectionNumber(section);
+/** the nav's own token for this section — never typed */
+const label = entry.label;
+---
+
+<div class="smk" data-section-marker={section} aria-hidden="true">
+  <span class="smk-l">{label}</span>
+  <span class="smk-n">{index}</span>
+</div>

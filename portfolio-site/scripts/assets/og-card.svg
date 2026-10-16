@@ -8,10 +8,10 @@
   <line x1="250" y1="64" x2="250" y2="566" stroke="#15171A" stroke-width="1" opacity="0.22"/>
   <rect x="246" y="124" width="8" height="92" fill="#14654A"/>
 
-  <!-- brand monogram; same geometry as favicon -->
+  <!-- brand monogram; geometry mirrors src/assets/brand/yk-mark.svg -->
   <g transform="translate(74 392) scale(3.6)">
-    <path d="M6 7.5 12.5 14v10.5M19 7.5 12.5 14" fill="none" stroke="#14654A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
-    <path d="M20 7.5v17M20 16l6-8.5M20 16l6 8.5" fill="none" stroke="#15171A" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+    <path fill="#14654A" d="M4 7.3h7.45c.7 0 1.3.28 1.75.8l2.8 3.35-4.8 4.65c-.15-.55-.42-1.05-.8-1.48L4 7.3Zm12.2 5.25v8.65a3.5 3.5 0 0 1-3.52 3.5h-1.33V18c0-.64.26-1.26.72-1.71l4.13-3.74Z"/>
+    <path fill="#15171A" d="m16.82 11.55 3.98-3.9c.23-.23.55-.35.88-.35H28L17.18 17.9v-5.08c0-.46-.12-.89-.36-1.27Zm.73 7.2 1.15-1.13c.85-.83 2.2-.73 2.92.22l5.53 6.86h-5.8c-.39 0-.76-.17-1.01-.47l-3.02-3.55c-.49-.58-.39-1.32.23-1.93Z"/>
   </g>
 
   <!-- main statement -->

@@ -1,17 +1,45 @@
 ---
 /**
- * /how-i-build/ — the method, in full.
+ * /how-i-build/ — how the work gets made.
  *
  * It used to be 2,220px of the homepage, between the work and the profile. The
  * page's job is to say what this engineer builds and show it; a reader who
- * wants the eight-step workflow, the roles table and the list of things that
- * are deliberately NOT claimed is a reader who has already decided to go
- * deeper, and this is where they land.
+ * wants the eight-step workflow, the roles table and the premises the published
+ * content is stated under is a reader who has already decided to go deeper, and
+ * this is where they land.
  *
  * NOTHING WAS REWRITTEN FOR THIS PAGE. It renders `HowIBuild.astro` against the
  * same `site.json` data the homepage rendered — the component moved, the words
  * did not. The homepage keeps the one sentence it all supports, plus a link
  * here (03 CAPABILITIES).
+ *
+ * THE PAGE ANSWERS ONE QUESTION, AND IT IS NOT "WHY THIS DECISION".
+ *
+ * #31 added 判断事例 — two public PRs transcribed into 問題 / 確認した事実 /
+ * 判断 / 結果 / 検証 — and #52 split PR #19's QA log out of it into its own
+ * section. Both were built to argue that the method above them is real, and
+ * both did it by carrying a specific project's reasoning: 2,302px and 779px of
+ * a 6,063px page, more than half of it, spent on why two particular changes
+ * were made the way they were.
+ *
+ * That is a Case Study's question. The three pages divide as
+ * `/work/` what was built, `/how-i-build/` how it is built, and each Case Study
+ * why THAT design and THAT technical decision — and a per-project judgement
+ * living here is the third page's material answered on the second one, where a
+ * reader has no project in hand to attach it to. So both sections are off this
+ * page and the depth goes to the Case Studies.
+ *
+ * WHAT IS NOT DELETED: `site.howIBuild.decisionCases` and `.qaRecord`, their
+ * approval records, and the `ui.howIBuild.case*` / `.qa*` labels. They are
+ * still content — transcribed from PRs, still under every gate — and they are
+ * what the Case Studies will draw. Not rendered and not registered are
+ * different states, the same distinction /work/'s own index records about its
+ * rail copy. What changed is which registered strings THIS page draws.
+ *
+ * TWO COMPONENTS, NOT ONE. The method and the way back up are separate files
+ * because they answer to different things: `HowIBuild` is shared with the
+ * homepage's own section history, and `ScrollToTop` is route furniture that
+ * exists because this page in particular runs long.
  */
 import { getCollection } from 'astro:content';
 import HowIBuild from '../components/home/HowIBuild.astro';
@@ -19,6 +47,7 @@ import Footer from '../components/layout/Footer.astro';
 import Rail from '../components/layout/Rail.astro';
 import SyntheticBar from '../components/layout/SyntheticBar.astro';
 import Nav from '../components/navigation/Nav.astro';
+import ScrollToTop from '../components/navigation/ScrollToTop.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { shippingWorks } from '../lib/content/derive.ts';
 import { site } from '../lib/content/site.ts';
@@ -37,7 +66,12 @@ const h = site.howIBuild;
         twice, the lede twice and two `M` rails on the one page that uses it
         (#10). The component's head is suppressed and its rail labels are
         raised to the rail here, so nothing approved is lost. */}
-    <section class="hero">
+    {/* #31 — `id="top"` is the anchor the fixed control at the bottom right
+        points at. It is on the hero rather than on `<main id="how-i-build">`
+        because the landmark's id is what /#how-i-build would mean to anything
+        linking here, and renaming it would be changing this page's address to
+        add a button to it. */}
+    <section class="hero" id="top">
       <div class="page">
         <div class="tr">
           <Rail index="M" labels={h.railLabels} />
@@ -50,5 +84,9 @@ const h = site.howIBuild;
     </section>
     <HowIBuild heading={false} />
     <Footer />
+    {/* Last in the DOM, so the tab order reaches it after the page rather than
+        beside it. It is fixed in the corner visually; nothing about the reading
+        order is reversed in CSS. */}
+    <ScrollToTop />
   </main>
 </BaseLayout>

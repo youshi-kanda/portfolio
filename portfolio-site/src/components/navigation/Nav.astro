@@ -3,24 +3,76 @@
  * A static sticky bar. Position is reported by a mono index and a 2px
  * hairline — an instrument, not a menu. No colour ramp, no label that grows.
  *
- * The item list is derived: a section that is not on this page (05 FEATURED
- * EVIDENCE at zero works) does not get a link, because an anchor that resolves
- * to nothing is a defect rather than a placeholder.
+ * TWO LISTS, TWO JOBS. The masthead used to draw one list everywhere:
+ * `site.sections`, the homepage's own running order, with the anchors rewritten
+ * to `/#work` when it was drawn off the homepage. That is a table of contents
+ * for a document the reader is not reading — and it has no entry for `/work/`,
+ * because the archive is a page and not a band, which is how the archive ended
+ * up with exactly one inbound link on the whole site.
+ *
+ *   homepage   the section index. Unchanged, scroll-spy included.
+ *   elsewhere  the site's routes: WORK INDEX / HOW I BUILD / CONTACT.
+ *
+ * The item list stays derived. On the homepage a section that is not on this
+ * page (05 FEATURED EVIDENCE at zero works) does not get a link, because an
+ * anchor that resolves to nothing is a defect rather than a placeholder.
+ *
+ * `aria-current="page"` NOW MEANS THE PAGE. It was previously emitted on
+ * `/work/`, `/work/<slug>/` and `/work/<slug>/technical/` alike, on a link
+ * whose href was `/#work` — three kinds of page each claiming to be a fourth.
+ * A page that merely lives UNDER an entry gets `data-section`, which draws the
+ * same underline and tells the accessibility tree nothing that is not true.
+ *
+ * THE `Index` BOX IS A BUTTON. It was a bordered `<span>Index</span>` with no
+ * handler and no tab stop — the one element in the chrome below 768px that
+ * looked like a way out and was not one. Two changes answered that separately:
+ * this branch gave it a real disclosure (the `<button>` and `.mob-panel`
+ * below), and the wayfinding work removed the dead span in favour of the
+ * breadcrumb. Both answers ship. The span is gone either way; what stands in
+ * its place is a control that works, and the breadcrumb under this bar is the
+ * trail — a disclosure that lists where you can GO, a breadcrumb that says
+ * where you ARE. Neither is the other's fallback.
+ *
+ * ONE LIST, TWO RENDERINGS. `indexItems` is what the `<ol>` above draws and
+ * what the panel draws, so the bar and the panel can never disagree about
+ * which entries exist or where they point — on the homepage the section index,
+ * elsewhere the same three routes. The panel's links carry no `aria-current`
+ * and no `data-section`: those are claims about the current page, one per
+ * page, and the `<ol>` above has already made them.
  */
-import { brandHref, navItems } from '../../lib/content/derive.ts';
+import { brandHref, navItems, siteNavItems } from '../../lib/content/derive.ts';
 import { site } from '../../lib/content/site.ts';
 import { ui } from '../../lib/content/ui.ts';
 
 interface Props {
+  /** Homepage only: the section label to mark. */
   current?: string | null;
   progress?: number;
   hasWorks?: boolean;
-  /** Off the homepage, section anchors are rewritten to point back at it. */
+  /** Off the homepage, the masthead draws the site's routes instead. */
   onHomepage?: boolean;
 }
 
 const { current = null, progress = 0, hasWorks = true, onHomepage = true } = Astro.props;
-const items = navItems(hasWorks, onHomepage);
+
+const sections = onHomepage ? navItems(hasWorks, true) : [];
+/*
+ * NO PAGE TELLS THIS COMPONENT WHICH ENTRY IT IS.
+ *
+ * The marking is read off `Astro.url.pathname`, because a `section` prop would
+ * be passed the same value by `/work/` and by `/work/<slug>/` — quite
+ * reasonably, since both do live under the archive — which would put
+ * `aria-current="page"` back on a link to `/work/` from `/work/crm/`. A page
+ * that can state its own identity is a page that can state it wrongly.
+ */
+const routes = onHomepage ? [] : siteNavItems(Astro.url.pathname);
+
+/*
+ * What the mobile panel lists. Exactly one of the two above is non-empty, so
+ * this is a selection and not a merge: the panel is the same index the bar
+ * draws, revealed at a breakpoint where the bar's own `<ol>` is display:none.
+ */
+const indexItems = onHomepage ? sections : routes;
 ---
 
 <nav class="nav" data-nav data-home-nav={onHomepage ? '' : undefined}>
@@ -28,12 +80,25 @@ const items = navItems(hasWorks, onHomepage);
     <a class="nm" href={brandHref(onHomepage)}>{site.handle}<i>{site.kicker}</i></a>
     <ol>
       {
-        items.map((item) => (
+        sections.map((item) => (
           <li>
             <a
               href={item.href}
               data-nav-target={onHomepage && item.href.startsWith('#') ? item.href.slice(1) : undefined}
               aria-current={item.label === current ? 'page' : undefined}
+            >
+              <i>{item.index}</i>{item.label}
+            </a>
+          </li>
+        ))
+      }
+      {
+        routes.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={item.isCurrentPage ? 'page' : undefined}
+              data-section={item.isSection ? '' : undefined}
             >
               <i>{item.index}</i>{item.label}
             </a>
@@ -56,16 +121,16 @@ const items = navItems(hasWorks, onHomepage);
     is `position:sticky`, and therefore a containing block — positions the panel
     under the bar with `top:calc(100% + 1px)` (polish.css).
 
-    `items` is the same array the desktop `<ol>` above renders, so the two lists
-    cannot disagree about which sections exist or where their anchors point.
-    The links deliberately carry NO `data-nav-target`: the scroll spy below maps
-    one link to one section, and a second link per section would leave one of
-    them permanently without `aria-current`.
+    `indexItems` is the same array the desktop `<ol>` above renders, so the two
+    lists cannot disagree about which entries exist or where they point. The
+    links deliberately carry NO `data-nav-target`: the scroll spy below maps one
+    link to one section, and a second link per section would leave one of them
+    permanently without `aria-current`.
   */}
   <div class="mob-panel" id="nav-index" hidden data-nav-panel>
     <ol>
       {
-        items.map((item) => (
+        indexItems.map((item) => (
           <li>
             <a href={item.href}><i>{item.index}</i>{item.label}</a>
           </li>

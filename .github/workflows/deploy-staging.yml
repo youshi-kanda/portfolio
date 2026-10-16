@@ -3,14 +3,21 @@ name: Deploy Portfolio Staging
 on:
   push:
     branches:
-      - release/portfolio-site-v4
+      - develop
     paths:
       - "portfolio-site/**"
       - ".github/workflows/deploy-staging.yml"
+      - ".github/scripts/staging-smoke.sh"
   workflow_dispatch:
 
 permissions:
   contents: read
+
+# staging は「2 つ目の公開サイト」ではなく、credentials が必要なレビュー環境
+# （Issue #36）。origin はここで 1 度だけ宣言する。こうしておくと deploy 先と
+# smoke test の検証先がずれることが原理的に起きない。
+env:
+  STG_ORIGIN: https://stg-portfolio.neppepe.net
 
 concurrency:
   group: portfolio-staging
@@ -66,8 +73,28 @@ jobs:
             dist/ \
             "$VPS_USER@$VPS_HOST:/var/www/portfolio-stg/"
 
-      - name: Smoke test
-        run: |
-          curl --fail --silent --show-error --location \
-            https://stg-portfolio.neppepe.net/ \
-            > /dev/null
+      # smoke test は inline ではなく script に置く。そうすることで、人が手元で
+      # 実行する手順と CI が実行する手順が同一のものになる:
+      #
+      #   STG_BASIC_USER=... STG_BASIC_PASS=... bash .github/scripts/staging-smoke.sh
+      #
+      # 検証するのは到達性だけでなくアクセス境界そのもの。credentials が設定されて
+      # いれば、staging への anonymous request は拒否されなければならず、認証あり
+      # の request は成功しなければならない。この両方が必要で、片方では足りない
+      # ——誰にでも 200 を返す状態はこの Issue が終わらせようとしている状態そのもの
+      # だし、deploy 自身にまで 401 が返るなら、結局何も検証できていない。
+      #
+      # 2 つの secret は環境変数として渡し、script 側がそこから mode-0600 の netrc
+      # file へ書き出す。command line にも URL にも載せず、echo もしない。同じ理由
+      # で script 内では `set -x` を一切使わない。
+      #
+      # portfolio-site/DEPLOY.md §10 の一度きりの server 作業が終わって secret が
+      # 登録されるまでは、どちらも空なので script は到達性の check を anonymous で
+      # 実行する（以前の inline `curl` と全く同じ動作）。そのうえで境界は
+      # NOT VERIFIED と報告する。この step によって今の green が弱まることも無いし、
+      # 検証できていないものを検証したふりをすることも無い。
+      - name: Staging smoke
+        env:
+          STG_BASIC_USER: ${{ secrets.STG_BASIC_USER }}
+          STG_BASIC_PASS: ${{ secrets.STG_BASIC_PASS }}
+        run: bash ../.github/scripts/staging-smoke.sh

@@ -75,6 +75,11 @@ describe('content schema', () => {
     // them:
     //   featured             a FEATURED WORK gallery block
     //   evidence.length > 0  /work/<slug>/ is emitted, and renders the entry
+    //
+    // #30 — the three cases that leave the FEATURED tier drop `featuredTier`
+    // with it. The fixture is a featured work, so carrying the tier across
+    // would trip the OTHER refinement and the case would then pass or fail for
+    // a reason that has nothing to do with the figure it is about.
     const w = clone(sampleWork()) as Record<string, unknown>;
     delete w['image'];
     const parse = (over: Record<string, unknown>) =>
@@ -82,29 +87,51 @@ describe('content schema', () => {
 
     // 1. featured + shipping, no image — FAIL
     assert.throws(
-      () => parse({ shipping: true, featured: true, homepage: 'featured', evidence: [] }),
+      () =>
+        parse({
+          shipping: true,
+          featured: true,
+          homepage: 'featured',
+          featuredTier: 'primary',
+          evidence: [],
+        }),
       /image/,
     );
     // 2. not featured + shipping + has Evidence, no image — FAIL
     assert.throws(
-      () => parse({ shipping: true, featured: false, homepage: 'more', evidence: ['CRM-V06'] }),
+      () =>
+        parse({
+          shipping: true,
+          featured: false,
+          homepage: 'more',
+          featuredTier: undefined,
+          evidence: ['CRM-V06'],
+        }),
       /image/,
     );
     // 3. not featured + shipping + no Evidence, no image — PASS
     assert.doesNotThrow(() =>
-      parse({ shipping: true, featured: false, homepage: 'more', evidence: [] }),
+      parse({
+        shipping: true,
+        featured: false,
+        homepage: 'more',
+        featuredTier: undefined,
+        evidence: [],
+      }),
     );
     // 4. not shipping, no image — PASS
-    assert.doesNotThrow(() =>
-      parse({ shipping: false, featured: false, homepage: undefined, evidence: [] }),
-    );
+    const offPage = {
+      shipping: false,
+      featured: false,
+      homepage: undefined,
+      featuredTier: undefined,
+      evidence: [],
+    };
+    assert.doesNotThrow(() => parse(offPage));
 
     // and the accessor is still total for everything a renderer can reach
     assert.equal(workFigure(sampleWork()).src, sampleWork().image?.src);
-    assert.throws(
-      () => workFigure(parse({ shipping: false, featured: false, homepage: undefined, evidence: [] })),
-      /描画された/,
-    );
+    assert.throws(() => workFigure(parse(offPage)), /描画された/);
   });
 
   it('keeps featured and homepage agreeing, so neither can drift', () => {
@@ -122,6 +149,54 @@ describe('content schema', () => {
     assert.throws(
       () => workSchema.parse({ ...w, featured: true, homepage: undefined }),
       /homepage/,
+    );
+  });
+
+  it('ties featuredTier to the FEATURED tier in both directions (#30)', () => {
+    // A third field that has to agree with `homepage`, and for the same reason
+    // the other two do: an editorial weighting that nothing draws is one the
+    // next person to move a work reads as a default.
+    const w = clone(sampleWork()) as Record<string, unknown>;
+
+    // a FEATURED work with no tier — the hierarchy has a hole in it
+    assert.throws(
+      () => workSchema.parse({ ...w, featured: true, homepage: 'featured', featuredTier: undefined }),
+      /featuredTier/,
+    );
+    // a MORE row carrying one — a weighting on a tier that has no weighting
+    assert.throws(
+      () =>
+        workSchema.parse({
+          ...w,
+          featured: false,
+          homepage: 'more',
+          featuredTier: 'supporting',
+        }),
+      /featuredTier/,
+    );
+    // an archive-only work carrying one
+    assert.throws(
+      () =>
+        workSchema.parse({
+          ...w,
+          featured: false,
+          homepage: undefined,
+          featuredTier: 'primary',
+        }),
+      /featuredTier/,
+    );
+    // and the two legal shapes
+    assert.doesNotThrow(() =>
+      workSchema.parse({ ...w, featured: true, homepage: 'featured', featuredTier: 'supporting' }),
+    );
+    assert.doesNotThrow(() =>
+      workSchema.parse({
+        ...w,
+        featured: false,
+        homepage: 'more',
+        featuredTier: undefined,
+        evidence: [],
+      }),
     );
   });
 

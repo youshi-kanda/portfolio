@@ -116,8 +116,11 @@ describe('homepage derivation at 0 / 1 / 3 works', () => {
   it('orders works by featuredOrder, not by collection order', () => {
     const { works } = realContent();
     const order = shippingWorks(works).map((w) => w.slug);
+    // #30 HD-G moved `crm` from 05 to 02: the two 代表作 lead, the three that
+    // show the range follow. The MORE tier and the archive-only work keep
+    // their places — the reorder is inside FEATURED and nowhere else.
     assert.deepEqual(order, [
-      'ins-ai', 'hire', 'assist', 'ops', 'crm',   // 01 FEATURED WORK
+      'ins-ai', 'crm', 'hire', 'assist', 'ops',   // 01 FEATURED WORK
       'ppm', 'minio', 'docai', 'agri',            // 02 MORE PROJECTS
       'dfe',                                      // archive only
     ]);

@@ -3,10 +3,24 @@
  * 02 HOW I BUILD — the AI development method, in the author's own words.
  *
  * Every string in this section is the brief's own wording; nothing here is
- * inferred about how the work is actually done. That includes the two things
- * it explicitly does NOT claim, which are rendered as prominently as the
- * workflow itself rather than tucked into a footnote.
+ * inferred about how the work is actually done. That includes 開発の前提 —
+ * who holds which part of the work, and what the published content is not
+ * built on — rendered as prominently as the workflow itself rather than
+ * tucked into a footnote.
+ *
+ * #31 — that block used to be 「主張しないこと」, two sentences each written as
+ * a refusal. The owner replaced the framing (Issue #31 comment 5747908981):
+ * it now states how the work is actually done and then bounds what the
+ * published content covers. The boundary itself is unchanged — the second
+ * sentence still puts 完全自動の Multi-Agent 開発 and a built harness outside
+ * what this site is claiming.
+ *
+ * The two sentences are APPROVED copy and are read from the registry by id.
+ * `site.howIBuild.premises` holds the ids and their order, which is what the
+ * section content legitimately owns; the sentences live where their approval
+ * record lives, and `copyText` throws on an id the registry does not have.
  */
+import { copyText } from '../../lib/content/copy.ts';
 import { site } from '../../lib/content/site.ts';
 import { fill, ui } from '../../lib/content/ui.ts';
 import Rail from '../layout/Rail.astro';
@@ -41,6 +55,9 @@ const b = site.howIBuild;
  * The rail carries the method's own mark instead of a homepage index.
  */
 const index = 'M';
+
+/** 開発の前提 — the approved sentences, in the order site.json states them. */
+const premises = await Promise.all(site.howIBuild.premises.map((id) => copyText(id)));
 ---
 
 <section class="s-open" id="build" data-mx-n={index}>
@@ -113,12 +130,26 @@ const index = 'M';
       <div class="ins"><span class="lb">{ui.howIBuild.intentLabel}</span></div>
       <div class="msr">
         <ul class="dash">{b.intent.map((t) => <li>{t}</li>)}</ul>
-        <div class="notclaim">
-          {/* One level up when this section states no heading of its own:
-              with `heading={false}` there is no h2 above this, so level 3
-              would skip from the page's h1. */}
-          <h4 aria-level={heading ? 3 : 2}>{ui.howIBuild.notClaimed}</h4>
-          <ul>{b.notClaimed.map((t) => <li>{t}</li>)}</ul>
+        {/*
+          #31 — A REAL `<h2>`, not an `<h4>` declaring `aria-level="2"`.
+
+          The outline the owner specified is h1 HOW I BUILD → h2 開発の前提 →
+          h2 判断事例, and this is the first of the two. It used to be an `<h4>`
+          carrying `aria-level`, which the accessibility tree reads correctly
+          but which leaves the document saying one thing and the markup another.
+
+          The tag changed and nothing about the drawing did: `.premise h2` in
+          components.css restates the mono 10.5px treatment, so `.ad h2`'s 40px
+          display size never applies here. The element is a heading; it is not
+          a display line, and it was never drawn as one.
+
+          `aria-level` survives for the one case that still needs it — when
+          this section states its own `<h2>` title above, a nested `<h2>` would
+          be a sibling of the section rather than a part of it.
+        */}
+        <div class="premise">
+          <h2 aria-level={heading ? 3 : undefined}>{ui.howIBuild.premises}</h2>
+          <ul>{premises.map((t) => <li data-premise>{t}</li>)}</ul>
         </div>
       </div>
     </div>

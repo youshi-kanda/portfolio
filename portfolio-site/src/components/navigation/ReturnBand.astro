@@ -1,0 +1,59 @@
+---
+/**
+ * The way back out, at the end of the page.
+ *
+ * A full-width band between the body and the footer, OUTSIDE every content
+ * section. That placement is the whole point of the component. The Technical
+ * page's return link used to live inside its Links section, which meant two
+ * things: it read as one more entry in a list of file paths, and it was
+ * rendered under `has('t8')` — a work whose Case Study cites no links would
+ * have shipped a page with no way back to the work it is about. Return
+ * navigation may not depend on whether a content section happens to exist.
+ *
+ * WHY CONTACT IS HERE AND NOT IN THE FOOTER. Below 768px the masthead's route
+ * list is `display:none` — 「youshi-kanda 業務システム / 業務自動化」 alone is
+ * ~254px of a 350px measure, so three routes cannot be drawn beside it — which
+ * left a reader on a phone with no way to make contact from inside a work
+ * without going to the homepage first. The footer is where that link would
+ * conventionally go, and #7 split CONTACT out of the footer on purpose: the
+ * footer closes the document and asks for nothing. So the ask stays out of it
+ * and rides here instead, in the band that is already about where to go next.
+ *
+ * Every href is a route. `history.back()` is not used and must not be: a
+ * visitor who arrived from a search result, a shared link or a new tab has no
+ * history to go back through, and that is exactly the visitor who most needs
+ * the way out.
+ *
+ * Direction is carried by the arrow AND by the label. `←` alone is a glyph a
+ * reader has to interpret; 「作品一覧に戻る」 says which way it goes even when
+ * the arrow is not rendered by the reader's font.
+ */
+export interface ReturnLink {
+  label: string;
+  href: string;
+  /** Up the hierarchy (←) or onward (→). */
+  back: boolean;
+}
+
+interface Props {
+  links: readonly ReturnLink[];
+}
+
+const { links } = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <section class="ret">
+      <div class="page">
+        {links.map((l) => (
+          <a class="lk" href={l.href}>
+            {l.back && <span class="ar bk">←</span>}
+            {l.label}
+            {!l.back && <span class="ar">→</span>}
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}

@@ -10,17 +10,52 @@
  * Deliberately not the stepper. Nothing here is a state a document passes
  * through and rests in — it is one transaction that either commits or is
  * unwound, so a progress indicator would misdescribe it.
+ *
+ * #52 — THE REGISTER STATES ITS COLUMNS.
+ *
+ * It did not, and five values in a row with no head is a table a reader has to
+ * reverse-engineer: `SYSTEM` was a word in the third position, and
+ * `200MS FAIL-FAST` was a word at the right edge, and nothing on the page said
+ * what either was the value OF. The heads are the five the owner named in
+ * Issue #52 comment 5791022793 and they map one-to-one onto the fields the
+ * rows already print, in the order the rows already print them.
+ *
+ * A ROW IS A HEADER ROW, NOT A HALF-BUILT ARIA TABLE. The head is real
+ * content in the document, ahead of the rows, read in the same order as every
+ * row below it — so a screen reader is given the column names once and then
+ * the values in that order. What it is NOT is `role="table"` over a grid: an
+ * ARIA table has to declare every row, every cell and the column count to be
+ * worth anything, and a partial one announces a table and then fails to
+ * navigate as one, which is worse than the plain reading order. A native
+ * `<table>` would be the other honest answer, and it is the wrong one here —
+ * the layout this register needs below 1280 is not a table at all (the row
+ * lies down into a stack), and `display:block` on table parts is how you keep
+ * the markup and lose the semantics anyway.
+ *
+ * `flow-ledger` IS THE WHOLE POINT OF THE CLASS. `.flow` is generic and HOW I
+ * BUILD's eight-step workflow and AI CRM's walkthrough both draw with it.
+ * Neither has column heads, neither wants PPM's column widths, and the fix for
+ * one register is not a change to the instrument every section shares.
  */
 import type { CaseStudy } from '../../lib/content/schema.ts';
+import { ui } from '../../lib/content/ui.ts';
 
 interface Props {
   caseStudy: CaseStudy;
 }
 
 const { caseStudy } = Astro.props;
+const heads = ui.caseStudy.ledgerHeaders;
 ---
 
-<div class="flow">
+<div class="flow flow-ledger">
+  <div class="fhd">
+    <span class="k">{heads.step}</span>
+    <span class="n">{heads.name}</span>
+    <span class="o">{heads.owner}</span>
+    <span class="d">{heads.what}</span>
+    <span class="g">{heads.gate}</span>
+  </div>
   {
     caseStudy.flow.map((s) => (
       <div class={s.gate ? 'fst gate' : 'fst'}>

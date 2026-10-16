@@ -1,17 +1,19 @@
 name: Portfolio Site CI
 
-# The release branch and main. `portfolio-site/` now exists on the release
-# branch and lands on main from it, so this fires where the tree it checks
-# actually is — and on every pull request that proposes to change it.
+# The two permanent branches, and nothing else. `develop` is what staging
+# deploys from and `main` is what production deploys from, so this fires where
+# the tree it checks actually is — and on every pull request that proposes to
+# change either of them. Topic branches are covered by their pull request, not
+# by a push trigger of their own.
 on:
   push:
     branches:
       - main
-      - release/portfolio-site-*
+      - develop
   pull_request:
     branches:
       - main
-      - release/portfolio-site-*
+      - develop
   workflow_dispatch:
 
 # No path filter, deliberately — unlike the three demo workflows beside this

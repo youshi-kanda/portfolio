@@ -17,7 +17,7 @@ ORIGIN="${PROD_ORIGIN:-https://portfolio.neppepe.net}"
 
 # A string from the hero that the placeholder cannot possibly contain. If the
 # home page is served but this is absent, the switch pointed somewhere wrong.
-HERO_MARKER='業務で使える Web・AI システムへ。'
+HERO_MARKER='現場で使える仕組みをつくる。'
 # The placeholder that occupied this document root before the first deploy.
 PLACEHOLDER_MARKER='Portfolio Test'
 # The site's own error document, as built.

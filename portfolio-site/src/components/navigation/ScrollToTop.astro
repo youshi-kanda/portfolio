@@ -1,0 +1,73 @@
+---
+/**
+ * ページ上部へ戻る — /how-i-build/ only (#31).
+ *
+ * IT IS AN ANCHOR, AND THAT IS THE WHOLE DESIGN. `<a href="#top">` is navigation
+ * the browser performs; a `<button>` calling `scrollTo()` is navigation this
+ * site performs, and it stops existing the moment the module fails to load, the
+ * moment a reader has script off, and in any context where the handler does not
+ * run. The page grew long because #31 added two decision cases to it, and the
+ * way back cannot be the part of the page most likely to be missing.
+ *
+ * SO JAVASCRIPT IS GIVEN EXACTLY ONE JOB: hiding the control while the top of
+ * the page is already on screen, where it would be an offer to go somewhere the
+ * reader is. It does that by observing `#top` — the hero — and toggling a
+ * class. It attaches no `scroll`, `wheel` or `touchmove` listener, reads no
+ * scroll position, and never calls `preventDefault`: those are the mechanisms
+ * that turn a page's own scrolling into something a script mediates, and this
+ * control is not worth one frame of that.
+ *
+ * With no script the link is simply always visible, which is the correct
+ * degradation: a control that is always there is a smaller cost than a control
+ * that is never there.
+ *
+ * `is-managed` is added by the script, and the CSS that hides anything is
+ * written against THAT class. So the hidden state cannot be reached unless the
+ * thing that can reveal it again is already running.
+ */
+import { ui } from '../../lib/content/ui.ts';
+---
+
+{/*
+  The visible face is one arrow. The word is the accessible name rather than
+  the label on a 48px square, because 「ページ上部へ戻る」 set in the instrument
+  face is a ~130px bar, and fixed to the bottom-right corner it sits over the
+  footer's links for the whole of the page's end. A screen reader gets the
+  words; the eye gets the corner back.
+*/}
+<a
+  class="totop"
+  href="#top"
+  aria-label={ui.howIBuild.toTop}
+  title={ui.howIBuild.toTop}
+  data-top-link
+>
+  <span class="totop-g" aria-hidden="true">↑</span>
+</a>
+
+<script>
+  /*
+   * Visibility only. If any line of this fails, the anchor stays visible and
+   * keeps working — which is why nothing here touches the anchor's behaviour.
+   */
+  const link = document.querySelector<HTMLElement>('[data-top-link]');
+  const top = document.getElementById('top');
+
+  if (link && top && 'IntersectionObserver' in window) {
+    // Only now may the stylesheet hide it: the class that permits the hidden
+    // state and the code that can leave it again arrive together.
+    link.classList.add('is-managed');
+
+    const atTop = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          link.classList.toggle('is-away', !entry.isIntersecting);
+        }
+      },
+      // Default thresholds: the hero counts as on screen until none of it is.
+      { threshold: 0 },
+    );
+
+    atTop.observe(top);
+  }
+</script>

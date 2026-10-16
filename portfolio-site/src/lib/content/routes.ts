@@ -15,7 +15,7 @@
  * here so there is something to check; the check is what makes it true.
  */
 import type { CaseStudy, Evidence, Work } from './schema.ts';
-import { shippingWorks, technicalHref, workHref } from './derive.ts';
+import { ARCHIVE_HREF, METHOD_HREF, shippingWorks, technicalHref, workHref } from './derive.ts';
 
 export interface PublicRoutes {
   /** Root-relative, trailing-slashed, in the order a reader meets them. */
@@ -31,7 +31,7 @@ export function publicRoutes(
   const evidenceIds = new Set(evidence.map((e) => e.id));
   const caseSlugs = new Set(caseStudies.map((c) => c.slug));
 
-  const paths = ['/', '/work/', '/how-i-build/'];
+  const paths = ['/', ARCHIVE_HREF, METHOD_HREF];
 
   for (const work of shipping) {
     // `/work/<slug>/` mirrors its getStaticPaths: the page is only emitted when

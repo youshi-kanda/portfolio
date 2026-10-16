@@ -35,53 +35,53 @@
   },
   {
     "id": "home.hero.display.01",
-    "text": "業務課題を、",
+    "text": "業務を理解し、",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 1 行目",
-    "purpose": "課題 → 実装 → 動く仕組み の順序を display で宣言する（1/3）。",
+    "purpose": "業務理解 → 現場で使える仕組み の順序を display で宣言する（1/2）。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.display.02",
-    "text": "業務で使える Web・AI システムへ。",
+    "text": "現場で使える仕組みをつくる。",
     "route": "/",
     "section": "00 HERO",
     "slot": "display 2 行目",
-    "purpose": "同上（2/3）。作れるものを、抽象語ではなく実装の単位で言う。",
+    "purpose": "同上（2/2）。作るものを、動くことではなく現場で使えることで言う。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
     "id": "home.hero.lede",
-    "text": "業務フローを整理し、画面・API・データ・AI・自動処理へ落とし込み、実際に運用できる仕組みとして設計・実装します。",
+    "text": "Webシステム・AI・業務自動化を、要件整理から設計・実装まで。",
     "route": "/",
     "section": "00 HERO",
     "slot": "answer 行の下のリード",
-    "purpose": "どういう設計をするエンジニアかを 2 文で言う。件数も、全作品共通の検証手段名も置かない。",
+    "purpose": "扱う領域と、関与する工程の範囲を 1 文で言う。件数も、全作品共通の検証手段名も置かない。",
     "publication": {
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4（#6 / PR #15 merged）"
+        "Issue #44 comment 5751276538（2026-09-20T17:03:02Z）— 本人がこの 3 文を公開コピーとして使用することを承認"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-20T17:03:02Z"
     }
   },
   {
@@ -198,7 +198,7 @@
   },
   {
     "id": "home.works.h2",
-    "text": "何のためのサービスを、どこまで実装したのか。",
+    "text": "何を作り、どこまで実装したのか。",
     "route": "/",
     "section": "01 SELECTED WORK",
     "slot": "見出し",
@@ -207,11 +207,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "TASK-PORTFOLIO-CONTENT-LOCK-01 §Selected Work h2 candidate",
-        "TASK-PORTFOLIO-CONTENT-FREEZE-02 §3"
+        "Task “Improve Home / Work copy for readers” §4 — user-specified heading"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-08-28T21:20:25Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -231,6 +230,25 @@
       ],
       "approvedBy": "user",
       "approvedAt": "2026-09-09T10:05:34Z"
+    }
+  },
+  {
+    "id": "work.archive.lede",
+    "text": "業務Webアプリ、AI活用、業務自動化を中心に、これまでの開発実績をまとめています。各実績では、目的・担当範囲・使用技術を掲載しています。",
+    "route": "/work/",
+    "section": "開発実績",
+    "slot": "ページ導入文",
+    "purpose": "初見の読者に掲載領域と、各実績で確認できる情報を短く伝える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve Home / Work copy for readers” §2 — user-specified introduction",
+        "portfolio-site/src/content/work/ — shipping work records and their purpose, role, selectedTech fields"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -392,7 +410,7 @@
   },
   {
     "id": "home.hero.cta.primary",
-    "text": "実績を見る",
+    "text": "主な開発実績を見る",
     "route": "/",
     "section": "00 HERO",
     "slot": "first viewport の primary CTA",
@@ -401,10 +419,10 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §6 — user-specified primary CTA"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
     }
   },
   {
@@ -443,8 +461,26 @@
     }
   },
   {
+    "id": "home.contact.helper",
+    "text": "現状の業務・困りごと・希望時期が分かる範囲で構いません。まずはメールでご相談ください。",
+    "route": "/",
+    "section": "05 CONTACT",
+    "slot": "lede の下 — 問い合わせ補助文",
+    "purpose": "問い合わせ時に何を書けばよいかを短く示し、相談開始時の負担を下げる。Email＝問い合わせ / GitHub＝実装確認の役割分離は変更しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "sourceRefs": [
+        "Issue #34 comment 5741442820（2026-09-19T11:26:31Z）— 本人がこの文言を公開コピーとして使用することを承認",
+        "Issue #34 §5.1 — 本人確認のうえ確定した公開文言として、この文がそのまま記載されている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-19T11:26:31Z"
+    }
+  },
+  {
     "id": "home.hero.cta.secondary",
-    "text": "相談する",
+    "text": "開発について相談する",
     "route": "/",
     "section": "00 HERO",
     "slot": "first viewport の secondary CTA",
@@ -453,10 +489,317 @@
       "reviewStatus": "approved",
       "sourceType": "authored",
       "sourceRefs": [
-        "portfolio-site/docs/design/home-ia-content-spec.md §4.5（#6 / PR #15 merged）"
+        "Task “Improve Home / Work copy for readers” §6 — user-specified secondary CTA"
       ],
       "approvedBy": "user",
-      "approvedAt": "2026-09-13T00:13:13Z"
+      "approvedAt": "2026-09-26T14:37:12Z"
+    }
+  },
+  {
+    "id": "home.works.sourceWithheld",
+    "text": "公開範囲を限定しているため、コードリンクは掲載していません。担当範囲と実装内容は、公開可能な情報に限定して記載しています。",
+    "route": "/",
+    "section": "01 FEATURED WORK",
+    "slot": "「確認できるもの」欄 — 公開コードリンクを出さない作品",
+    "purpose": "公開コードへのリンクが無いことを、読み手が不信として読まないための説明。private repository と public-repo + withheld を公開面で区別せず、公開面で確実に言える「掲載していない」という事実だけを述べる。顧客名・発注元名・非公開リポジトリ名につながる情報は出さない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #30 comment 5746615341（2026-09-20T01:11:07Z）— 本人がこの文言を公開コピーとして使用することを承認（HD-I）",
+        "Issue #30 §8.1 — HD-I の公開文言として、この文がそのまま記載されている"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T01:11:07Z"
+    }
+  },
+  {
+    "id": "method.rail.subtitle",
+    "text": "AIを活用した開発プロセス",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD",
+    "slot": "rail 2 行目",
+    "purpose": "HOW I BUILD が説明する内容を、日本語で短く示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified rail label"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.title",
+    "text": "AIを活用した開発の進め方",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD",
+    "slot": "h1",
+    "purpose": "専門用語を前提にせず、このページがAIを使った開発工程の説明であることを示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified page title"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.lede",
+    "text": "AIを設計・実装の支援に使い、要件整理・重要な判断・最終確認は自分で行います。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD",
+    "slot": "h1 下のリード",
+    "purpose": "AIに任せる範囲と本人が担う判断・確認の境界を、冒頭で具体的に示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified opening copy",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.workflow.decisionTag",
+    "text": "人が判断",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Workflow",
+    "slot": "Human Decision step tag",
+    "purpose": "内部用語 decision gate を、誰が何をする段階か分かる表示へ置き換える。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "presentation",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified reader-facing tag"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.human",
+    "text": "要件整理 / 内容理解 / 採否判断",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "Human duty",
+    "purpose": "開発工程で本人が担う範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Human duty",
+        "site.howIBuild.workflow — Human が担当する Requirement / Specification / Human Decision"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.chatgpt",
+    "text": "計画 / レビュー / 論点整理",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "ChatGPT duty",
+    "purpose": "開発工程でChatGPTに担わせる範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified ChatGPT duty",
+        "site.howIBuild.workflow — ChatGPT が担当する Planning / Review と Independent Review"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.roles.claudeCode",
+    "text": "実装 / テスト",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Roles",
+    "slot": "Claude Code duty",
+    "purpose": "開発工程でClaude Codeに担わせる範囲を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Claude Code duty",
+        "site.howIBuild.workflow — Claude Code が担当する Coding Agent / Tests / CI / Evidence"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.01",
+    "text": "AIに実装を任せる場合も、内容を理解したうえで採否を判断します。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 1 行目",
+    "purpose": "AIが実装する場合も、内容理解と採否判断を本人が担う方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — reader-facing rewrite of the existing Intent",
+        "site.howIBuild.workflow / roles"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.02",
+    "text": "理解が浅い技術や重要な設計判断では、人が確認する範囲を広げます。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 2 行目",
+    "purpose": "理解度と判断の重要性に応じて、人が確認する範囲を変える方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Intent copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.intent.03",
+    "text": "定型作業は自動化し、判断が必要な箇所に確認を集中します。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / Intent",
+    "slot": "Intent 3 行目",
+    "purpose": "自動化の対象と、人が確認する対象を分ける方針を示す。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified Intent copy"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.premise.01",
+    "text": "要件整理・判断・検証は自分で行い、AIは設計・実装の支援に使っています。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」1 文目 — 実際の開発体制",
+    "purpose": "誰が何を担うかを、一般読者にも分かる日本語で述べる。要件整理・判断・検証を本人が持ち、AIを設計・実装の支援に使う既存の事実境界は変えない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user-specified reader-facing premise rewrite",
+        "site.howIBuild.workflow / roles — Human が Requirement / Specification / Human Decision を持ち、AI が Planning / Review / 実装 / テストを担う工程表（同ページに掲載）",
+        "Issue #31 comment 5747908981 — 置換前の承認文と、維持する事実境界"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "method.premise.02",
+    "text": "現在の公開内容は、複数のAIがすべて自動で開発する仕組みや、専用の自動化基盤を構築・運用した実績を示すものではありません。",
+    "route": "/how-i-build/",
+    "section": "HOW I BUILD / 開発の前提",
+    "slot": "「開発の前提」2 文目 — 公開内容の対象範囲",
+    "purpose": "誇張防止の境界線。旧文が対象外としていた完全自動のMulti-Agent開発と構築済みHarnessの運用を、一般読者向けに「複数のAIがすべて自動で開発する仕組み」「専用の自動化基盤」と言い換える。境界そのものは削除しない。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Task “Improve HOW I BUILD / Technical copy for readers” — user instruction to keep the factual boundary and make it understandable to general readers",
+        "Issue #31 comment 5747908981 — 置換前の承認文と、維持する誇張防止の境界"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-26T15:25:44Z"
+    }
+  },
+  {
+    "id": "home.about.experience",
+    "text": "製造現場から営業までの業務経験を通じ、業務フローを理解したうえで課題を整理し、システムへ落とし込むことを大切にしています。",
+    "route": "/",
+    "section": "06 ABOUT / 業務経験",
+    "slot": "「業務経験」1 文 — 業務背景と現在の開発のつながり",
+    "purpose": "この engineer の業務背景を述べる。ABOUT には業務経験の記述が 1 行も無く、読み手からは注意書き 3 行しか見えていなかった。年数・勤務先・職務の列挙は出さない（HD-C）: 出すのは「現場から営業までの業務フローを理解していること」と「現在の要件整理・システム化へ接続していること」だけで、それ以上は職務経歴書側の仕事である。本人しか Authority を持たない経歴なので user-fact。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "user-fact",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #32 comment 5748116465（2026-09-20T06:25:47Z）— HD-C 確定。年数表現を使わず、この文を業務経験の基準文とする",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
+    }
+  },
+  {
+    "id": "home.about.disclosure",
+    "text": "公開している作品には、共同プロジェクトを公開用に再構成したもの、個人開発の技術デモ、自主開発のPoCが含まれます。",
+    "route": "/",
+    "section": "06 ABOUT / 掲載内容について",
+    "slot": "「掲載内容について」1 文 — 掲載作品がどういう成り立ちのものか",
+    "purpose": "掲載作品がどういう成り立ちのものかを述べる。旧 `実装形態` 行は Portfolio 全体を「個人開発」と言っていて、#29 が共同プロジェクトの公開用再構成を本人確認済みの事実として記録した時点で成り立たなくなった。ここで使う分類語は #29 の metadata と同じもので、新しい軸を作っていない。マージ前レビューで 2 文目「担当範囲と到達状態は作品ごとに記載しています。」を削除した（Issue #32 comment 5749023659）: 担当範囲は Featured Work の Role / 開発背景 として出ているが、到達状態は作品レコードにあるだけで公開面に出ていない。公開UIを足して文に合わせるのではなく、文を現在の公開面で確認できる範囲へ狭めている。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "Issue #32 comment 5749023659（2026-09-20T09:43:50Z）— 本人が 2 文目を削除した現在の文面を確定文として記載",
+        "Issue #29 comment 5742687087（2026-09-19）— 本人確認済み作品メタデータ。共同プロジェクト / 公開用再構成 / 個人開発 / 技術デモ / 自主開発 / PoC の分類と、作品ごとの担当範囲・到達状態",
+        "work/agri",
+        "work/crm",
+        "work/ops",
+        "src/content/work/*.json portfolioProfile — agri が collaborative / public-reconstruction、crm が personal / technical-demo、ops が personal / poc。文が挙げる 3 種がそれぞれ実在する",
+        "ui.work.profileLabels — enum を読者向けの語にする唯一の対応表。この文が使う語はそこから来ている",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 旧承認。削除前の 2 文構成を承認したもので、現在の文の承認ではない（履歴）"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T09:43:50Z"
+    }
+  },
+  {
+    "id": "home.about.syntheticData",
+    "text": "掲載画面では実顧客情報を公開せず、合成データを使用しています。",
+    "route": "/",
+    "section": "06 ABOUT / 公開データ",
+    "slot": "「公開データ」1 文 — 掲載画面のデータが何であるか",
+    "purpose": "掲載画面が合成データであることを述べる。旧 `データ` 行を圧縮したもので、表明そのものは削っていない: 実顧客情報を公開しないという理由と、合成データを使っているという事実の 2 つが残っている。「実顧客・実案件・本番運用の記録ではない」という否定形の列挙をやめたのは、同じ内容が理由の側から言えるからである。",
+    "publication": {
+      "reviewStatus": "approved",
+      "sourceType": "authored",
+      "claimType": "fact",
+      "sourceRefs": [
+        "各作品の README ／ PUBLISH-MAP.md — 旧 about.known `データ` 行が根拠にしていた合成データの記録。圧縮しても根拠は引き継ぐ",
+        "site.synthetic — 作品ページ・Case Study・/how-i-build/ に出ている合成データの表明",
+        "Issue #32 comment 5748161578（2026-09-20T06:35:42Z）— 本人が ABOUT 3 ブロックの公開文面を確定文として記載"
+      ],
+      "approvedBy": "user",
+      "approvedAt": "2026-09-20T06:35:42Z"
     }
   }
 ]
